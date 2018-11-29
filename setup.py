@@ -1,4 +1,3 @@
-# WORK IN PROGRESS!!!
 
 import setuptools
 from setuptools import setup
