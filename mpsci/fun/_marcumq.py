@@ -16,7 +16,15 @@ def marcumq(m, a, b):
 
     The function uses numerical integration, so it can be very slow.
     """
-    q = mpmath.quad(lambda x: _integrand(x, m, a), [b, mpmath.inf])
+    if a == 0:
+        if m == 1:
+            q = mpmath.exp(-b**2/2)
+        else:
+            q = mpmath.gammainc(m, b**2/2, regularized=True)
+    elif b == 0 and m > 0:
+        q = mpmath.mpf(1)
+    else:
+        q = mpmath.quad(lambda x: _integrand(x, m, a), [b, mpmath.inf])
     return q
 
 
@@ -28,5 +36,13 @@ def cmarcumq(m, a, b):
 
     The function uses numerical integration, so it can be very slow.
     """
-    q = mpmath.quad(lambda x: _integrand(x, m, a), [0, b])
+    if a == 0:
+        if m == 1:
+            q = -mpmath.expm1(-b**2/2)
+        else:
+            q = mpmath.gammainc(m, 0, b**2/2, regularized=True)
+    elif b == 0 and m > 0:
+        q = mpmath.mpf(0)
+    else:
+        q = mpmath.quad(lambda x: _integrand(x, m, a), [0, b])
     return q
