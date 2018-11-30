@@ -1,33 +1,6 @@
 
 import mpmath
-
-
-def _digammainv(y):
-    """
-    Inverse of the digamma function (real positive arguments only).
-
-    Solves digamma(x) = y for real, positive x.
-
-    The digamma function is also known as psi_0; `mpmath.digamma(x)` is the
-    same as `mpmath.psi(0, x)`.
-    """
-    _em = mpmath.euler
-
-    y = mpmath.mpf(y)
-
-    # Find a good initial guess for the root.
-    if y > -0.125:
-        x0 = mpmath.exp(y) + 0.5
-    elif y > -3:
-        x0 = mpmath.exp(y/mpmath.mpf(2.332)) + mpmath.mpf(0.08661)
-    else:
-        x0 = 1 / (-y - _em)
-
-    solver = 'anderson'
-    x0 = (4*x0/5, 5*x0/4)
-    x = mpmath.findroot(lambda x: mpmath.digamma(x) - y, x0, solver=solver)
-
-    return x
+from ...fun import digammainv
 
 
 def pdf(x, k, theta):
@@ -83,7 +56,7 @@ def mle(x, k=None, theta=None):
             theta_hat = meanx / k_hat
         else:
             # theta is fixed, only solve for k
-            k_hat = _digammainv(meanlnx - mpmath.log(theta))
+            k_hat = digammainv(meanlnx - mpmath.log(theta))
             theta_hat = theta
     else:
         if theta is None:
