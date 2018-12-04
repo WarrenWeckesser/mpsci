@@ -7,9 +7,9 @@ __all__ = ['digammainv']
 
 def digammainv(y):
     """
-    Inverse of the digamma function (real positive arguments only).
+    Inverse of the digamma function (real values only).
 
-    Solves digamma(x) = y for real, positive x.
+    For real y, digammainv(y) returns x such that digamma(x) = y.
 
     The digamma function is also known as psi_0; `mpmath.digamma(x)` is the
     same as `mpmath.psi(0, x)`.
