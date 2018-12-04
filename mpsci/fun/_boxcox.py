@@ -31,7 +31,7 @@ def boxcox1p(x, lmbda):
                { log(1+x)            if lmbda == 0,
         f(x) = {
                { (1+x)**lmbda - 1
-               { ----------------    if lmba != 0
+               { ----------------    if lmbda != 0
                {      lmbda
 
     """
