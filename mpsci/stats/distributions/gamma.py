@@ -68,11 +68,6 @@ def mle(x, k=None, theta=None):
             k_hat = k
             theta_hat = theta
 
-    if theta is None:
-        theta_hat = meanx / k_hat
-    else:
-        theta_hat = theta
-
     return k_hat, theta_hat
 
 
