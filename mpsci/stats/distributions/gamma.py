@@ -46,7 +46,7 @@ def mle(x, k=None, theta=None):
             k_hat = (3 - s + mpmath.sqrt((s - 3)**2 + 24*s)) / (12*s)
             # XXX This is loop implements a "dumb" convergence criterion.
             # It exits early if the old k equals the new k, but if that never
-            # happens, then whatever value k_has after  the last iteration
+            # happens, then whatever value k_hat has after  the last iteration
             # is the value that is returned.
             for _ in range(10):
                 oldk = k_hat
