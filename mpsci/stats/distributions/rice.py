@@ -1,5 +1,16 @@
 """
 This module defines functions for the Rice distribution.
+
+Parameter names and formulas are from the wikipedia article:
+
+    https://en.wikipedia.org/wiki/Rice_distribution
+
+SciPy has a different parametrization:
+
+    mpsci               SciPy
+    -----------------   -----------------------------------------------------
+    pdf(x, nu, sigma)   scipy.stats.rice.pdf(x, nu/sigma, loc=0, scale=sigma)
+
 """
 
 import mpmath
@@ -9,11 +20,7 @@ from ...fun import marcumq, cmarcumq
 __all__ = ['pdf', 'cdf', 'sf']
 
 
-# Parameter names and formulas are from the wikipedia article:
-#     https://en.wikipedia.org/wiki/Rice_distribution
-# scipy has a different parametrization:
-# Here                  Scipy
-# pdf(x, nu, sigma)     scipy.stats.rice.pdf(x, nu/sigma, loc=0, scale=sigma)
+
 
 def pdf(x, nu, sigma):
     """
