@@ -38,7 +38,8 @@ def pdf(x, p, b, loc=0, scale=1):
 
 
 def logpdf(x, p, b, loc=0, scale=1):
-    """Log of the PDF of the generalized inverse Gaussian distribution.
+    """
+    Log of the PDF of the generalized inverse Gaussian distribution.
 
     The PDF for x > loc is
 
@@ -68,6 +69,8 @@ def cdf(x, p, b, loc=0, scale=1):
     """
     Cumulative distribution function of the generalized inverse Gaussian
     distribution.
+
+    The CDF is computed by using mpmath.quad to numerically integrate the PDF.
     """
     x = mpmath.mpf(x)
     p = mpmath.mpf(p)
@@ -92,6 +95,9 @@ def cdf(x, p, b, loc=0, scale=1):
 def sf(x, p, b, loc=0, scale=1):
     """
     Survival function of the generalized inverse Gaussian distribution.
+
+    The survival function is computed by using mpmath.quad to numerically
+    integrate the PDF.
     """
     x = mpmath.mpf(x)
     p = mpmath.mpf(p)
@@ -115,6 +121,14 @@ def sf(x, p, b, loc=0, scale=1):
 def mean(p, b, loc=0, scale=1):
     """
     Mean of the generalized inverse Gaussian distribution.
+
+    The mean is
+                     K_{p + 1}(b)
+        loc + scale --------------
+                        K_p(b)
+
+    where K_n(x) is the modified Bessel function of the second kind
+    (implemented in mpmath as besselk(n, x)).
     """
     p = mpmath.mpf(p)
     b = mpmath.mpf(b)
@@ -127,6 +141,11 @@ def mean(p, b, loc=0, scale=1):
 def mode(p, b, loc=0, scale=1):
     """
     Mode of the generalized inverse Gaussian distribution.
+
+    The mode is
+                    p - 1 + sqrt((p - 1)**2 + b**2)
+        loc + scale -------------------------------
+                                  b
     """
     p = mpmath.mpf(p)
     b = mpmath.mpf(b)
