@@ -14,11 +14,9 @@ except ImportError:
         mpmath = None
 
 
-__all__ = ['butter_lp', 'butter_bp', 'butter_lp_ord',
-           'cheby1_lp',
-           'freqz', 'zpkfreqz',
-           'poly_from_zeros',
-          ]
+__all__ = ['butter_lp', 'butter_bp', 'butter_lp_ord', 'cheby1_lp',
+           'freqz', 'zpkfreqz', 'poly_from_zeros']
+
 
 def _prod(seq):
     """Returns the product of the elements in the sequence `seq`."""
@@ -103,7 +101,7 @@ def _zpklp2bp(z, p, k, wo, bw):
 def _butter_analog_poles(n):
     """
     Poles of an analog Butterworth lowpass filter.
-    
+
     This is the same calculation as scipy.signal.buttap(n) or
     scipy.signal.butter(n, 1, analog=True, output='zpk'), but mpmath is used,
     and only the poles are returned.
@@ -160,14 +158,16 @@ def butter_lp_ord(wp, ws, deltap, deltas, fs=1):
     return n
 
 
-
 def cheby1_lp(N, rp, Wn):
     """
     Chebyshev Type I lowpass digital filter design.
 
-    This computes the same result as scipy.signal.cheby1(n, rp, Wn, output='zpk'),
-    but it uses mpmath, and the results are returned in lists instead of numpy
-    arrays.
+    This function computes the same result as
+
+        scipy.signal.cheby1(n, rp, Wn, output='zpk')
+
+    but it uses mpmath, and the results are returned in lists instead of
+    numpy arrays.
     """
     zeros = []
 
@@ -216,7 +216,7 @@ def zpkfreqz(z, p, k, worN=None):
         denom = _prod([zm1 - t for t in p])
         hk = k * numer / denom
         h.append(hk)
-    return ws, h        
+    return ws, h
 
 
 def freqz(b, a=1, worN=None):

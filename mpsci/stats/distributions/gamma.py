@@ -50,7 +50,9 @@ def mle(x, k=None, theta=None):
             # is the value that is returned.
             for _ in range(10):
                 oldk = k_hat
-                k_hat = k_hat - (mpmath.log(k_hat) - mpmath.psi(0, k_hat) - s)/(1/k_hat - mpmath.psi(1, k_hat))
+                delta = ((mpmath.log(k_hat) - mpmath.psi(0, k_hat) - s) /
+                         (1/k_hat - mpmath.psi(1, k_hat)))
+                k_hat = k_hat - delta
                 if k_hat == oldk:
                     break
             theta_hat = meanx / k_hat
@@ -79,7 +81,8 @@ def nll(x, k, theta):
     sumx = sum(x)
     sumlnx = sum(mpmath.log(t) for t in x)
 
-    ll = (k - 1)*sumlnx - sumx/theta - N*k*mpmath.log(theta) - N*mpmath.loggamma(k)
+    ll = ((k - 1)*sumlnx - sumx/theta - N*k*mpmath.log(theta) -
+          N*mpmath.loggamma(k))
     return -ll
 
 
@@ -125,4 +128,5 @@ def nll_invhess(x, k, theta):
 
     det = dk2*dtheta2 - dkdtheta**2
 
-    return mpmath.matrix([[-dtheta2/det, dkdtheta/det], [dkdtheta/det, -dk2/det]])
+    return mpmath.matrix([[-dtheta2/det, dkdtheta/det],
+                          [dkdtheta/det, -dk2/det]])

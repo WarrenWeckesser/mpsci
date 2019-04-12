@@ -20,8 +20,6 @@ from ...fun import marcumq, cmarcumq
 __all__ = ['pdf', 'cdf', 'sf']
 
 
-
-
 def pdf(x, nu, sigma):
     """
     PDF for the Rice distribution.
