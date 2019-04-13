@@ -6,7 +6,7 @@ import mpmath
 from ...fun import marcumq, cmarcumq
 
 
-__all__ = ['pdf', 'cdf', 'sf']
+__all__ = ['pdf', 'cdf', 'sf', 'mean', 'variance']
 
 
 def pdf(x, k, lam):
@@ -41,3 +41,22 @@ def sf(x, k, lam):
     lam = mpmath.mpf(lam)
     s = marcumq(k/2, mpmath.sqrt(lam), mpmath.sqrt(x))
     return s
+
+
+def mean(k, lam):
+    """
+    Mean of the noncentral chi-square distribution.
+    """
+    k = mpmath.mpf(k)
+    lam = mpmath.mpf(lam)
+    return k + lam
+
+
+def variance(k, lam):
+    """
+    Variance of the noncentral chi-square distribution.
+    """
+    k = mpmath.mpf(k)
+    lam = mpmath.mpf(lam)
+    return 2*(k + 2*lam)
+
