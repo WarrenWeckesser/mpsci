@@ -1,3 +1,19 @@
+"""
+Continous Distributions
+-----------------------
+exponweib
+gamma
+genextreme
+geninvgauss
+ncx2
+normal
+rice
+
+Discrete Distributions
+----------------------
+hypergeometric
+
+"""
 
 from . import exponweib
 from . import gamma
