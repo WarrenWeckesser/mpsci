@@ -19,3 +19,14 @@ def test_recurrence():
         for x in [mpmath.mpf('0.25'), mpmath.mpf(25)]:
             y = digammainv(mpmath.digamma(x) + 1/x)
             assert mpmath.almosteq(y, x + 1)
+
+
+def test_gauss_digamma_theorem():
+    pi = mpmath.pi
+    r = 3
+    m = 5
+    y = (-mpmath.euler - mpmath.log(2*m) - pi/2 * mpmath.cot(r*pi/m)
+         + 2*sum(mpmath.cos(2*pi*n*r/m)*mpmath.log(mpmath.sin(pi*n/m))
+                 for n in range(1, (m - 1)//2 + 1)))
+    x = digammainv(y)
+    assert mpmath.almosteq(x, mpmath.mpf(r)/m)
