@@ -2,6 +2,9 @@
 import mpmath
 
 
+__all__ = ['pdf']
+
+
 def pdf(x, a, c):
     """
     PDF for the exponentiated Weibull distribution.

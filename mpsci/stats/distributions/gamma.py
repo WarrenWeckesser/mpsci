@@ -3,6 +3,9 @@ import mpmath
 from ...fun import digammainv
 
 
+__all__ = ['pdf', 'cdf', 'mle', 'nll', 'nll_grad', 'nll_hess', 'nll_invhess']
+
+
 def pdf(x, k, theta):
     """
     Gamma distribution probability density function.

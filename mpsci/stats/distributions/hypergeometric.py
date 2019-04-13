@@ -5,6 +5,9 @@ The hypergeometric distribution.
 import mpmath
 
 
+__all__ = ['pmf', 'cdf', 'sf', 'support']
+
+
 def pmf(k, ntotal, ngood, nsample):
     """
     Probability mass function of the hypergeometric distribution.
