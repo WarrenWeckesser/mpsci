@@ -35,6 +35,8 @@ def cmarcumq(m, a, b):
     This is 1 - marcumq(m, a, b).
 
     The function uses numerical integration, so it can be very slow.
+
+    The computed integral tends to be very inaccurate for m < 1/2.
     """
     if a == 0:
         if m == 1:

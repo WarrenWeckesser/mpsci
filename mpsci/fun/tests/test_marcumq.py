@@ -4,6 +4,8 @@ from mpsci.fun import marcumq, cmarcumq
 
 
 def test_sum():
+    # Test that marcumq(m, 0.5, 2) + cmarcumq(m, 0.5, 2) == 1.
+    # The individual values are not checked.
     with mpmath.workdps(50):
         for m in [1, 10, 25, 100]:
             q1 = marcumq(m, 0.5, 2)
@@ -104,3 +106,19 @@ def test_specific_values_from_wolfram():
         for (m, a, b), expected in values:
             q = marcumq(m, a, b)
             assert mpmath.almosteq(q, expected)
+
+        values = [
+            [(0.5, 1, 2),
+             mpmath.mpf('0.839994848036912854058580730864442945100083598568223741623')],
+            [(0.5, 5, 13),
+             mpmath.mpf('0.99999999999999937790394257282158764840048274118115775113')],
+            [(0.5, 5, mpmath.mpf('1/13')),
+             mpmath.mpf('2.3417168332795098320214996797055274037932802604709459e-7')],
+            [(0.75, 5, mpmath.mpf('0.001')),
+             mpmath.mpf('7.6243509472783061143887290663443105556790864676878435e-11')],
+            [(51/2, 5, mpmath.mpf('0.1')),
+             mpmath.mpf('9.9527768099307883918427141035705197017192239618506806e-91')]
+        ]
+        for (m, a, b), expected in values:
+            c = cmarcumq(m, a, b)
+            assert mpmath.almosteq(c, expected)
