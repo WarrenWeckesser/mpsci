@@ -23,7 +23,6 @@ def boxcox_llf(lmb, x):
 
     logdata = [mpmath.log(t) for t in x]
     sumlogdata = mpmath.fsum(logdata)
-    meanlogdata = sumlogdata / n
 
     # Compute the variance of the transformed data.
     if lmb == 0:
@@ -48,7 +47,6 @@ def _boxcox_llf_deriv_not_finished(lmb, x):
 
     logdata = [mpmath.log(t) for t in x]
     sumlogdata = mpmath.fsum(logdata)
-    meanlogdata = sumlogdata / n
 
     mean_deriv_bc_sq = mpmath.fsum(2*(t**lmb/lmb)**2*(mpmath.log(t) - 1/lmb) for t in x) / n
     mean_bc_data = mpmath.fsum(t**lmb/lmb for t in x) / n
