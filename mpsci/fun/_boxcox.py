@@ -39,6 +39,6 @@ def boxcox1p(x, lmbda):
     lmbda = mpmath.mpf(lmbda)
     one = mpmath.mpf(1)
     if lmbda == 0:
-        return mpmath.log(one + x)
+        return mpmath.log1p(x)
     else:
         return mpmath.powm1(one + x, lmbda) / lmbda

@@ -17,4 +17,4 @@ def test_boxcox():
 def test_boxcox1p():
     for x in [1, 10]:
         assert boxcox1p(x, 1) == x
-        assert boxcox1p(x, 0) == mpmath.log(x + 1)
+        assert boxcox1p(x, 0) == mpmath.log1p(x)
