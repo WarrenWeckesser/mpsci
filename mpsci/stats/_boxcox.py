@@ -5,15 +5,9 @@ Box-Cox transformation.
 This code is not in the public API yet.  It has not been thoroughly
 tested, and there are some improvements that can be made.
 """
+
 import mpmath
-
-
-def _var(x):
-    n = len(x)
-    sumx = mpmath.fsum(x)
-    meanx = sumx / n
-    varx = mpmath.fsum((mpmath.mpf(t) - meanx)**2 for t in x)/n
-    return varx
+from ._basic import var
 
 
 def boxcox_llf(lmb, x):
@@ -26,12 +20,12 @@ def boxcox_llf(lmb, x):
 
     # Compute the variance of the transformed data.
     if lmb == 0:
-        variance = _var(logdata)
+        variance = var(logdata)
     else:
         # Transform without the constant offset 1/lmb.  The offset does
         # not effect the variance, and the subtraction of the offset can
         # lead to loss of precision.
-        variance = _var([t**lmb / lmb for t in x])
+        variance = var([t**lmb / lmb for t in x])
 
     return (lmb - 1) * sumlogdata - n/2 * mpmath.log(variance)
 
