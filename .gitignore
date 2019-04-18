@@ -36,3 +36,7 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+# pytest cache
+.cache/*
+.pytest_cache/*
