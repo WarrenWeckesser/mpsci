@@ -102,6 +102,12 @@ def pmean(x, p):
         return mean(x)
     elif p == -1:
         return hmean(x)
+    elif mpmath.isinf(p):
+        with mpmath.extraprec(16):
+            if p > 0:
+                return max(mpmath.mpf(t) for t in x)
+            else:
+                return min(mpmath.mpf(t) for t in x)
 
     with mpmath.extraprec(16):
         p = mpmath.mpf(p)

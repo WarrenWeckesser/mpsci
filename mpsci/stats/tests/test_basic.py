@@ -38,3 +38,5 @@ def test_pmean():
     with mpmath.extraprec(16):
         assert mpmath.almosteq(pmean([3, 4, 5], 3), 72**mpmath.mpf('1/3'))
         assert mpmath.almosteq(pmean([2, 2, 1], -2), mpmath.sqrt(2))
+        assert pmean([4, 2, 5, 3], mpmath.inf) == 5
+        assert pmean([4, 2, 5, 3], -mpmath.inf) == 2
