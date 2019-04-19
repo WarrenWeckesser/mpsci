@@ -1,5 +1,6 @@
 """
-This module defines functions for the noncentral chi-square distribution.
+Noncentral chi-square distribution
+----------------------------------
 """
 
 import mpmath

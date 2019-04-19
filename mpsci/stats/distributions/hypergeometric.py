@@ -1,5 +1,6 @@
 """
-The hypergeometric distribution.
+Hypergeometric distribution
+---------------------------
 """
 
 import mpmath

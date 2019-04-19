@@ -1,3 +1,7 @@
+"""
+Gamma probability distribution
+------------------------------
+"""
 
 import mpmath
 from ...fun import digammainv

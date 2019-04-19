@@ -1,3 +1,7 @@
+"""
+Exponentiated Weibull probability distribution
+----------------------------------------------
+"""
 
 import mpmath
 

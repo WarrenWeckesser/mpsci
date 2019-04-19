@@ -1,3 +1,7 @@
+"""
+Normal distribution
+-------------------
+"""
 
 import mpmath
 

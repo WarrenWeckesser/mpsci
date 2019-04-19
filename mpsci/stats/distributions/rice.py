@@ -1,11 +1,12 @@
 """
-This module defines functions for the Rice distribution.
+Rice distribution
+-----------------
 
 Parameter names and formulas are from the wikipedia article:
 
     https://en.wikipedia.org/wiki/Rice_distribution
 
-SciPy has a different parametrization:
+SciPy has a different parametrization::
 
     mpsci               SciPy
     -----------------   -----------------------------------------------------

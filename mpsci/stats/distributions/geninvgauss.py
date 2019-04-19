@@ -1,5 +1,6 @@
 """
-Methods for the generalized inverse Gaussian distribution.
+Generalized inverse Gaussian distribution
+-----------------------------------------
 """
 
 import mpmath
@@ -16,11 +17,11 @@ def pdf(x, p, b, loc=0, scale=1):
     Probability density function of the generalized inverse Gaussian
     distribution.
 
-    The PDF for x > loc is
+    The PDF for x > loc is::
 
         z**(p - 1) * exp(-b*(z + 1/z)/2))
         ---------------------------------
-               scale * K_p(b)
+                 scale * K_p(b)
 
     where z = (x - loc)/scale and K_p(b) is the modified Bessel function of
     the second kind.  For x <= loc, the PDF is zero.
@@ -44,11 +45,11 @@ def logpdf(x, p, b, loc=0, scale=1):
     """
     Log of the PDF of the generalized inverse Gaussian distribution.
 
-    The PDF for x > loc is
+    The PDF for x > loc is::
 
         z**(p - 1) * exp(-b*(z + 1/z)/2))
         ---------------------------------
-               scale * K_p(b)
+                 scale * K_p(b)
 
     where z = (x - loc)/scale and K_p(b) is the modified Bessel function of
     the second kind.  For x <= loc, the PDF is zero.
@@ -125,7 +126,8 @@ def mean(p, b, loc=0, scale=1):
     """
     Mean of the generalized inverse Gaussian distribution.
 
-    The mean is
+    The mean is::
+
                      K_{p + 1}(b)
         loc + scale --------------
                         K_p(b)
@@ -145,7 +147,8 @@ def mode(p, b, loc=0, scale=1):
     """
     Mode of the generalized inverse Gaussian distribution.
 
-    The mode is
+    The mode is::
+
                     p - 1 + sqrt((p - 1)**2 + b**2)
         loc + scale -------------------------------
                                   b

@@ -1,3 +1,6 @@
+"""
+Useful functions for scientific computing.
+"""
 
 from ._boxcox import *
 from ._marcumq import *

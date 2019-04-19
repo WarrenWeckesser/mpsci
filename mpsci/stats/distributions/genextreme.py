@@ -1,3 +1,7 @@
+"""
+Generalized extreme value distribution
+--------------------------------------
+"""
 
 import mpmath
 
