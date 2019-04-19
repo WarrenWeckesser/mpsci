@@ -9,11 +9,13 @@ def boxcox(x, lmbda):
     """
     Box-Cox transformation of x.
 
-               { log(x)          if lmbda == 0,
-        f(x) = {
-               { x**lmbda - 1
-               { ------------    if lmbda != 0
-               {    lmbda
+    The Box-Cox transformation is::
+
+                      { log(x)          if lmbda == 0,
+        f(x; lmbda) = {
+                      { x**lmbda - 1
+                      { ------------    if lmbda != 0
+                      {    lmbda
 
     """
     x = mpmath.mpf(x)
@@ -28,11 +30,13 @@ def boxcox1p(x, lmbda):
     """
     Box-Cox transformation of 1 plus x.
 
-               { log(1+x)            if lmbda == 0,
-        f(x) = {
-               { (1+x)**lmbda - 1
-               { ----------------    if lmbda != 0
-               {      lmbda
+    The transformation is::
+
+                      { log(1+x)            if lmbda == 0,
+        f(x; lmbda) = {
+                      { (1+x)**lmbda - 1
+                      { ----------------    if lmbda != 0
+                      {      lmbda
 
     """
     x = mpmath.mpf(x)
