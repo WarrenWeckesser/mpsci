@@ -15,7 +15,7 @@ SciPy has a different parametrization::
 """
 
 import mpmath
-from ...fun import marcumq, cmarcumq
+from ..fun import marcumq, cmarcumq
 
 
 __all__ = ['pdf', 'cdf', 'sf']

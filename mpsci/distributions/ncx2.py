@@ -4,7 +4,7 @@ Noncentral chi-square distribution
 """
 
 import mpmath
-from ...fun import marcumq, cmarcumq
+from ..fun import marcumq, cmarcumq
 
 
 __all__ = ['pdf', 'cdf', 'sf', 'mean', 'variance']
