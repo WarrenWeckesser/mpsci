@@ -1,18 +1,6 @@
 """
-Continous Distributions
------------------------
-exponweib
-gamma
-genextreme
-geninvgauss
-ncx2
-normal
-rice
-
-Discrete Distributions
-----------------------
-hypergeometric
-
+`mpsci.distributions`: Probability distributions
+------------------------------------------------
 """
 
 from . import exponweib

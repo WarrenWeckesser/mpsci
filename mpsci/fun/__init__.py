@@ -1,5 +1,9 @@
 """
-Useful functions for scientific computing.
+`mpsci.fun`: Useful functions
+-----------------------------
+
+This module contains an assortment of functions that arise
+in scientific computing.
 """
 
 from ._boxcox import *

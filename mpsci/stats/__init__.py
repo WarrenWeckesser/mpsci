@@ -1,5 +1,7 @@
 """
-Statistics and probability distributions.
+`mpsci.stats`: Statistical functions
+------------------------------------
+
 """
 
 from ._basic import *
