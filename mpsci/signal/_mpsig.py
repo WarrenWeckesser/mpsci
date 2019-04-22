@@ -217,7 +217,7 @@ def freqz(b, a=1, worN=None):
     """
     Frequency response of a filter in (b, a) format (i.e. transfer function).
 
-    This function is similar to scipy.signa.freqz, but the results are stored
+    This function is similar to `scipy.signal.freqz`, but the results are stored
     in lists.
     """
     if worN is None or isinstance(worN, int):
