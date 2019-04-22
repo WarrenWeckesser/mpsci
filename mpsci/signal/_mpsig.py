@@ -1,17 +1,10 @@
 """
-Some signal functions implemented using mpmath.
+Some signal functions.
 """
 
 from __future__ import division
 from functools import reduce
-
-try:
-    import mpmath
-except ImportError:
-    try:
-        import sympy.mpmath as mpmath
-    except ImportError:
-        mpmath = None
+import mpmath
 
 
 __all__ = ['butter_lp', 'butter_bp', 'butter_lp_ord', 'cheby1_lp',
@@ -131,7 +124,9 @@ def butter_lp(n, Wn):
 
 
 def butter_bp(n, wlo, whi):
-
+    """
+    Bandpass Butterworth filter design.
+    """
     zeros = []
     poles = _butter_analog_poles(n)
     k = 1
@@ -197,11 +192,10 @@ def cheby1_lp(N, rp, Wn):
 
 def zpkfreqz(z, p, k, worN=None):
     """
-    Frequency response of a filter in zpk format, using mpmath.
+    Frequency response of a filter in zpk format.
 
     This is the same calculation as scipy.signal.freqz, but the input is in
-    zpk format, the calculation is performed using mpath, and the results are
-    returned in lists instead of numpy arrays.
+    zpk format, and the results are returned in lists instead of numpy arrays.
     """
     if worN is None or isinstance(worN, int):
         N = worN or 512
@@ -223,7 +217,8 @@ def freqz(b, a=1, worN=None):
     """
     Frequency response of a filter in (b, a) format (i.e. transfer function).
 
-    The calculation is performed using mpmath, and lists are returned.
+    This function is similar to scipy.signa.freqz, but the results are stored
+    in lists.
     """
     if worN is None or isinstance(worN, int):
         N = worN or 512
