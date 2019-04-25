@@ -263,7 +263,7 @@ def poly_from_zeros(z):
     """
     Convert the zeros of a polynomial to the coefficients.
 
-    Coefficient are ordered from highest degree term to lowest.
+    Coefficients are ordered from highest degree term to lowest.
 
     The leading coefficient will be 1.
 

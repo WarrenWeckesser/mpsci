@@ -1,6 +1,9 @@
 """
-``stats``: Statistical functions
---------------------------------
+``stats``
+---------
+
+Most of these functions were implemented to test their counterparts
+in `scipy.stats`.
 
 """
 

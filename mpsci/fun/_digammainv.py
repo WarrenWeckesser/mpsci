@@ -9,10 +9,35 @@ def digammainv(y):
     """
     Inverse of the digamma function (real values only).
 
-    For real y, digammainv(y) returns x such that digamma(x) = y.
+    The `digamma function` [1]_ [2]_ is the logarithmic derivative of the
+    gamma function.
 
-    The digamma function is also known as psi_0; `mpmath.digamma(x)` is the
+    For real y, digammainv(y) returns the positive x such that digamma(x) = y.
+
+    The digamma function is also known as :math:`\psi_0`; `mpmath.digamma(x)` is the
     same as `mpmath.psi(0, x)`.
+
+    References
+    ----------
+    .. [1] "Digamma function",
+           https://en.wikipedia.org/wiki/Digamma_function
+    .. [2] Abramowitz and Stegun, *Handbook of Mathematical Functions*
+           (section 6.3), Dover Publications, New York (1972).  
+
+    Examples
+    --------
+
+    >>> import mpmath
+    >>> from mpsci.fun import digammainv
+    >>> mpmath.mp.dps = 25
+    >>> y = mpmath.mpf('7.89123')
+    >>> y
+    mpf('7.891230000000000000000000011')
+    >>> x = digammainv(y)
+    >>> x
+    mpf('2674.230572001301673812839151')
+    >>> mpmath.digamma(x)
+    mpf('7.891230000000000000000000011')
     """
 
     # XXX I'm not sure this extra dps is necessary.

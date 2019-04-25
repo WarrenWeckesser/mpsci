@@ -1,6 +1,6 @@
 """
-``fun``: Useful functions
--------------------------
+``fun``
+-------
 
 This module contains an assortment of functions that arise
 in scientific computing.
