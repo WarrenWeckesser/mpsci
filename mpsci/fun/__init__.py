@@ -1,6 +1,6 @@
 """
-`mpsci.fun`: Useful functions
------------------------------
+``fun``: Useful functions
+-------------------------
 
 This module contains an assortment of functions that arise
 in scientific computing.

@@ -1,6 +1,6 @@
 """
-`mpsci.signal`: Signal processing tools
----------------------------------------
+``signal``: Signal processing tools
+-----------------------------------
 
 """
 

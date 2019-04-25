@@ -1,6 +1,6 @@
 """
-`mpsci.stats`: Statistical functions
-------------------------------------
+``stats``: Statistical functions
+--------------------------------
 
 """
 

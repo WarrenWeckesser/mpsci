@@ -1,6 +1,6 @@
 """
-`mpsci.distributions`: Probability distributions
-------------------------------------------------
+``distributions``: Probability distributions
+--------------------------------------------
 """
 
 from . import exponweib

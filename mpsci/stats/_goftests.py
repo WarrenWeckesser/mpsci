@@ -29,6 +29,10 @@ def gtest(observed, expected):
 
         G = 2 * sum(observed*log(observed/expected))
 
+    or
+
+    .. math::  G = 2\sum_{i=0}^{n-1} O_{i} \log(O_{i}/E_{i})
+
     """
     stat = sum(2*xlogy(obs, obs/exp) for obs, exp in zip(observed, expected))
     df = len(observed) - 1
