@@ -3,10 +3,29 @@ Generalized inverse Gaussian distribution
 -----------------------------------------
 """
 
+import re
 import mpmath
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode']
+
+
+_latex_pdf = r"""
+.. math::
+
+   \\frac{z^{(p - 1)}\\exp\\left(-\\frac{b}{2}\\left(z + \\frac{1}{z}\\right)\\right)}
+         {s K_p(b)}
+
+"""
+
+_pdf_docstring_re_subs = [
+    ('[ ]+z.*\* K_p\(b\)', _latex_pdf, 0, re.DOTALL),
+    ('where s', r'where :math:`s`', 0, 0),
+    ('z =.*/s', r':math:`z = (x - \\textsf{loc})/s`', 0, 0),
+    ('K_p\(b\) is', r':math:`K_p(b)` is', 0, 0),
+    ('x > loc', r':math:`x > \\textsf{loc}`', 0, 0),
+    ('x <= loc', r':math:`x \\le \\textsf{loc}`', 0, 0),
+]
 
 
 # Parameters have been chosen to match the proposed implementation of
@@ -17,14 +36,14 @@ def pdf(x, p, b, loc=0, scale=1):
     Probability density function of the generalized inverse Gaussian
     distribution.
 
-    The PDF for x > loc is::
+    The PDF for x > loc is:
 
         z**(p - 1) * exp(-b*(z + 1/z)/2))
         ---------------------------------
-                 scale * K_p(b)
+                 s * K_p(b)
 
-    where z = (x - loc)/scale and K_p(b) is the modified Bessel function of
-    the second kind.  For x <= loc, the PDF is zero.
+    where s is the scale, z = (x - loc)/s, and K_p(b) is the modified Bessel
+    function of the second kind.  For x <= loc, the PDF is zero.
     """
     x = mpmath.mpf(x)
     p = mpmath.mpf(p)
@@ -41,18 +60,21 @@ def pdf(x, p, b, loc=0, scale=1):
             / scale)
 
 
+pdf._docstring_re_subs = _pdf_docstring_re_subs
+
+
 def logpdf(x, p, b, loc=0, scale=1):
     """
     Log of the PDF of the generalized inverse Gaussian distribution.
 
-    The PDF for x > loc is::
+    The PDF for x > loc is:
 
         z**(p - 1) * exp(-b*(z + 1/z)/2))
         ---------------------------------
                  scale * K_p(b)
 
-    where z = (x - loc)/scale and K_p(b) is the modified Bessel function of
-    the second kind.  For x <= loc, the PDF is zero.
+    where s is the scale, z = (x - loc)/scale and K_p(b) is the modified Bessel
+    function of the second kind.  For x <= loc, the PDF is zero.
     """
     x = mpmath.mpf(x)
     p = mpmath.mpf(p)
@@ -67,6 +89,9 @@ def logpdf(x, p, b, loc=0, scale=1):
             - b*(z + 1/z)/2
             - mpmath.log(2*mpmath.besselk(p, b))
             - mpmath.log(scale))
+
+
+logpdf._docstring_re_subs = _pdf_docstring_re_subs
 
 
 def cdf(x, p, b, loc=0, scale=1):
@@ -126,7 +151,7 @@ def mean(p, b, loc=0, scale=1):
     """
     Mean of the generalized inverse Gaussian distribution.
 
-    The mean is::
+    The mean is:
 
                      K_{p + 1}(b)
         loc + scale --------------
@@ -143,11 +168,23 @@ def mean(p, b, loc=0, scale=1):
     return loc + scale*mpmath.besselk(p + 1, b)/mpmath.besselk(p, b)
 
 
+_mean_latex = r"""
+.. math::
+
+   \\textsf{loc} + \\textsf{scale} \\frac{K_{p+1}(b)}{K_p(b)}
+
+"""
+
+mean._docstring_re_subs = [
+    ('[ ]+K_.*K_p\(b\)', _mean_latex, 0, re.DOTALL),
+    ('where K_n\(x\)', r'where :math:`K_n(x)`', 0, 0),
+]
+
 def mode(p, b, loc=0, scale=1):
     """
     Mode of the generalized inverse Gaussian distribution.
 
-    The mode is::
+    The mode is:
 
                     p - 1 + sqrt((p - 1)**2 + b**2)
         loc + scale -------------------------------
@@ -159,3 +196,15 @@ def mode(p, b, loc=0, scale=1):
     scale = mpmath.mpf(scale)
 
     return loc + scale*(p - 1 + mpmath.sqrt((p - 1)**2 + b**2))/b
+
+_mode_latex = r"""
+.. math::
+
+   \\textsf{loc} +
+   \\textsf{scale} \\frac{p - 1 + \\sqrt{(p - 1)^2 + b^2}}{b}
+
+"""
+
+mode._docstring_re_subs = [
+    ('[ ]+p.*  b', _mode_latex, 0, re.DOTALL),
+]
