@@ -1,12 +1,12 @@
 
 import mpmath
-
+import re
 
 __all__ = ['boxcox', 'boxcox1p']
 
 
 def boxcox(x, lmbda):
-    """
+    r"""
     Box-Cox transformation of x.
 
     The Box-Cox transformation is::
@@ -26,8 +26,23 @@ def boxcox(x, lmbda):
         return mpmath.powm1(x, lmbda) / lmbda
 
 
+_boxcox_latex_f = r"""
+.. math::
+
+        f(x; \\lambda) = \\begin{cases}
+                           \\log(x) & \\textrm{if} \\; \\lambda = 0 \\\\
+                           \\frac{x^{\\lambda} - 1}{\lambda}  & \\textrm{if} \\; \\lambda \\ne 0
+                        \\end{cases}
+"""
+
+boxcox._docstring_re_subs = [
+    ('::', ':', 0, 0),
+    ('[ ]+{.*lmbda', _boxcox_latex_f, 0, re.DOTALL)
+]
+
+
 def boxcox1p(x, lmbda):
-    """
+    r"""
     Box-Cox transformation of 1 plus x.
 
     The transformation is::
@@ -38,6 +53,8 @@ def boxcox1p(x, lmbda):
                       { ----------------    if lmbda != 0
                       {      lmbda
 
+    This function is mathematically equivalent to `boxcox(1+x, lmba)`.
+    It avoids the loss of precision that can occur if x is very small.
     """
     x = mpmath.mpf(x)
     lmbda = mpmath.mpf(lmbda)
@@ -46,3 +63,18 @@ def boxcox1p(x, lmbda):
         return mpmath.log1p(x)
     else:
         return mpmath.powm1(one + x, lmbda) / lmbda
+
+
+_boxcox1p_latex_f = r"""
+.. math::
+
+      f(x; \\lambda) = \\begin{cases}
+                         \\log(x + 1) & \\textrm{if} \\; \\lambda = 0 \\\\
+                         \\frac{(x + 1)^{\\lambda} - 1}{\\lambda}  & \\textrm{if} \\; \\lambda \\ne 0
+                      \\end{cases}
+"""
+
+boxcox1p._docstring_re_subs = [
+    ('::', ':', 0, 0),
+    ('[ ]+{.*lmbda', _boxcox1p_latex_f, 0, re.DOTALL)
+]
