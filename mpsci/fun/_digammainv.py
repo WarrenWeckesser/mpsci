@@ -14,7 +14,7 @@ def digammainv(y):
 
     For real y, digammainv(y) returns the positive x such that digamma(x) = y.
 
-    The digamma function is also known as :math:`\psi_0`; `mpmath.digamma(x)` is the
+    The digamma function is also known as psi_0; `mpmath.digamma(x)` is the
     same as `mpmath.psi(0, x)`.
 
     References
@@ -57,3 +57,8 @@ def digammainv(y):
         x = mpmath.findroot(lambda x: mpmath.digamma(x) - y, x0, solver=solver)
 
     return x
+
+
+digammainv._docstring_re_subs = [
+    ('psi_0', ':math:`\\psi_0`', 0, 0)
+]

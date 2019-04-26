@@ -285,3 +285,14 @@ def poly_from_zeros(z):
     for k in range(1, len(z)):
         p = _convolve(p, [1, -z[k]])
     return p
+
+_math = """
+.. math::
+
+   (x - 2)(x - 3) = x^2 - 5x + 6
+
+"""
+
+poly_from_zeros._docstring_re_subs = [
+    ('[ ]+\(x.*6', _math, 0, 0)
+]
