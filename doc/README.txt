@@ -9,3 +9,53 @@ Build sequence:
 3. Run:
    $ sphinx-build -c . -b html -a -E source build
 4. Open build/index.html in a browser
+
+
+Using the resubber Sphinx extension.
+
+I don't like using LaTeX markup in user-facing documentation.
+That means docstrings must not have code like this:
+
+    .. math::
+
+       f(x; \lambda) = \begin{cases}
+                         \log(x) & \textrm{if} \; \lambda = 0 \\
+                         \frac{x^{\lambda} - 1}{\lambda}  & \textrm{if} \; \lambda \ne 0
+                       \end{cases}
+
+But I do want nicely rendered mathematical expressions in the
+HTML version of the docstrings.  My solution is to write the
+docstring using human-readable "ASCII math", and in Sphinx,
+replace the ASCII math with LaTeX markup using `.. math::`
+directives or `:math:` roles.
+
+The Sphinx extension resubber is a very simple extension.
+Sphinx passes each object that it processes to resubber's
+`process_docstring` function.  In `process_docstring`, if
+the object has an attribute called `_docstring_re_subs`,
+the docstring is modified by treating each item in
+`_docstring_re_subs` as a tuple containing the four arguments
+`pattern`, `repl`, `count` and `flags` to `re.sub`.  These
+substutions are applied to the docstring in-place, so Sphinx
+sees the math roles and directives instead of the ASCII math
+text.
+
+For example, in the following function I want
+
+    c = sqrt(a**2 + b**2)
+
+in the text docstring, but I want to replace that with
+
+    :math:`c = \sqrt{a^2 + b^2}`
+
+when Sphinx processes the docstring:
+
+    def hypot(a, b):
+        """
+        Comute the hypotenuse c = sqrt(a**2 + b**2).
+        """
+        return sqrt(a**2 + b**2)
+
+    hypot._docstring_re_subs = [
+        ('c =.*\)', ':math:`c = \\sqrt{a^2 + b^2}', 0, 0),
+    ]
