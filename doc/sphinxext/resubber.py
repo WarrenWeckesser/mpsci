@@ -9,7 +9,8 @@ import re
 
 
 def process_docstring(app, what, name, obj, options, lines):
-    subs = getattr(obj, '_docstring_re_subs', None)
+    subs = getattr(app.config, 'resubber_re_subs', [])
+    subs.extend(getattr(obj, '_docstring_re_subs', []))
     if subs:
         docstring = '\n'.join(lines)
         for pattern, repl, count, flags in subs:
@@ -20,9 +21,8 @@ def process_docstring(app, what, name, obj, options, lines):
 
 
 def setup(app):
-    # type: (Sphinx) -> Dict[str, Any]
     app.connect('autodoc-process-docstring', process_docstring)
-
+    app.add_config_value('resubber_re_subs', [], 'env')
     return {
         'version': '0.0.1',
         'parallel_read_safe': True,

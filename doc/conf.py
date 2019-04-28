@@ -39,6 +39,7 @@ extensions = [
 
 mathjax_path = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"
 
+resubber_re_subs = [(r'`mpsci\.([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)`', r':ref:`mpsci_\1_\2`', 0, 0),]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

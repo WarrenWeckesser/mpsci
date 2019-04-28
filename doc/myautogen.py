@@ -102,6 +102,7 @@ for module in [fun, signal]:
         filename = os.path.join(pth, name + '.rst')
         with open(filename, 'w') as f:
             f.write(preamble)
+            f.write('.. _' + '_'.join(['mpsci', modname, name]) + ':\n')
             f.write('\n%s\n' % name)
             f.write('-'*len(name) + '\n\n')
             f.write('\n.. autofunction:: mpsci.%s.' % modname + name + '\n')

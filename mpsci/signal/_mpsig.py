@@ -196,6 +196,8 @@ def zpkfreqz(z, p, k, worN=None):
 
     This is the same calculation as scipy.signal.freqz, but the input is in
     zpk format, and the results are returned in lists instead of numpy arrays.
+
+    *See also:* `mpsci.signal.freqz`
     """
     if worN is None or isinstance(worN, int):
         N = worN or 512
@@ -219,6 +221,8 @@ def freqz(b, a=1, worN=None):
 
     This function is similar to `scipy.signal.freqz`, but the results are stored
     in lists.
+
+    *See also:* `mpsci.signal.zpkfreqz`
     """
     if worN is None or isinstance(worN, int):
         N = worN or 512

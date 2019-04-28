@@ -21,7 +21,25 @@ def marcumq(m, a, b):
 
     where I_{M-1}(x) is the modified Bessel function of order M-1.
 
+    *See also:* `mpsci.fun.cmarcumq`
+
+    Returns
+    -------
+    q : mpmath.mpf
+        The function value.
+
+    Notes
+    -----
     The function uses numerical integration, so it can be very slow.
+
+    Examples
+    --------
+    >>> import mpmath
+    >>> from mpsci.fun import marcumq
+    >>> mpmath.mp.dps = 40
+    >>> marcumq(2, 0.5, 3.0)
+    mpf('0.07558718754263240906718640000640082605610073')
+
     """
     if a == 0:
         if m == 1:
@@ -56,6 +74,8 @@ def cmarcumq(m, a, b):
     The function uses numerical integration, so it can be very slow.
 
     The computed integral tends to be very inaccurate for m < 1/2.
+
+    *See also:* `mpsci.fun.marcumq`
     """
     if a == 0:
         if m == 1:
