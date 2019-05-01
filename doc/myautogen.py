@@ -120,7 +120,7 @@ othernames = []
 for name in names:
     obj = getattr(stats, name)
     src = obj.__module__.split('.')[-1]
-    if src == '_goftests' or src == '_pearsonr':
+    if src == '_goftests' or src == '_pearsonr' or src == '_fisher_exact':
         testnames.append(name)
     else:
         othernames.append(name)

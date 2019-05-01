@@ -10,3 +10,4 @@ in `scipy.stats`.
 from ._basic import *
 from ._goftests import *
 from ._pearsonr import pearsonr
+from ._fisher_exact import fisher_exact
