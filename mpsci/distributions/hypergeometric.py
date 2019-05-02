@@ -4,9 +4,10 @@ Hypergeometric distribution
 """
 
 import mpmath
+from ..fun import logbeta
 
 
-__all__ = ['pmf', 'cdf', 'sf', 'support']
+__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'support']
 
 
 def pmf(k, ntotal, ngood, nsample):
@@ -19,6 +20,22 @@ def pmf(k, ntotal, ngood, nsample):
              mpmath.beta(nsample - k + 1, nbad - nsample + k + 1))
     pmf = numer / denom
     return pmf
+
+
+def logpmf(k, ntotal, ngood, nsample):
+    """
+    Natural log of the probability mass function of the hypergeometric distribution.
+    """
+    nbad = ntotal - ngood
+    with mpmath.extradps(5):
+        # numerator terms
+        terms = [mpmath.log(ntotal + 1), logbeta(ntotal - nsample + 1, nsample + 1)]
+        # denominator terms
+        terms.extend([-mpmath.log(ngood + 1),
+                      -mpmath.log(nbad + 1),
+                      -logbeta(k + 1, ngood - k + 1),
+                      -logbeta(nsample - k + 1, nbad - nsample + k + 1)])
+        return mpmath.fsum(terms)
 
 
 def cdf(k, ntotal, ngood, nsample):
