@@ -18,3 +18,4 @@ from . import normal
 from . import rice
 
 from . import hypergeometric
+from . import fishers_noncentral_hypergeometric
