@@ -1,6 +1,6 @@
 
 import mpmath
-from mpsci.stats.distributions import ncx2
+from mpsci.distributions import ncx2
 
 
 def test_basic_pdf():

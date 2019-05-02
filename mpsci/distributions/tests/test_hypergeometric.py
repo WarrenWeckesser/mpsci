@@ -1,6 +1,6 @@
 
 import mpmath
-from mpsci.stats.distributions import hypergeometric
+from mpsci.distributions import hypergeometric
 
 
 def test_basic():
