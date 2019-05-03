@@ -86,7 +86,7 @@ def mode(ncp, ntotal, ngood, nsample):
 
 def mean(ncp, ntotal, ngood, nsample):
     """
-    Mode of Fisher's noncentral hypergeometric distribution.
+    Mean of Fisher's noncentral hypergeometric distribution.
 
     This calculation is implemented as a weighted sum over the support.
     It may be very slow for large parameters.
