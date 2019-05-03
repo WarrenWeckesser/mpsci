@@ -13,11 +13,11 @@ from . import hypergeometric
 __all__ = ['support', 'mode', 'mean']
 
 
-def support(ncp, ntotal, ngood, nsample):
+def support(nc, ntotal, ngood, nsample):
     """
     *Full* PMF for Fisher's noncentral hypergeometric distribution.
 
-    Requires 0 < ncp < inf.
+    Requires 0 < nc < inf.
 
     Returns
     -------
@@ -47,7 +47,7 @@ def support(ncp, ntotal, ngood, nsample):
     support, values = hypergeometric.support(ntotal, ngood, nsample)
     lpmf = [hypergeometric.logpmf(k, ntotal, ngood, nsample) for k in support]
 
-    g = [lpmf[k - support[0]] + mpmath.log(ncp) * k for k in support]
+    g = [lpmf[k - support[0]] + mpmath.log(nc) * k for k in support]
     gmax = max(g)
     g = [mpmath.exp(v - gmax) for v in g]
     gsum = mpmath.fsum(g)
@@ -60,7 +60,7 @@ support._docstring_re_subs = [
 ]
 
 
-def mode(ncp, ntotal, ngood, nsample):
+def mode(nc, ntotal, ngood, nsample):
     """
     Mode of Fisher's noncentral hypergeometric distribution.
 
@@ -76,15 +76,15 @@ def mode(ncp, ntotal, ngood, nsample):
     mpf('6.0')
 
     """
-    ncp = mpmath.mpf(ncp)
-    A = ncp - 1
-    B = ngood + nsample - ntotal - (ngood + nsample + 2)*ncp
-    C = (ngood + 1)*(nsample + 1)*ncp
+    nc = mpmath.mpf(nc)
+    A = nc - 1
+    B = ngood + nsample - ntotal - (ngood + nsample + 2)*nc
+    C = (ngood + 1)*(nsample + 1)*nc
     m = mpmath.floor(-2*C / (B - mpmath.sqrt(B**2 - 4*A*C)))
     return m
 
 
-def mean(ncp, ntotal, ngood, nsample):
+def mean(nc, ntotal, ngood, nsample):
     """
     Mean of Fisher's noncentral hypergeometric distribution.
 
@@ -104,7 +104,7 @@ def mean(ncp, ntotal, ngood, nsample):
     >>> fishers_noncentral_hypergeometric.mean(2.5, 16, 8, 10)
     mpf('5.89685838859408792634258808')
     """
-    sup, p = support(ncp, ntotal, ngood, nsample)
+    sup, p = support(nc, ntotal, ngood, nsample)
     n = len(p)
     with mpmath.extradps(5):
         return mpmath.fsum([sup[k]*p[k] for k in range(len(p))])
