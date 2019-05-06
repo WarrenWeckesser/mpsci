@@ -14,14 +14,14 @@ _latex_pdf = r"""
 .. math::
 
    \\frac{z^{(p - 1)}\\exp\\left(-\\frac{b}{2}\\left(z + \\frac{1}{z}\\right)\\right)}
-         {s K_p(b)}
+         {s K_{p}(b)}
 
 """
 
 _pdf_docstring_re_subs = [
     ('[ ]+z.*\* K_p\(b\)', _latex_pdf, 0, re.DOTALL),
     ('where s', r'where :math:`s`', 0, 0),
-    ('z =.*/s', r':math:`z = (x - \\textsf{loc})/s`', 0, 0),
+    ('z = \(x - loc\)/s', r':math:`z = (x - \\textsf{loc})/s`', 0, 0),
     ('K_p\(b\) is', r':math:`K_p(b)` is', 0, 0),
     ('x > loc', r':math:`x > \\textsf{loc}`', 0, 0),
     ('x <= loc', r':math:`x \\le \\textsf{loc}`', 0, 0),
@@ -73,7 +73,7 @@ def logpdf(x, p, b, loc=0, scale=1):
         ---------------------------------
                  scale * K_p(b)
 
-    where s is the scale, z = (x - loc)/scale and K_p(b) is the modified Bessel
+    where s is the scale, z = (x - loc)/s, and K_p(b) is the modified Bessel
     function of the second kind.  For x <= loc, the PDF is zero.
     """
     x = mpmath.mpf(x)
