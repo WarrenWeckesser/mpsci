@@ -8,7 +8,7 @@ import re
 import mpmath
 
 
-__all__ = ['pdf', 'cdf', 'invcdf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf']
 
 
 # TO DO: Add location and scale parameters.
@@ -25,6 +25,9 @@ def pdf(x):
     on the interval (-pi, pi) and zero elsewhere.
     """
     with mpmath.extradps(5):
+        x = mpmath.mpf(x)
+        if x <= -mpmath.pi or x >= mpmath.pi:
+            return mpmath.mp.zero
         return (mpmath.cos(x) + 1)/(2*mpmath.pi)
 
 
@@ -40,6 +43,28 @@ pdf._docstring_re_subs = [
     ('\(-pi, pi\)', r':math:`(-\\pi, \\pi)`', 0, 0),
 ]
 
+
+def logpdf(x):
+    """
+    Natual logarithm of the PDF of the raised cosine distribution.
+
+    The PDF of the raised cosine distribution is
+
+        f(x) = (1 + cos(x))/(2*pi)
+
+    on the interval (-pi, pi) and zero elsewhere.
+    """
+    with mpmath.extradps(5):
+        if x <= -mpmath.pi or x >= mpmath.pi:
+            return -mpmath.inf
+        return mpmath.log1p(mpmath.cos(x)) - mpmath.log(2*mpmath.pi)
+
+
+logpdf._docstring_re_subs = [
+    ('    f.*\*pi\)', _pdf_docstring_replace, 0, re.DOTALL),
+    ('\(-pi, pi\)', r':math:`(-\\pi, \\pi)`', 0, 0),
+]
+
 def cdf(x):
     """
     Cumulative distribution function (CDF) of the raised cosine distribution.
@@ -50,6 +75,10 @@ def cdf(x):
     """
     with mpmath.extradps(5):
         x = mpmath.mpf(x)
+        if x <= -mpmath.pi:
+            return mpmath.mp.zero
+        if x >= mpmath.pi:
+            return mpmath.mp.one
         return mpmath.mpf('1/2') + (x + mpmath.sin(x))/(2*mpmath.pi)
 
 
