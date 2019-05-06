@@ -9,14 +9,14 @@ as the corresponding implementations in `scipy.stats`.
 
 """
 
-from . import cosine
-from . import exponweib
-from . import gamma
-from . import genextreme
-from . import geninvgauss
-from . import ncx2
-from . import normal
-from . import rice
+from .continuous import cosine
+from .continuous import exponweib
+from .continuous import gamma
+from .continuous import genextreme
+from .continuous import geninvgauss
+from .continuous import ncx2
+from .continuous import normal
+from .continuous import rice
 
-from . import hypergeometric
-from . import fishers_noncentral_hypergeometric
+from .discrete import hypergeometric
+from .discrete import fishers_noncentral_hypergeometric

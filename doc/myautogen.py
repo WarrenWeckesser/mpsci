@@ -158,18 +158,39 @@ for name in othernames + testnames:
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create distributions.rst
 
-module = distributions
-modname = module.__name__.split('.')[-1]
-names = [name for name in dir(module) if not name.startswith('_')]
 
 lines = []
 lines.extend(preamble_lines)
+
+module = distributions
+modname = module.__name__.split('.')[-1]
+
+pth = os.path.join('source', modname)
+os.mkdir(pth)
+
 lines.extend(['.. _%s:' % modname, ''])
 lines.extend(['.. currentmodule:: mpsci.%s' % modname, ''])
 lines.extend(['.. automodule:: mpsci.%s' % modname, ''])
-lines.extend(['.. autosummary::', ''])
-for name in names:
-    lines.extend(['   ' + name])
+
+for submodule in [distributions.continuous, distributions.discrete]:
+    submodname = submodule.__name__.split('.')[-1]
+    #lines.extend(['', '.. currentmodule:: %s' % submodule.__name__, ''])
+    lines.extend(['', '*' + submodname.title() + ' distributions*', ''])
+    names = [name for name in dir(submodule) if not name.startswith('_')]
+    lines.extend(['.. autosummary::', ''])
+    for name in names:
+        lines.extend(['   ' + name])
+
+    for name in names:
+        filename = os.path.join(pth, name + '.rst')
+        submodule = getattr(module, name)
+        subnames = submodule.__all__
+        with open(filename, 'w') as f:
+            f.write(preamble)
+            f.write('\n.. automodule:: mpsci.%s.' % modname + name + '\n')
+            f.write('   :members:\n\n')
+        print("Created", filename)
+
 
 content = '\n'.join(lines)
 rst = os.path.join('source', modname + '.rst')
@@ -177,15 +198,3 @@ with open(rst, 'w') as f:
     f.write(content)
 
 print("Created", rst)
-
-pth = os.path.join('source', modname)
-os.mkdir(pth)
-for name in names:
-    filename = os.path.join(pth, name + '.rst')
-    submodule = getattr(module, name)
-    subnames = submodule.__all__
-    with open(filename, 'w') as f:
-        f.write(preamble)
-        f.write('\n.. automodule:: mpsci.%s.' % modname + name + '\n')
-        f.write('   :members:\n\n')
-    print("Created", filename)
