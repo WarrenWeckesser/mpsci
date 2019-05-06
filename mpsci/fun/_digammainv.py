@@ -60,5 +60,5 @@ def digammainv(y):
 
 
 digammainv._docstring_re_subs = [
-    ('psi_0', ':math:`\\psi_0`', 0, 0)
+    ('psi_0', r':math:`\\psi_{0}`', 0, 0)
 ]
