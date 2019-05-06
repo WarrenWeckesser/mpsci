@@ -9,6 +9,7 @@ as the corresponding implementations in `scipy.stats`.
 
 """
 
+from . import cosine
 from . import exponweib
 from . import gamma
 from . import genextreme
