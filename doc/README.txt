@@ -10,8 +10,10 @@ Build sequence:
    $ sphinx-build -c . -b html -a -E source build
 4. Open build/index.html in a browser
 
+The file builddocs.sh is a shell script for steps 1-3.
 
-Using the resubber Sphinx extension.
+
+*Using the resubber Sphinx extension.*
 
 I don't like using LaTeX markup in user-facing documentation.
 That means docstrings must not have code like this:
