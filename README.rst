@@ -13,6 +13,7 @@ will probably be backwards-incompatible API changes as the code is expanded.
 
 -----
 
-:Author:     Warren Weckesser
-:Repository: https://github.com/WarrenWeckesser/mpsci
-:License:    BSD 2-clause (http://opensource.org/licenses/BSD-2-Clause)
+:Author:        Warren Weckesser
+:Documentation: https://warrenweckesser.github.io/mpsci/
+:Repository:    https://github.com/WarrenWeckesser/mpsci
+:License:       BSD 2-clause (http://opensource.org/licenses/BSD-2-Clause)
