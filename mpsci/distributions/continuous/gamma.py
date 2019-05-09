@@ -7,7 +7,8 @@ import mpmath
 from ...fun import digammainv
 
 
-__all__ = ['pdf', 'cdf', 'mle', 'nll', 'nll_grad', 'nll_hess', 'nll_invhess']
+__all__ = ['pdf', 'cdf', 'mean', 'var',
+           'mle', 'nll', 'nll_grad', 'nll_hess', 'nll_invhess']
 
 
 def pdf(x, k, theta):
@@ -32,6 +33,24 @@ def cdf(x, k, theta):
     Unlike scipy, a location parameter is not included.
     """
     return mpmath.rgamma(k) * mpmath.gammainc(k, 0, x/theta)
+
+
+def mean(k, theta):
+    """
+    Mean of the gamma distribution.
+    """
+    k = mpmath.mpf(k)
+    theta = mpmath.mpf(theta)
+    return k * theta
+
+
+def var(k, theta):
+    """
+    Variance of the gamma distribution.
+    """
+    k = mpmath.mpf(k)
+    theta = mpmath.mpf(theta)
+    return k * theta**2
 
 
 def mle(x, k=None, theta=None):
