@@ -9,7 +9,7 @@ of the corresponding shape parameter in `scipy.stats.genextreme`.
 import mpmath
 
 
-__all__ = ['pdf', 'cdf', 'mean', 'var']
+__all__ = ['pdf', 'cdf', 'sf', 'mean', 'var']
 
 
 def pdf(x, xi, mu=0, sigma=1):
@@ -45,6 +45,23 @@ def cdf(x, xi, mu=0, sigma=1):
     else:
         t = mpmath.exp(-(x - mu)/sigma)
     return mpmath.exp(-t)
+
+
+def sf(x, xi, mu=0, sigma=1):
+    """
+    Generalized extreme value distribution survival function.
+    """
+    xi = mpmath.mpf(xi)
+    mu = mpmath.mpf(mu)
+    sigma = mpmath.mpf(sigma)
+
+    # Formula from wikipedia, which has a sign convention for xi that
+    # is the opposite of scipy's shape parameter.
+    if xi != 0:
+        t = mpmath.power(1 + ((x - mu)/sigma)*xi, -1/xi)
+    else:
+        t = mpmath.exp(-(x - mu)/sigma)
+    return -mpmath.expm1(-t)
 
 
 def mean(xi, mu=0, sigma=1):
