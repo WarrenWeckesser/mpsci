@@ -152,6 +152,8 @@ for name in othernames + testnames:
     filename = os.path.join(pth, name + '.rst')
     with open(filename, 'w') as f:
         f.write(preamble)
+        f.write('\n%s\n' % name)
+        f.write('-'*len(name) + '\n\n')
         f.write('\n.. autofunction:: mpsci.%s.' % modname + name + '\n')
     print("Created", filename)
 
