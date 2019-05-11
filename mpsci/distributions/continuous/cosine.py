@@ -94,39 +94,70 @@ cdf._docstring_re_subs = [
 ]
 
 
+# XXX coefficients in _p2 and _q2 are 64 bit floating point, not
+# mpmath floats.
+
+def _p2(t):
+    t = mpmath.mpf(t)
+    return (0.5
+            + t*(-0.06532856457583547
+                 + t*(0.0020893844847965047
+                      + t*-1.0233693819385904e-05)))
+
+def _q2(t):
+    t = mpmath.mpf(t)
+    return (1.0
+            + t*(-0.15149046248500425
+                 + t*(0.006293153604697265
+                      + t*-6.042645518776793e-05)))
+
+
+def _poly_approx(s):
+    #
+    # p(s) = s + s**3/60 + s**5/1400 + s**7/25200 + 43*s**9/17248000 + ...
+    #      = s*(1 + s**2*(1/60 + s**2*(1/1400 + s**2*(1/25200 + s**2*43/17248000)))
+    #
+    # See, for example, the wikipedia article "Kepler's equation"
+    # (https://en.wikipedia.org/wiki/Kepler%27s_equation).  In particular, see the
+    # series expansion for the inverse Kepler equation when the eccentricity e is 1.
+    #
+    # Here we include terms up to s**9.
+    s2 = s**2
+    return (s*(mpmath.mp.one
+               + s2*(mpmath.mpf('1/60')
+                     + s2*(mpmath.mpf('1/1400')
+                           + s2*(mpmath.mpf('1/25200')
+                                 + s2*mpmath.mpf('43/17248000'))))))
+
+
 def invcdf(p):
     """
     Inverse of the CDF of the raised cosine distribution.
-
-    XXX This implementation needs further testing, especially for the
-    behavior near x=pi and x=-pi.
     """
-
-    if p < 0 or p > 1:
-        return mpmath.nan
-    if p == 0:
-        return -mpmath.pi
-    if p == 1:
-        return mpmath.pi
-
-    def rootfunc(t):
-        return cdf(t) - p
-
     with mpmath.extradps(5):
-        xp1 = mpmath.mpf('-1.5148393083566466647517666551356551803961998987290333367840767')
-        xp9 = mpmath.mpf('1.51483930835664682990834405453173140711667691817143014741422715')
-
         p = mpmath.mpf(p)
 
-        solver = 'bisect'
-        if p < 0.09:
-            x0 = (-mpmath.pi, xp1)
-            x = mpmath.findroot(rootfunc, x0, solver=solver)
-        elif p > 0.91:
-            x0 = (xp9, mpmath.pi)
-            x = mpmath.findroot(rootfunc, x0, solver=solver)
+        if p < 0 or p > 1:
+            return mpmath.nan
+        if p == 0:
+            return -mpmath.pi
+        if p == 1:
+            return mpmath.pi
+
+        if p < 0.094:
+            x = _poly_approx(mpmath.cbrt(12*mpmath.pi*p)) - mpmath.pi
+        elif p > 0.906:
+            x = mpmath.pi - _poly_approx(mpmath.cbrt(12*mpmath.pi*(1 - p)))
         else:
-            # 0.1 <= p <= 0.9
-            x0 = 0.0
-            x = mpmath.findroot(rootfunc, x0)
+            y = mpmath.pi*(2*p - 1)
+            y2 = y**2
+            x = y * _p2(y2) / _q2(y2)
+
+        solver = 'mnewton'
+        x = mpmath.findroot(f=lambda t: cdf(t) - p,
+                            x0=x,
+                            df=lambda t: (1 + mpmath.cos(t))/(2*mpmath.pi),
+                            df2 =lambda t: -mpmath.sin(t)/(2*mpmath.pi),
+                            solver=solver)
+
         return x
