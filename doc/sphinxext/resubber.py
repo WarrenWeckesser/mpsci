@@ -9,7 +9,7 @@ import re
 
 
 def process_docstring(app, what, name, obj, options, lines):
-    subs = getattr(app.config, 'resubber_re_subs', [])
+    subs = getattr(app.config, 'resubber_re_subs', []).copy()
     subs.extend(getattr(obj, '_docstring_re_subs', []))
     if subs:
         docstring = '\n'.join(lines)
