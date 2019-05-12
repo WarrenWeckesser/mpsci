@@ -41,7 +41,7 @@ the object has an attribute called `_docstring_re_subs`,
 the docstring is modified by treating each item in
 `_docstring_re_subs` as a tuple containing the four arguments
 `pattern`, `repl`, `count` and `flags` to `re.sub`.  These
-substutions are applied to the docstring in-place, so Sphinx
+substitutions are applied to the docstring in-place, so Sphinx
 sees the math roles and directives instead of the ASCII math
 text.
 
@@ -64,3 +64,9 @@ when Sphinx processes the docstring:
     hypot._docstring_re_subs = [
         ('c =.*\)', ':math:`c = \\sqrt{a^2 + b^2}', 0, 0),
     ]
+
+A set of re substitutions can also be defined in conf.py with the
+name 'resubber_re_subs'.  If defined, these substitutions are applied
+to all docstrings processed by resubber.  They are applied before
+any subsitutions that are defined for specific objects via the
+`_docstring_re_subs` attribute.
