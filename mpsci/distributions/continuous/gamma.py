@@ -7,7 +7,7 @@ import mpmath
 from ...fun import digammainv
 
 
-__all__ = ['pdf', 'cdf', 'mean', 'var',
+__all__ = ['pdf', 'logpdf', 'cdf', 'mean', 'var',
            'mle', 'nll', 'nll_grad', 'nll_hess', 'nll_invhess']
 
 
@@ -20,7 +20,20 @@ def pdf(x, k, theta):
 
     Unlike scipy, a location parameter is not included.
     """
+    x = mpmath.mpf(x)
+    k = mpmath.mpf(k)
+    theta = mpmath.mpf(theta)
     return mpmath.rgamma(k) / theta**k * x**(k-1) * mpmath.exp(-x/theta)
+
+
+def logpdf(x, k, theta):
+    """
+    Log of the PDF of the gamma distribution.
+    """
+    x = mpmath.mpf(x)
+    k = mpmath.mpf(k)
+    theta = mpmath.mpf(theta)
+    return -mpmath.loggamma(k) - k*mpmath.log(theta) + (k - 1)*mpmath.log(x) - x/theta
 
 
 def cdf(x, k, theta):
@@ -32,6 +45,9 @@ def cdf(x, k, theta):
 
     Unlike scipy, a location parameter is not included.
     """
+    x = mpmath.mpf(x)
+    k = mpmath.mpf(k)
+    theta = mpmath.mpf(theta)
     return mpmath.rgamma(k) * mpmath.gammainc(k, 0, x/theta)
 
 
@@ -62,8 +78,8 @@ def mle(x, k=None, theta=None):
 
     x must be a sequence of values.
     """
-    meanx = sum(x) / len(x)
-    meanlnx = sum(mpmath.log(t) for t in x) / len(x)
+    meanx = mpmath.fsum(x) / len(x)
+    meanlnx = mpmath.fsum(mpmath.log(t) for t in x) / len(x)
 
     if k is None:
         if theta is None:
@@ -84,17 +100,18 @@ def mle(x, k=None, theta=None):
             theta_hat = meanx / k_hat
         else:
             # theta is fixed, only solve for k
+            theta = mpmath.mpf(theta)
             k_hat = digammainv(meanlnx - mpmath.log(theta))
             theta_hat = theta
     else:
         if theta is None:
             # Solve for theta, k is fixed.
-            k_hat = k
+            k_hat = mpmath.mpf(k)
             theta_hat = meanx / k_hat
         else:
             # Both k and theta are fixed.
-            k_hat = k
-            theta_hat = theta
+            k_hat = mpmath.mpf(k)
+            theta_hat = mpmath.mpf(theta)
 
     return k_hat, theta_hat
 
@@ -103,9 +120,12 @@ def nll(x, k, theta):
     """
     Gamma distribution negative log-likelihood.
     """
+    k = mpmath.mpf(k)
+    theta = mpmath.mpf(theta)
+
     N = len(x)
-    sumx = sum(x)
-    sumlnx = sum(mpmath.log(t) for t in x)
+    sumx = mpmath.fsum(x)
+    sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
 
     ll = ((k - 1)*sumlnx - sumx/theta - N*k*mpmath.log(theta) -
           N*mpmath.loggamma(k))
@@ -116,9 +136,12 @@ def nll_grad(x, k, theta):
     """
     Gamma distribution gradient of the negative log-likelihood function.
     """
+    k = mpmath.mpf(k)
+    theta = mpmath.mpf(theta)
+
     N = len(x)
-    sumx = sum(x)
-    sumlnx = sum(mpmath.log(t) for t in x)
+    sumx = mpmath.fsum(x)
+    sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
 
     dk = sumlnx - N*mpmath.log(theta) - N*mpmath.digamma(k)
     dtheta = sumx/theta**2 - N*k/theta
@@ -129,9 +152,12 @@ def nll_hess(x, k, theta):
     """
     Gamma distribution hessian of the negative log-likelihood function.
     """
+    k = mpmath.mpf(k)
+    theta = mpmath.mpf(theta)
+
     N = len(x)
-    sumx = sum(x)
-    sumlnx = sum(mpmath.log(t) for t in x)
+    sumx = mpmath.fsum(x)
+    sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
 
     dk2 = -N*mpmath.psi(1, k)
     dkdtheta = -N/theta
@@ -144,9 +170,12 @@ def nll_invhess(x, k, theta):
     """
     Gamma distribution inverse of the hessian of the negative log-likelihood.
     """
+    k = mpmath.mpf(k)
+    theta = mpmath.mpf(theta)
+
     N = len(x)
-    sumx = sum(x)
-    sumlnx = sum(mpmath.log(t) for t in x)
+    sumx = mpmath.fsum(x)
+    sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
 
     dk2 = -N*mpmath.psi(1, k)
     dkdtheta = -N/theta
