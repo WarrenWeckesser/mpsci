@@ -8,7 +8,7 @@ import re
 import mpmath
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf']
 
 
 # TO DO: Add location and scale parameters.
@@ -161,3 +161,17 @@ def invcdf(p):
                             solver=solver)
 
         return x
+
+
+def sf(x):
+    """
+    Survival function for the cosine distribution.
+    """
+    return cdf(-x)
+
+
+def invsf(p):
+    """
+    Inverse of the survival function of the cosine distribution.
+    """
+    return -invcdf(p)
