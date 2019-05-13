@@ -7,7 +7,7 @@ import mpmath
 from ...fun import digammainv
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'mean', 'var',
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var',
            'mle', 'nll', 'nll_grad', 'nll_hess', 'nll_invhess']
 
 
@@ -49,6 +49,16 @@ def cdf(x, k, theta):
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
     return mpmath.rgamma(k) * mpmath.gammainc(k, 0, x/theta)
+
+
+def sf(x, k, theta):
+    """
+    Survival function of the gamma distribution.
+    """
+    x = mpmath.mpf(x)
+    k = mpmath.mpf(k)
+    theta = mpmath.mpf(theta)
+    return mpmath.rgamma(k) * mpmath.gammainc(k, x/theta, mpmath.inf)
 
 
 def mean(k, theta):
