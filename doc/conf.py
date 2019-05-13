@@ -87,6 +87,8 @@ html_static_path = []
 html_copy_source = False
 html_show_sourcelink = False
 
+html_favicon = 'favicon.png'
+
 # -----
 
 
