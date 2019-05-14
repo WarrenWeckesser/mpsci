@@ -9,6 +9,7 @@ as the corresponding implementations in `scipy.stats`.
 
 """
 
+from .continuous import beta
 from .continuous import cosine
 from .continuous import exponweib
 from .continuous import gamma
