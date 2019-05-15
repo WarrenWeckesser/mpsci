@@ -60,4 +60,3 @@ def variance(k, lam):
     k = mpmath.mpf(k)
     lam = mpmath.mpf(lam)
     return 2*(k + 2*lam)
-

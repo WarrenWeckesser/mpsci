@@ -19,12 +19,12 @@ _latex_pdf = r"""
 """
 
 _pdf_docstring_re_subs = [
-    ('[ ]+z.*\* K_p\(b\)', _latex_pdf, 0, re.DOTALL),
-    ('where s', r'where :math:`s`', 0, 0),
-    ('z = \(x - loc\)/s', r':math:`z = (x - \\textsf{loc})/s`', 0, 0),
-    ('K_p\(b\) is', r':math:`K_p(b)` is', 0, 0),
-    ('x > loc', r':math:`x > \\textsf{loc}`', 0, 0),
-    ('x <= loc', r':math:`x \\le \\textsf{loc}`', 0, 0),
+    (r'[ ]+z.*\* K_p\(b\)', _latex_pdf, 0, re.DOTALL),
+    (r'where s', r'where :math:`s`', 0, 0),
+    (r'z = \(x - loc\)/s', r':math:`z = (x - \\textsf{loc})/s`', 0, 0),
+    (r'K_p\(b\) is', r':math:`K_p(b)` is', 0, 0),
+    (r'x > loc', r':math:`x > \\textsf{loc}`', 0, 0),
+    (r'x <= loc', r':math:`x \\le \\textsf{loc}`', 0, 0),
 ]
 
 
@@ -176,9 +176,10 @@ _mean_latex = r"""
 """
 
 mean._docstring_re_subs = [
-    ('[ ]+K_.*K_p\(b\)', _mean_latex, 0, re.DOTALL),
-    ('where K_n\(x\)', r'where :math:`K_n(x)`', 0, 0),
+    (r'[ ]+K_.*K_p\(b\)', _mean_latex, 0, re.DOTALL),
+    (r'where K_n\(x\)', r'where :math:`K_n(x)`', 0, 0),
 ]
+
 
 def mode(p, b, loc=0, scale=1):
     """
@@ -197,6 +198,7 @@ def mode(p, b, loc=0, scale=1):
 
     return loc + scale*(p - 1 + mpmath.sqrt((p - 1)**2 + b**2))/b
 
+
 _mode_latex = r"""
 .. math::
 
@@ -206,5 +208,5 @@ _mode_latex = r"""
 """
 
 mode._docstring_re_subs = [
-    ('[ ]+p.*  b', _mode_latex, 0, re.DOTALL),
+    (r'[ ]+p.*  b', _mode_latex, 0, re.DOTALL),
 ]

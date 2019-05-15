@@ -52,8 +52,9 @@ def marcumq(m, a, b):
         q = mpmath.quad(lambda x: _integrand(x, m, a), [b, mpmath.inf])
     return q
 
+
 marcumq._docstring_re_subs = [
-    ('is defined as .*a\*x\)',
+    (r'is defined as .*a\*x\)',
      r'''is defined as
 
 .. math::
@@ -61,9 +62,10 @@ marcumq._docstring_re_subs = [
    Q_M(a, b) = \\int_b^{\\infty} x \\left(\\frac{x}{a}\\right)^{M-1}
                \\exp\\left(-\\frac{x^2 + a^2}{2}\\right) I_{M-1}(ax)\\,dx
 ''', 0, re.DOTALL),
-    ('I_\{M-1\}\(x\)', r':math:`I_{M-1}(z)`', 0, 0),
-    ('M-1\.', r':math:`M-1`', 0, 0),
+    (r'I_\{M-1\}\(x\)', r':math:`I_{M-1}(z)`', 0, 0),
+    (r'M-1\.', r':math:`M-1`', 0, 0),
 ]
+
 
 def cmarcumq(m, a, b):
     """

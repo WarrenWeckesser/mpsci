@@ -21,7 +21,9 @@ def logbeta(x, y):
     with mpmath.extradps(5):
         mx = mpmath.mpf(x)
         my = mpmath.mpf(y)
-        return mpmath.loggamma(x) + mpmath.loggamma(y) - mpmath.loggamma(mx + my)
+        return (mpmath.loggamma(x)
+                + mpmath.loggamma(y)
+                - mpmath.loggamma(mx + my))
 
 
 _beta_func_latex = r"""
@@ -32,6 +34,6 @@ _beta_func_latex = r"""
 
 logbeta._docstring_re_subs = [
     (r'     *Gamma\(x.*x \+ y\)', _beta_func_latex, 0, re.DOTALL),
-    (' Gamma\(z\)', r' :math:`\\Gamma(z)`', 0, 0),
-    (' beta\(x, y\)', r' :math:`B(x, y)`', 0, 0),
+    (r' Gamma\(z\)', r' :math:`\\Gamma(z)`', 0, 0),
+    (r' beta\(x, y\)', r' :math:`B(x, y)`', 0, 0),
 ]

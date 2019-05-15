@@ -20,9 +20,11 @@ def xlogy(x, y):
     else:
         return x * mp.log(y)
 
+
 xlogy._docstring_re_subs = [
     (r'x\*log\(y\)', r':math:`x\\textrm{log}(y)`', 0, 0),
 ]
+
 
 def xlog1py(x, y):
     """
@@ -41,6 +43,7 @@ def xlog1py(x, y):
         return mp.zero
     else:
         return x * mp.log1p(y)
+
 
 xlog1py._docstring_re_subs = [
     (r'x\*log\(1\+y\)', r':math:`x\\textrm{log}(1+y)`', 0, 0),
