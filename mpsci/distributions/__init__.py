@@ -15,6 +15,7 @@ from .continuous import exponweib
 from .continuous import gamma
 from .continuous import genextreme
 from .continuous import geninvgauss
+from .continuous import lognormal
 from .continuous import ncx2
 from .continuous import normal
 from .continuous import rice
