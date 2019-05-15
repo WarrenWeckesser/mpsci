@@ -39,8 +39,8 @@ _pdf_docstring_replace = r"""
 """
 
 pdf._docstring_re_subs = [
-    ('    f.*\*pi\)', _pdf_docstring_replace, 0, re.DOTALL),
-    ('\(-pi, pi\)', r':math:`(-\\pi, \\pi)`', 0, 0),
+    (r'    f.*\*pi\)', _pdf_docstring_replace, 0, re.DOTALL),
+    (r'\(-pi, pi\)', r':math:`(-\\pi, \\pi)`', 0, 0),
 ]
 
 
@@ -61,9 +61,10 @@ def logpdf(x):
 
 
 logpdf._docstring_re_subs = [
-    ('    f.*\*pi\)', _pdf_docstring_replace, 0, re.DOTALL),
-    ('\(-pi, pi\)', r':math:`(-\\pi, \\pi)`', 0, 0),
+    (r'    f.*\*pi\)', _pdf_docstring_replace, 0, re.DOTALL),
+    (r'\(-pi, pi\)', r':math:`(-\\pi, \\pi)`', 0, 0),
 ]
+
 
 def cdf(x):
     """
@@ -90,7 +91,7 @@ _cdf_docstring_replace = r"""
 """
 
 cdf._docstring_re_subs = [
-    ('    F.*pi\)', _cdf_docstring_replace, 0, re.DOTALL),
+    (r'    F.*pi\)', _cdf_docstring_replace, 0, re.DOTALL),
 ]
 
 
@@ -104,6 +105,7 @@ def _p2(t):
                  + t*(0.0020893844847965047
                       + t*-1.0233693819385904e-05)))
 
+
 def _q2(t):
     t = mpmath.mpf(t)
     return (1.0
@@ -115,11 +117,16 @@ def _q2(t):
 def _poly_approx(s):
     #
     # p(s) = s + s**3/60 + s**5/1400 + s**7/25200 + 43*s**9/17248000 + ...
-    #      = s*(1 + s**2*(1/60 + s**2*(1/1400 + s**2*(1/25200 + s**2*43/17248000)))
+    #      = s*(1
+    #           + s**2*(1/60
+    #                   + s**2*(1/1400
+    #                           + s**2*(1/25200
+    #                                   + s**2*43/17248000)))
     #
     # See, for example, the wikipedia article "Kepler's equation"
-    # (https://en.wikipedia.org/wiki/Kepler%27s_equation).  In particular, see the
-    # series expansion for the inverse Kepler equation when the eccentricity e is 1.
+    # (https://en.wikipedia.org/wiki/Kepler%27s_equation).  In particular,
+    # see the series expansion for the inverse Kepler equation when the
+    # eccentricity e is 1.
     #
     # Here we include terms up to s**9.
     s2 = s**2
@@ -157,7 +164,7 @@ def invcdf(p):
         x = mpmath.findroot(f=lambda t: cdf(t) - p,
                             x0=x,
                             df=lambda t: (1 + mpmath.cos(t))/(2*mpmath.pi),
-                            df2 =lambda t: -mpmath.sin(t)/(2*mpmath.pi),
+                            df2=lambda t: -mpmath.sin(t)/(2*mpmath.pi),
                             solver=solver)
 
         return x
