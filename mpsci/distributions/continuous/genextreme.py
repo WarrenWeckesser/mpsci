@@ -22,10 +22,11 @@ def pdf(x, xi, mu=0, sigma=1):
 
     # Formula from wikipedia, which has a sign convention for xi that
     # is the opposite of scipy's shape parameter.
+    z = (x - mu)/sigma
     if xi != 0:
-        t = mpmath.power(1 + ((x - mu)/sigma)*xi, -1/xi)
+        t = mpmath.power(1 + z*xi, -1/xi)
     else:
-        t = mpmath.exp(-(x - mu)/sigma)
+        t = mpmath.exp(-z)
     p = mpmath.power(t, xi+1) * mpmath.exp(-t) / sigma
     return p
 
@@ -40,11 +41,14 @@ def logpdf(x, xi, mu=0, sigma=1):
 
     # Formula from wikipedia, which has a sign convention for xi that
     # is the opposite of scipy's shape parameter.
+    z = (x - mu)/sigma
     if xi != 0:
-        t = mpmath.power(1 + ((x - mu)/sigma)*xi, -1/xi)
+        t = mpmath.power(1 + z*xi, -1/xi)
+        logt = -mpmath.log1p(z*xi)/xi
     else:
-        t = mpmath.exp(-(x - mu)/sigma)
-    p = (xi + 1)*mpmath.log(t) - t - mpmath.log(sigma)
+        t = mpmath.exp(-z)
+        logt = -z
+    p = (xi + 1)*logt - t - mpmath.log(sigma)
     return p
 
 
