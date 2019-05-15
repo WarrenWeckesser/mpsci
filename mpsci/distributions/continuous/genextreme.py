@@ -9,7 +9,7 @@ of the corresponding shape parameter in `scipy.stats.genextreme`.
 import mpmath
 
 
-__all__ = ['pdf', 'cdf', 'sf', 'mean', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var']
 
 
 def pdf(x, xi, mu=0, sigma=1):
@@ -27,6 +27,24 @@ def pdf(x, xi, mu=0, sigma=1):
     else:
         t = mpmath.exp(-(x - mu)/sigma)
     p = mpmath.power(t, xi+1) * mpmath.exp(-t) / sigma
+    return p
+
+
+def logpdf(x, xi, mu=0, sigma=1):
+    """
+    Natural logarithm of the PDF of the generalized extreme value distribution.
+    """
+    xi = mpmath.mpf(xi)
+    mu = mpmath.mpf(mu)
+    sigma = mpmath.mpf(sigma)
+
+    # Formula from wikipedia, which has a sign convention for xi that
+    # is the opposite of scipy's shape parameter.
+    if xi != 0:
+        t = mpmath.power(1 + ((x - mu)/sigma)*xi, -1/xi)
+    else:
+        t = mpmath.exp(-(x - mu)/sigma)
+    p = (xi + 1)*mpmath.log(t) - t - mpmath.log(sigma)
     return p
 
 
