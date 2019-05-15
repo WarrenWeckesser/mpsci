@@ -33,7 +33,8 @@ def logpdf(x, k, theta):
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
-    return -mpmath.loggamma(k) - k*mpmath.log(theta) + (k - 1)*mpmath.log(x) - x/theta
+    return (-mpmath.loggamma(k) - k*mpmath.log(theta) +
+            (k - 1)*mpmath.log(x) - x/theta)
 
 
 def cdf(x, k, theta):
@@ -96,7 +97,7 @@ def mle(x, k=None, theta=None):
             # Solve for k and theta
             s = mpmath.log(meanx) - meanlnx
             k_hat = (3 - s + mpmath.sqrt((s - 3)**2 + 24*s)) / (12*s)
-            # XXX This is loop implements a "dumb" convergence criterion.
+            # XXX This loop implements a "dumb" convergence criterion.
             # It exits early if the old k equals the new k, but if that never
             # happens, then whatever value k_hat has after  the last iteration
             # is the value that is returned.
