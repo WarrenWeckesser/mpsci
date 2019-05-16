@@ -19,11 +19,9 @@ def logbeta(x, y):
     where Gamma(z) is the Gamma function.
     """
     with mpmath.extradps(5):
-        mx = mpmath.mpf(x)
-        my = mpmath.mpf(y)
         return (mpmath.loggamma(x)
                 + mpmath.loggamma(y)
-                - mpmath.loggamma(mx + my))
+                - mpmath.loggamma(mpmath.fsum([x, y])))
 
 
 _beta_func_latex = r"""
