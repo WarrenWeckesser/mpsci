@@ -11,3 +11,4 @@ from ._marcumq import *
 from ._digammainv import *
 from ._xlogy import *
 from ._logbeta import *
+from ._logbinomial import *
