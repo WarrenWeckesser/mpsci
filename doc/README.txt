@@ -62,7 +62,7 @@ when Sphinx processes the docstring:
         return sqrt(a**2 + b**2)
 
     hypot._docstring_re_subs = [
-        ('c =.*\)', ':math:`c = \\sqrt{a^2 + b^2}', 0, 0),
+        (r'c =.*\)', r':math:`c = \\sqrt{a^2 + b^2}', 0, 0),
     ]
 
 A set of re substitutions can also be defined in conf.py with the
