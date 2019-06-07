@@ -1,7 +1,7 @@
 
 import sys
 import os
-from mpsci import fun, signal, stats, distributions
+from mpsci import fun, signal, stats, distributions, polyapprox
 
 
 try:
@@ -22,7 +22,7 @@ Most of the code in ``mpsci`` was developed as a way to find the
 The package should be considered prototype-quality software.  There
 will probably be backwards-incompatible API changes as the code is expanded.
 
-The four subpackages of `mpsci` are:
+The five subpackages of `mpsci` are:
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -66,6 +66,7 @@ lines.extend(['   fun', ''])
 lines.extend(['   signal', ''])
 lines.extend(['   stats', ''])
 lines.extend(['   distributions', ''])
+lines.extend(['   polyapprox', ''])
 
 content = '\n'.join(lines)
 index_name = os.path.join('source', 'index.rst')
@@ -73,9 +74,9 @@ with open(index_name, 'w') as f:
     f.write(content)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Create fun.rst and signal.rst
+# Create fun.rst, signal.rst and polyapprox.rst
 
-for module in [fun, signal]:
+for module in [fun, signal, polyapprox]:
     modname = module.__name__.split('.')[-1]
     names = [name for name in dir(module) if not name.startswith('_')]
 

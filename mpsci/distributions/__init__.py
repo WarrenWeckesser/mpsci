@@ -9,16 +9,9 @@ as the corresponding implementations in `scipy.stats`.
 
 """
 
-from .continuous import beta
-from .continuous import cosine
-from .continuous import exponweib
-from .continuous import gamma
-from .continuous import genextreme
-from .continuous import geninvgauss
-from .continuous import lognormal
-from .continuous import ncx2
-from .continuous import normal
-from .continuous import rice
+__all__ = ['beta', 'cosine', 'exponweib', 'gamma', 'genextreme', 'geninvgauss',
+           'lognormal', 'ncx2', 'normal', 'rice',
+           'hypergeometric', 'fishers_noncentral_hypergeometric']
 
-from .discrete import hypergeometric
-from .discrete import fishers_noncentral_hypergeometric
+from .continuous import *
+from .discrete import *
