@@ -66,7 +66,8 @@ html_theme_options = {
     'sidebar_collapse': True,
     'extra_nav_links': {'Index': 'genindex.html',
                         'Source code':
-                            'https://github.com/WarrenWeckesser/mpsci'}
+                            'https://github.com/WarrenWeckesser/mpsci'},
+    'font_family': ['New Times Roman', 'Times', 'serif']
 }
 
 html_sidebars = {
