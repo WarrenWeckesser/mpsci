@@ -6,3 +6,9 @@ calculations.
 """
 
 __version__ = "0.0.1.dev3"
+
+from . import distributions
+from . import fun
+from . import polyapprox
+from . import signal
+from . import stats
