@@ -34,8 +34,8 @@ htmlcov/
 nosetests.xml
 coverage.xml
 
-# Sphinx documentation
-docs/_build/
+doc/build/
+doc/source/
 
 # pytest cache
 .cache/*
