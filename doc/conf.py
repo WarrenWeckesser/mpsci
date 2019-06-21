@@ -64,9 +64,10 @@ html_theme_options = {
     'github_button': False,
     'fixed_sidebar': True,
     'sidebar_collapse': True,
-    'extra_nav_links': {'Index': 'genindex.html',
-                        'Source code':
-                            'https://github.com/WarrenWeckesser/mpsci'},
+    'extra_nav_links': {
+        #'Index': 'genindex.html',
+        'Source code': 'https://github.com/WarrenWeckesser/mpsci',
+    },
     'font_family': ['New Times Roman', 'Times', 'serif']
 }
 
