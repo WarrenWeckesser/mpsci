@@ -4,7 +4,7 @@ Beta probability distribution
 
 """
 import mpmath
-from ...fun import logbeta, xlogy, xlog1py
+from ..fun import logbeta, xlogy, xlog1py
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean']

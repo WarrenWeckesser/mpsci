@@ -4,7 +4,7 @@ Hypergeometric distribution
 """
 
 import mpmath
-from ...fun import logbeta
+from ..fun import logbeta
 
 
 __all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'support']
