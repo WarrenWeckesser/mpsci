@@ -1,7 +1,67 @@
 
 import sys
 import os
+import subprocess
+
 from mpsci import fun, signal, stats, distributions, polyapprox
+
+
+# The function git_version() returns the git revision as a string.
+# This function is from scipy's setup.py.  It has the following license:
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - -
+# Copyright (c) 2001-2002 Enthought, Inc.  2003-2019, SciPy Developers.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer in the documentation and/or other materials provided
+#    with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - -
+def git_version():
+    def _minimal_ext_cmd(cmd):
+        # construct minimal environment
+        env = {}
+        for k in ['SYSTEMROOT', 'PATH']:
+            v = os.environ.get(k)
+            if v is not None:
+                env[k] = v
+        # LANGUAGE is used on win32
+        env['LANGUAGE'] = 'C'
+        env['LANG'] = 'C'
+        env['LC_ALL'] = 'C'
+        out = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env).communicate()[0]
+        return out
+
+    try:
+        out = _minimal_ext_cmd(['git', 'rev-parse', 'HEAD'])
+        git_revision = out.strip().decode('ascii')
+    except OSError:
+        git_revision = None
+
+    return git_revision
 
 
 try:
@@ -11,8 +71,17 @@ except FileExistsError:
     print("No files created.")
     sys.exit(0)
 
+
+gitrev = git_version()
+if gitrev:
+    gitrev = gitrev[:8] + "..."
+else:
+    gitrev = "unknown"
+
 main_descr = """
-``mpsci`` is a Python module that defines an assortment of numerical
+(*Git revision:* ``%s``)
+
+``mpsci`` is a Python library that defines an assortment of numerical
 formulas and algorithms.  The library `mpmath` is used for floating point
 calculations.
 
@@ -23,7 +92,7 @@ The package should be considered prototype-quality software.  There
 will probably be backwards-incompatible API changes as the code is expanded.
 
 The five subpackages of `mpsci` are:
-"""
+""" % gitrev
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create README.txt
@@ -184,7 +253,6 @@ module = distributions
 modname = module.__name__.split('.')[-1]
 
 names = [name for name in dir(module) if not name.startswith('_')]
-print("::: names:", names)
 
 objects = [getattr(module, name) for name in names]
 continuous_dists = [obj for obj in objects if hasattr(obj, 'pdf')]
@@ -203,8 +271,6 @@ for header, dists in [('Continuous', continuous_dists), ('Discrete', discrete_di
     lines.extend(['', '*' + header + ' distributions*', ''])
     lines.extend(['.. autosummary::', ''])
     names = [dist.__name__.split('.')[-1] for dist in dists]
-    print("+++ dists:", dists)
-    print("+++ names:", names)
     for name in names:
         lines.extend(['   ' + name])
 
