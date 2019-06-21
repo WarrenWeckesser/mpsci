@@ -11,7 +11,7 @@ import mpmath
 from . import hypergeometric
 
 
-__all__ = ['support', 'mode', 'mean']
+__all__ = ['support', 'pmf_dict', 'mode', 'mean']
 
 
 def support(nc, ntotal, ngood, nsample):
@@ -128,6 +128,14 @@ support._docstring_re_subs = [
     ('    k_min =.*ngood\)\.', _kmin_kmax_values, 0, re.DOTALL),
     ('    p_k =.*max\]\)', _p_k_formula, 0, 0),
 ]
+
+
+def pmf_dict(nc, ntotal, ngood, nsample):
+    """
+    PMF as a dictionary.
+    """
+    sup, values = support(nc, ntotal, ngood, nsample)
+    return dict(zip(sup, values))
 
 
 def mode(nc, ntotal, ngood, nsample):
