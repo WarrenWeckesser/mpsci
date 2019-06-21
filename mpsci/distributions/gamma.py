@@ -4,7 +4,7 @@ Gamma probability distribution
 """
 
 import mpmath
-from ...fun import digammainv
+from ..fun import digammainv
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var',
