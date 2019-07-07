@@ -72,7 +72,11 @@ def cdf(k, r, p):
     p : float
         Probability of success.
     """
-    return mpmath.mp.one - sf(k, r, p)
+    with mpmath.extradps(5):
+        k = mpmath.mpf(k)
+        r = mpmath.mpf(r)
+        p = mpmath.mpf(p)
+        return mpmath.betainc(k + 1, r, p, 1, regularized=True)
 
 
 def mean(r, p):
