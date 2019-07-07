@@ -6,7 +6,7 @@ Multivariate hypergeometric distribution
 import mpmath
 
 
-__all__ = ['mvhg_support', 'pmf_dict']
+__all__ = ['support', 'pmf_dict']
 
 
 def support(colors, nsample):
