@@ -2,6 +2,11 @@
 Negative binomial distribution
 ------------------------------
 
+There are several different ways to parameterize the negative binomial
+distribution.  Here, the quantiles are the number of "successes" that
+occur when draws from a binomial distribution are made repeatedly until
+the number of "failures" drawn is `r`.  `p` is the probability of drawing
+a "success".
 """
 
 import mpmath
