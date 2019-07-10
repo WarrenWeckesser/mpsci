@@ -8,7 +8,7 @@ from ..fun import logbeta, xlogy, xlog1py
 from ..stats import mean as mpsci_mean, var as mpsci_var
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean', 'mle']
 
 
 def pdf(x, a, b):
