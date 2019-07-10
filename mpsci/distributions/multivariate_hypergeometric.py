@@ -8,6 +8,8 @@ import mpmath
 
 __all__ = ['support', 'pmf_dict']
 
+_multivariate = True
+
 
 def support(colors, nsample):
     """

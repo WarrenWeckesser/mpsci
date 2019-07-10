@@ -255,8 +255,17 @@ modname = module.__name__.split('.')[-1]
 names = [name for name in dir(module) if not name.startswith('_')]
 
 objects = [getattr(module, name) for name in names]
-continuous_dists = [obj for obj in objects if hasattr(obj, 'pdf')]
-discrete_dists = [obj for obj in objects if hasattr(obj, 'pmf') or hasattr(obj, 'pmf_dict')]
+continuous_dists = [obj for obj in objects
+                        if hasattr(obj, 'pdf')]
+discrete_dists = [obj for obj in objects
+                      if hasattr(obj, 'pmf') or hasattr(obj, 'pmf_dict')]
+
+univariate_discrete_dists = []
+multivariate_discrete_dists = []
+for obj in discrete_dists:
+    (multivariate_discrete_dists
+     if getattr(obj, '_multivariate', False)
+     else univariate_discrete_dists).append(obj)
 
 pth = os.path.join('source', modname)
 os.mkdir(pth)
@@ -265,8 +274,9 @@ lines.extend(['.. _%s:' % modname, ''])
 lines.extend(['.. currentmodule:: mpsci.%s' % modname, ''])
 lines.extend(['.. automodule:: mpsci.%s' % modname, ''])
 
-
-for header, dists in [('Continuous', continuous_dists), ('Discrete', discrete_dists)]:
+for header, dists in [('Continuous', continuous_dists),
+                      ('Univariate discrete', univariate_discrete_dists),
+                      ('Multivariate discrete', multivariate_discrete_dists)]:
     #lines.extend(['', '.. currentmodule:: %s' % submodule.__name__, ''])
     lines.extend(['', '*' + header + ' distributions*', ''])
     lines.extend(['.. autosummary::', ''])
