@@ -5,6 +5,7 @@ Beta probability distribution
 """
 import mpmath
 from ..fun import logbeta, xlogy, xlog1py
+from ..stats import mean as mpsci_mean, var as mpsci_var
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean']
@@ -119,3 +120,49 @@ def mean(a, b):
     a = mpmath.mpf(a)
     b = mpmath.mpf(b)
     return a/(a + b)
+
+
+def _beta_mle_func(a, b, n, s):
+    psiab = mpmath.digamma(a + b)
+    return s - n * (-psiab + mpmath.digamma(a))
+
+
+def mle(x, a=None, b=None):
+    """
+    Maximum likelihood estimation for the beta distribution.
+    """
+    if any((t <= 0 or t >= 1) for t in x):
+        raise ValueError('Values in x must greater than 0 and less than 1')
+    n = len(x)
+    xbar = mpsci_mean(x)
+
+    if a is None and b is None:
+        # Fit both parameters
+        s1 = mpmath.fsum(mpmath.log(t) for t in x)
+        s2 = mpmath.fsum(mpmath.log1p(-t) for t in x)
+        fac = xbar * (mpmath.mp.one - xbar) / mpsci_var(x) - 1
+        a0 = xbar * fac
+        b0 = (mpmath.mp.one - xbar) * fac
+        a1, b1 = mpmath.findroot([lambda a, b: _beta_mle_func(a, b, n, s1),
+                                  lambda a, b: _beta_mle_func(b, a, n, s2)],
+                                 [a0, b0])
+        return a1, b1
+
+    if a is not None and b is not None:
+        return a, b
+
+    swap = False
+    if b is None:
+        swap = True
+        b = a
+        x = [mpmath.mp.one - t for t in x]
+        xbar = mpmath.mp.one - xbar
+
+    # Fit the a parameter, with b given.
+    s1 = mpmath.fsum(mpmath.log(t) for t in x)
+    p0 = b * xbar / (mpmath.mp.one - xbar)
+    p1 = mpmath.findroot(lambda a: _beta_mle_func(a, b, n, s1), p0)
+    if swap:
+        return a, p1
+    else:
+        return p1, b
