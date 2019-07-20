@@ -31,5 +31,5 @@ def anova_oneway(*args):
         F = vb/(num_groups - 1) / (vw/(n - num_groups))
         dof_num = num_groups - 1
         dof_den = n - num_groups
-        p = mpmath.mp.one - f.cdf(F, dof_num, dof_den)
+        p = f.sf(F, dof_num, dof_den)
         return F, p

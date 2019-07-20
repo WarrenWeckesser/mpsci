@@ -8,7 +8,7 @@ import mpmath
 from ..fun import logbeta, xlogy, xlog1py
 
 
-__all__ = ['pdf', 'logpdf', 'cdf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf']
 
 
 def pdf(x, dfn, dfd):
@@ -72,4 +72,21 @@ def cdf(x, dfn, dfd):
         dfd = mpmath.mp.mpf(dfd)
         dfnx = dfn * x
         return mpmath.betainc(dfn/2, dfd/2, x2=dfnx/(dfnx + dfd),
+                              regularized=True)
+
+
+def sf(x, dfn, dfd):
+    """
+    Survival function of the F distribution.
+
+    `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
+    """
+    if x <= 0:
+        return mpmath.mp.one
+    with mpmath.mp.extradps(5):
+        x = mpmath.mp.mpf(x)
+        dfn = mpmath.mp.mpf(dfn)
+        dfd = mpmath.mp.mpf(dfd)
+        dfnx = dfn * x
+        return mpmath.betainc(dfn/2, dfd/2, x1=dfnx/(dfnx + dfd),
                               regularized=True)
