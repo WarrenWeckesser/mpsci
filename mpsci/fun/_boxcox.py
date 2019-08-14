@@ -32,7 +32,7 @@ _boxcox_latex_f = r"""
 
         f(x; \\lambda) = \\begin{cases}
                            \\log(x) & \\textrm{if} \\; \\lambda = 0 \\\\
-                           \\frac{x^{\\lambda} - 1}{\lambda}  & \\textrm{if} \\; \\lambda \\ne 0
+                           \\frac{x^{\\lambda} - 1}{\\lambda}  & \\textrm{if} \\; \\lambda \\ne 0
                         \\end{cases}
 """
 
