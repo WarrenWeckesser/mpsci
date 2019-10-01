@@ -68,5 +68,5 @@ when Sphinx processes the docstring:
 A set of re substitutions can also be defined in conf.py with the
 name 'resubber_re_subs'.  If defined, these substitutions are applied
 to all docstrings processed by resubber.  They are applied before
-any subsitutions that are defined for specific objects via the
+any substitutions that are defined for specific objects via the
 `_docstring_re_subs` attribute.
