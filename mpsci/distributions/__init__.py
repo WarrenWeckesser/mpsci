@@ -11,5 +11,5 @@ as the corresponding implementations in `scipy.stats`.
 
 from . import (beta, cosine, exponweib, f, fishers_noncentral_hypergeometric,
                gamma, genextreme, geninvgauss, hypergeometric, lognormal,
-               multivariate_hypergeometric, ncx2, negative_binomial, normal,
-               rice)
+               multivariate_hypergeometric, ncx2, negative_binomial,
+               negative_hypergeometric, normal, rice)
