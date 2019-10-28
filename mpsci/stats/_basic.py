@@ -82,12 +82,74 @@ def hmean(x):
     """
     Harmonic mean of the values in the sequence x.
 
-    All the values in x must be greater than zero.
+    If any value in x is 0, the return value is 0.
+
+    hmean accepts negative values. Usually the harmonic mean is defined
+    for positive values only, but the formula is well-defined as long as
+    1/x[0] + 1/x[1] + ... + 1/x[-1] is not 0.
+
+    If that expression is 0, and the signs of the x values are mixed, nan
+    is returned.  If the signs are not mixed, then either all the values are
+    +inf or they are all -inf.  For those cases, +inf and -inf are returned,
+    respectively.
+
+    Examples
+    --------
+    >>> from mpsci.stats import hmean
+    >>> import mpmath
+    >>> mpmath.mp.dps = 25
+
+    >>> hmean([1, 3, 3])
+    mpf('1.8')
+
+    >>> hmean([10, 3, -2])
+    mpf('-45.0')
+
+    >>> hmean(range(1, 10))
+    mpf('3.181371861411137606957497545')
+
+    >>> hmean([2, -2])
+    mpf('nan')
+
+    >>> hmean([mpmath.inf, mpmath.inf, mpmath.inf])
+    mpf('+inf')
+
+    >>> hmean([mpmath.inf, mpmath.inf, -mpmath.inf])
+    mpf('nan')
+
+    >>> hmean([-mpmath.inf, -mpmath.inf, -mpmath.inf])
+    >>> mpf('-inf')
+
     """
-    if any(t <= 0 for t in x):
-        raise ValueError("all values in x must be greater than zero.")
+    # The denominator can be 0 if, for example,
+    # *   x = [2, -2]:      The function should return nan or raise an exception.
+    # *   x = [+inf, +inf]: The function should return inf
+    # To do: think more about the correct handling of -inf.
+
+    npos = 0
+    nneg = 0
+    nzero = 0
+    for t in x:
+        if t > 0:
+            npos += 1
+        elif t < 0:
+            nneg += 1
+        else:
+            nzero += 1
+    if nzero > 0:
+        return mpmath.mp.zero
+    mixed_signs = npos > 0 and nneg > 0
     with mpmath.extraprec(16):
-        return 1 / mean([1/mpmath.mpf(t) for t in x])
+        m = mean([1/mpmath.mpf(t) for t in x])
+        if m == 0:
+            if mixed_signs:
+                return mpmath.mp.nan
+            elif npos > 0:
+                return mpmath.mp.inf
+            else:
+                return -mpmath.mp.inf
+        else:
+            return 1 / m
 
 
 
