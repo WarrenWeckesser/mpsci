@@ -55,6 +55,24 @@ def sf(k, ntotal, ngood, untilnbad):
     return hg_cdf(untilnbad - 1, ntotal, ntotal - ngood, k + 1)
 
 
+def mean(ntotal, ngood, untilnbad):
+    """
+    Mean of the negative hypergeometric distribution.
+    """
+    return mpmath.mpf(untilnbad) * ngood / (ntotal - ngood + 1)
+
+
+def var(ntotal, ngood, untilnbad):
+    """
+    Variance of the negative hypergeometric distribution.
+    """
+    nbad = ntotal - ngood
+    r = mpmath.mpf(untilnbad)
+    v = (r * (ntotal + 1) * ngood * (mpmath.mp.one - r / (nbad + 1))
+         / (nbad + 1) / (nbad + 2))
+    return v
+
+
 def support(ntotal, ngood, untilnbad):
     """
     Support of the negative hypergeometric distribution.
