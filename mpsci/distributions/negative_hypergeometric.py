@@ -8,7 +8,7 @@ from ..fun import logbinomial
 from .hypergeometric import cdf as hg_cdf, sf as hg_sf
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'support']
+__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var', 'support']
 
 
 def pmf(k, ntotal, ngood, untilnbad):
