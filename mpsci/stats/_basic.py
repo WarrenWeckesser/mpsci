@@ -121,11 +121,6 @@ def hmean(x):
     >>> mpf('-inf')
 
     """
-    # The denominator can be 0 if, for example,
-    # *   x = [2, -2]:      The function should return nan or raise an exception.
-    # *   x = [+inf, +inf]: The function should return inf
-    # To do: think more about the correct handling of -inf.
-
     npos = 0
     nneg = 0
     nzero = 0
