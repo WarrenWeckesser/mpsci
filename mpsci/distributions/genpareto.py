@@ -2,8 +2,6 @@
 Generalized Pareto distribution
 -------------------------------
 
-Note that the parameter xi used here has the opposite sign
-of the corresponding shape parameter in `scipy.stats.genextreme`.
 """
 
 import mpmath
