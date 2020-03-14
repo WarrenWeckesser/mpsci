@@ -10,7 +10,7 @@ as the corresponding implementations in `scipy.stats`.
 """
 
 from . import (beta, binomial, cosine, exponweib, f,
-               fishers_noncentral_hypergeometric, gamma, genextreme,
-               geninvgauss, genpareto, hypergeometric,
+               fishers_noncentral_hypergeometric, gamma, gamma_gompertz,
+               genextreme, geninvgauss, genpareto, hypergeometric,
                lognormal, multivariate_hypergeometric, ncx2,
                negative_binomial, negative_hypergeometric, normal, rice)
