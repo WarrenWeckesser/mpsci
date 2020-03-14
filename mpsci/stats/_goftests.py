@@ -19,7 +19,7 @@ def chisquare(observed, expected):
 
 
 def gtest(observed, expected):
-    """
+    r"""
     G-test (likelihood-ratio test, maximum likelihood test).
 
     Test whether the observed frequency distribution differs from the

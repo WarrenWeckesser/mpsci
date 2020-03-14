@@ -298,5 +298,5 @@ _math = """
 """
 
 poly_from_zeros._docstring_re_subs = [
-    ('[ ]+\(x.*6', _math, 0, 0)
+    (r'[ ]+\(x.*6', _math, 0, 0)
 ]
