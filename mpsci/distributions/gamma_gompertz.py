@@ -19,7 +19,7 @@ The parameters used here map to the wikipedia article as follows::
 import mpmath
 
 
-__all__ = ['pdf', 'cdf', 'sf']
+__all__ = ['pdf', 'cdf', 'invcdf', 'sf', 'invsf']
 
 
 def pdf(x, c, beta, scale):
@@ -57,6 +57,24 @@ def cdf(x, c, beta, scale):
         return p
 
 
+def invcdf(p, c, beta, scale):
+    """
+    Inverse CDF (i.e. quantile function) of the Gamma-Gompertz distribution.
+    """
+    with mpmath.extradps(5):
+        if p < 0 or p > 1:
+            return mpmath.mp.nan
+        p = mpmath.mpf(p)
+        beta = mpmath.mpf(beta)
+        c = mpmath.mpf(c)
+        scale = mpmath.mpf(scale)
+        # XXX It would be nice if the result could be formulated in a
+        # way that avoids computing 1 - p.
+        r = mpmath.powm1(1 - p, -1/c)
+        x = scale * mpmath.log1p(beta * r)
+        return x
+
+
 def sf(x, c, beta, scale):
     """
     Cumulative distribution function of the Gamma-Gompertz distribution.
@@ -72,3 +90,19 @@ def sf(x, c, beta, scale):
         ex = mpmath.exp(x/scale)
         p = mpmath.power(beta / (beta - 1 + ex), c)
         return p
+
+
+def invsf(p, c, beta, scale):
+    """
+    Inverse survival function of the Gamma-Gompertz distribution.
+    """
+    with mpmath.extradps(5):
+        if p < 0 or p > 1:
+            return mpmath.mp.nan
+        p = mpmath.mpf(p)
+        beta = mpmath.mpf(beta)
+        c = mpmath.mpf(c)
+        scale = mpmath.mpf(scale)
+        r = mpmath.powm1(p, -1/c)
+        x = scale * mpmath.log1p(beta * r)
+        return x
