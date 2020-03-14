@@ -24,12 +24,16 @@ def pmf(k, ntotal, ngood, nsample):
 
 def logpmf(k, ntotal, ngood, nsample):
     """
-    Natural log of the probability mass function of the hypergeometric distribution.
+    Logarithm of the PMF of the hypergeometric distribution.
+
+    `logpmf` computes the natural logarithm of the probability mass function
+    of the hypergeometric distribution.
     """
     nbad = ntotal - ngood
     with mpmath.extradps(5):
         # numerator terms
-        terms = [mpmath.log(ntotal + 1), logbeta(ntotal - nsample + 1, nsample + 1)]
+        terms = [mpmath.log(ntotal + 1),
+                 logbeta(ntotal - nsample + 1, nsample + 1)]
         # denominator terms
         terms.extend([-mpmath.log(ngood + 1),
                       -mpmath.log(nbad + 1),
@@ -49,9 +53,12 @@ def sf(k, ntotal, ngood, nsample):
     """
     Survival function of the hypergeometric distribution.
     """
-    h = mpmath.hyp3f2(1, k + 1 - ngood, k + 1 - nsample, k + 2, ntotal + k + 2 - ngood - nsample, 1)
-    sf = (mpmath.binomial(nsample, k + 1) * mpmath.binomial(ntotal - nsample, ngood - k - 1) /
-          mpmath.binomial(ntotal, ngood) * h)
+    h = mpmath.hyp3f2(1, k + 1 - ngood, k + 1 - nsample, k + 2,
+                      ntotal + k + 2 - ngood - nsample, 1)
+    num = (mpmath.binomial(nsample, k + 1) *
+           mpmath.binomial(ntotal - nsample, ngood - k - 1))
+    den = mpmath.binomial(ntotal, ngood)
+    sf = (num / den) * h
     return sf
 
 
@@ -72,7 +79,7 @@ def support(ntotal, ngood, nsample):
     >>> sup, pvals = hypergeometric.support(20, 14, 5)
     >>> for k, p in zip(sup, pvals):
     ...     print("{:2} {:10.7f}".format(k, float(p)))
-    ... 
+    ...
      0  0.0003870
      1  0.0135449
      2  0.1173891
