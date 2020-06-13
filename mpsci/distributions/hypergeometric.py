@@ -10,10 +10,23 @@ from ..fun import logbeta
 __all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'support']
 
 
+def _validate(ntotal, ngood, nsample):
+    if ntotal < 0 or ngood < 0 or nsample < 0:
+        raise ValueError(f'ntotal ({ntotal}), ngood ({ngood}) and nsample '
+                         f'({nsample}) must be nonnegative.')
+    if ngood > ntotal:
+        raise ValueError(f'ngood ({ngood}) must not be greater than '
+                         f'ntotal ({ntotal})')
+    if nsample > ntotal:
+        raise ValueError(f'nsample ({nsample}) must not be greater than '
+                         f'ntotal ({ntotal})')
+
+
 def pmf(k, ntotal, ngood, nsample):
     """
     Probability mass function of the hypergeometric distribution.
     """
+    _validate(ntotal, ngood, nsample)
     nbad = ntotal - ngood
     numer = (ntotal + 1) * mpmath.beta(ntotal - nsample + 1, nsample + 1)
     denom = ((ngood + 1) * (nbad + 1) * mpmath.beta(k + 1, ngood - k + 1) *
@@ -29,6 +42,7 @@ def logpmf(k, ntotal, ngood, nsample):
     `logpmf` computes the natural logarithm of the probability mass function
     of the hypergeometric distribution.
     """
+    _validate(ntotal, ngood, nsample)
     nbad = ntotal - ngood
     with mpmath.extradps(5):
         # numerator terms
@@ -46,6 +60,7 @@ def cdf(k, ntotal, ngood, nsample):
     """
     Cumulative distribution function of the hypergeometric distribution.
     """
+    _validate(ntotal, ngood, nsample)
     return 1 - sf(k, ntotal, ngood, nsample)
 
 
@@ -53,6 +68,7 @@ def sf(k, ntotal, ngood, nsample):
     """
     Survival function of the hypergeometric distribution.
     """
+    _validate(ntotal, ngood, nsample)
     h = mpmath.hyp3f2(1, k + 1 - ngood, k + 1 - nsample, k + 2,
                       ntotal + k + 2 - ngood - nsample, 1)
     num = (mpmath.binomial(nsample, k + 1) *
@@ -88,6 +104,7 @@ def support(ntotal, ngood, nsample):
      5  0.1291280
 
     """
+    _validate(ntotal, ngood, nsample)
     nbad = ntotal - ngood
     p = []
     support = range(max(0, nsample - nbad), min(nsample, ngood) + 1)

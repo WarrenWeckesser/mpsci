@@ -6,12 +6,54 @@ Fisher's noncentral hypergeometric distribution
 
 """
 
+from functools import lru_cache
 import re
 import mpmath
-from . import hypergeometric
+from . import hypergeometric as _hg
 
 
-__all__ = ['support', 'pmf_dict', 'mode', 'mean']
+__all__ = ['support', 'pmf_dict', 'pmf', 'cdf', 'sf', 'mode', 'mean']
+
+
+# This auxiliary version of support includes the parameter prec,
+# so the mpmath precision is part of the cache key.
+@lru_cache()
+def _support(nc, ntotal, ngood, nsample, prec):
+    with mpmath.extradps(5):
+        # XXX This is inefficient...
+        support, values = _hg.support(ntotal, ngood, nsample)
+        lpmf = [_hg.logpmf(k, ntotal, ngood, nsample)
+                for k in support]
+
+        # The PMF of Fisher's noncentral hypergeometric distribution is
+        # proportional to a weighted version of the hypergeometric
+        # distribution.  The weights are the powers of the noncentrality
+        # parameter.  To maintain precision over a wide range of values, we
+        # compute the log of the weighted hypergeometric PMF:
+        g = [lpmf[k - support[0]] + mpmath.log(nc) * k for k in support]
+
+        # g contains the logs of values proportional to the noncentral
+        # hypergeometric PMF.  That is, g = [log(c0), log(c1), log(c2), ...].
+        # We must exponentiate these values, and then normalize them to get
+        # a PMF.  To exponentiate safely, we'll subtract the maximum value
+        # from all the values before exponentiating.  So instead of computing
+        # [exp(log(c0), exp(log(c1)), exp(log(c2)), ...], we compute
+        #   [exp(log(c0) - log(cmax)),
+        #    exp(log(c1) - log(cmax)),
+        #    exp(log(c2) - log(cmax)),
+        #    ...],
+        # which is
+        #   [c0/cmax, c1/cmax, c2/cmax, ...].
+        # and the maximum value in that sequence is therefore 1.
+        gmax = max(g)
+        eg = [mpmath.exp(v - gmax) for v in g]
+
+        # The values in eg are proportional to the desired PMF, and the
+        # maximum value in eg is 1.  Divide all the values in eg by sum(eg)
+        # to create a PMF.
+        egsum = mpmath.fsum(eg)
+        values = [v/egsum for v in eg]
+        return support, values
 
 
 def support(nc, ntotal, ngood, nsample):
@@ -58,41 +100,10 @@ def support(nc, ntotal, ngood, nsample):
      mpf('0.0360647110553053786621550275')]
 
     """
-    with mpmath.extradps(5):
-        # XXX This is inefficient...
-        support, values = hypergeometric.support(ntotal, ngood, nsample)
-        lpmf = [hypergeometric.logpmf(k, ntotal, ngood, nsample)
-                for k in support]
-
-        # The PMF of Fisher's noncentral hypergeometric distribution is
-        # proportional to a weighted version of the hypergeometric
-        # distribution.  The weights are the powers of the noncentrality
-        # parameter.  To maintain precision over a wide range of values, we
-        # compute the log of the weighted hypergeometric PMF:
-        g = [lpmf[k - support[0]] + mpmath.log(nc) * k for k in support]
-
-        # g contains the logs of values proportional to the noncentral
-        # hypergeometric PMF.  That is, g = [log(c0), log(c1), log(c2), ...].
-        # We must exponentiate these values, and then normalize them to get
-        # a PMF.  To exponentiate safely, we'll subtract the maximum value
-        # from all the values before exponentiating.  So instead of computing
-        # [exp(log(c0), exp(log(c1)), exp(log(c2)), ...], we compute
-        #   [exp(log(c0) - log(cmax)),
-        #    exp(log(c1) - log(cmax)),
-        #    exp(log(c2) - log(cmax)),
-        #    ...],
-        # which is
-        #   [c0/cmax, c1/cmax, c2/cmax, ...].
-        # and the maximum value in that sequence is therefore 1.
-        gmax = max(g)
-        eg = [mpmath.exp(v - gmax) for v in g]
-
-        # The values in eg are proportional to the desired PMF, and the
-        # maximum value in eg is 1.  Divide all the values in eg by sum(eg)
-        # to create a PMF.
-        egsum = mpmath.fsum(eg)
-        values = [v/egsum for v in eg]
-        return support, values
+    _hg._validate(ntotal, ngood, nsample)
+    prec = mpmath.mp.prec
+    support, values = _support(nc, ntotal, ngood, nsample, prec)
+    return support, values
 
 
 _c_k_formula = r"""
@@ -134,8 +145,49 @@ def pmf_dict(nc, ntotal, ngood, nsample):
     """
     PMF as a dictionary.
     """
+    _hg._validate(ntotal, ngood, nsample)
     sup, values = support(nc, ntotal, ngood, nsample)
     return dict(zip(sup, values))
+
+
+def pmf(k, nc, ntotal, ngood, nsample):
+    """
+    PMF of Fisher's noncentral hypergeometric distribution.
+    """
+    _hg._validate(ntotal, ngood, nsample)
+    sup, p = support(nc, ntotal, ngood, nsample)
+    if k in sup:
+        return p[k - sup[0]]
+    else:
+        return mpmath.mp.zero
+
+
+def cdf(k, nc, ntotal, ngood, nsample):
+    """
+    CDF of Fisher's noncentral hypergeometric distribution.
+    """
+    _hg._validate(ntotal, ngood, nsample)
+    sup, p = support(nc, ntotal, ngood, nsample)
+    if k < sup[0]:
+        return mpmath.mp.zero
+    elif k >= sup[-1]:
+        return mpmath.mp.one
+    else:
+        return mpmath.fsum(p[:k - sup[0] + 1])
+
+
+def sf(k, nc, ntotal, ngood, nsample):
+    """
+    Survival function of Fisher's noncentral hypergeometric distribution.
+    """
+    _hg._validate(ntotal, ngood, nsample)
+    sup, p = support(nc, ntotal, ngood, nsample)
+    if k < sup[0]:
+        return mpmath.mp.one
+    elif k >= sup[-1]:
+        return mpmath.mp.zero
+    else:
+        return mpmath.fsum(p[k - sup[0] + 1:])
 
 
 def mode(nc, ntotal, ngood, nsample):
@@ -174,6 +226,7 @@ def mode(nc, ntotal, ngood, nsample):
     4
 
     """
+    _hg._validate(ntotal, ngood, nsample)
     with mpmath.extradps(5):
         nc = mpmath.mpf(nc)
         # Using the notation from the wikipedia page...
@@ -204,6 +257,7 @@ def mean(nc, ntotal, ngood, nsample):
     >>> fishers_noncentral_hypergeometric.mean(2.5, 16, 8, 10)
     mpf('5.89685838859408792634258808')
     """
+    _hg._validate(ntotal, ngood, nsample)
     sup, p = support(nc, ntotal, ngood, nsample)
     n = len(p)
     with mpmath.extradps(5):
