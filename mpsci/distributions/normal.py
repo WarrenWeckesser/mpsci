@@ -6,7 +6,7 @@ Normal distribution
 import mpmath
 
 
-__all__ = ['pdf', 'cdf', 'sf', 'invcdf', 'mle']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'mle']
 
 
 def pdf(x, mu=0, sigma=1):
@@ -15,6 +15,19 @@ def pdf(x, mu=0, sigma=1):
     """
     # Defined here for consistency, but this is just mpmath.npdf
     return mpmath.npdf(x, mu, sigma)
+
+
+def logpdf(x, mu=0, sigma=1):
+    """
+    Logarithm of the PDF of the normal distribution.
+    """
+    with mpmath.extradps(5):
+        x = mpmath.mpf(x)
+        mu = mpmath.mpf(mu)
+        sigma = mpmath.mpf(sigma)
+        logp = (-mpmath.log(2*mpmath.pi)/2 - mpmath.log(sigma)
+                - (x - mu)**2/(2*sigma**2))
+    return logp
 
 
 def cdf(x, mu=0, sigma=1):

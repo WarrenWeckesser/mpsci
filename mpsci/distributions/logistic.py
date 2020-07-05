@@ -9,7 +9,7 @@ The logistic distribution is also known as the sech-squared distribution.
 import mpmath
 
 
-__all__ = ['pdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var']
 
 
 def pdf(x, loc=0, scale=1):
@@ -23,6 +23,19 @@ def pdf(x, loc=0, scale=1):
         z = (x - loc) / scale
         p = mpmath.sech(z/2)**2 / (4*scale)
     return p
+
+
+def logpdf(x, loc=0, scale=1):
+    """
+    Logarithm of the PDF of the logistic distribution.
+    """
+    with mpmath.extradps(5):
+        x = mpmath.mpf(x)
+        loc = mpmath.mpf(loc)
+        scale = mpmath.mpf(scale)
+        z = (x - loc) / scale
+        logp = 2*mpmath.log(mpmath.sech(z/2)) - mpmath.log(4*scale)
+    return logp
 
 
 def cdf(x, loc=0, scale=1):
