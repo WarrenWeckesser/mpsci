@@ -14,11 +14,14 @@ def pdf(x, k, lam):
     """
     PDF for the noncentral chi-square distribution.
     """
-    x = mpmath.mpf(x)
-    k = mpmath.mpf(k)
-    lam = mpmath.mpf(lam)
-    p = (mpmath.exp(-(x + lam)/2) * mpmath.power(x / lam, (k/2 - 1)/2) *
-         mpmath.besseli(k/2 - 1, mpmath.sqrt(lam*x))/2)
+    if x < 0:
+        return mpmath.mp.zero
+    with mpmath.extradps(5):
+        x = mpmath.mpf(x)
+        k = mpmath.mpf(k)
+        lam = mpmath.mpf(lam)
+        p = (mpmath.exp(-(x + lam)/2) * mpmath.power(x / lam, (k/2 - 1)/2) *
+             mpmath.besseli(k/2 - 1, mpmath.sqrt(lam*x))/2)
     return p
 
 
@@ -26,10 +29,13 @@ def cdf(x, k, lam):
     """
     CDF for the noncentral chi-square distribution.
     """
-    x = mpmath.mpf(x)
-    k = mpmath.mpf(k)
-    lam = mpmath.mpf(lam)
-    c = cmarcumq(k/2, mpmath.sqrt(lam), mpmath.sqrt(x))
+    if x <= 0:
+        return mpmath.mp.zero
+    with mpmath.extradps(5):
+        x = mpmath.mpf(x)
+        k = mpmath.mpf(k)
+        lam = mpmath.mpf(lam)
+        c = cmarcumq(k/2, mpmath.sqrt(lam), mpmath.sqrt(x))
     return c
 
 
@@ -37,10 +43,13 @@ def sf(x, k, lam):
     """
     Survival function for the noncentral chi-square distribution.
     """
-    x = mpmath.mpf(x)
-    k = mpmath.mpf(k)
-    lam = mpmath.mpf(lam)
-    s = marcumq(k/2, mpmath.sqrt(lam), mpmath.sqrt(x))
+    if x <= 0:
+        return mpmath.mp.one
+    with mpmath.extradps(5):
+        x = mpmath.mpf(x)
+        k = mpmath.mpf(k)
+        lam = mpmath.mpf(lam)
+        s = marcumq(k/2, mpmath.sqrt(lam), mpmath.sqrt(x))
     return s
 
 
