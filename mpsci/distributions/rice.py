@@ -25,12 +25,15 @@ def pdf(x, nu, sigma):
     """
     PDF for the Rice distribution.
     """
-    x = mpmath.mpf(x)
-    nu = mpmath.mpf(nu)
-    sigma = mpmath.mpf(sigma)
-    sigma2 = sigma**2
-    p = ((x / sigma2) * mpmath.exp(-(x**2 + nu**2)/(2*sigma2)) *
-         mpmath.besseli(0, x*nu/sigma2))
+    if x <= 0:
+        return mpmath.mp.zero
+    with mpmath.extradps(5):
+        x = mpmath.mpf(x)
+        nu = mpmath.mpf(nu)
+        sigma = mpmath.mpf(sigma)
+        sigma2 = sigma**2
+        p = ((x / sigma2) * mpmath.exp(-(x**2 + nu**2)/(2*sigma2)) *
+             mpmath.besseli(0, x*nu/sigma2))
     return p
 
 
@@ -38,10 +41,13 @@ def cdf(x, nu, sigma):
     """
     CDF for the Rice distribution.
     """
-    x = mpmath.mpf(x)
-    nu = mpmath.mpf(nu)
-    sigma = mpmath.mpf(sigma)
-    c = cmarcumq(1, nu/sigma, x/sigma)
+    if x <= 0:
+        return mpmath.mp.zero
+    with mpmath.extradps(5):
+        x = mpmath.mpf(x)
+        nu = mpmath.mpf(nu)
+        sigma = mpmath.mpf(sigma)
+        c = cmarcumq(1, nu/sigma, x/sigma)
     return c
 
 
@@ -49,8 +55,11 @@ def sf(x, nu, sigma):
     """
     Survival function for the Rice distribution.
     """
-    x = mpmath.mpf(x)
-    nu = mpmath.mpf(nu)
-    sigma = mpmath.mpf(sigma)
-    s = marcumq(1, nu/sigma, x/sigma)
+    if x <= 0:
+        return mpmath.mp.one
+    with mpmath.extradps(5):
+        x = mpmath.mpf(x)
+        nu = mpmath.mpf(nu)
+        sigma = mpmath.mpf(sigma)
+        s = marcumq(1, nu/sigma, x/sigma)
     return s
