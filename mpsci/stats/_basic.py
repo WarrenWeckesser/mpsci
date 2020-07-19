@@ -18,7 +18,7 @@ pmean
 import mpmath
 
 
-__all__ = ['mean', 'var', 'std', 'gmean', 'hmean', 'pmean']
+__all__ = ['mean', 'var', 'std', 'variation', 'gmean', 'hmean', 'pmean']
 
 
 # XXX Add special handling for inf and nan in these functions?
@@ -41,7 +41,8 @@ def mean(x, weights=None):
         else:
             if mpmath.fsum(weights) == 0:
                 raise ZeroDivisionError('sum(weights) must be nonzero.')
-            return mpmath.fsum(t*w for t, w in zip(x, weights)) / mpmath.fsum(weights)
+            return (mpmath.fsum(t*w for t, w in zip(x, weights)) /
+                    mpmath.fsum(weights))
 
 
 def var(x, ddof=0):
@@ -62,6 +63,26 @@ def std(x, ddof=0):
     """
     with mpmath.extraprec(16):
         return mpmath.sqrt(var(x, ddof))
+
+
+def variation(x, ddof=1):
+    """
+    The variation of x.
+
+    The variation the ratio of the standard deviation to the mean:
+
+        std(x, ddof) / mean(x)
+
+    Note that, unlike `var` and `std`, the default value of `ddof` is 1.
+    This is the more typical value used when computing the variation.
+
+    (The implementation is simply std(x, ddof) / mean(x); no special
+    handling is provided for `nan` values, a mean of 0, etc.)
+    """
+    with mpmath.extraprec(16):
+        s = std(x, ddof=ddof)
+        m = mean(x)
+        return s / m
 
 
 def gmean(x):
