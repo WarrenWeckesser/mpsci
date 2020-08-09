@@ -14,4 +14,4 @@ from . import (beta, binomial, cosine, exponweib, f,
                genexpon, genextreme, geninvgauss, genpareto, hypergeometric,
                laplace, logistic, lognormal, multivariate_hypergeometric, ncx2,
                negative_binomial, negative_hypergeometric, normal, poisson,
-               rice)
+               rice, t)
