@@ -77,6 +77,10 @@ def invcdf(p, df):
 
     This function is also known as the quantile function or the percent
     point function.
+
+    For values far in the tails of the distribution, the solution might
+    not be accurate.  Check the results, and increase the precision of
+    the calculation if necessary.
     """
     if p < 0 or p > 1:
         raise ValueError('p must be in the interval [0, 1]')
@@ -90,12 +94,26 @@ def invcdf(p, df):
 
     with mpmath.extradps(5):
         p = mpmath.mpf(p)
+        if p > 0.5:
+            p0 = mpmath.mp.one - p
+        else:
+            p0 = p
         df = mpmath.mpf(df)
 
-        def _func(x):
-            return cdf(x, df) - p
+        x0 = -mpmath.mp.one
+        count = 0
+        while cdf(x0, df) > p0:
+            x0 = 2*x0
+            count += 1
+            if count > mpmath.mp.prec / 2:
+                raise RuntimeError('failed to find a bracketing interval')
 
-        x = mpmath.findroot(_func, 0)
+        def _func(x):
+            return cdf(x, df) - p0
+
+        x = mpmath.findroot(_func, (x0, x0/2), solver='anderson')
+        if p > 0.5:
+            x = -x
 
     return x
 
@@ -103,24 +121,14 @@ def invcdf(p, df):
 def invsf(p, df):
     """
     Inverse of the survival function for Student's t distribution.
+
+    For values far in the tails of the distribution, the solution might
+    not be accurate.  Check the results, and increase the precision of
+    the calculation if necessary.
     """
     if p < 0 or p > 1:
         raise ValueError('p must be in the interval [0, 1]')
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    if p == 0:
-        return mpmath.inf
-    if p == 1:
-        return mpmath.ninf
-
-    with mpmath.extradps(5):
-        p = mpmath.mpf(p)
-        df = mpmath.mpf(df)
-
-        def _func(x):
-            return sf(x, df) - p
-
-        x = mpmath.findroot(_func, 0)
-
-    return x
+    return -invcdf(p, df)
