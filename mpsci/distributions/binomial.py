@@ -8,7 +8,7 @@ import mpmath
 from ..fun import logbinomial
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'mean', 'var']
+__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var']
 
 
 def _validate_np(n, p):
@@ -63,10 +63,38 @@ def cdf(k, n, p, method='incbeta'):
             return mpmath.betainc(n - k, k + 1, x1=0, x2=1 - p,
                                   regularized=True)
     else:
-        # method is "sum"
+        # method is "sumpmf"
         with mpmath.extradps(5):
             c = mpmath.fsum([mpmath.exp(logpmf(t, n, p))
                              for t in range(k + 1)])
+            return c
+
+
+def sf(k, n, p, method='incbeta'):
+    """
+    Survivial function of the binomial distribution.
+
+    `method` must be either "sumpmf" or "incbeta".  When `method` is "sumpmf",
+    the survival function is computed with a simple sum of the PMF values.
+    When `method` is "incbeta", the incomplete beta function is used. This
+    method is generally faster than the "sumpmf" method, but for large values
+    of k or n, the incomplete beta function of mpmath might fail.
+    """
+    _validate_np(n, p)
+    if method not in ['sumpmf', 'incbeta']:
+        raise ValueError('method must be "sum" or "incbeta"')
+    if method == 'incbeta':
+        with mpmath.extradps(5):
+            p = mpmath.mpf(p)
+            # XXX For large values of k and/or n, betainc fails. The failure
+            # occurs in one of the hypergeometric functions.
+            return mpmath.betainc(n - k, k + 1, x1=1-p, x2=1,
+                                  regularized=True)
+    else:
+        # method is "sumpmf"
+        with mpmath.extradps(5):
+            c = mpmath.fsum([mpmath.exp(logpmf(t, n, p))
+                             for t in range(k + 1, n + 1)])
             return c
 
 
