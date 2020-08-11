@@ -72,7 +72,7 @@ def cdf(k, n, p, method='incbeta'):
 
 def sf(k, n, p, method='incbeta'):
     """
-    Survivial function of the binomial distribution.
+    Survival function of the binomial distribution.
 
     `method` must be either "sumpmf" or "incbeta".  When `method` is "sumpmf",
     the survival function is computed with a simple sum of the PMF values.
