@@ -9,7 +9,7 @@ as the corresponding implementations in `scipy.stats`.
 
 """
 
-from . import (beta, binomial, cosine, exponweib, f,
+from . import (benktander1, benktander2, beta, binomial, cosine, exponweib, f,
                fishers_noncentral_hypergeometric, gamma, gamma_gompertz,
                genexpon, genextreme, geninvgauss, genpareto, hypergeometric,
                laplace, levy, logistic, lognormal, multivariate_hypergeometric,
