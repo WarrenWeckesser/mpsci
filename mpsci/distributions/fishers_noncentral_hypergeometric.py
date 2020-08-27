@@ -135,7 +135,8 @@ _p_k_formula = r"""
 support._docstring_re_subs = [
     (' inf[.]', r':math:`\\infty`.', 0, 0),
     (r'c_k.*\*\*k', _c_k_formula, 0, 0),
-    ('k_min <= k <= k_max', r':math:`k_{\\textsf{min}} \\le k \\le k_{\\textsf{max}}`', 0, 0),
+    ('k_min <= k <= k_max',
+     r':math:`k_{\\textsf{min}} \\le k \\le k_{\\textsf{max}}`', 0, 0),
     (r'    k_min =.*ngood\)\.', _kmin_kmax_values, 0, re.DOTALL),
     (r'    p_k =.*max\]\)', _p_k_formula, 0, 0),
 ]
@@ -261,4 +262,4 @@ def mean(nc, ntotal, ngood, nsample):
     sup, p = support(nc, ntotal, ngood, nsample)
     n = len(p)
     with mpmath.extradps(5):
-        return mpmath.fsum([sup[k]*p[k] for k in range(len(p))])
+        return mpmath.fsum([sup[k]*p[k] for k in range(n)])

@@ -64,7 +64,8 @@ def revert(coeffs, taylor=True):
     g[1] = 1/f[1]
 
     for n in range(2, m):
-        s = sum((-1)**k * mpmath.rf(n, k) * _bell_incomplete_poly(n-1, k, f_hat[:n-k])
+        s = sum((-1)**k * mpmath.rf(n, k) *
+                _bell_incomplete_poly(n-1, k, f_hat[:n-k])
                 for k in range(1, n))
         g[n] = s / f[1]**n
 
@@ -122,6 +123,7 @@ def inverse_taylor(f, x0, n):
     r[0] = x0
     return [mpmath.mpf(t) for t in r]
 
+
 inverse_taylor._docstring_re_subs = [
     (r"g\(y\)", r':math:`g(y)`', 0, 0),
     (r"f(')?\(x0\)", r':math:`f\1(x_0)`', 0, 0),
@@ -129,6 +131,7 @@ inverse_taylor._docstring_re_subs = [
     (r' g(\W)', r' :math:`g`\1', 0, 0),
     (r'([xy])0', r':math:`\1_0`', 0, 0),
 ]
+
 
 def inverse_pade(f, x0, m, n):
     """

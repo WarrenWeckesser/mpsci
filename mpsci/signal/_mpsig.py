@@ -219,8 +219,8 @@ def freqz(b, a=1, worN=None):
     """
     Frequency response of a filter in (b, a) format (i.e. transfer function).
 
-    This function is similar to `scipy.signal.freqz`, but the results are stored
-    in lists.
+    This function is similar to `scipy.signal.freqz`, but the results are
+    stored in lists.
 
     *See also:* `mpsci.signal.zpkfreqz`
     """
@@ -289,6 +289,7 @@ def poly_from_zeros(z):
     for k in range(1, len(z)):
         p = _convolve(p, [1, -z[k]])
     return p
+
 
 _math = """
 .. math::

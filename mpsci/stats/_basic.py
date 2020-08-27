@@ -168,7 +168,6 @@ def hmean(x):
             return 1 / m
 
 
-
 def pmean(x, p):
     """
     Power (or generalized) mean of the values in the sequence x.
