@@ -4,6 +4,9 @@ import mpmath
 from ..distributions import normal
 
 
+__all__ = ['pearsonr', 'pearsonr_ci']
+
+
 def pearsonr(x, y, alternative='two-sided'):
     """
     Pearson's correlation coefficient.
