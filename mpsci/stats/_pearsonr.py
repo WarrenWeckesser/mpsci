@@ -4,7 +4,7 @@ import mpmath
 from ..distributions import normal
 
 
-def pearsonr(x, y):
+def pearsonr(x, y, alternative='two-sided'):
     """
     Pearson's correlation coefficient.
 
@@ -15,6 +15,9 @@ def pearsonr(x, y):
     The function assumes all the values in x and y are finite
     (no `inf`, no `nan`).
     """
+    if alternative not in ['two-sided', 'less', 'greater']:
+        raise ValueError("alternative must be 'two-sided', 'less', or "
+                         "'greater'.")
     if len(x) != len(y):
         raise ValueError('lengths of x and y must be the same.')
 
@@ -39,12 +42,18 @@ def pearsonr(x, y):
 
     n = len(x)
     a = mpmath.mpf(float(n))/2 - 1
-    p = 2*mpmath.betainc(a, a, x2=0.5*(1-abs(r)))/mpmath.beta(a, a)
+    if alternative == 'two-sided':
+        p = 2*mpmath.betainc(a, a, x2=0.5*(1-abs(r)))/mpmath.beta(a, a)
+    elif alternative == 'less':
+        p = mpmath.betainc(a, a, x2=0.5*(1+r))/mpmath.beta(a, a)
+    else:
+        # alternative == 'greater'
+        p = mpmath.betainc(a, a, x2=0.5*(1-r))/mpmath.beta(a, a)
 
     return r, p
 
 
-def pearsonr_ci(r, n, alpha):
+def pearsonr_ci(r, n, alpha, alternative='two-sided'):
     """
     Confidence interval of Pearson's correlation coefficient.
 
@@ -81,15 +90,30 @@ def pearsonr_ci(r, n, alpha):
     mpf('0.97464778383702233502275')
 
     """
+    if alternative not in ['two-sided', 'less', 'greater']:
+        raise ValueError("alternative must be 'two-sided', 'less', or "
+                         "'greater'.")
+
     with mpmath.mp.extradps(5):
         zr = mpmath.atanh(r)
         n = mpmath.mp.mpf(n)
         alpha = mpmath.mp.mpf(alpha)
-        v = 1 / (n - 3)
-        s = mpmath.sqrt(v)
-        h = normal.invcdf(1 - alpha/2)
-        zlo = zr - h*s
-        zhi = zr + h*s
-        rlo = mpmath.tanh(zlo)
-        rhi = mpmath.tanh(zhi)
+        s = mpmath.sqrt(1/(n - 3))
+        if alternative == 'two-sided':
+            h = normal.invcdf(1 - alpha/2)
+            zlo = zr - h*s
+            zhi = zr + h*s
+            rlo = mpmath.tanh(zlo)
+            rhi = mpmath.tanh(zhi)
+        elif alternative == 'less':
+            h = normal.invcdf(1 - alpha)
+            zhi = zr + h*s
+            rhi = mpmath.tanh(zhi)
+            rlo = -mpmath.mp.one
+        else:
+            # alternative == 'greater'
+            h = normal.invcdf(1 - alpha)
+            zlo = zr - h*s
+            rlo = mpmath.tanh(zlo)
+            rhi = mpmath.mp.one
         return rlo, rhi
