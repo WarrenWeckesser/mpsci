@@ -13,5 +13,6 @@ from . import (argus, benktander1, benktander2, beta, binomial, chi2, cosine,
                exponweib, f, fishers_noncentral_hypergeometric, gamma,
                gamma_gompertz, genexpon, genextreme, geninvgauss, genpareto,
                hypergeometric, laplace, levy, logistic, lognormal,
-               multivariate_hypergeometric, ncf, ncx2, negative_binomial,
-               negative_hypergeometric, normal, poisson, rice, t)
+               multivariate_hypergeometric, multivariate_t, ncf, ncx2,
+               negative_binomial, negative_hypergeometric, normal, poisson,
+               rice, t)
