@@ -17,6 +17,31 @@ def pearsonr(x, y, alternative='two-sided'):
 
     The function assumes all the values in x and y are finite
     (no `inf`, no `nan`).
+
+    Examples
+    --------
+    >>> from mpsci.stats import pearsonr
+    >>> import mpmath
+    >>> mpmath.mp.dps = 25
+    >>> x = [1, 2, 3, 5, 8, 10]
+    >>> y = [0.25, 2, 2, 2.5, 2.4, 5.5]
+
+    Compute the correlation coefficent and p-value.
+
+    >>> r, p = pearsonr(x, y)
+    >>> r
+    mpf('0.8645211772786436751458124677')
+    >>> p
+    mpf('0.02628844331049414042317641803')
+
+    Compute a one-sided p-value.  The correlation coefficient is the
+    same; only the p-value is different.
+
+    >>> r, p = pearsonr(x, y, alternative='greater')
+    >>> r
+    mpf('0.8645211772786436751458124677')
+    >>> p
+    mpf('0.01314422165524707021158820901')
     """
     if alternative not in ['two-sided', 'less', 'greater']:
         raise ValueError("alternative must be 'two-sided', 'less', or "
