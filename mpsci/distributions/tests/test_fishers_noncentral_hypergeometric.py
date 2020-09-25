@@ -1,6 +1,6 @@
 
 import mpmath
-from mpsci.distributions import fishers_noncentral_hypergeometric
+from mpsci.distributions import fishers_noncentral_hypergeometric as fnchg
 
 
 def test_basic():
@@ -20,7 +20,7 @@ def test_basic():
             mpmath.mp.mpq(100000, 433249),
             mpmath.mp.mpq(15625, 433249),
         ]
-        sup, pmf = fishers_noncentral_hypergeometric.support(nc, ntotal, ngood, nsample)
+        sup, pmf = fnchg.support(nc, ntotal, ngood, nsample)
         assert list(sup) == [2, 3, 4, 5, 6, 7, 8]
         for k in range(len(expected_pmf)):
             assert mpmath.almosteq(pmf[k], expected_pmf[k])

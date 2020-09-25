@@ -22,7 +22,7 @@ def digammainv(y):
     .. [1] "Digamma function",
            https://en.wikipedia.org/wiki/Digamma_function
     .. [2] Abramowitz and Stegun, *Handbook of Mathematical Functions*
-           (section 6.3), Dover Publications, New York (1972).  
+           (section 6.3), Dover Publications, New York (1972).
 
     Examples
     --------

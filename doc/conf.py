@@ -37,9 +37,11 @@ extensions = [
     'resubber',
 ]
 
-mathjax_path = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"
+mathjax_path = ("https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/"
+                "MathJax.js?config=TeX-MML-AM_CHTML")
 
-resubber_re_subs = [(r'`mpsci\.([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)`', r':ref:`mpsci_\1_\2`', 0, 0),]
+resubber_re_subs = [(r'`mpsci\.([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)`',
+                     r':ref:`mpsci_\1_\2`', 0, 0), ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -55,17 +57,17 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'alabaster'
-#html_theme = 'sphinx_rtd_theme'
+# html_theme = 'sphinx_rtd_theme'
 
 html_theme_options = {
-    #'logo': 'logo.png',
+    # 'logo': 'logo.png',
     'github_user': 'WarrenWeckesser',
     'github_repo': 'mpsci',
     'github_button': False,
     'fixed_sidebar': True,
     'sidebar_collapse': True,
     'extra_nav_links': {
-        #'Index': 'genindex.html',
+        # 'Index': 'genindex.html',
         'Source code': 'https://github.com/WarrenWeckesser/mpsci',
     },
     'font_family': ['New Times Roman', 'Times', 'serif']
@@ -75,15 +77,15 @@ html_sidebars = {
     '**': [
         'about.html',
         'navigation.html',
-        #'relations.html',
+        # 'relations.html',
         'searchbox.html',
-        #'donate.html',
+        # 'donate.html',
     ]
 }
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['_static']
+# html_static_path = ['_static']
 html_static_path = []
 
 html_copy_source = False

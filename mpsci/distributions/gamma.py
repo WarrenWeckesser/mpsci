@@ -168,7 +168,7 @@ def nll_hess(x, k, theta):
 
     N = len(x)
     sumx = mpmath.fsum(x)
-    sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
+    # sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
 
     dk2 = -N*mpmath.psi(1, k)
     dkdtheta = -N/theta
@@ -186,7 +186,7 @@ def nll_invhess(x, k, theta):
 
     N = len(x)
     sumx = mpmath.fsum(x)
-    sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
+    # sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
 
     dk2 = -N*mpmath.psi(1, k)
     dkdtheta = -N/theta

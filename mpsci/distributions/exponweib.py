@@ -55,7 +55,10 @@ def logpdf(x, a, c, scale=1):
 
 def cdf(x, a, c, scale=1):
     """
-    Cumulative distribution function for the exponentiated Weibull distribution.
+    CDF for the exponentiated Weibull distribution.
+
+    This is the cumulative distribution function for the exponentiated
+    Weibull distribution.
 
     All the distribution parameters are assumed to be positive.
     """

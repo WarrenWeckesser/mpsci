@@ -30,7 +30,6 @@ def boxcox_llf(lmb, x):
     return (lmb - 1) * sumlogdata - n/2 * mpmath.log(variance)
 
 
-
 def _boxcox_llf_deriv_not_finished(lmb, x):
     """
     This function assumes lmb != 0.
@@ -42,22 +41,23 @@ def _boxcox_llf_deriv_not_finished(lmb, x):
     logdata = [mpmath.log(t) for t in x]
     sumlogdata = mpmath.fsum(logdata)
 
-    mean_deriv_bc_sq = mpmath.fsum(2*(t**lmb/lmb)**2*(mpmath.log(t) - 1/lmb) for t in x) / n
+    mean_deriv_bc_sq = mpmath.fsum(2*(t**lmb/lmb)**2*(mpmath.log(t) - 1/lmb)
+                                   for t in x) / n
     mean_bc_data = mpmath.fsum(t**lmb/lmb for t in x) / n
-    deriv_mean_bc_data = mpmath.fsum(t**lmb/lmb * (mpmath.log(t) - 1/lmb) for t in x) / n
+    deriv_mean_bc_data = mpmath.fsum(t**lmb/lmb * (mpmath.log(t) - 1/lmb)
+                                     for t in x) / n
 
     dvar = mean_deriv_bc_sq - 2 * mean_bc_data * deriv_mean_bc_data
 
     return sumlogdata - n/2 * dvar
 
 
-
 def _boxcox_llf_deriv(lmb, x):
     """
-    Use mpmath.diff to estimate the derivative of _boxcox_llf w.r.t. lmb.
+    Use mpmath.diff to estimate the derivative of boxcox_llf w.r.t. lmb.
     """
     with mpmath.extradps(10):
-        return mpmath.diff(lambda t: _boxcox_llf(t, x), lmb)
+        return mpmath.diff(lambda t: boxcox_llf(t, x), lmb)
 
 
 def boxcox_mle(x):
