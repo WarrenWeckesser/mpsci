@@ -258,6 +258,14 @@ names = [name for name in dir(module) if not name.startswith('_')]
 objects = [getattr(module, name) for name in names]
 continuous_dists = [obj for obj in objects
                         if hasattr(obj, 'pdf')]
+
+univariate_continuous_dists = []
+multivariate_continuous_dists = []
+for obj in continuous_dists:
+    (multivariate_continuous_dists
+     if getattr(obj, '_multivariate', False)
+     else univariate_continuous_dists).append(obj)
+
 discrete_dists = [obj for obj in objects
                       if hasattr(obj, 'pmf') or hasattr(obj, 'pmf_dict')]
 
@@ -275,7 +283,8 @@ lines.extend(['.. _%s:' % modname, ''])
 lines.extend(['.. currentmodule:: mpsci.%s' % modname, ''])
 lines.extend(['.. automodule:: mpsci.%s' % modname, ''])
 
-for header, dists in [('Continuous', continuous_dists),
+for header, dists in [('Univariate continuous', univariate_continuous_dists),
+                      ('Multivariate continuous', multivariate_continuous_dists),
                       ('Univariate discrete', univariate_discrete_dists),
                       ('Multivariate discrete', multivariate_discrete_dists)]:
     #lines.extend(['', '.. currentmodule:: %s' % submodule.__name__, ''])
