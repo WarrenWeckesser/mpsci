@@ -11,24 +11,37 @@ import mpmath
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf']
 
 
+def _validate_params(a, b, c, loc, scale):
+    if a <= 0:
+        raise ValueError("'a' must be greater than 0.")
+    if b <= 0:
+        raise ValueError("'b' must be greater than 0.")
+    if c <= 0:
+        raise ValueError("'c' must be greater than 0.")
+    if scale <= 0:
+        raise ValueError("'scale' must be greater than 0.")
+    return (mpmath.mpf(t) for t in [a, b, c, loc, scale])
+
+
+def _validate_x_params(x, a, b, c, loc, scale):
+    x = mpmath.mpf(x)
+    a, b, c, loc, scale = _validate_params(a, b, c, loc, scale)
+    if x < loc:
+        raise ValueError("'x' must not be less than 'loc'.")
+    return x, a, b, c, loc, scale
+
+
 def pdf(x, a, b, c, loc=0, scale=1):
     """
     PDF of the generalized exponential distribution.
     """
-    # XXX Validate signs of args, check for x < loc, etc.
-
     with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        c = mpmath.mpf(c)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
+        x, a, b, c, loc, scale = _validate_x_params(x, a, b, c, loc, scale)
         z = (x - loc) / scale
         s = a + b
         r = b / c
         p = ((a + b*(-mpmath.expm1(-c*z))) *
-             mpmath.exp(-s*z + r*(-mpmath.expm1(-c*z))))
+             mpmath.exp(-s*z + r*(-mpmath.expm1(-c*z))))/scale
     return p
 
 
@@ -37,12 +50,7 @@ def logpdf(x, a, b, c, loc=0, scale=1):
     Natural logarithm of the PDF of the generalized exponential distribution.
     """
     with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        c = mpmath.mpf(c)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
+        x, a, b, c, loc, scale = _validate_x_params(x, a, b, c, loc, scale)
         z = (x - loc) / scale
         s = a + b
         r = b / c
@@ -56,12 +64,7 @@ def cdf(x, a, b, c, loc=0, scale=1):
     CDF of the generalized exponential distribution.
     """
     with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        c = mpmath.mpf(c)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
+        x, a, b, c, loc, scale = _validate_x_params(x, a, b, c, loc, scale)
         z = (x - loc) / scale
         s = a + b
         r = b / c
@@ -74,12 +77,7 @@ def sf(x, a, b, c, loc=0, scale=1):
     Survival function of the generalized exponential distribution.
     """
     with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        c = mpmath.mpf(c)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
+        x, a, b, c, loc, scale = _validate_x_params(x, a, b, c, loc, scale)
         z = (x - loc) / scale
         s = a + b
         r = b / c
@@ -88,13 +86,17 @@ def sf(x, a, b, c, loc=0, scale=1):
 
 
 def invcdf(p, a, b, c, loc=0, scale=1):
+    """
+    Inverse of the CDF of the generalized exponential distribution.
+
+    This is also known as the quantile function.
+    """
+    if p < 0 or p > 1:
+        raise ValueError("'p' must be between 0 and 1.")
     with mpmath.extradps(5):
         p = mpmath.mpf(p)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        c = mpmath.mpf(c)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
+        a, b, c, loc, scale = _validate_params(a, b, c, loc, scale)
+
         s = a + b
         r = b / c
 
