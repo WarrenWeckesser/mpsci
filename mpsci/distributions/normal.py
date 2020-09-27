@@ -52,7 +52,9 @@ def invcdf(p, mu=0, sigma=1):
     This function is also known as the quantile function or the percent
     point function.
     """
-    # XXX Check cases, similar to those in mpmath.ncdf.
+    if p < 0 or p > 1:
+        return mpmath.nan
+
     p = mpmath.mpf(p)
     mu = mpmath.mpf(mu)
     sigma = mpmath.mpf(sigma)
