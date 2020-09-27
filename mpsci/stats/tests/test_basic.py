@@ -7,6 +7,8 @@ from mpsci.stats import mean, var, std, variation, gmean, hmean, pmean
 # calculation uses floating point.  That these tests currently pass
 # might just be luck.
 
+mpmath.mp.dps = 50
+
 
 def test_mean():
     assert mean([1, 2, 3]) == 2
@@ -26,7 +28,7 @@ def test_std():
 
 
 def test_gmean():
-    assert gmean([3, 3**3, 3**5]) == 27
+    assert mpmath.almosteq(gmean([3, 3**3, 3**5]), 27)
 
 
 def test_hmean():
