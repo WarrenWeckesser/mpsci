@@ -13,7 +13,7 @@ def logbinomial(n, k):
     --------
     >>> import mpmath
     >>> mpmath.mp.dps = 25
-    >>> from mpsci.func import logbinomial
+    >>> from mpsci.fun import logbinomial
 
     Compute the log of C(1500, 450).
 
