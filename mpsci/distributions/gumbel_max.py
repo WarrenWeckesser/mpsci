@@ -99,7 +99,7 @@ def invsf(p, loc, scale):
         p = mpmath.mpf(p)
         loc = mpmath.mpf(loc)
         scale = mpmath.mpf(scale)
-        z = -mpmath.log(-mpmath.log(1-p))
+        z = -mpmath.log(-mpmath.log1p(-p))
         x = scale*z + loc
         return x
 
