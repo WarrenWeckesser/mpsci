@@ -1,19 +1,11 @@
 """
-Gumbel probability distribution (for maxima)
+Gumbel probability distribution (for minima)
 --------------------------------------------
 
 This is the same distribution as:
 
-* `scipy.stats.gumbel_r`;
-* NumPy's `numpy.random.Generator.gumbel`;
-* the Gumbel distribution discussed in the wikipedia article
-  "Gumbel distribtion" (https://en.wikipedia.org/wiki/Gumbel_distribution);
-* the Type I extreme value distribution used in the text "An Introduction
-  to Statistical Modeling of Extreme Values" by Stuart Coles (Springer, 2001);
-* the Gumbel distribution given in the text "Modelling Extremal Events" by
-  Embrechts, Klüppelberg and Mikosch (Springer, 1997);
-* the Gumbel distribution in the text "Statistical Distribution" (fourth ed.)
-  by Forbes, Evans, Hastings and Peacock (Wiley, 2011).
+* `scipy.stats.gumbel_l`;
+* Wolfram Alpha's `GumbelDistribution`.
 
 """
 
@@ -27,7 +19,7 @@ __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean', 'var',
 
 def pdf(x, loc, scale):
     """
-    Probability density function for the Gumbel distribution (for maxima).
+    Probability density function for the Gumbel distribution (for minima).
     """
     if scale <= 0:
         raise ValueError('scale must be positive.')
@@ -51,7 +43,7 @@ def logpdf(x, loc, scale):
         loc = mpmath.mpf(loc)
         scale = mpmath.mpf(scale)
         z = (x - loc) / scale
-        return -(z + mpmath.exp(-z)) - mpmath.log(scale)
+        return -(-z + mpmath.exp(z)) - mpmath.log(scale)
 
 
 def cdf(x, loc, scale):
@@ -66,7 +58,7 @@ def cdf(x, loc, scale):
         loc = mpmath.mpf(loc)
         scale = mpmath.mpf(scale)
         z = (x - loc) / scale
-        return mpmath.exp(-mpmath.exp(-z))
+        return -mpmath.expm1(-mpmath.exp(z))
 
 
 def invcdf(p, loc, scale):
@@ -80,7 +72,7 @@ def invcdf(p, loc, scale):
         p = mpmath.mpf(p)
         loc = mpmath.mpf(loc)
         scale = mpmath.mpf(scale)
-        z = -mpmath.log(-mpmath.log(p))
+        z = mpmath.log(-mpmath.log1p(-p))
         x = scale*z + loc
         return x
 
@@ -97,7 +89,7 @@ def sf(x, loc, scale):
         loc = mpmath.mpf(loc)
         scale = mpmath.mpf(scale)
         z = (x - loc) / scale
-        return -mpmath.expm1(-mpmath.exp(-z))
+        return mpmath.exp(-mpmath.exp(z))
 
 
 def invsf(p, loc, scale):
@@ -111,7 +103,7 @@ def invsf(p, loc, scale):
         p = mpmath.mpf(p)
         loc = mpmath.mpf(loc)
         scale = mpmath.mpf(scale)
-        z = -mpmath.log(-mpmath.log1p(-p))
+        z = mpmath.log(-mpmath.log(p))
         x = scale*z + loc
         return x
 
@@ -126,7 +118,7 @@ def mean(loc, scale):
     with mpmath.extradps(5):
         loc = mpmath.mpf(loc)
         scale = mpmath.mpf(scale)
-        return loc + mpmath.euler*scale
+        return loc - mpmath.euler*scale
 
 
 def var(loc, scale):
@@ -155,16 +147,16 @@ def nll(x, loc, scale):
         n = len(x)
         z = [(mpmath.mpf(xi) - loc)/scale for xi in x]
         t1 = n*mpmath.log(scale)
-        t2 = mpmath.fsum(z)
-        t3 = mpmath.fsum([mpmath.exp(-zi) for zi in z])
+        t2 = -mpmath.fsum(z)
+        t3 = mpmath.fsum([mpmath.exp(zi) for zi in z])
         return t1 + t2 + t3
 
 
 def _mle_scale_func(scale, x, xbar):
-    emx = [mpmath.exp(-xi/scale) for xi in x]
+    emx = [mpmath.exp(xi/scale) for xi in x]
     s1 = mpmath.fsum([xi * emxi for xi, emxi in zip(x, emx)])
     s2 = mpmath.fsum(emx)
-    return s2*(xbar - scale) - s1
+    return s2*(xbar + scale) - s1
 
 
 def _solve_mle_scale(x):
@@ -206,8 +198,8 @@ def _solve_mle_scale(x):
 
 def _mle_scale_with_fixed_loc(scale, x, loc):
     z = [(xi - loc) / scale for xi in x]
-    ez = [mpmath.expm1(-zi)*zi for zi in z]
-    return stats.mean(ez) + 1
+    ez = [mpmath.expm1(zi)*zi for zi in z]
+    return 1 - stats.mean(ez)
 
 
 def mle(x, loc=None, scale=None):
@@ -229,7 +221,7 @@ def mle(x, loc=None, scale=None):
 
     >>> import mpmath
     >>> mpmath.mp.dps = 20
-    >>> from mpsci.distributions import gumbel_max
+    >>> from mpsci.distributions import gumbel_min
 
     The data to be fit:
 
@@ -237,13 +229,13 @@ def mle(x, loc=None, scale=None):
 
     Unconstrained MLE:
 
-    >>> gumbel_max.mle(x)
-    (mpf('9.4879877926148360358863'), mpf('2.727868138859403832702'))
+    >>> gumbel_min.mle(x)
+    (mpf('12.708439639698245696235'), mpf('2.878444823276260896075'))
 
     If we know the scale is 2, we can add the argument `scale=2`:
 
-    >>> gumbel_max.mle(x, scale=2)
-    (mpf('9.1305625326153555632872'), mpf('2.0'))
+    >>> gumbel_min.mle(x, scale=2)
+    (mpf('13.18226169025112165358'), mpf('2.0'))
     """
     with mpmath.extradps(5):
         x = [mpmath.mpf(xi) for xi in x]
@@ -264,8 +256,8 @@ def mle(x, loc=None, scale=None):
             scale = mpmath.mpf(scale)
 
         if loc is None:
-            ex = [mpmath.exp(-xi / scale) for xi in x]
-            loc = -scale * mpmath.log(stats.mean(ex))
+            ex = [mpmath.exp(xi / scale) for xi in x]
+            loc = scale * mpmath.log(stats.mean(ex))
         else:
             loc = mpmath.mpf(loc)
 
