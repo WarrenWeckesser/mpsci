@@ -6,7 +6,7 @@ Multivariate hypergeometric distribution
 import mpmath
 
 
-__all__ = ['support', 'pmf_dict', 'mean', 'cov']
+__all__ = ['support', 'pmf_dict', 'mean', 'cov', 'entropy']
 
 _multivariate = True
 
@@ -132,3 +132,15 @@ def cov(colors, nsample):
                 else:
                     c[i][j] = -f * u[i] * u[j]
         return c
+
+
+def entropy(colors, nsample):
+    """
+    Entropy of the multivariate hypergeometric distribution.
+
+    The entropy is computed using the natural logarithm.
+    """
+    _validate_params(colors, nsample)
+    with mpmath.extradps(5):
+        return -mpmath.fsum(p * mpmath.log(p)
+                            for p in pmf_dict(colors, nsample).values())
