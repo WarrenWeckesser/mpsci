@@ -1,6 +1,16 @@
 """
 Lévy Distribution
 -----------------
+
+The parameters of the distribution are mu (the location) and
+sigma (the scale).
+
+See the wikipedia article "Lévy distribution" [1]_ for more
+information.
+
+.. [1] Lévy distribution,
+       https://en.wikipedia.org/wiki/L%C3%A9vy_distribution
+
 """
 
 import mpmath
