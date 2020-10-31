@@ -6,9 +6,16 @@ Multivariate hypergeometric distribution
 import mpmath
 
 
-__all__ = ['support', 'pmf_dict']
+__all__ = ['support', 'pmf_dict', 'mean', 'cov']
 
 _multivariate = True
+
+
+def _validate_params(colors, nsample):
+    if any(color < 0 for color in colors):
+        raise ValueError("all values in colors must be nonnegative.")
+    if nsample > sum(colors):
+        raise ValueError("nsample must not exceed sum(colors).")
 
 
 def support(colors, nsample):
@@ -43,10 +50,7 @@ def support(colors, nsample):
      [4, 1, 1],
      [4, 2, 0]]
     """
-    if any(color < 0 for color in colors):
-        raise ValueError("all values in colors must be nonnegative.")
-    if nsample > sum(colors):
-        raise ValueError("nsample must not exceed sum(colors).")
+    _validate_params(colors, nsample)
     return _support_gen(colors, nsample)
 
 
@@ -77,6 +81,7 @@ def pmf_dict(colors, nsample):
     >>> float(pmf[2, 2, 2])
     0.1798201798201798
     """
+    _validate_params(colors, nsample)
     total = sum(colors)
     denom = mpmath.binomial(total, nsample)
     pmf = {}
@@ -87,3 +92,43 @@ def pmf_dict(colors, nsample):
         prob = numer/denom
         pmf[tuple(coords)] = prob
     return pmf
+
+
+def mean(colors, nsample):
+    """
+    Mean of the multivariate hypergeometric distribution.
+    """
+    _validate_params(colors, nsample)
+    with mpmath.extradps(5):
+        s = mpmath.fsum(colors)
+        if nsample == s:
+            # This includes the edge case where colors = [0, ..., 0]
+            # and nsample = 0.
+            return [mpmath.mp.one * k for k in colors]
+        return [nsample * (k / s) for k in colors]
+
+
+def cov(colors, nsample):
+    """
+    Covariance matrix of the multivariate hypergeometric distribution.
+
+    Let n be the length of `colors`. The n x n covariance matrix is
+    represented as a list of lists, where the length of the outer list
+    and the lengths of the inner lists are all n.
+    """
+    _validate_params(colors, nsample)
+    n = len(colors)
+    with mpmath.extradps(5):
+        s = mpmath.fsum(colors)
+        if nsample == s:
+            return [[mpmath.mp.zero]*n for _ in range(n)]
+        u = [k / s for k in colors]
+        f = nsample * (s - nsample) / (s - 1)
+        c = [[None]*n for _ in range(n)]
+        for i in range(n):
+            for j in range(n):
+                if i == j:
+                    c[i][j] = f * u[i] * (1 - u[i])
+                else:
+                    c[i][j] = -f * u[i] * u[j]
+        return c
