@@ -1,6 +1,9 @@
 """
 Multivariate hypergeometric distribution
 ----------------------------------------
+
+The multivariate hypergeometric distribution is a generalization of the
+hypergeometric distribution.
 """
 
 import mpmath
@@ -97,6 +100,26 @@ def pmf_dict(colors, nsample):
 def mean(colors, nsample):
     """
     Mean of the multivariate hypergeometric distribution.
+
+    Examples
+    --------
+    First configure the default mpmath precision.
+
+    >>> import mpmath
+    >>> mpmath.mp.dps = 25
+
+    Some examples of the `mean` function.
+
+    >>> from mpsci.distributions import multivariate_hypergeometric
+    >>> multivariate_hypergeometric.mean([5, 10, 15], 18)
+    [mpf('3.0'), mpf('6.0'), mpf('9.0')]
+
+    >>> multivariate_hypergeometric.mean([1, 2, 4, 8, 16], 20)
+    [mpf('0.6451612903225806451612903226'),
+     mpf('1.290322580645161290322580645'),
+     mpf('2.58064516129032258064516129'),
+     mpf('5.161290322580645161290322581'),
+     mpf('10.32258064516129032258064516')]
     """
     _validate_params(colors, nsample)
     with mpmath.extradps(5):
@@ -115,6 +138,48 @@ def cov(colors, nsample):
     Let n be the length of `colors`. The n x n covariance matrix is
     represented as a list of lists, where the length of the outer list
     and the lengths of the inner lists are all n.
+
+    Examples
+    --------
+    First configure the default mpmath precision.  Also import `pprint`
+    for nicer printed output.
+
+    >>> from pprint import pprint
+    >>> import mpmath
+    >>> mpmath.mp.dps = 25
+
+    Some examples of the `cov` function.
+
+    >>> from mpsci.distributions import multivariate_hypergeometric
+    >>> c = multivariate_hypergeometric.cov([5, 10, 15], 18)
+    >>> pprint(c)
+    [[mpf('1.034482758620689655172413793'),
+      mpf('-0.4137931034482758620689655172'),
+      mpf('-0.6206896551724137931034482759')],
+     [mpf('-0.4137931034482758620689655172'),
+      mpf('1.655172413793103448275862069'),
+      mpf('-1.241379310344827586206896552')],
+     [mpf('-0.6206896551724137931034482759'),
+      mpf('-1.241379310344827586206896552'),
+      mpf('1.862068965517241379310344828')]]
+    >>> c = multivariate_hypergeometric.cov([1, 2, 4, 8], 6)
+    >>> pprint(c)
+    [[mpf('0.24'),
+      mpf('-0.03428571428571428571428571429'),
+      mpf('-0.06857142857142857142857142857'),
+      mpf('-0.1371428571428571428571428571')],
+     [mpf('-0.03428571428571428571428571429'),
+      mpf('0.4457142857142857142857142857'),
+      mpf('-0.1371428571428571428571428571'),
+      mpf('-0.2742857142857142857142857143')],
+     [mpf('-0.06857142857142857142857142857'),
+      mpf('-0.1371428571428571428571428571'),
+      mpf('0.7542857142857142857142857143'),
+      mpf('-0.5485714285714285714285714286')],
+     [mpf('-0.1371428571428571428571428571'),
+      mpf('-0.2742857142857142857142857143'),
+      mpf('-0.5485714285714285714285714286'),
+      mpf('0.96')]]
     """
     _validate_params(colors, nsample)
     n = len(colors)
@@ -139,6 +204,22 @@ def entropy(colors, nsample):
     Entropy of the multivariate hypergeometric distribution.
 
     The entropy is computed using the natural logarithm.
+
+    Examples
+    --------
+    First configure the default mpmath precision.
+
+    >>> import mpmath
+    >>> mpmath.mp.dps = 25
+
+    Some examples of the `entropy` function.
+
+    >>> from mpsci.distributions import multivariate_hypergeometric
+    >>> multivariate_hypergeometric.entropy([5, 10, 15], 18)
+    mpf('3.046643631879764168841250566')
+
+    >>> multivariate_hypergeometric.entropy([1, 2, 4, 8], 6)
+    mpf('2.877874138861812367967354693')
     """
     _validate_params(colors, nsample)
     with mpmath.extradps(5):
