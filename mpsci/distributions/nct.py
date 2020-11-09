@@ -23,19 +23,32 @@ def pdf(x, df, nc):
         x = mpmath.mpf(x)
         df = mpmath.mpf(df)
         nc = mpmath.mpf(nc)
-        logc = (df*mpmath.log(df)/2 - nc**2/2 - mpmath.loggamma(df/2)
-                - mpmath.log(mpmath.pi)/2 - (df + 1)/2 * mpmath.log(df + x**2))
-        c = mpmath.exp(logc)
 
-        def _pdf_term(i):
-            logterm = (mpmath.loggamma((df + i + 1)/2)
-                       + i*mpmath.log(x*nc)
-                       + i*mpmath.log(2/(df + x**2))/2
-                       - mpmath.loggamma(i + 1))
-            return mpmath.exp(logterm)
+        if x == 0:
+            logp = (-nc**2/2
+                    - mpmath.log(mpmath.pi)/2
+                    - mpmath.log(df)/2
+                    + mpmath.loggamma((df + 1)/2)
+                    - mpmath.loggamma(df/2))
+            p = mpmath.exp(logp)
+        else:
+            logc = (df*mpmath.log(df)/2
+                    - nc**2/2
+                    - mpmath.loggamma(df/2)
+                    - mpmath.log(mpmath.pi)/2
+                    - (df + 1)/2 * mpmath.log(df + x**2))
+            c = mpmath.exp(logc)
 
-        s = mpmath.nsum(_pdf_term, [0, mpmath.inf])
-        return c * s
+            def _pdf_term(i):
+                logterm = (mpmath.loggamma((df + i + 1)/2)
+                           + i*mpmath.log(x*nc)
+                           + i*mpmath.log(2/(df + x**2))/2
+                           - mpmath.loggamma(i + 1))
+                return mpmath.exp(logterm).real
+
+            s = mpmath.nsum(_pdf_term, [0, mpmath.inf])
+            p = c * s
+        return p
 
 
 def mean(df, nc):
