@@ -4,8 +4,8 @@ Beta probability distribution
 
 """
 import mpmath
-from ..fun import logbeta, xlogy, xlog1py
-from ..stats import mean as mpsci_mean, var as mpsci_var
+from .. import fun as _fun
+from ..stats import mean as _mean, var as _var
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean', 'mle']
@@ -43,7 +43,7 @@ def logpdf(x, a, b):
     b = mpmath.mpf(b)
     if x < 0 or x > 1:
         return -mpmath.mp.inf
-    return xlogy(a - 1, x) + xlog1py(b - 1, -x) - logbeta(a, b)
+    return _fun.xlogy(a - 1, x) + _fun.xlog1py(b - 1, -x) - _fun.logbeta(a, b)
 
 
 def cdf(x, a, b):
@@ -134,13 +134,13 @@ def mle(x, a=None, b=None):
     if any((t <= 0 or t >= 1) for t in x):
         raise ValueError('Values in x must greater than 0 and less than 1')
     n = len(x)
-    xbar = mpsci_mean(x)
+    xbar = _mean(x)
 
     if a is None and b is None:
         # Fit both parameters
         s1 = mpmath.fsum(mpmath.log(t) for t in x)
         s2 = mpmath.fsum(mpmath.log1p(-t) for t in x)
-        fac = xbar * (mpmath.mp.one - xbar) / mpsci_var(x) - 1
+        fac = xbar * (mpmath.mp.one - xbar) / _var(x) - 1
         a0 = xbar * fac
         b0 = (mpmath.mp.one - xbar) * fac
         a1, b1 = mpmath.findroot([lambda a, b: _beta_mle_func(a, b, n, s1),
