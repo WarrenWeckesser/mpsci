@@ -78,6 +78,17 @@ def variation(x, ddof=1):
 
     (The implementation is simply std(x, ddof) / mean(x); no special
     handling is provided for `nan` values, a mean of 0, etc.)
+
+    Examples
+    --------
+    >>> from mpsci.stats import variation
+    >>> variation([2, 3, 5, 8, 13, 21])
+    >>> mpf('0.83418102841390518')
+
+    For comparison to `scipy.stats.variation`, use `ddof=0`:
+
+    >>> variation([2, 3, 5, 8, 13, 21], ddof=0)
+    >>> mpf('0.76149961050858964')
     """
     with mpmath.extraprec(16):
         s = std(x, ddof=ddof)
