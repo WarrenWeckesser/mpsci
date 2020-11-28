@@ -16,6 +16,7 @@ pmean
 """
 
 import mpmath
+from ..fun import xlogy as _xlogy
 
 
 __all__ = ['mean', 'var', 'std', 'variation', 'gmean', 'hmean', 'pmean']
@@ -96,18 +97,30 @@ def variation(x, ddof=1):
         return s / m
 
 
-def gmean(x):
+def gmean(x, weights=None):
     """
     Geometric mean of the values in the sequence x.
 
     All the values in x must be nonnegative.
+
+    If weights is not None, it must be a sequence with the same length
+    as x.  The sum of weights must not be zero.
     """
     if any(t < 0 for t in x):
         raise ValueError("all values in x must be nonnegative.")
-    if 0 in x:
-        return mpmath.mp.zero
     with mpmath.extraprec(16):
-        return mpmath.exp(mean([mpmath.log(t) for t in x]))
+        if weights is None:
+            if 0 in x:
+                return mpmath.mp.zero
+            return mpmath.exp(mean([mpmath.log(t) for t in x]))
+        else:
+            # Weighted geometric mean
+            wsum = mpmath.fsum(weights)
+            if wsum == 0:
+                raise ValueError('sum of weights must not be 0.')
+            wlogxsum = mpmath.fsum([_xlogy(wi, xi)
+                                    for (xi, wi) in zip(x, weights)])
+            return mpmath.exp(wlogxsum / wsum)
 
 
 def hmean(x):

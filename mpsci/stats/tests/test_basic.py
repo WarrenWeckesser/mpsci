@@ -31,6 +31,35 @@ def test_gmean():
     assert mpmath.almosteq(gmean([3, 3**3, 3**5]), 27)
 
 
+def test_gmean_with_0():
+    assert gmean([3, 1, 0, 9]) == 0
+
+
+def test_gmean_weights_all_one():
+    x = [3, 4, 5, 10]
+    assert mpmath.almosteq(gmean(x, weights=[1]*len(x)),
+                           gmean(x))
+
+
+def test_gmean_weights():
+    x = [2, 3, 5, 8]
+    w = [1, 2, 3, 4]
+    wgm1 = gmean(x, weights=w)
+    wx = sum([[xi]*wi for (xi, wi) in zip(x, w)], [])
+    wgm2 = gmean(wx)
+    assert mpmath.almosteq(wgm1, wgm2)
+
+
+def test_gmean_0_weight():
+    x = [2, 3, 5, 8, 13, 21]
+    w = [1, 3, 5, 0,  4,  0]
+    wgm1 = gmean(x, weights=w)
+    # Filter out points where the weight is 0.
+    xx, ww = zip(*[(xi, wi) for (xi, wi) in zip(x, w) if wi != 0])
+    wgm2 = gmean(xx, weights=ww)
+    assert mpmath.almosteq(wgm1, wgm2)
+
+
 def test_hmean():
     with mpmath.extraprec(16):
         assert mpmath.almosteq(hmean([1, 2, 16]), mpmath.mpf('48/25'))
