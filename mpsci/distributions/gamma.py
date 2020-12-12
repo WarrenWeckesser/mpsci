@@ -7,7 +7,7 @@ import mpmath
 from ..fun import digammainv
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var',
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var', 'mom',
            'mle', 'nll', 'nll_grad', 'nll_hess', 'nll_invhess']
 
 
@@ -78,6 +78,24 @@ def var(k, theta):
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
     return k * theta**2
+
+
+def mom(x):
+    """
+    Parameter estimation by the method of moments for the gamma distribution.
+
+    x must be a sequence of values.
+
+    Returns the estimates of the shape k and the scale theta.
+    """
+    n = len(x)
+    with mpmath.extradps(5):
+        m1 = mpmath.fsum(x) / n
+        m2 = mpmath.fsum([mpmath.power(t, 2) for t in x]) / n
+        m1sq = m1**2
+        k = m1sq / (m2 - m1sq)
+        theta = (m2 - m1sq) / m1
+    return k, theta
 
 
 def mle(x, k=None, theta=None):
