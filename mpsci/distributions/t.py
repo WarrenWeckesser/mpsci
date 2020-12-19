@@ -6,7 +6,7 @@ Student's t distribution
 import mpmath
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'entropy']
 
 
 def logpdf(x, df):
@@ -132,3 +132,19 @@ def invsf(p, df):
         raise ValueError('df must be greater than 0')
 
     return -invcdf(p, df)
+
+
+def entropy(df):
+    """
+    Entropy of Student's t distribution.
+    """
+    if df <= 0:
+        raise ValueError('df must be greater than 0')
+
+    with mpmath.extradps(5):
+        df = mpmath.mpf(df)
+        h = df/2
+        h1 = (df + 1)/2
+        return (h1*(mpmath.digamma(h1) - mpmath.digamma(h)) +
+                mpmath.log(mpmath.sqrt(df)*mpmath.beta(h, 0.5)))
+
