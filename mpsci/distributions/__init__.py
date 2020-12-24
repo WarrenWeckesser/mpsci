@@ -16,4 +16,4 @@ from . import (argus, benktander1, benktander2, beta, binomial, chi2, cosine,
                hypergeometric, laplace, levy, logseries, logistic, lognormal,
                multivariate_hypergeometric, multivariate_t, ncf, nct, ncx2,
                negative_binomial, negative_hypergeometric, normal, poisson,
-               rice, t, weibull_max, weibull_min)
+               rice, t, uniform, weibull_max, weibull_min)
