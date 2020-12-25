@@ -7,9 +7,11 @@ The logistic distribution is also known as the sech-squared distribution.
 """
 
 import mpmath
+from mpsci.stats import mean as _mean
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
+           'mom']
 
 
 def pdf(x, loc=0, scale=1):
@@ -106,3 +108,17 @@ def var(loc=0, scale=1):
     with mpmath.extradps(5):
         scale = mpmath.mpf(scale)
         return scale**2 * mpmath.pi**2 / 3
+
+
+def mom(x):
+    """
+    Method of moments parameter estimation for the logistic distribution.
+
+    x must be a sequence of numbers.
+
+    Returns (loc, scale).
+    """
+    with mpmath.extradps(5):
+        M1 = _mean(x)
+        M2 = _mean([mpmath.mpf(t)**2 for t in x])
+        return M1, mpmath.sqrt(3*(M2 - M1**2))/mpmath.pi

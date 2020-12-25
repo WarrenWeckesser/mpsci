@@ -11,7 +11,7 @@ from mpsci.stats import mean as _mean
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'mean', 'var', 'mle']
+           'mean', 'var', 'mle', 'mom']
 
 
 def pdf(x, mu=0, b=1):
@@ -190,3 +190,17 @@ def mle(x, mu=None, b=None):
             b_est = _mean([abs(t - mu_est) for t in x])
 
         return mu_est, b_est
+
+
+def mom(x):
+    """
+    Method of moments estimation for the Laplace distribution.
+
+    x must be a sequence of numbers.
+
+    Returns (mu, b).
+    """
+    with mpmath.extradps(5):
+        M1 = _mean(x)
+        M2 = _mean([mpmath.mpf(t)**2 for t in x])
+        return M1, mpmath.sqrt((M2 - M1**2)/2)
