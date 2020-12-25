@@ -10,7 +10,7 @@ parameters as used in `scipy.stats.lognorm`.
 import mpmath
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mle']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mle', 'mom']
 
 
 def pdf(x, mu=0, sigma=1):
@@ -89,6 +89,12 @@ def invsf(p, mu=0, sigma=1):
 
 # XXX Add standard errors and confidence intervals for the fitted parameters.
 
+
+def _validate_x(x):
+    if any(t <= 0 for t in x):
+        raise ValueError('All values in x must be greater than 0.')
+
+
 def mle(x):
     """
     Log-normal distribution maximum likelihood parameter estimation.
@@ -97,9 +103,28 @@ def mle(x):
 
     Returns (mu, sigma).
     """
+    _validate_x(x)
     lnx = [mpmath.log(t) for t in x]
     N = len(x)
     meanx = sum(lnx) / N
     var = sum((lnxi - meanx)**2 for lnxi in lnx) / N
     sigma = mpmath.sqrt(var)
     return meanx, sigma
+
+
+def mom(x):
+    """
+    Method of moments parameter estimation for the log-normal distribution.
+
+    x must be a sequence of numbers.
+
+    Returns (mu, sigma).
+    """
+    _validate_x(x)
+    with mpmath.extradps(5):
+        logsumx = mpmath.log(mpmath.fsum(x))
+        logsumx2 = mpmath.log(mpmath.fsum([mpmath.mpf(t)**2 for t in x]))
+        logn = mpmath.log(len(x))
+        mu = -logsumx2/2 + 2*logsumx - 3*logn/2
+        sigma = mpmath.sqrt(logsumx2 - 2*logsumx + logn)
+        return mu, sigma

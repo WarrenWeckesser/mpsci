@@ -127,12 +127,16 @@ def _beta_mle_func(a, b, n, s):
     return s - n * (-psiab + mpmath.digamma(a))
 
 
+def _validate_x(x):
+    if any((t <= 0 or t >= 1) for t in x):
+        raise ValueError('Values in x must greater than 0 and less than 1')
+
+
 def mle(x, a=None, b=None):
     """
     Maximum likelihood estimation for the beta distribution.
     """
-    if any((t <= 0 or t >= 1) for t in x):
-        raise ValueError('Values in x must greater than 0 and less than 1')
+    _validate_x(x)
     n = len(x)
     xbar = _mean(x)
 
@@ -166,3 +170,21 @@ def mle(x, a=None, b=None):
         return a, p1
     else:
         return p1, b
+
+
+def mom(x):
+    """
+    Method of moments parameter estimation for the beta distribution.
+
+    x must be a sequence of numbers from the interval (0, 1).
+
+    Returns (a, b).
+    """
+    _validate_x(x)
+    with mpmath.extradps(5):
+        M1 = _mean(x)
+        M2 = _mean([mpmath.mpf(t)**2 for t in x])
+        c = (M1 - M2) / (M2 - M1**2)
+        a = M1*c
+        b = (1 - M1)*c
+        return a, b
