@@ -19,10 +19,11 @@ This is the same distribution as:
 
 import mpmath
 from .. import stats
+from mpsci.stats import mean as _mean
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean', 'var',
-           'nll', 'mle']
+           'nll', 'mle', 'mom']
 
 
 def pdf(x, loc, scale):
@@ -269,4 +270,20 @@ def mle(x, loc=None, scale=None):
         else:
             loc = mpmath.mpf(loc)
 
+        return loc, scale
+
+
+def mom(x):
+    """
+    Method of moments parameter estimation for the Gumbel-max distribution.
+
+    x must be a sequence of real numbers.
+
+    Returns (loc, scale).
+    """
+    with mpmath.extradps(5):
+        M1 = _mean(x)
+        M2 = _mean([mpmath.mpf(t)**2 for t in x])
+        scale = mpmath.sqrt(6*(M2 - M1**2))/mpmath.pi
+        loc = M1 - scale*mpmath.euler
         return loc, scale
