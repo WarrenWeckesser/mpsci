@@ -8,8 +8,8 @@ from .. import fun as _fun
 from ..stats import mean as _mean, var as _var
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean', 'mle',
-           'mom']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
+           'mean', 'mle', 'mom']
 
 
 def pdf(x, a, b):
