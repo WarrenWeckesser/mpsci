@@ -49,7 +49,7 @@ def cdf(x, k, theta):
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
-    return mpmath.rgamma(k) * mpmath.gammainc(k, 0, x/theta)
+    return mpmath.gammainc(k, 0, x/theta, regularized=True)
 
 
 def sf(x, k, theta):
@@ -59,7 +59,7 @@ def sf(x, k, theta):
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
-    return mpmath.rgamma(k) * mpmath.gammainc(k, x/theta, mpmath.inf)
+    return mpmath.gammainc(k, x/theta, mpmath.inf, regularized=True)
 
 
 def mean(k, theta):
