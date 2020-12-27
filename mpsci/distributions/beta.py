@@ -71,6 +71,30 @@ def sf(x, a, b):
     return mpmath.betainc(a, b, x1=x, x2=1, regularized=True)
 
 
+def interval_prob(x1, x2, a, b):
+    """
+    Compute the probability of x in [x1, x2] for the beta distribution.
+
+    Mathematically, this is the same as
+
+        beta.cdf(x2, a, b) - beta.cdf(x1, a, b)
+
+    but when the two CDF values are nearly equal, this function will give
+    a more accurate result.
+
+    x1 must be less than or equal to x2.
+    """
+    if x1 > x2:
+        raise ValueError('x1 must not be greater than x2')
+
+    with mpmath.extradps(5):
+        x1 = mpmath.mpf(x1)
+        x2 = mpmath.mpf(x2)
+        a = mpmath.mpf(a)
+        b = mpmath.mpf(b)
+        return mpmath.betainc(a, b, x1, x2, regularized=True)
+
+
 def invcdf(p, a, b):
     """
     Inverse of the CDF of the beta distribution.

@@ -69,7 +69,7 @@ def interval_prob(x1, x2, k, theta):
 
     Mathematically, this is the same as
 
-        gamma.cdf(x2, k, theta) - gamma.cdf(x1, k, theta).
+        gamma.cdf(x2, k, theta) - gamma.cdf(x1, k, theta)
 
     but when the two CDF values are nearly equal, this function will give
     a more accurate result.
