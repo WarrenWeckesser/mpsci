@@ -7,8 +7,9 @@ import mpmath
 from ..fun import digammainv
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var', 'mom',
-           'mle', 'nll', 'nll_grad', 'nll_hess', 'nll_invhess']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'interval_prob',
+           'mean', 'var', 'mom', 'mle',
+           'nll', 'nll_grad', 'nll_hess', 'nll_invhess']
 
 
 def pdf(x, k, theta):
@@ -60,6 +61,30 @@ def sf(x, k, theta):
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
     return mpmath.gammainc(k, x/theta, mpmath.inf, regularized=True)
+
+
+def interval_prob(x1, x2, k, theta):
+    """
+    Compute the probability of x in [x1, x2] for the gamma distribution.
+
+    Mathematically, this is the same as
+
+        gamma.cdf(x2, k, theta) - gamma.cdf(x1, k, theta).
+
+    but when the two CDF values are nearly equal, this function will give
+    a more accurate result.
+
+    x1 must be less than or equal to x2.
+    """
+    if x1 > x2:
+        raise ValueError('x1 must not be greater than x2')
+
+    with mpmath.extradps(5):
+        x1 = mpmath.mpf(x1)
+        x2 = mpmath.mpf(x2)
+        k = mpmath.mpf(k)
+        theta = mpmath.mpf(theta)
+        return mpmath.gammainc(k, x1/theta, x2/theta, regularized=True)
 
 
 def mean(k, theta):
