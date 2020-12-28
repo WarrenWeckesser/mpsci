@@ -213,3 +213,95 @@ def mom(x):
         a = M1*c
         b = (1 - M1)*c
         return a, b
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Experimental code -- fit the beta distribution to interval-censored
+# data and compute the standard errors of the parameter estimates.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+def _nll_cens(a, b, lo, hi):
+    t = -sum(mpmath.log(interval_prob(x1, x2, a, b))
+             for (x1, x2) in zip(lo, hi))
+    return t
+
+
+def _nll_cens_da(a, b, lo, hi):
+    return mpmath.diff(lambda t: _nll_cens(t, b, lo, hi), a)
+
+
+def _nll_cens_db(a, b, lo, hi):
+    return mpmath.diff(lambda t: _nll_cens(a, t, lo, hi), b)
+
+
+def _nll_cens_d2a(a, b, lo, hi):
+    return mpmath.diff(lambda t: _nll_cens(t, b, lo, hi), a, n=2)
+
+
+def _nll_cens_d2b(a, b, lo, hi):
+    return mpmath.diff(lambda t: _nll_cens(a, t, lo, hi), b, n=2)
+
+
+def _nll_cens_dadb(a, b, lo, hi):
+    return mpmath.diff(lambda t: _nll_cens_da(a, t, lo, hi), b)
+
+
+def _mle_cens(lo, hi, p0=None):
+    """
+    MLE for interval-censored data.
+
+    Returns a, b, stderr(a), stderr(b).
+
+    Examples
+    --------
+    >>> mpmath.mp.dps = 60
+    >>> lo = [0.0, 0.2, 0.4, 0.6, 0.8]
+    >>> hi = [0.2, 0.4, 0.6, 0.8, 1.0]
+    >>> counts = [5, 4, 7, 3, 1]
+    >>> lower = sum(([v]*k for (v, k) in zip(lo, counts)), []) # like np.repeat
+    >>> upper = sum(([v]*k for (v, k) in zip(hi, counts)), [])
+    >>> a, b, se_a, se_b = beta._mle_cens(lower, upper)
+    >>> a, b
+    (1.4306399666975587, 2.10146607361142)
+    >>> se_a, se_b
+    (0.5609812965559253, 0.804302808645818)
+
+    Compare that to the result of the following R code::
+
+        > library(fitdistrplus)
+        > lo <- c(0. , 0. , 0. , 0. , 0. , 0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4,
+        +         0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.8)
+        > hi <- c(0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6,
+        +         0.6, 0.6, 0.6, 0.6, 0.8, 0.8, 0.8, 1. )
+        > data <- data.frame(left=lo, right=hi)
+        > result <- fitdistcens(data, 'beta', control=list(reltol=1e-13))
+        > result
+        Fitting of the distribution ' beta ' on censored data by
+        maximum likelihood
+        Parameters:
+               estimate
+        shape1 1.430639
+        shape2 2.101466
+        > result$sd
+           shape1    shape2
+        0.5609800 0.8043017
+    """
+    with mpmath.extradps(5):
+        if p0 is None:
+            mid = [0.5*(s + t) for (s, t) in zip(lo, hi)]
+            p0 = mle(mid)
+        a, b = mpmath.findroot([lambda a, b: _nll_cens_da(a, b, lo, hi),
+                                lambda a, b: _nll_cens_db(a, b, lo, hi)],
+                               p0)
+
+        hess = mpmath.matrix(2)
+        hess[0, 0] = _nll_cens_d2a(a, b, lo, hi)
+        hess[1, 1] = _nll_cens_d2b(a, b, lo, hi)
+        hess[0, 1] = _nll_cens_dadb(a, b, lo, hi)
+        hess[1, 0] = hess[0, 1]
+
+        hessinv = mpmath.inverse(hess)
+        se_a = mpmath.sqrt(hessinv[0, 0])
+        se_b = mpmath.sqrt(hessinv[1, 1])
+
+        return a, b, se_a, se_b
