@@ -12,8 +12,8 @@ as the corresponding implementations in `scipy.stats`.
 from . import (argus, benktander1, benktander2, beta, binomial, chi2, cosine,
                exponweib, f, fishers_noncentral_hypergeometric, gamma,
                gamma_gompertz, genexpon, genextreme, geninvgauss, genpareto,
-               gumbel_max, gumbel_min,
-               hypergeometric, laplace, levy, logseries, logistic, lognormal,
+               gumbel_max, gumbel_min, hypergeometric,
+               laplace, levy, loggamma, logistic, lognormal, logseries,
                multivariate_hypergeometric, multivariate_t, ncf, nct, ncx2,
                negative_binomial, negative_hypergeometric, normal, poisson,
                rice, t, uniform, weibull_max, weibull_min)
