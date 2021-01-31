@@ -260,11 +260,13 @@ def _mle_cens(lo, hi, p0=None):
     >>> counts = [5, 4, 7, 3, 1]
     >>> lower = sum(([v]*k for (v, k) in zip(lo, counts)), []) # like np.repeat
     >>> upper = sum(([v]*k for (v, k) in zip(hi, counts)), [])
-    >>> a, b, se_a, se_b = beta._mle_cens(lower, upper)
+    >>> a, b, hess, se_a, se_b = beta._mle_cens(lower, upper)
     >>> a, b
-    (1.4306399666975587, 2.10146607361142)
+    (mpf('1.43063996669755867460949981031263342116947521525450502076755418'),
+     mpf('2.10146607361141987108020246352181196280047393503978656215126088'))
     >>> se_a, se_b
-    (0.5609812965559253, 0.804302808645818)
+    (mpf('0.560981296555925349878923728306227202047919510954353813044627044'),
+     mpf('0.804302808645818037653239966888036072761898836526193514644697737'))
 
     Compare that to the result of the following R code::
 
@@ -304,4 +306,4 @@ def _mle_cens(lo, hi, p0=None):
         se_a = mpmath.sqrt(hessinv[0, 0])
         se_b = mpmath.sqrt(hessinv[1, 1])
 
-        return a, b, se_a, se_b
+        return a, b, hess, se_a, se_b
