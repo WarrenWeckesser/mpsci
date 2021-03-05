@@ -365,7 +365,7 @@ def odds_ratio(table, kind='conditional', alternative='two-sided'):
     result : `OddsRatioResult` instance
         The returned object has two computed attributes:
 
-        odds_ratio : float
+        odds_ratio : mpmath.mpf
             * If `kind` is ``'sample'``, this is
               ``table[0, 0]*table[1, 1]/(table[0, 1]*table[1, 0])``.
               This is the prior odds ratio and not a posterior estimate.
@@ -374,7 +374,7 @@ def odds_ratio(table, kind='conditional', alternative='two-sided'):
               the noncentrality parameter of Fisher's noncentral
               hypergeometric distribution with the same hypergeometric
               parameters as `table` and whose mean is ``table[0, 0]``.
-        pvalue : float
+        pvalue : fractions.Fraction or mpmath.mpf
             The p-value associated with the computed odds ratio.
 
             * If `kind` is ``'sample'``, the p-value is based on the
