@@ -29,7 +29,7 @@ def test_logpdf():
         assert mpmath.almosteq(p, expected)
 
 
-def test_cdf():
+def test_cdf_invcdf():
     with mpmath.workdps(50):
         x = mpmath.mpf('1.5')
         a = 2
@@ -40,9 +40,11 @@ def test_cdf():
         valstr = '0.6497498357448767493508965922137966312235765166018499603595'
         expected = mpmath.mpf(valstr)
         assert mpmath.almosteq(p, expected)
+        x1 = benktander2.invcdf(expected, a, b)
+        assert mpmath.almosteq(x1, x)
 
 
-def test_sf():
+def test_sf_invsf():
     with mpmath.workdps(50):
         x = mpmath.mpf('1.5')
         a = 2
@@ -53,3 +55,24 @@ def test_sf():
         valstr = '0.3502501642551232506491034077862033687764234833981500396405'
         expected = mpmath.mpf(valstr)
         assert mpmath.almosteq(p, expected)
+        x1 = benktander2.invsf(expected, a, b)
+        assert mpmath.almosteq(x1, x)
+
+
+def test_mean():
+    with mpmath.workdps(50):
+        a = 2
+        b = mpmath.mpf('0.25')
+        m = benktander2.mean(a, b)
+        assert mpmath.almosteq(m, mpmath.mpf('1.5'))
+
+
+def test_var():
+    with mpmath.workdps(50):
+        a = 2
+        b = mpmath.mpf('0.25')
+        m = benktander2.var(a, b)
+        # Expected value computed with Wolfram Alpha:
+        #    Var[BenktanderWeibullDistribution[2, 1/4]]
+        expected = mpmath.mpf('251/512')
+        assert mpmath.almosteq(m, expected)
