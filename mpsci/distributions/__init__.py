@@ -9,10 +9,10 @@ as the corresponding implementations in `scipy.stats`.
 
 """
 
-from . import (argus, benktander1, benktander2, beta, binomial, burr12, chi2,
-               cosine, exponweib, f, fishers_noncentral_hypergeometric, gamma,
-               gamma_gompertz, genexpon, genextreme, geninvgauss, genpareto,
-               gumbel_max, gumbel_min, hypergeometric,
+from . import (argus, benktander1, benktander2, beta, binomial, burr12, chi,
+               chi2, cosine, exponweib, f, fishers_noncentral_hypergeometric,
+               gamma, gamma_gompertz, genexpon, genextreme, geninvgauss,
+               genpareto, gumbel_max, gumbel_min, hypergeometric,
                laplace, levy, loggamma, logistic, lognormal, logseries,
                multivariate_hypergeometric, multivariate_t, ncf, nct, ncx2,
                negative_binomial, negative_hypergeometric, normal, poisson,
