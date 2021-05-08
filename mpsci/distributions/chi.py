@@ -82,6 +82,13 @@ def mode(k):
         return mpmath.sqrt(k - 1)
 
 
+mode._docstring_re_subs = ([
+    (r'sqrt\(k - 1\)', r':math:`\\sqrt{k - 1}`', 0, 0),
+    (r'k >= 1', r':math:`k \\ge 1`', 0, 0),
+    (r'0 < k < 1', r':math:`0 < k < 1`', 0, 0),
+])
+
+
 def mean(k):
     """
     Mean of the chi distribution.
