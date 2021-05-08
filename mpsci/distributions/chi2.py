@@ -34,7 +34,7 @@ def logpdf(x, k):
     """
     _validate_k(k)
     if x < 0:
-        return mpmath.mp.zero
+        return mpmath.mp.ninf
     with mpmath.extradps(5):
         x = mpmath.mpf(x)
         k = mpmath.mpf(k)

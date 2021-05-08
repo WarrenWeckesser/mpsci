@@ -38,6 +38,11 @@ def test_basic_logpdf():
         assert mpmath.almosteq(chi2.logpdf(250, k), expected)
 
 
+def test_logpdf_negx():
+    with mpmath.workdps(50):
+        assert chi2.logpdf(-3, 4) == mpmath.ninf
+
+
 def test_basic_cdf():
     with mpmath.workdps(50):
 
