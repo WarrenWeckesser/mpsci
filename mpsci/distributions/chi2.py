@@ -6,15 +6,19 @@ Chi-square distribution
 import mpmath
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'variance']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'variance']
+
+
+def _validate_k(k):
+    if k <= 0:
+        raise ValueError('k must be positive')
 
 
 def pdf(x, k):
     """
     PDF for the chi-square distribution.
     """
-    if k <= 0:
-        raise ValueError('k must be positive')
+    _validate_k(k)
     if x < 0:
         return mpmath.mp.zero
     with mpmath.extradps(5):
@@ -28,8 +32,7 @@ def logpdf(x, k):
     """
     Logarithm of the PDF for the chi-square distribution.
     """
-    if k <= 0:
-        raise ValueError('k must be positive')
+    _validate_k(k)
     if x < 0:
         return mpmath.mp.zero
     with mpmath.extradps(5):
@@ -44,8 +47,7 @@ def cdf(x, k):
     """
     CDF for the chi-square distribution.
     """
-    if k <= 0:
-        raise ValueError('k must be positive')
+    _validate_k(k)
     if x <= 0:
         return mpmath.mp.zero
     with mpmath.extradps(5):
@@ -59,8 +61,7 @@ def sf(x, k):
     """
     Survival function for the chi-square distribution.
     """
-    if k <= 0:
-        raise ValueError('k must be positive')
+    _validate_k(k)
     if x <= 0:
         return mpmath.mp.one
     with mpmath.extradps(5):
@@ -74,17 +75,26 @@ def mean(k):
     """
     Mean of the chi-square distribution.
     """
-    if k <= 0:
-        raise ValueError('k must be positive')
+    _validate_k(k)
     k = mpmath.mpf(k)
     return k
+
+
+def mode(k):
+    """
+    Mode of the chi-square distribution.
+
+    The mode is max(k - 2, 0).
+    """
+    _validate_k(k)
+    k = mpmath.mpf(k)
+    return max(k - 2, mpmath.mp.zero)
 
 
 def variance(k):
     """
     Variance of the chi-square distribution.
     """
-    if k <= 0:
-        raise ValueError('k must be positive')
+    _validate_k(k)
     k = mpmath.mpf(k)
     return 2*k

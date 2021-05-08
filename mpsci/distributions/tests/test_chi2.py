@@ -72,3 +72,9 @@ def test_basic_mean_variance():
     with mpmath.workdps(50):
         assert chi2.mean(5) == 5
         assert chi2.variance(5) == 10
+
+
+def test_mode():
+    with mpmath.workdps(50):
+        assert chi2.mode(5) == 3
+        assert chi2.mode(1.5) == 0
