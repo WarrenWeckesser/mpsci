@@ -2,11 +2,36 @@
 Inverse chi-square distribution
 -------------------------------
 
-See https://en.wikipedia.org/wiki/Inverse-chi-squared_distribution
+The probability density function for the inverse chi-square
+distribution is
+
+
+    f(x, nu) = 2**(-nu/2) / Gamma(nu/2) * x**(-nu/2 - 1) * exp(-1/(2*x))
+
+
+See the Wikipedia article `"Inverse-chi-squared distribution"
+<https://en.wikipedia.org/wiki/Inverse-chi-squared_distribution>`_
+for more information.  The functions here implement the first
+definition given in the wikipedia article.  That is, if X has the
+chi-square distribution with nu degrees of freedom, then 1/X has the
+inverse chi-square distribution with nu degrees of freedom.
 
 """
 
+import re
 import mpmath
+
+
+# module docstring substitution
+_docstring_re_subs = [
+    (r'    f\(x,.*$',
+     '\n'.join(['.. math::',
+                r'          f(x, \\nu) = \\frac{2^{-\\nu/2}}{\\Gamma(\\nu/2)}',
+                r'                       x^{-\\nu/2 - 1} e^{-1/(2x)}',
+                '']),
+     0, re.MULTILINE),
+    (' nu ', r' :math:`\\nu` ', 0, 0),
+]
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'variance']
@@ -80,11 +105,25 @@ def sf(x, nu):
 def mean(nu):
     """
     Mean of the inverse chi-square distribution.
+
+    For nu > 2, the mean is 1/(nu - 2).
+
     """
     _validate_nu(nu)
     with mpmath.extradps(5):
         nu = mpmath.mpf(nu)
         return mpmath.mp.one / (nu - 2) if nu > 2 else mpmath.nan
+
+
+mean._docstring_re_subs = [
+    (r'     *1.*2\)$',
+     '\n'.join([r'.. math::',
+                r'        \\frac{1}{\\nu - 2}',
+                r'']),
+     0, re.MULTILINE),
+    (r'1/\(nu - 2\)', r':math:`1/(\\nu - 2)`', 0, 0),
+    ('nu > 2', r':math:`\\nu > 2`', 0, 0),
+]
 
 
 def mode(nu):
@@ -102,8 +141,23 @@ def mode(nu):
 def variance(nu):
     """
     Variance of the inverse chi-square distribution.
+
+    For nu > 4, the variance is
+
+        2 / ((nu - 2)**2 (nu - 4))
+
     """
     _validate_nu(nu)
     with mpmath.extradps(5):
         nu = mpmath.mpf(nu)
         return 2/(nu - 2)**2 / (nu - 4) if nu > 4 else mpmath.nan
+
+
+variance._docstring_re_subs = [
+    (r'     *2.*4\)\)$',
+     '\n'.join([r'.. math::',
+                r'        \\frac{2}{(\\nu - 2)^2 (\\nu - 4)}',
+                r'']),
+     0, re.MULTILINE),
+    ('nu > 4', r':math:`\\nu > 4`', 0, 0),
+]
