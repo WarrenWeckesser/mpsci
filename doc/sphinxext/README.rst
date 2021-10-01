@@ -17,12 +17,12 @@ replacement
 count
     Passed on to ``re.sub`` as the ``count`` parameter.
 flags
-    Passed on to ``re.sub`` as the ``flags`` paramere.
+    Passed on to ``re.sub`` as the ``flags`` parameter.
 
 
 Here's an example from a module in ``mpsci``.  The module
 docstring for ``mpsci.distributions.invchi2`` contains the
-text:
+text::
 
     The probability density function for the inverse chi-square
     distribution is
@@ -55,14 +55,16 @@ in the module, as follows::
         (' nu ', r' :math:`\\nu` ', 0, 0),
     ]
 
-The first pattern to be matched is ``    f\(x,.*$``, which matches the
-text starting with ``    f(x`` to the end of the line.  The second value
+The first pattern to be matched is ``f\(x,.*$`` (along with the four
+spaces preceding it), which matches the text starting with four spaces
+followed by ``f(x``, and ending at the end of the line.  The second value
 in ``_docstring_re_subs`` is the replacement text.  The variable
 ``_math_expression`` has been defined to hold the ``..math::`` directive.
 
-A second substitution is included in ``_docstring_re_subs`` that will
-replace occurrences of `` nu  `` with `` :math:`\\nu` ``.  This should
-only occur within a line, so the flag ``re.MULTILINE`` is not needed.
+A second substitution (not related to the first) is included in
+``_docstring_re_subs`` that will replace occurrences of `` nu  `` with
+`` :math:`\\nu` ``.  This should only occur within a line, so the flag
+``re.MULTILINE`` is not needed.
 
 For a module, the attribute ``_docstring_re_subs`` is created by
 simply assigning it as a variable within the module.  For a function,
@@ -85,4 +87,4 @@ an attribute of ``sincpi``::
     ]
 
 The substitution will replace ``sin(pi*x)/(pi*x)`` with
-``:math:`\\frac{\\sin(\\pi x)}{\\pi x}``.
+``:math:`\\frac{\\sin(\\pi x)}{\\pi x}```.
