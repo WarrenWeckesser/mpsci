@@ -57,9 +57,9 @@ in the module, as follows::
 
 The first pattern to be matched is ``f\(x,.*$`` (along with the four
 spaces preceding it), which matches the text starting with four spaces
-followed by ``f(x``, and ending at the end of the line.  The second value
-in ``_docstring_re_subs`` is the replacement text.  The variable
-``_math_expression`` has been defined to hold the ``..math::`` directive.
+followed by ``f(x``, and ending at the end of the line.  The replacement
+string for this substitution is defined in the variable ``_math_expression``.
+It holds the ``..math::`` directive with the LaTeX markup.
 
 A second substitution (not related to the first) is included in
 ``_docstring_re_subs`` that will replace occurrences of `` nu  `` with
