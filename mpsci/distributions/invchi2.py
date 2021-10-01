@@ -5,9 +5,7 @@ Inverse chi-square distribution
 The probability density function for the inverse chi-square
 distribution is
 
-
     f(x, nu) = 2**(-nu/2) / Gamma(nu/2) * x**(-nu/2 - 1) * exp(-1/(2*x))
-
 
 See the Wikipedia article `"Inverse-chi-squared distribution"
 <https://en.wikipedia.org/wiki/Inverse-chi-squared_distribution>`_
@@ -23,13 +21,13 @@ import mpmath
 
 
 # module docstring substitution
+_math_expression = r"""
+.. math::
+          f(x, \\nu) = \\frac{2^{-\\nu/2}}{\\Gamma(\\nu/2)}
+                       x^{-\\nu/2 - 1} e^{-1/(2x)}
+"""
 _docstring_re_subs = [
-    (r'    f\(x,.*$',
-     '\n'.join(['.. math::',
-                r'          f(x, \\nu) = \\frac{2^{-\\nu/2}}{\\Gamma(\\nu/2)}',
-                r'                       x^{-\\nu/2 - 1} e^{-1/(2x)}',
-                '']),
-     0, re.MULTILINE),
+    (r'    f\(x,.*$', _math_expression, 0, re.MULTILINE),
     (' nu ', r' :math:`\\nu` ', 0, 0),
 ]
 
