@@ -2,7 +2,7 @@
     resubber
     ~~~~~~~~
 
-    Simple docstring text subsitution using re.sub.
+    Simple docstring text substitution using re.sub.
 """
 
 import re
