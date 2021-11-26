@@ -7,7 +7,7 @@ in scientific computing.
 """
 
 from ._boxcox import *
-from ._yeo_johnson import yeo_johnson
+from ._yeo_johnson import yeo_johnson, inv_yeo_johnson
 from ._marcumq import *
 from ._digammainv import *
 from ._xlogy import *
