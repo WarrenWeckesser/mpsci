@@ -20,7 +20,7 @@ sys.path.append('sphinxext')
 # -- Project information -----------------------------------------------------
 
 project = 'mpsci'
-copyright = '2020, Warren Weckesser'
+copyright = '2021, Warren Weckesser'
 author = 'Warren Weckesser'
 
 
