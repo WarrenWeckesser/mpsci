@@ -1,6 +1,6 @@
 """
 Laplace distribution
--------------------
+--------------------
 
 The parameters are mu (the location) and b (the scale).
 
