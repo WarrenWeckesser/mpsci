@@ -14,3 +14,4 @@ from ._xlogy import *
 from ._logbeta import *
 from ._logbinomial import *
 from ._logsumexp import *
+from ._legendre import roots_legendre
