@@ -93,6 +93,8 @@ def invcdf(p, a, b):
     Variable names follow the convention used on wikipedia.
     """
     _validate_ab(a, b)
+    if p < 0 or p > 1:
+        return mpmath.nan
     with mpmath.extradps(5):
         p = mpmath.mpf(p)
         a = mpmath.mpf(a)
@@ -114,13 +116,15 @@ def invsf(p, a, b):
     Variable names follow the convention used on wikipedia.
     """
     _validate_ab(a, b)
+    if p < 0 or p > 1:
+        return mpmath.nan
     with mpmath.extradps(5):
         p = mpmath.mpf(p)
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
         one = mpmath.mp.one
         if b == 1:
-            return 1 - mpmath.log(p)/a
+            return one - mpmath.log(p)/a
         else:
             onemb = one - b
             c = a/onemb
