@@ -97,17 +97,11 @@ def invcdf(p, a, b):
         p = mpmath.mpf(p)
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
-        w = mpmath.log1p(-p)
         one = mpmath.mp.one
-        # Compute a bracketing interval for the root.
-        xlow = one + w/(b - one - a)
-        xhigh = mpmath.power(one - (b/a)*w, 1/b)
-
-        def func(x):
-            return w - (b - 1)*mpmath.log(x) - (a/b)*(one - x**b)
-
-        x = mpmath.findroot(func, (xlow, xhigh), method='anderson')
-        return x
+        onemb = one - b
+        c = a/onemb
+        t = c*mpmath.exp(c)*mpmath.power(one - p, -b/onemb)
+        return mpmath.power(mpmath.lambertw(t)/c, 1/b)
 
 
 def invsf(p, a, b):
@@ -121,17 +115,11 @@ def invsf(p, a, b):
         p = mpmath.mpf(p)
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
-        w = mpmath.log(p)
         one = mpmath.mp.one
-        # Compute a bracketing interval for the root.
-        xlow = one + w/(b - one - a)
-        xhigh = mpmath.power(one - (b/a)*w, 1/b)
-
-        def func(x):
-            return w - (b - 1)*mpmath.log(x) - (a/b)*(one - x**b)
-
-        x = mpmath.findroot(func, (xlow, xhigh), method='anderson')
-        return x
+        onemb = one - b
+        c = a/onemb
+        t = c*mpmath.exp(c)*mpmath.power(p, -b/onemb)
+        return mpmath.power(mpmath.lambertw(t)/c, 1/b)
 
 
 def mean(a, b):
