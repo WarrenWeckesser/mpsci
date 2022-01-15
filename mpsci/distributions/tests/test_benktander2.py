@@ -44,6 +44,17 @@ def test_cdf_invcdf():
         assert mpmath.almosteq(x1, x)
 
 
+def test_invcdf_b1():
+    with mpmath.workdps(50):
+        p = mpmath.mpf('0.001')
+        a = 4
+        b = 1
+        x = benktander2.invcdf(p, a, b)
+        valstr = '1.00025012508339588337503574556351708624018880131260860231'
+        expected = mpmath.mpf(valstr)
+        assert mpmath.almosteq(x, expected)
+
+
 def test_sf_invsf():
     with mpmath.workdps(50):
         x = mpmath.mpf('1.5')
@@ -57,6 +68,17 @@ def test_sf_invsf():
         assert mpmath.almosteq(p, expected)
         x1 = benktander2.invsf(expected, a, b)
         assert mpmath.almosteq(x1, x)
+
+
+def test_invsf_b1():
+    with mpmath.workdps(50):
+        p = mpmath.mpf('0.999')
+        a = 4
+        b = 1
+        x = benktander2.invsf(p, a, b)
+        valstr = '1.00025012508339588337503574556351708624018880131260860231'
+        expected = mpmath.mpf(valstr)
+        assert mpmath.almosteq(x, expected)
 
 
 def test_mean():

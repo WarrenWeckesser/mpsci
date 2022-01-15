@@ -98,10 +98,13 @@ def invcdf(p, a, b):
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
         one = mpmath.mp.one
-        onemb = one - b
-        c = a/onemb
-        t = c*mpmath.exp(c)*mpmath.power(one - p, -b/onemb)
-        return mpmath.power(mpmath.lambertw(t)/c, 1/b)
+        if b == 1:
+            return one - mpmath.log1p(-p)/a
+        else:
+            onemb = one - b
+            c = a/onemb
+            t = c*mpmath.exp(c)*mpmath.power(one - p, -b/onemb)
+            return mpmath.power(mpmath.lambertw(t)/c, 1/b)
 
 
 def invsf(p, a, b):
@@ -116,10 +119,13 @@ def invsf(p, a, b):
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
         one = mpmath.mp.one
-        onemb = one - b
-        c = a/onemb
-        t = c*mpmath.exp(c)*mpmath.power(p, -b/onemb)
-        return mpmath.power(mpmath.lambertw(t)/c, 1/b)
+        if b == 1:
+            return 1 - mpmath.log(p)/a
+        else:
+            onemb = one - b
+            c = a/onemb
+            t = c*mpmath.exp(c)*mpmath.power(p, -b/onemb)
+            return mpmath.power(mpmath.lambertw(t)/c, 1/b)
 
 
 def mean(a, b):
