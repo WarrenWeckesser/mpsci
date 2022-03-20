@@ -90,3 +90,37 @@ def sf(x, dfn, dfd):
         dfnx = dfn * x
         return mpmath.betainc(dfn/2, dfd/2, x1=dfnx/(dfnx + dfd),
                               regularized=True)
+
+
+def mean(dfn, dfd):
+    """
+    Mean of the F distribution.
+
+    `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
+
+    For a finite mean, `dfd` must be greater than 2.
+    If `dfd` is less than or equal to 2, this function returns `inf`.
+    """
+    with mpmath.mp.extradps(5):
+        if dfd > 2:
+            dfd = mpmath.mpf(dfd)
+            return dfd/(dfd - 2)
+        return mpmath.inf
+
+
+def var(dfn, dfd):
+    """
+    Variance of the F distribution.
+
+    `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
+
+    For a finite variance, `dfd` must be greater than 4.
+    If `dfd` is less than or equal to 4, this function returns `inf`.
+    """
+    with mpmath.mp.extradps(5):
+        if dfd > 4:
+            dfn = mpmath.mpf(dfn)
+            dfd = mpmath.mpf(dfd)
+            return (2 * dfd**2 * (dfn + dfd - 2)
+                    / (dfn * (dfd - 2)**2 * (dfd - 4)))
+        return mpmath.inf
