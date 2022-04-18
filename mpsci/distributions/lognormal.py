@@ -10,13 +10,20 @@ parameters as used in `scipy.stats.lognorm`.
 import mpmath
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mle', 'mom']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'mean', 'var', 'skewness', 'kurtosis', 'mle', 'mom']
+
+
+def _validate_sigma(sigma):
+    if sigma <= 0:
+        raise ValueError('sigma must be positive')
 
 
 def pdf(x, mu=0, sigma=1):
     """
     Log-normal distribution probability density function.
     """
+    _validate_sigma(sigma)
     if x <= 0:
         return mpmath.mp.zero
     x = mpmath.mpf(x)
@@ -28,6 +35,7 @@ def logpdf(x, mu=0, sigma=1):
     """
     Natural logarithm of the PDF of the log-normal distribution.
     """
+    _validate_sigma(sigma)
     if x <= 0:
         return -mpmath.inf
     with mpmath.extradps(5):
@@ -44,6 +52,7 @@ def cdf(x, mu=0, sigma=1):
     """
     Log-normal distribution cumulative distribution function.
     """
+    _validate_sigma(sigma)
     if x <= 0:
         return mpmath.mp.zero
     lnx = mpmath.log(x)
@@ -54,6 +63,7 @@ def sf(x, mu=0, sigma=1):
     """
     Log-normal distribution survival function.
     """
+    _validate_sigma(sigma)
     if x <= 0:
         return mpmath.mp.one
     lnx = mpmath.log(x)
@@ -67,6 +77,7 @@ def invcdf(p, mu=0, sigma=1):
     This function is also known as the quantile function or the percent
     point function.
     """
+    _validate_sigma(sigma)
     if p < 0 or p > 1:
         return mpmath.nan
 
@@ -84,7 +95,48 @@ def invsf(p, mu=0, sigma=1):
     """
     Log-normal distribution inverse survival function.
     """
+    _validate_sigma(sigma)
     return invcdf(1 - p, mu, sigma)
+
+
+def mean(mu=0, sigma=1):
+    """
+    Mean of the lognormal distribution.
+    """
+    _validate_sigma(sigma)
+    mu = mpmath.mpf(mu)
+    sigma = mpmath.mpf(sigma)
+    return mpmath.exp(mu + sigma**2/2)
+
+
+def var(mu=0, sigma=1):
+    """
+    Variance of the lognormal distribution.
+    """
+    _validate_sigma(sigma)
+    mu = mpmath.mpf(mu)
+    sigma = mpmath.mpf(sigma)
+    sigma2 = sigma**2
+    return mpmath.expm1(sigma2) * mpmath.exp(2*mu + sigma2)
+
+
+def skewness(mu=0, sigma=1):
+    """
+    Skewness of the lognormal distribution.
+    """
+    _validate_sigma(sigma)
+    sigma2 = sigma**2
+    return (mpmath.exp(sigma2) + 2) * mpmath.sqrt(mpmath.expm1(sigma2))
+
+
+def kurtosis(mu=0, sigma=1):
+    """
+    Kurtosis of the lognormal distribution.
+    """
+    _validate_sigma(sigma)
+    sigma2 = sigma**2
+    return (mpmath.exp(4*sigma2) + 2*mpmath.exp(3*sigma2)
+            + 3*mpmath.exp(2*sigma2) - 6)
 
 
 # XXX Add standard errors and confidence intervals for the fitted parameters.
