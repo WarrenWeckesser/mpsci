@@ -8,8 +8,15 @@ from ..fun import digammainv
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'interval_prob',
-           'mean', 'var', 'mom', 'mle',
+           'mean', 'var', 'skewness', 'kurtosis', 'mom', 'mle',
            'nll', 'nll_grad', 'nll_hess', 'nll_invhess']
+
+
+def _validate_k_theta(k, theta):
+    if k <= 0:
+        raise ValueError('k must be positive')
+    if theta <= 0:
+        raise ValueError('theta must be positive')
 
 
 def pdf(x, k, theta):
@@ -21,6 +28,7 @@ def pdf(x, k, theta):
 
     Unlike scipy, a location parameter is not included.
     """
+    _validate_k_theta(k, theta)
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
@@ -31,6 +39,7 @@ def logpdf(x, k, theta):
     """
     Log of the PDF of the gamma distribution.
     """
+    _validate_k_theta(k, theta)
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
@@ -47,6 +56,7 @@ def cdf(x, k, theta):
 
     Unlike scipy, a location parameter is not included.
     """
+    _validate_k_theta(k, theta)
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
@@ -57,6 +67,7 @@ def sf(x, k, theta):
     """
     Survival function of the gamma distribution.
     """
+    _validate_k_theta(k, theta)
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
@@ -76,6 +87,7 @@ def interval_prob(x1, x2, k, theta):
 
     x1 must be less than or equal to x2.
     """
+    _validate_k_theta(k, theta)
     if x1 > x2:
         raise ValueError('x1 must not be greater than x2')
 
@@ -91,6 +103,7 @@ def mean(k, theta):
     """
     Mean of the gamma distribution.
     """
+    _validate_k_theta(k, theta)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
     return k * theta
@@ -100,9 +113,28 @@ def var(k, theta):
     """
     Variance of the gamma distribution.
     """
+    _validate_k_theta(k, theta)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
     return k * theta**2
+
+
+def skewness(k, theta):
+    """
+    Skewness of the gamma distribution.
+    """
+    _validate_k_theta(k, theta)
+    k = mpmath.mpf(k)
+    return 2/mpmath.sqrt(k)
+
+
+def kurtosis(k, theta):
+    """
+    Excess kurtosis of the gamma distribution.
+    """
+    _validate_k_theta(k, theta)
+    k = mpmath.mpf(k)
+    return 6/k
 
 
 def mom(x):
@@ -174,6 +206,7 @@ def nll(x, k, theta):
     """
     Gamma distribution negative log-likelihood.
     """
+    _validate_k_theta(k, theta)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
 
@@ -190,6 +223,7 @@ def nll_grad(x, k, theta):
     """
     Gamma distribution gradient of the negative log-likelihood function.
     """
+    _validate_k_theta(k, theta)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
 
@@ -206,6 +240,7 @@ def nll_hess(x, k, theta):
     """
     Gamma distribution hessian of the negative log-likelihood function.
     """
+    _validate_k_theta(k, theta)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
 
@@ -224,6 +259,7 @@ def nll_invhess(x, k, theta):
     """
     Gamma distribution inverse of the hessian of the negative log-likelihood.
     """
+    _validate_k_theta(k, theta)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
 

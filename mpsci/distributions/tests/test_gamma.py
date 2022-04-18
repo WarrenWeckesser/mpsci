@@ -24,6 +24,16 @@ def test_sf():
     assert mpmath.almosteq(s, expected)
 
 
+def test_skewness():
+    s = gamma.skewness(k=16, theta=3)
+    assert s == 0.5
+
+
+def test_kurtosis():
+    k = gamma.kurtosis(k=16, theta=3)
+    assert k == 3/8
+
+
 def test_interval_prob():
     x1 = 2.0
     x2 = 3.0
