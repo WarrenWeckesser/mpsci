@@ -10,8 +10,8 @@ import mpmath
 from . import normal
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
-           'median']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'median',
+           'var', 'skewness', 'kurtosis']
 
 
 def _validate_params(a, b):
