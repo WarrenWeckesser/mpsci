@@ -141,6 +141,15 @@ def mean(a, b):
         return pdf(a, a, b) - pdf(b, a, b)
 
 
+def median(a, b):
+    """
+    Median of the truncated standard normal distribution.
+    """
+    _validate_params(a, b)
+    with mpmath.extradps(5):
+        return normal.invcdf((normal.cdf(a) + normal.cdf(b))/2)
+
+
 def var(a, b):
     """
     Variance of the truncated standard normal distribution.
@@ -157,10 +166,72 @@ def var(a, b):
         return 1 + ta - tb - (pa - pb)**2
 
 
-def median(a, b):
+def _noncentral_moments(n, a, b):
     """
-    Median of the truncated standard normal distribution.
+    Compute the noncentral moments m1, m2, ... mn.
+
+    These are the moments about 0.
+
+    Returns a list of length n.  n must be a positive integer.
     """
     _validate_params(a, b)
     with mpmath.extradps(5):
-        return normal.invcdf((normal.cdf(a) + normal.cdf(b))/2)
+        a = mpmath.mpf(a)
+        b = mpmath.mpf(b)
+
+        pa = pdf(a, a, b)
+        pb = pdf(b, a, b)
+
+        # Avoid the possibility of inf*0:
+        if pa == 0:
+            a = 0
+        if pb == 0:
+            b = 0
+        apa = a*pa
+        bpb = b*pb
+
+        result = [pa - pb]
+        if n >= 2:
+            result.append(1 + apa - bpb)
+        for k in range(3, n+1):
+            apa = a*apa
+            bpb = b*bpb
+            result.append((k-1)*result[k-3] + apa - bpb)
+
+        return result
+
+
+def skewness(a, b):
+    """
+    Skewness of the truncated standard normal distribution.
+    """
+    _validate_params(a, b)
+    with mpmath.extradps(5):
+        m1, m2, m3 = _noncentral_moments(3, a, b)
+
+        # Central moments (i.e. moments about the mean)
+        mu2 = m2 - m1**2
+        mu3 = m3 + m1 * (-3*m2 + 2*m1**2)
+
+        # Skewness
+        g1 = mu3 / mpmath.power(mu2, 1.5)
+
+        return g1
+
+
+def kurtosis(a, b):
+    """
+    Excess kurtosis of the truncated standard normal distribution.
+    """
+    _validate_params(a, b)
+    with mpmath.extradps(5):
+        m1, m2, m3, m4 = _noncentral_moments(4, a, b)
+
+        # Central moments (i.e. moments about the mean)
+        mu2 = m2 - m1**2
+        mu4 = m4 + m1*(-4*m3 + 3*m1*(2*m2 - m1**2))
+
+        # Excess kurtosis
+        g2 = mu4 / mu2**2 - 3
+
+        return g2
