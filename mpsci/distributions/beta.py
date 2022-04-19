@@ -9,16 +9,20 @@ from ..stats import mean as _mean, var as _var
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
-           'mean', 'mle', 'mom']
+           'mean', 'var', 'skewness', 'kurtosis', 'mle', 'mom']
+
+
+def _validate_a_b(a, b):
+    if a <= 0 or b <= 0:
+        raise ValueError('The shape parameters a and b must be greater '
+                         'than 0.')
 
 
 def pdf(x, a, b):
     """
     Probability density function (PDF) for the beta distribution.
     """
-    if a <= 0 or b <= 0:
-        raise ValueError('The shape parameters a and b must be greater '
-                         'than 0.')
+    _validate_a_b(a, b)
     x = mpmath.mpf(x)
     a = mpmath.mpf(a)
     b = mpmath.mpf(b)
@@ -36,9 +40,7 @@ def logpdf(x, a, b):
     """
     Natural logarithm of the PDF of the beta distribution.
     """
-    if a <= 0 or b <= 0:
-        raise ValueError('The shape parameters a and b must be greater '
-                         'than 0.')
+    _validate_a_b(a, b)
     x = mpmath.mpf(x)
     a = mpmath.mpf(a)
     b = mpmath.mpf(b)
@@ -51,9 +53,7 @@ def cdf(x, a, b):
     """
     Cumulative distribution function of the beta distribution.
     """
-    if a <= 0 or b <= 0:
-        raise ValueError('The shape parameters a and b must be greater '
-                         'than 0.')
+    _validate_a_b(a, b)
     if x < 0:
         return mpmath.mp.zero
     if x > 1:
@@ -65,9 +65,7 @@ def sf(x, a, b):
     """
     Survival function of the beta distribution.
     """
-    if a <= 0 or b <= 0:
-        raise ValueError('The shape parameters a and b must be greater '
-                         'than 0.')
+    _validate_a_b(a, b)
     return mpmath.betainc(a, b, x1=x, x2=1, regularized=True)
 
 
@@ -84,6 +82,7 @@ def interval_prob(x1, x2, a, b):
 
     x1 must be less than or equal to x2.
     """
+    _validate_a_b(a, b)
     if x1 > x2:
         raise ValueError('x1 must not be greater than x2')
 
@@ -99,9 +98,7 @@ def invcdf(p, a, b):
     """
     Inverse of the CDF of the beta distribution.
     """
-    if a <= 0 or b <= 0:
-        raise ValueError('The shape parameters a and b must be greater '
-                         'than 0.')
+    _validate_a_b(a, b)
     if p < 0 or p > 1:
         return mpmath.nan
     if p == 0:
@@ -119,9 +116,7 @@ def invsf(p, a, b):
     """
     Inverse of the survival function of the beta distribution.
     """
-    if a <= 0 or b <= 0:
-        raise ValueError('The shape parameters a and b must be greater '
-                         'than 0.')
+    _validate_a_b(a, b)
     if p < 0 or p > 1:
         return mpmath.nan
     if p == 0:
@@ -139,12 +134,48 @@ def mean(a, b):
     """
     Mean of the beta distribution.
     """
-    if a <= 0 or b <= 0:
-        raise ValueError('The shape parameters a and b must be greater '
-                         'than 0.')
-    a = mpmath.mpf(a)
-    b = mpmath.mpf(b)
-    return a/(a + b)
+    _validate_a_b(a, b)
+    with mpmath.extradps(5):
+        a = mpmath.mpf(a)
+        b = mpmath.mpf(b)
+        return a/(a + b)
+
+
+def var(a, b):
+    """
+    Variance of the beta distribution.
+    """
+    _validate_a_b(a, b)
+    with mpmath.extradps(5):
+        a = mpmath.mpf(a)
+        b = mpmath.mpf(b)
+        apb = a + b
+        return a*b/(apb**2 * (apb + 1))
+
+
+def skewness(a, b):
+    """
+    Skewness of the beta distribution.
+    """
+    _validate_a_b(a, b)
+    with mpmath.extradps(5):
+        a = mpmath.mpf(a)
+        b = mpmath.mpf(b)
+        apb = a + b
+        return 2*(b - a)*mpmath.sqrt(apb + 1)/((apb + 2)*(mpmath.sqrt(a*b)))
+
+
+def kurtosis(a, b):
+    """
+    Excess kurtosis of the beta distribution.
+    """
+    _validate_a_b(a, b)
+    with mpmath.extradps(5):
+        a = mpmath.mpf(a)
+        b = mpmath.mpf(b)
+        apb = a + b
+        return (6*((a - b)**2*(apb + 1) - a*b*(apb + 2)) /
+                (a*b*(apb + 2)*(apb + 3)))
 
 
 def _beta_mle_func(a, b, n, s):

@@ -7,6 +7,36 @@ from mpsci.distributions import beta
 mpmath.mp.dps = 40
 
 
+@pytest.mark.parametrize('a, b, expected',
+                         [(1, 3, mpmath.mpf('0.0375')),
+                          (0.5, 0.5, 0.125)])
+def test_var(a, b, expected):
+    with mpmath.workdps(25):
+        v = beta.var(a, b)
+        assert mpmath.almosteq(v, expected)
+
+
+def test_skewness():
+    a = 1
+    b = 3
+    # Expected value computed with Wolfram Alpha:
+    #     Skewness[BetaDistribution[1, 3]]
+    s = '0.860662965823870418928725644396088802407315934509242405908'
+    with mpmath.workdps(len(s) - 2):
+        v = beta.skewness(a, b)
+        expected = mpmath.mpf(s)
+        assert mpmath.almosteq(v, expected)
+
+
+def test_kurtosis():
+    a = 1
+    b = 3
+    with mpmath.workdps(25):
+        kurt = beta.kurtosis(a, b)
+        expected = mpmath.mpf(2.0) / 21
+        assert mpmath.almosteq(kurt, expected)
+
+
 @pytest.mark.parametrize('a, b', [(1, 1), (4, 2), (3, 5)])
 def test_pmf_integer_ab_half(a, b):
     half = mpmath.mpf('0.5')
