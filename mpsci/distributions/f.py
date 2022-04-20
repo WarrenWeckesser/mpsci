@@ -8,7 +8,7 @@ import mpmath
 from ..fun import logbeta, xlogy, xlog1py
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var']
 
 
 def pdf(x, dfn, dfd):
