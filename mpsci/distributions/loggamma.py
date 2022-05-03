@@ -2,16 +2,23 @@
 Log-gamma probability distribution
 ----------------------------------
 
-k is the shape parameter of the gamma distribution.
-theta is the scale parameter of the log-gamma distribution.
+* k is the shape parameter of the gamma distribution.
+* theta is the scale parameter of the log-gamma distribution.
 
-Unlike scipy, a location parameter is not included.
+In SciPy, this distribution is implemented as `scipy.stats.loggamma`.
+
+In the Wolfram language, this distribution is called `ExpGammaDistribution`.
+
+Unlike SciPy and Wolfram, a location parameter is not included in this
+implementation of the log-gamma distribution.
+
 """
 
 import mpmath
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
+           'mean', 'var']
 
 
 def pdf(x, k, theta):
@@ -136,3 +143,30 @@ def interval_prob(x1, x2, k, theta):
         z2 = x2/theta
         return mpmath.gammainc(k, mpmath.exp(z1), mpmath.exp(z2),
                                regularized=True)
+
+
+def mean(k, theta):
+    """
+    Mean of the log-gamma distribution.
+
+    k is the shape parameter of the gamma distribution.
+    theta is the scale parameter of the log-gamma distribution.
+    """
+    with mpmath.extradps(5):
+        k = mpmath.mpf(k)
+        theta = mpmath.mpf(theta)
+        return theta * mpmath.psi(0, k)
+
+
+
+def var(k, theta):
+    """
+    Variance of the log-gamma distribution.
+
+    k is the shape parameter of the gamma distribution.
+    theta is the scale parameter of the log-gamma distribution.
+    """
+    with mpmath.extradps(5):
+        k = mpmath.mpf(k)
+        theta = mpmath.mpf(theta)
+        return theta**2 * mpmath.psi(1, k)
