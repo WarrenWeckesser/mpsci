@@ -18,7 +18,7 @@ import mpmath
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
-           'mean', 'var']
+           'mean', 'var', 'skewness', 'kurtosis']
 
 
 def pdf(x, k, theta):
@@ -158,7 +158,6 @@ def mean(k, theta):
         return theta * mpmath.psi(0, k)
 
 
-
 def var(k, theta):
     """
     Variance of the log-gamma distribution.
@@ -170,3 +169,29 @@ def var(k, theta):
         k = mpmath.mpf(k)
         theta = mpmath.mpf(theta)
         return theta**2 * mpmath.psi(1, k)
+
+
+def skewness(k, theta):
+    """
+    Variance of the log-gamma distribution.
+
+    k is the shape parameter of the gamma distribution.
+    theta is the scale parameter of the log-gamma distribution.
+    """
+    with mpmath.extradps(5):
+        k = mpmath.mpf(k)
+        theta = mpmath.mpf(theta)
+        return mpmath.psi(2, k) / mpmath.psi(1, k)**1.5
+
+
+def kurtosis(k, theta):
+    """
+    Excess kurtosis of the log-gamma distribution.
+
+    k is the shape parameter of the gamma distribution.
+    theta is the scale parameter of the log-gamma distribution.
+    """
+    with mpmath.extradps(5):
+        k = mpmath.mpf(k)
+        theta = mpmath.mpf(theta)
+        return mpmath.psi(3, k) / mpmath.psi(1, k)**2
