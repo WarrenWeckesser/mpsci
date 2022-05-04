@@ -8,7 +8,8 @@ import re
 import mpmath
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'mean', 'var', 'skewness', 'kurtosis']
 
 
 # TO DO: Add location and scale parameters.
@@ -182,3 +183,40 @@ def invsf(p):
     Inverse of the survival function of the cosine distribution.
     """
     return -invcdf(p)
+
+
+def mean():
+    """
+    Mean of the cosine distribution.
+
+    The mean is 0.
+    """
+    return mpmath.mp.zero
+
+
+def var():
+    """
+    Variance of the cosine distribution.
+
+    The variance is pi**2/3 - 2.
+    """
+    return mpmath.pi**2/3 - 2
+
+
+def skewness():
+    """
+    Skewness of the cosine distribution.
+
+    The skewness is 0.
+    """
+    return mpmath.mp.zero
+
+
+def kurtosis():
+    """
+    Excess kurtosis of the cosine distribution.
+
+    The excess kurtosis is (6/5)*(90 - pi**4)/(pi**2 - 6)**2.
+    """
+    pi2 = mpmath.pi**2
+    return (90 - pi2**2)/(pi2 - 6)**2 * 6 / 5
