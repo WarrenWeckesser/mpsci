@@ -17,7 +17,8 @@ This is the same distribution as:
 import mpmath
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'mean', 'var', 'skewness', 'kurtosis']
 
 
 def _validate_params(k, loc, scale):
@@ -170,3 +171,35 @@ def var(k, loc, scale):
         v1 = 1 + 1/k
         v2 = 1 + 2/k
         return scale**2 * (mpmath.gamma(v2) - mpmath.gamma(v1)**2)
+
+
+def skewness(k, loc, scale):
+    """
+    Skewness of the Weibull distribution (for minima).
+
+    This is a three-parameter version of the distribution.  The more typical
+    two-parameter version has just the parameters k and scale.
+    """
+    with mpmath.extradps(5):
+        k, loc, scale = _validate_params(k, loc, scale)
+        g1 = mpmath.gamma(1 + 1/k)
+        g2 = mpmath.gamma(1 + 2/k)
+        g3 = mpmath.gamma(1 + 3/k)
+        return (g3 - 3*g1*g2 + 2*g1**3) / mpmath.power(g2 - g1**2, 1.5)
+
+
+def kurtosis(k, loc, scale):
+    """
+    Excess kurtosis of the Weibull distribution (for minima).
+
+    This is a three-parameter version of the distribution.  The more typical
+    two-parameter version has just the parameters k and scale.
+    """
+    with mpmath.extradps(5):
+        k, loc, scale = _validate_params(k, loc, scale)
+        g1 = mpmath.gamma(1 + 1/k)
+        g2 = mpmath.gamma(1 + 2/k)
+        g3 = mpmath.gamma(1 + 3/k)
+        g4 = mpmath.gamma(1 + 4/k)
+        den = (g2 - g1**2)**2
+        return (-6*g1**4 + 12*g1**2*g2 - 3*g2**2 - 4*g1*g3 + g4) / den
