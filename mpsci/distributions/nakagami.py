@@ -164,17 +164,6 @@ def _mle_nu_func(nu, scale, R):
     return mpmath.log(nu) - mpmath.digamma(nu) - R
 
 
-def _mle_scale_func(scale, x):
-    # This function is used in mle() to find the MLE for the scale.
-    # The equation to be solved is
-    #     sum((x_i/scale)**2) = N
-    # where N is len(x).
-    scale = mpmath.mpf(scale)
-    N = len(x)
-    S2 = sum((t/scale)**2 for t in x)
-    return S2 - N
-
-
 def _estimate_nu(R):
     """
     Estimate the solution of log(nu) - psi(nu) = R.
@@ -205,8 +194,7 @@ def mle(x, nu=None, loc=None, scale=None):
                          '`loc` must be given.')
 
     if scale is None:
-        scale = mpmath.findroot(lambda scale: _mle_scale_func(scale, x),
-                                stats.std(x))
+        scale = mpmath.sqrt(mpmath.fsum([t**2 for t in x])/len(x))
 
     if nu is None:
         R = (stats.mean([(t/scale)**2 for t in x]) -
