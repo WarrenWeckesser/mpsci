@@ -158,6 +158,26 @@ def nll(x, nu, loc, scale):
         return -ll
 
 
+def nll_grad(x, nu, loc, scale):
+    """
+    Gradient of the negative log-likelihood for the Nakagami distribution.
+    """
+    _validate_params(nu, loc, scale)
+    _validate_x(x, loc=loc)
+    n = len(x)
+    with mpmath.extradps(5):
+        nu = mpmath.mpf(nu)
+        loc = mpmath.mpf(loc)
+        scale = mpmath.mpf(scale)
+        xloc = [(t - loc) for t in x]
+        dldnu = (n*(1 + mpmath.log(nu) - mpmath.digamma(nu))
+                 + 2*mpmath.fsum([mpmath.log(t/scale) for t in xloc])
+                 - mpmath.fsum([t**2 for t in xloc])/scale**2)
+        dldloc = -(2*nu - 1)*mpmath.fsum([1/t for t in xloc]) + 2*nu*mpmath.fsum(xloc)/scale**2
+        dldscale = (2*nu/scale)*(-n + mpmath.fsum([t**2 for t in xloc])/scale**2)
+        return dldnu, dldloc, dldscale
+
+
 def _mle_nu_func(nu, scale, R):
     # This function is used in mle() to solve log(nu) - digamma(nu) = R.
     nu = mpmath.mpf(nu)
@@ -178,7 +198,7 @@ def _estimate_nu(R):
 
 def mle(x, nu=None, loc=None, scale=None):
     """
-    Nakagami distribution maximum likelihood parameter estimation.
+    Maximum likelihood parameter estimation for the Nakagami distribution.
 
     x must be a sequence of numbers.
 
@@ -186,20 +206,37 @@ def mle(x, nu=None, loc=None, scale=None):
 
     Currently a fixed loc *must* be given.
     """
+    if nu is not None and loc is not None and scale is not None:
+        # Nothing to do.
+        return nu, loc, scale
+
     if loc is not None:
+        # loc is fixed; handle this by subtracting loc from x.
         _validate_x(x, loc)
-        x = [t - loc for t in x]
+        with mpmath.extradps(5):
+            loc0 = mpmath.mpf(loc)
+            x = [t - loc0 for t in x]
     else:
         raise ValueError('Fitting `loc` is not implemented yet. '
                          '`loc` must be given.')
 
+    # If here, loc is fixed, and we've handled that by shifting x.
+    # Either nu or scale (or both) are not fixed.
+
     if scale is None:
-        scale = mpmath.sqrt(mpmath.fsum([t**2 for t in x])/len(x))
+        scale0 = mpmath.sqrt(mpmath.fsum([t**2 for t in x])/len(x))
+    else:
+        scale0 = mpmath.mpf(scale)
 
-    if nu is None:
-        R = (stats.mean([(t/scale)**2 for t in x]) -
-             stats.mean([2*mpmath.log(t/scale) for t in x]) - 1)
+    if nu is not None:
+        nu0 = mpmath.mpf(nu)
+    else:
+        if scale is None:
+            R = -stats.mean([2*mpmath.log(t/scale0) for t in x])
+        else:
+            R = (stats.mean([(t/scale0)**2 for t in x]) -
+                 stats.mean([2*mpmath.log(t/scale0) for t in x]) - 1)
         nu0 = _estimate_nu(R)
-        nu = mpmath.findroot(lambda nu: _mle_nu_func(nu, scale, R), nu0)
+        nu0 = mpmath.findroot(lambda nu: _mle_nu_func(nu, scale0, R), nu0)
 
-    return nu, loc, scale
+    return nu0, loc0, scale0
