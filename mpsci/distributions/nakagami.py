@@ -173,8 +173,10 @@ def nll_grad(x, nu, loc, scale):
         dldnu = (n*(1 + mpmath.log(nu) - mpmath.digamma(nu))
                  + 2*mpmath.fsum([mpmath.log(t/scale) for t in xloc])
                  - mpmath.fsum([t**2 for t in xloc])/scale**2)
-        dldloc = -(2*nu - 1)*mpmath.fsum([1/t for t in xloc]) + 2*nu*mpmath.fsum(xloc)/scale**2
-        dldscale = (2*nu/scale)*(-n + mpmath.fsum([t**2 for t in xloc])/scale**2)
+        sum_inv = mpmath.fsum([1/t for t in xloc])
+        dldloc = -(2*nu - 1)*sum_inv + 2*nu*mpmath.fsum(xloc)/scale**2
+        sum_sq = mpmath.fsum([t**2 for t in xloc])
+        dldscale = (2*nu/scale)*(-n + sum_sq/scale**2)
         return dldnu, dldloc, dldscale
 
 

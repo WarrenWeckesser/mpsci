@@ -147,4 +147,3 @@ def entropy(df):
         h1 = (df + 1)/2
         return (h1*(mpmath.digamma(h1) - mpmath.digamma(h)) +
                 mpmath.log(mpmath.sqrt(df)*mpmath.beta(h, 0.5)))
-
