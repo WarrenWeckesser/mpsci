@@ -17,4 +17,4 @@ from . import (argus, benktander1, benktander2, beta, binomial, burr12, chi,
                logseries, multivariate_hypergeometric, multivariate_t,
                nakagami, ncf, nct, ncx2, negative_binomial,
                negative_hypergeometric, normal, poisson, rice, slash, t,
-               truncnorm, uniform, weibull_max, weibull_min)
+               truncnorm, uniform, vonmises, weibull_max, weibull_min)
