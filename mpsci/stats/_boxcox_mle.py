@@ -1,17 +1,14 @@
 """
-Some functions for testing the maximum likelihood estimate of the
+Code for the maximum likelihood estimation of the
 Box-Cox transformation.
-
-This code is not in the public API yet.  It has not been thoroughly
-tested, and there are some improvements that can be made.
 """
 
 import mpmath
 from ._basic import var
 
 
-def boxcox_llf(lmb, x):
-    lmb = mpmath.mpf(lmb)
+def _boxcox_llf(lam, x):
+    lam = mpmath.mpf(lam)
     x = [mpmath.mpf(t) for t in x]
     n = len(x)
 
@@ -19,49 +16,50 @@ def boxcox_llf(lmb, x):
     sumlogdata = mpmath.fsum(logdata)
 
     # Compute the variance of the transformed data.
-    if lmb == 0:
+    if lam == 0:
         variance = var(logdata)
     else:
-        # Transform without the constant offset 1/lmb.  The offset does
+        # Transform without the constant offset 1/lam.  The offset does
         # not effect the variance, and the subtraction of the offset can
         # lead to loss of precision.
-        variance = var([t**lmb / lmb for t in x])
+        variance = var([t**lam / lam for t in x])
 
-    return (lmb - 1) * sumlogdata - n/2 * mpmath.log(variance)
+    return (lam - 1) * sumlogdata - n/2 * mpmath.log(variance)
 
 
-def _boxcox_llf_deriv_not_finished(lmb, x):
+def _boxcox_llf_deriv(lam, x):
     """
-    This function assumes lmb != 0.
-    """
-    lmb = mpmath.mpf(lmb)
-    x = [mpmath.mpf(t) for t in x]
-    n = len(x)
-
-    logdata = [mpmath.log(t) for t in x]
-    sumlogdata = mpmath.fsum(logdata)
-
-    mean_deriv_bc_sq = mpmath.fsum(2*(t**lmb/lmb)**2*(mpmath.log(t) - 1/lmb)
-                                   for t in x) / n
-    mean_bc_data = mpmath.fsum(t**lmb/lmb for t in x) / n
-    deriv_mean_bc_data = mpmath.fsum(t**lmb/lmb * (mpmath.log(t) - 1/lmb)
-                                     for t in x) / n
-
-    dvar = mean_deriv_bc_sq - 2 * mean_bc_data * deriv_mean_bc_data
-
-    return sumlogdata - n/2 * dvar
-
-
-def _boxcox_llf_deriv(lmb, x):
-    """
-    Use mpmath.diff to estimate the derivative of boxcox_llf w.r.t. lmb.
+    Use mpmath.diff to estimate the derivative of boxcox_llf w.r.t. lam.
     """
     with mpmath.extradps(10):
-        return mpmath.diff(lambda t: boxcox_llf(t, x), lmb)
+        return mpmath.diff(lambda t: _boxcox_llf(t, x), lam)
 
 
-def boxcox_mle(x):
+def boxcox_mle(x, lam0=0):
     """
     Maximum likelihood estimate of lambda in the Box-Cox transformation.
+
+    Parameters
+    ----------
+    x : sequence of numbers
+        The dataset for which the MLE of lambda is to be estimated.
+    lam0 : float
+        The initial guess for the numerical procedure that computes lambda.
+
+    Returns
+    -------
+    lam : mpmath.mpf
+        The esimate of the Box-Cox lambda parameter.
+
+    Examples
+    --------
+    >>> import mpmath
+    >>> mpmath.mp.dps = 40
+
+    >>> from mpsci.stats import boxcox_mle
+    >>> x = [12.5, 13, 18.2, 20, 24.9, 25.3, 32.8]
+    >>> boxcox_mle(x)
+    mpf('0.1902293418567596520673395974496886925599866')
+
     """
-    return mpmath.findroot(lambda t: _boxcox_llf_deriv(t, x), 0.0)
+    return mpmath.findroot(lambda t: _boxcox_llf_deriv(t, x), lam0)
