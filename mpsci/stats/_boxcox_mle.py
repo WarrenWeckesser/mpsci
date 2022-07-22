@@ -49,7 +49,7 @@ def boxcox_mle(x, lam0=0):
     Returns
     -------
     lam : mpmath.mpf
-        The esimate of the Box-Cox lambda parameter.
+        The estimate of the Box-Cox lambda parameter.
 
     Examples
     --------
