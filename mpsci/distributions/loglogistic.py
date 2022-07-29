@@ -5,6 +5,8 @@ Log-logistic distribution
 The log-logistic distribution is the probability distribution of a random
 variable whose logarithm has a logistic distribution.
 
+The distribution is also known as the Fisk distribution.
+
 The distribution has two parameters, `beta` and `scale`.  `beta` is a
 shape parameter.
 
