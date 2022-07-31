@@ -15,3 +15,4 @@ from ._logbeta import logbeta
 from ._logbinomial import logbinomial
 from ._logsumexp import logsumexp
 from ._legendre import roots_legendre
+from ._linspace import linspace
