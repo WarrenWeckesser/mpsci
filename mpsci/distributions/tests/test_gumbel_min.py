@@ -3,6 +3,7 @@
 import pytest
 import mpmath
 from mpsci.distributions import gumbel_min
+from ._utils import check_mle
 
 
 @pytest.mark.parametrize('scale', [1, 2])
@@ -50,3 +51,12 @@ def test_sf():
         valstr = '0.24768130366579455342390646303215371545090605136653835'
         expected = mpmath.mpf(valstr)
         assert mpmath.almosteq(p, expected)
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[2, 4, 8, 16],
+     [-990, -750, -375, -305, -300, -210, -60, 2]]
+)
+def test_mle(x):
+    check_mle(gumbel_min, x)

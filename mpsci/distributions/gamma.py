@@ -207,16 +207,17 @@ def nll(x, k, theta):
     Gamma distribution negative log-likelihood.
     """
     _validate_k_theta(k, theta)
-    k = mpmath.mpf(k)
-    theta = mpmath.mpf(theta)
+    with mpmath.extradps(5):
+        k = mpmath.mpf(k)
+        theta = mpmath.mpf(theta)
 
-    N = len(x)
-    sumx = mpmath.fsum(x)
-    sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
+        N = len(x)
+        sumx = mpmath.fsum(x)
+        sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
 
-    ll = ((k - 1)*sumlnx - sumx/theta - N*k*mpmath.log(theta) -
-          N*mpmath.loggamma(k))
-    return -ll
+        ll = ((k - 1)*sumlnx - sumx/theta - N*k*mpmath.log(theta) -
+              N*mpmath.loggamma(k))
+        return -ll
 
 
 def nll_grad(x, k, theta):
@@ -224,16 +225,17 @@ def nll_grad(x, k, theta):
     Gamma distribution gradient of the negative log-likelihood function.
     """
     _validate_k_theta(k, theta)
-    k = mpmath.mpf(k)
-    theta = mpmath.mpf(theta)
+    with mpmath.extradps(5):
+        k = mpmath.mpf(k)
+        theta = mpmath.mpf(theta)
 
-    N = len(x)
-    sumx = mpmath.fsum(x)
-    sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
+        N = len(x)
+        sumx = mpmath.fsum(x)
+        sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
 
-    dk = sumlnx - N*mpmath.log(theta) - N*mpmath.digamma(k)
-    dtheta = sumx/theta**2 - N*k/theta
-    return [-dk, -dtheta]
+        dk = sumlnx - N*mpmath.log(theta) - N*mpmath.digamma(k)
+        dtheta = sumx/theta**2 - N*k/theta
+        return [-dk, -dtheta]
 
 
 def nll_hess(x, k, theta):
@@ -241,18 +243,19 @@ def nll_hess(x, k, theta):
     Gamma distribution hessian of the negative log-likelihood function.
     """
     _validate_k_theta(k, theta)
-    k = mpmath.mpf(k)
-    theta = mpmath.mpf(theta)
+    with mpmath.extradps(5):
+        k = mpmath.mpf(k)
+        theta = mpmath.mpf(theta)
 
-    N = len(x)
-    sumx = mpmath.fsum(x)
-    # sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
+        N = len(x)
+        sumx = mpmath.fsum(x)
+        # sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
 
-    dk2 = -N*mpmath.psi(1, k)
-    dkdtheta = -N/theta
-    dtheta2 = -2*sumx/theta**3 + N*k/theta**2
+        dk2 = -N*mpmath.psi(1, k)
+        dkdtheta = -N/theta
+        dtheta2 = -2*sumx/theta**3 + N*k/theta**2
 
-    return mpmath.matrix([[-dk2, -dkdtheta], [-dkdtheta, -dtheta2]])
+        return mpmath.matrix([[-dk2, -dkdtheta], [-dkdtheta, -dtheta2]])
 
 
 def nll_invhess(x, k, theta):
@@ -260,18 +263,19 @@ def nll_invhess(x, k, theta):
     Gamma distribution inverse of the hessian of the negative log-likelihood.
     """
     _validate_k_theta(k, theta)
-    k = mpmath.mpf(k)
-    theta = mpmath.mpf(theta)
+    with mpmath.extradps(5):
+        k = mpmath.mpf(k)
+        theta = mpmath.mpf(theta)
 
-    N = len(x)
-    sumx = mpmath.fsum(x)
-    # sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
+        N = len(x)
+        sumx = mpmath.fsum(x)
+        # sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
 
-    dk2 = -N*mpmath.psi(1, k)
-    dkdtheta = -N/theta
-    dtheta2 = -2*sumx/theta**3 + N*k/theta**2
+        dk2 = -N*mpmath.psi(1, k)
+        dkdtheta = -N/theta
+        dtheta2 = -2*sumx/theta**3 + N*k/theta**2
 
-    det = dk2*dtheta2 - dkdtheta**2
+        det = dk2*dtheta2 - dkdtheta**2
 
-    return mpmath.matrix([[-dtheta2/det, dkdtheta/det],
-                          [dkdtheta/det, -dk2/det]])
+        return mpmath.matrix([[-dtheta2/det, dkdtheta/det],
+                              [dkdtheta/det, -dk2/det]])
