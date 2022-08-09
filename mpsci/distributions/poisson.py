@@ -68,11 +68,14 @@ def var(lam):
     return mpmath.mpf(lam)
 
 
-def mle(sample):
+def mle(x):
     """
     Maximum likelihood estimate for the Poisson distribution.
 
-    Returns lambda, the parameter of the Poisson distribution.
+    x must be a sequence of numbers that are presumed to be a sample
+    from a Poisson distribution.
+
+    Returns lambda, the estimated parameter of the Poisson distribution.
     """
     with mpmath.extradps(5):
-        return mpmath.fsum(sample) / len(sample)
+        return mpmath.fsum(x) / len(x)

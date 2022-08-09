@@ -1,4 +1,5 @@
 
+import statistics
 import pytest
 import mpmath
 from mpsci.distributions import poisson
@@ -38,3 +39,11 @@ def test_sf(k, lam):
         expected = 1 - mpmath.exp(-lam) * S
 
     assert abs(sf - expected) < 1e-40
+
+
+def test_mle():
+    sample = [2.0, 4.0, 8.0, 16.0]
+    lam = poisson.mle(sample)
+    # For the values in sample, statistics.mean(sample) will give the
+    # exact result.
+    assert mpmath.almosteq(lam, statistics.mean(sample))

@@ -1,6 +1,8 @@
 
+import pytest
 import mpmath
 from mpsci.distributions import gamma
+from ._utils import check_mle
 
 
 mpmath.mp.dps = 16
@@ -79,3 +81,14 @@ def test_mom():
     k, theta = gamma.mom(x)
     assert k == mpmath.mpf(5)
     assert theta == mpmath.mpf('0.5')
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[2, 4, 8, 16],
+     [63.0, 29.5, 53.0, 32.5, 22.0, 38.5, 24.5, 28.5, 23.5, 45.0, 64.5,
+      13.0, 21.5, 40.0, 48.0, 22.0, 15.0, 47.5, 48.0, 26.5, 33.0, 21.0,
+      28.0, 23.5, 16.0, 39.5, 38.5, 43.5, 23.0, 22.5, 33.5, 92.0, 44.5]]
+)
+def test_mle(x):
+    check_mle(gamma, x)
