@@ -1,5 +1,4 @@
-
-
+from itertools import product
 import pytest
 import mpmath
 from mpsci.distributions import weibull_max, weibull_min
@@ -67,3 +66,25 @@ def test_kurtosis(dist):
         valstr = '2.8021519350984650074697694858304410798423229238041266467027'
         expected = mpmath.mpf(valstr)
         assert mpmath.almosteq(kurt, expected)
+
+
+@pytest.mark.parametrize('dist, sgn', [(weibull_min, 1), (weibull_max, -1)])
+@pytest.mark.parametrize(
+    'x',
+    [[2, 4, 8, 16],
+     [5.43, 4.78, 3.38, 4.71, 4.64, 4.76, 5.45, 5.33, 4.64, 3.60,
+      5.02, 4.93, 3.40, 5.37, 4.36, 4.08, 4.97, 5.65, 5.10, 4.48,
+      5.44, 5.59, 4.64, 5.36, 4.99]],
+)
+def test_mle(dist, sgn, x):
+    # This is a crude test of dist.mle().
+    x = [sgn*t for t in x]
+    k_hat, _, scale_hat = dist.mle(x, loc=0)
+    nll = dist.nll(x, k=k_hat, loc=0, scale=scale_hat)
+    delta = 1e-9
+    n = 2
+    dirs = set(product(*([[-1, 0, 1]]*n))) - set([(0,)*n])
+    for d in dirs:
+        k = k_hat + d[0]*delta
+        scale = scale_hat + d[1]*delta
+        assert nll < dist.nll(x, k=k, loc=0, scale=scale)
