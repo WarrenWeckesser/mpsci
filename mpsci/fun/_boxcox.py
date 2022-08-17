@@ -1,6 +1,7 @@
 
 import mpmath
 import re
+from ._powm1 import pow1pm1, inv_powm1, inv_pow1pm1
 
 __all__ = ['boxcox', 'boxcox1p']
 
@@ -53,18 +54,17 @@ def boxcox1p(x, lmbda):
                       { ----------------    if lmbda != 0
                       {      lmbda
 
-    This function is mathematically equivalent to `boxcox(1+x, lmba)`.
+    This function is mathematically equivalent to `boxcox(1+x, lmbda)`.
     It avoids the loss of precision that can occur if x is very small.
 
     *See also:* `mpsci.fun.boxcox`
     """
     x = mpmath.mpf(x)
     lmbda = mpmath.mpf(lmbda)
-    one = mpmath.mpf(1)
     if lmbda == 0:
         return mpmath.log1p(x)
     else:
-        return mpmath.powm1(one + x, lmbda) / lmbda
+        return pow1pm1(x, lmbda) / lmbda
 
 
 _boxcox1p_latex_f = r"""
@@ -79,3 +79,27 @@ _boxcox1p_latex_f = r"""
 boxcox1p._docstring_re_subs = [
     ('[ ]+{.*lmbda', _boxcox1p_latex_f, 0, re.DOTALL)
 ]
+
+
+def inv_boxcox(y, lmbda):
+    """
+    Inverse with respect to x of boxcox(x, lmbda).
+    """
+    y = mpmath.mpf(y)
+    lmbda = mpmath.mpf(lmbda)
+    if lmbda == 0:
+        return mpmath.exp(y)
+    else:
+        return inv_powm1(lmbda*y, lmbda)
+
+
+def inv_boxcox1p(y, lmbda):
+    """
+    Inverse with respect to x of boxcox1p(x, lmbda).
+    """
+    y = mpmath.mpf(y)
+    lmbda = mpmath.mpf(lmbda)
+    if lmbda == 0:
+        return mpmath.expm1(y)
+    else:
+        return inv_pow1pm1(lmbda*y, lmbda)
