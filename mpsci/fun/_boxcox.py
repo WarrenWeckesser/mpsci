@@ -77,7 +77,7 @@ _boxcox1p_latex_f = r"""
 """
 
 boxcox1p._docstring_re_subs = [
-    ('[ ]+{.*lmbda', _boxcox1p_latex_f, 0, re.DOTALL)
+    ('[ ]+{.*    lmbda', _boxcox1p_latex_f, 0, re.DOTALL)
 ]
 
 
