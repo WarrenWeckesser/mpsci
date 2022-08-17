@@ -4,6 +4,7 @@ Kumaraswamy probability distribution
 
 """
 import mpmath
+from ..fun._powm1 import inv_powm1
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
@@ -82,13 +83,6 @@ def sf(x, a, b):
         return mpmath.power(-mpmath.powm1(x, a), b)
 
 
-def _invpowm1(y, r):
-    """
-    Inverse with respect to x of powm1(x, r).
-    """
-    return mpmath.exp(mpmath.log1p(y)/r)
-
-
 def invcdf(p, a, b):
     """
     Inverse of the CDF of the beta distribution.
@@ -105,7 +99,7 @@ def invcdf(p, a, b):
         p = mpmath.mpf(p)
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
-        return _invpowm1(-_invpowm1(-p, b), a)
+        return inv_powm1(-inv_powm1(-p, b), a)
 
 
 def invsf(p, a, b):
@@ -124,7 +118,7 @@ def invsf(p, a, b):
         p = mpmath.mpf(p)
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
-        return _invpowm1(-mpmath.power(p, 1/b), a)
+        return inv_powm1(-mpmath.power(p, 1/b), a)
 
 
 def mean(a, b):
@@ -157,4 +151,4 @@ def median(a, b):
     with mpmath.extradps(5):
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
-        return _invpowm1(-mpmath.power(0.5, 1/b), a)
+        return inv_powm1(-mpmath.power(0.5, 1/b), a)
