@@ -21,7 +21,7 @@ def marcumq(m, a, b):
 
     where I_{M-1}(x) is the modified Bessel function of order M-1.
 
-    *See also:* `mpsci.fun.cmarcumq`
+    *See also:* :func:`cmarcumq`
 
     Returns
     -------
@@ -77,7 +77,7 @@ def cmarcumq(m, a, b):
 
     The computed integral tends to be very inaccurate for m < 1/2.
 
-    *See also:* `mpsci.fun.marcumq`
+    *See also:* :func:`marcumq`
     """
     if a == 0:
         if m == 1:

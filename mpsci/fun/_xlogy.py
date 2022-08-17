@@ -11,7 +11,7 @@ def xlogy(x, y):
 
     If x is 0 and y is not nan, 0 is returned.
 
-    *See also:* `mpsci.fun.xlog1py`
+    *See also:* :func:`xlog1py`
     """
     if mp.isnan(x) or mp.isnan(y):
         return mp.nan
@@ -35,7 +35,7 @@ def xlog1py(x, y):
     This function is mathematically equivalent to `mpsci.fun.xlogy(1 + y)`.
     It avoids the loss of precision that can result if y is very small.
 
-    *See also:* `mpsci.fun.xlogy`
+    *See also:* :func:`xlogy`
     """
     if mp.isnan(x) or mp.isnan(y):
         return mp.nan

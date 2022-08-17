@@ -11,6 +11,8 @@ def yeo_johnson(x, lmbda):
     Yeo-Johnson transformation of x.
 
     See https://en.wikipedia.org/wiki/Power_transform#Yeo%E2%80%93Johnson_transformation
+
+    *See also:* :func:`inv_yeo_johnson`
     """
     with mpmath.extradps(5):
         x = mpmath.mpf(x)
@@ -33,6 +35,8 @@ def inv_yeo_johnson(x, lmbda):
     Inverse Yeo-Johnson transformation.
 
     See https://en.wikipedia.org/wiki/Power_transform#Yeo%E2%80%93Johnson_transformation
+
+    *See also:* :func:`yeo_johnson`
     """
     with mpmath.extradps(5):
         x = mpmath.mpf(x)

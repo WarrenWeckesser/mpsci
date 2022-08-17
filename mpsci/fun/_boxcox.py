@@ -18,7 +18,7 @@ def boxcox(x, lmbda):
                       { ------------    if lmbda != 0
                       {    lmbda
 
-    *See also:* `mpsci.fun.boxcox1p`
+    *See also:* :func:`inv_boxcox`,  :func:`boxcox1p`
     """
     x = mpmath.mpf(x)
     lmbda = mpmath.mpf(lmbda)
@@ -57,7 +57,7 @@ def boxcox1p(x, lmbda):
     This function is mathematically equivalent to `boxcox(1+x, lmbda)`.
     It avoids the loss of precision that can occur if x is very small.
 
-    *See also:* `mpsci.fun.boxcox`
+    *See also:* :func:`boxcox`, :func:`inv_boxcox1p`
     """
     x = mpmath.mpf(x)
     lmbda = mpmath.mpf(lmbda)
@@ -84,6 +84,8 @@ boxcox1p._docstring_re_subs = [
 def inv_boxcox(y, lmbda):
     """
     Inverse with respect to x of boxcox(x, lmbda).
+
+    *See also:* :func:`boxcox`
     """
     y = mpmath.mpf(y)
     lmbda = mpmath.mpf(lmbda)
@@ -96,6 +98,8 @@ def inv_boxcox(y, lmbda):
 def inv_boxcox1p(y, lmbda):
     """
     Inverse with respect to x of boxcox1p(x, lmbda).
+
+    *See also:* :func:`boxcox1p`
     """
     y = mpmath.mpf(y)
     lmbda = mpmath.mpf(lmbda)

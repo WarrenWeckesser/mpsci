@@ -5,7 +5,9 @@ from ._xlogy import xlog1py
 
 def inv_powm1(t, y):
     """
-    Inverse with respect to x of powm1(x, y).
+    Inverse with respect to x of ``mpmath.powm1(x, y)``.
+
+    *See also:* :func:`pow1pm1`, :func:`inv_pow1pm1`
     """
     if y == 0:
         raise ValueError('y must not be 0.')
@@ -19,7 +21,9 @@ def inv_powm1(t, y):
 
 def pow1pm1(x, y):
     """
-    Compute (x + 1)**y - 1.
+    Compute ``(x + 1)**y - 1``.
+
+    *See also:* :func:`inv_pow1pm1`
     """
     with mpmath.extradps(5):
         x = mpmath.mpf(x)
@@ -29,7 +33,9 @@ def pow1pm1(x, y):
 
 def inv_pow1pm1(t, y):
     """
-    Inverse with respect to x of pow1pm1(x, y).
+    Inverse with respect to x of ``pow1pm1(x, y)``.
+
+    *See also:* :func:`pow1pm1`
     """
     if y == 0:
         raise ValueError('y must not be 0.')
