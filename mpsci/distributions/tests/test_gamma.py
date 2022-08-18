@@ -8,6 +8,16 @@ from ._utils import check_mle
 mpmath.mp.dps = 16
 
 
+def test_pdf_outside_support():
+    p = gamma.pdf(-10, k=0.5, theta=1)
+    assert p == 0
+
+
+def test_logpdf_outside_support():
+    logp = gamma.logpdf(-10, k=0.5, theta=1)
+    assert logp == mpmath.mp.ninf
+
+
 # This is the value of CDF[GammaDistribution[2, 3], 1] computed with
 # Wolfram Alpha
 _cdf123str = ("0.04462491923494766609919453743282711006251725357136112381217"
@@ -20,10 +30,20 @@ def test_cdf():
     assert mpmath.almosteq(c, expected)
 
 
+def test_cdf_outside_support():
+    c = gamma.cdf(-10, k=0.5, theta=1)
+    assert c == 0
+
+
 def test_sf():
     s = gamma.sf(1, k=2, theta=3)
     expected = 1 - mpmath.mpf(_cdf123str)
     assert mpmath.almosteq(s, expected)
+
+
+def test_sf_outside_support():
+    c = gamma.sf(-10, k=0.5, theta=1)
+    assert c == 1
 
 
 def test_skewness():

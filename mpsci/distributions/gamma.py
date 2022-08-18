@@ -29,6 +29,8 @@ def pdf(x, k, theta):
     Unlike scipy, a location parameter is not included.
     """
     _validate_k_theta(k, theta)
+    if x < 0:
+        return mpmath.mp.zero
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
@@ -40,6 +42,8 @@ def logpdf(x, k, theta):
     Log of the PDF of the gamma distribution.
     """
     _validate_k_theta(k, theta)
+    if x < 0:
+        return mpmath.mp.ninf
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
@@ -57,6 +61,8 @@ def cdf(x, k, theta):
     Unlike scipy, a location parameter is not included.
     """
     _validate_k_theta(k, theta)
+    if x < 0:
+        return mpmath.mp.zero
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
@@ -68,6 +74,8 @@ def sf(x, k, theta):
     Survival function of the gamma distribution.
     """
     _validate_k_theta(k, theta)
+    if x < 0:
+        return mpmath.mp.one
     x = mpmath.mpf(x)
     k = mpmath.mpf(k)
     theta = mpmath.mpf(theta)
