@@ -14,8 +14,8 @@ This is the same distribution as:
 
 import mpmath
 from ..stats import pmean
-from ._weibull_common import (_validate_params, _validate_p,
-                              _mle_k_eqn1, _mle_k_eqn2, _median)
+from ._common import _validate_p, _median
+from ._weibull_common import _validate_params, _mle_k_eqn1, _mle_k_eqn2
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',

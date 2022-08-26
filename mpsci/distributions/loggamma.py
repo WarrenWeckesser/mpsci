@@ -15,6 +15,7 @@ implementation of the log-gamma distribution.
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
@@ -77,7 +78,11 @@ def invcdf(p, k, theta, x0):
     x0 is an initial guess for the quantile.
     """
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
+        if p == 0:
+            return mpmath.ninf
+        if p == 1:
+            return mpmath.inf
         k = mpmath.mpf(k)
         theta = mpmath.mpf(theta)
         root = mpmath.findroot(lambda t: cdf(t, k, theta) - p, x0)
@@ -108,7 +113,11 @@ def invsf(p, k, theta, x0):
     x0 is an initial guess for the quantile.
     """
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
+        if p == 0:
+            return mpmath.inf
+        if p == 1:
+            return mpmath.ninf
         k = mpmath.mpf(k)
         theta = mpmath.mpf(theta)
         root = mpmath.findroot(lambda t: sf(t, k, theta) - p, x0)
