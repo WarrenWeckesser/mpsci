@@ -8,7 +8,7 @@ This is the same distribution as `scipy.stats.genexpon`.
 import mpmath
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf']
 
 
 def _validate_params(a, b, c, loc, scale):
@@ -96,20 +96,24 @@ def invcdf(p, a, b, c, loc=0, scale=1):
     with mpmath.extradps(5):
         p = mpmath.mpf(p)
         a, b, c, loc, scale = _validate_params(a, b, c, loc, scale)
+        r = b/(a + b)
+        s = r/c - mpmath.log1p(-p)/(a + b)
+        x = s + mpmath.lambertw(-r*mpmath.exp(-s*c))/c
+    return loc + scale*x
 
-        s = a + b
-        r = b / c
 
-        y = -mpmath.log1p(-p)
-        s = a + b
-        r = b / c
+def invsf(p, a, b, c, loc=0, scale=1):
+    """
+    Inverse of the survival function of the gen. exponential distribution.
 
-        def _genexpon_invcdf_rootfunc(z):
-            return s*z + r*mpmath.expm1(-c*z) - y
-
-        z0 = y / s
-        z1 = (y + r) / s
-        z = mpmath.findroot(_genexpon_invcdf_rootfunc,
-                            (z0, z1), solver='anderson')
-        x = loc + scale*z
-    return x
+    This is also known as the quantile function.
+    """
+    if p < 0 or p > 1:
+        raise ValueError("'p' must be between 0 and 1.")
+    with mpmath.extradps(5):
+        p = mpmath.mpf(p)
+        a, b, c, loc, scale = _validate_params(a, b, c, loc, scale)
+        r = b/(a + b)
+        s = r/c - mpmath.log(p)/(a + b)
+        x = s + mpmath.lambertw(-r*mpmath.exp(-s*c))/c
+    return loc + scale*x
