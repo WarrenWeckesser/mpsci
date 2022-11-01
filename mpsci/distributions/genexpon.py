@@ -105,8 +105,6 @@ def invcdf(p, a, b, c, loc=0, scale=1):
 def invsf(p, a, b, c, loc=0, scale=1):
     """
     Inverse of the survival function of the gen. exponential distribution.
-
-    This is also known as the quantile function.
     """
     if p < 0 or p > 1:
         raise ValueError("'p' must be between 0 and 1.")
