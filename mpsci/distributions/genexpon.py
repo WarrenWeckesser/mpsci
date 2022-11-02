@@ -6,6 +6,7 @@ This is the same distribution as `scipy.stats.genexpon`.
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf']
@@ -91,10 +92,8 @@ def invcdf(p, a, b, c, loc=0, scale=1):
 
     This is also known as the quantile function.
     """
-    if p < 0 or p > 1:
-        raise ValueError("'p' must be between 0 and 1.")
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         a, b, c, loc, scale = _validate_params(a, b, c, loc, scale)
         r = b/(a + b)
         s = r/c - mpmath.log1p(-p)/(a + b)
@@ -106,10 +105,8 @@ def invsf(p, a, b, c, loc=0, scale=1):
     """
     Inverse of the survival function of the gen. exponential distribution.
     """
-    if p < 0 or p > 1:
-        raise ValueError("'p' must be between 0 and 1.")
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         a, b, c, loc, scale = _validate_params(a, b, c, loc, scale)
         r = b/(a + b)
         s = r/c - mpmath.log(p)/(a + b)

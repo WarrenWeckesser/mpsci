@@ -4,6 +4,7 @@ Kumaraswamy probability distribution
 
 """
 import mpmath
+from ._common import _validate_p
 from ..fun._powm1 import inv_powm1
 
 
@@ -88,15 +89,12 @@ def invcdf(p, a, b):
     Inverse of the CDF of the beta distribution.
     """
     _validate_a_b(a, b)
-    if p < 0 or p > 1:
-        return mpmath.nan
-    if p == 0:
-        return mpmath.mp.zero
-    if p == 1:
-        return mpmath.mp.one
-
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
+        if p == 0:
+            return mpmath.mp.zero
+        if p == 1:
+            return mpmath.mp.one
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
         return inv_powm1(-inv_powm1(-p, b), a)
@@ -107,15 +105,12 @@ def invsf(p, a, b):
     Inverse of the survival function of the Kumaraswamy distribution.
     """
     _validate_a_b(a, b)
-    if p < 0 or p > 1:
-        return mpmath.nan
-    if p == 0:
-        return mpmath.mp.one
-    if p == 1:
-        return mpmath.mp.zero
-
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
+        if p == 0:
+            return mpmath.mp.one
+        if p == 1:
+            return mpmath.mp.zero
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
         return inv_powm1(-mpmath.power(p, 1/b), a)

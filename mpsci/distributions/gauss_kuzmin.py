@@ -12,15 +12,11 @@ See https://en.wikipedia.org/wiki/Gauss%E2%80%93Kuzmin_distribution
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pmf', 'logpmf', 'cdf', 'invcdf', 'sf', 'invsf',
            'mode', 'median', 'mean', 'var']
-
-
-def _check_p(p):
-    if p < 0 or p > 1:
-        raise ValueError('p must be in the interval [0, 1]')
 
 
 def pmf(k):
@@ -73,9 +69,8 @@ def invcdf(p):
     The distribution is discrete, but mpmath.mpf values are returned,
     to allow for returning `inf` when p is 1.
     """
-    _check_p(p)
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         if p == 1:
             return mpmath.inf
         t = mpmath.powm1(2, 1 - p)
@@ -103,9 +98,8 @@ def invsf(p):
     The distribution is discrete, but mpmath.mpf values are returned,
     to allow for returning `inf` when p is 0.
     """
-    _check_p(p)
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         if p == 0:
             return mpmath.inf
         t = mpmath.powm1(2, p)

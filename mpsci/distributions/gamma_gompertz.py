@@ -17,6 +17,7 @@ The parameters used here map to the wikipedia article as follows::
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'cdf', 'invcdf', 'sf', 'invsf']
@@ -62,9 +63,7 @@ def invcdf(p, c, beta, scale):
     Inverse CDF (i.e. quantile function) of the Gamma-Gompertz distribution.
     """
     with mpmath.extradps(5):
-        if p < 0 or p > 1:
-            return mpmath.mp.nan
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         beta = mpmath.mpf(beta)
         c = mpmath.mpf(c)
         scale = mpmath.mpf(scale)
@@ -97,9 +96,7 @@ def invsf(p, c, beta, scale):
     Inverse survival function of the Gamma-Gompertz distribution.
     """
     with mpmath.extradps(5):
-        if p < 0 or p > 1:
-            return mpmath.mp.nan
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         beta = mpmath.mpf(beta)
         c = mpmath.mpf(c)
         scale = mpmath.mpf(scale)

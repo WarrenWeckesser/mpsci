@@ -7,6 +7,7 @@ See https://en.wikipedia.org/wiki/Slash_distribution for details.
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf']
@@ -67,10 +68,8 @@ def invcdf(p):
     This function numerically inverts the CDF function so it
     may be slow, and in some cases it may fail to find a solution.
     """
-    if p < 0 or p > 1:
-        raise ValueError('p must be in the interval [0, 1]')
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         if p == 0:
             return mpmath.ninf
         if p == 1:
@@ -91,10 +90,8 @@ def invsf(p):
     This function numerically inverts the survival function so it
     may be slow, and in some cases it may fail to find a solution.
     """
-    if p < 0 or p > 1:
-        raise ValueError('p must be in the interval [0, 1]')
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         if p == 0:
             return mpmath.inf
         if p == 1:

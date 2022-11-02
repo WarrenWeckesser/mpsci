@@ -8,6 +8,7 @@ run multiple times with increasing mpmath precision.
 
 import mpmath
 from . import normal
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'median',
@@ -98,12 +99,8 @@ def invcdf(p, a, b):
     This function is also known as the quantile function or the percent
     point function.
     """
-    _validate_params(a, b)
-    if p < 0 or p > 1:
-        return mpmath.nan
-
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
 
@@ -117,12 +114,8 @@ def invsf(p, a, b):
     """
     Inverse of the survival function of the standard normal distribution.
     """
-    _validate_params(a, b)
-    if p < 0 or p > 1:
-        return mpmath.nan
-
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
 

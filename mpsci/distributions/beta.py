@@ -4,6 +4,7 @@ Beta probability distribution
 
 """
 import mpmath
+from ._common import _validate_p
 from .. import fun as _fun
 from ..stats import mean as _mean, var as _var
 
@@ -99,17 +100,18 @@ def invcdf(p, a, b):
     Inverse of the CDF of the beta distribution.
     """
     _validate_a_b(a, b)
-    if p < 0 or p > 1:
-        return mpmath.nan
-    if p == 0:
-        return mpmath.mp.zero
-    if p == 1:
-        return mpmath.mp.one
+    with mpmath.extradps(5):
+        p = _validate_p(p)
+        if p == 0:
+            return mpmath.mp.zero
+        if p == 1:
+            return mpmath.mp.one
 
-    # XXX Bisection is not the most efficient method.  This also fails in some
-    # cases when p is very close to 0 or 1.
-    x = mpmath.findroot(lambda x: cdf(x, a, b) - p, x0=(0, 1), solver='bisect')
-    return x
+        # XXX Bisection is not the most efficient method.  This also fails in
+        # some cases when p is very close to 0 or 1.
+        x = mpmath.findroot(lambda x: cdf(x, a, b) - p, x0=(0, 1),
+                            solver='bisect')
+        return x
 
 
 def invsf(p, a, b):
@@ -117,17 +119,18 @@ def invsf(p, a, b):
     Inverse of the survival function of the beta distribution.
     """
     _validate_a_b(a, b)
-    if p < 0 or p > 1:
-        return mpmath.nan
-    if p == 0:
-        return mpmath.mp.one
-    if p == 1:
-        return mpmath.mp.zero
+    with mpmath.extradps(5):
+        p = _validate_p(p)
+        if p == 0:
+            return mpmath.mp.one
+        if p == 1:
+            return mpmath.mp.zero
 
-    # XXX Bisection is not the most efficient method.  This also fails in some
-    # cases when p is very close to 0 or 1.
-    x = mpmath.findroot(lambda x: sf(x, a, b) - p, x0=(0, 1), solver='bisect')
-    return x
+        # XXX Bisection is not the most efficient method.  This also fails in
+        # some cases when p is very close to 0 or 1.
+        x = mpmath.findroot(lambda x: sf(x, a, b) - p, x0=(0, 1),
+                            solver='bisect')
+        return x
 
 
 def mean(a, b):

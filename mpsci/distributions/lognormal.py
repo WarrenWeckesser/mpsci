@@ -8,6 +8,7 @@ parameters as used in `scipy.stats.lognorm`.
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
@@ -78,11 +79,8 @@ def invcdf(p, mu=0, sigma=1):
     point function.
     """
     _validate_sigma(sigma)
-    if p < 0 or p > 1:
-        return mpmath.nan
-
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         mu = mpmath.mpf(mu)
         sigma = mpmath.mpf(sigma)
         a = mpmath.erfinv(2*p - 1)
@@ -96,7 +94,9 @@ def invsf(p, mu=0, sigma=1):
     Log-normal distribution inverse survival function.
     """
     _validate_sigma(sigma)
-    return invcdf(1 - p, mu, sigma)
+    with mpmath.extradps(5):
+        p = _validate_p(p)
+        return invcdf(1 - p, mu, sigma)
 
 
 def mean(mu=0, sigma=1):

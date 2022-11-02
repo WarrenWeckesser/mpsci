@@ -13,6 +13,7 @@ shape parameter.
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var']
@@ -23,11 +24,6 @@ def _validate_params(beta, scale):
         raise ValueError('beta must be greater than 0')
     if scale <= 0:
         raise ValueError('scale must be greater than 0')
-
-
-def _validate_p(p):
-    if p < 0 or p > 1:
-        raise ValueError('p must be in the interval [0, 1].')
 
 
 def pdf(x, beta, scale):
@@ -108,10 +104,9 @@ def invcdf(p, beta, scale):
     This function is also known as the quantile function or the percent
     point function.
     """
-    _validate_p(p)
     _validate_params(beta, scale)
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         if p == 1:
             return mpmath.inf
         beta = mpmath.mpf(beta)
@@ -124,10 +119,9 @@ def invsf(p, beta, scale):
     """
     Inverse survival function of the log-logistic distribution.
     """
-    _validate_p(p)
     _validate_params(beta, scale)
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         if p == 0:
             return mpmath.inf
         beta = mpmath.mpf(beta)

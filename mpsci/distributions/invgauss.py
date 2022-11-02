@@ -9,6 +9,7 @@ implementation in `scipy.stats.invgauss`.  `mu` is a shape parameter;
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf',
@@ -96,9 +97,7 @@ def invcdf(p, mu, loc=0, scale=1):
     """
     with mpmath.extradps(5):
         mu, loc, scale = _validate_params(mu, loc, scale)
-        p = mpmath.mpf(p)
-        if p < 0 or p > 1:
-            return mpmath.mp.nan
+        p = _validate_p(p)
         if p == 0:
             return loc
         if p == 1:
@@ -149,9 +148,7 @@ def invsf(p, mu, loc=0, scale=1):
     """
     with mpmath.extradps(5):
         mu, loc, scale = _validate_params(mu, loc, scale)
-        p = mpmath.mpf(p)
-        if p < 0 or p > 1:
-            return mpmath.mp.nan
+        p = _validate_p(p)
         if p == 0:
             return mpmath.inf
         if p == 1:

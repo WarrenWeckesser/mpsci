@@ -6,6 +6,7 @@ Raised cosine distribution
 
 import re
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
@@ -143,10 +144,7 @@ def invcdf(p):
     Inverse of the CDF of the raised cosine distribution.
     """
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
-
-        if p < 0 or p > 1:
-            return mpmath.nan
+        p = _validate_p(p)
         if p == 0:
             return -mpmath.pi
         if p == 1:

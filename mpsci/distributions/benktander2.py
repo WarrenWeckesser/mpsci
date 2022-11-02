@@ -4,6 +4,7 @@ Benktander II Distribution
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var']
@@ -93,9 +94,8 @@ def invcdf(p, a, b):
     Variable names follow the convention used on wikipedia.
     """
     _validate_ab(a, b)
-    if p < 0 or p > 1:
-        return mpmath.nan
     with mpmath.extradps(5):
+        p = _validate_p(p)
         p = mpmath.mpf(p)
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
@@ -116,10 +116,8 @@ def invsf(p, a, b):
     Variable names follow the convention used on wikipedia.
     """
     _validate_ab(a, b)
-    if p < 0 or p > 1:
-        return mpmath.nan
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         a = mpmath.mpf(a)
         b = mpmath.mpf(b)
         one = mpmath.mp.one

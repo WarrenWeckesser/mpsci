@@ -4,6 +4,7 @@ Student's t distribution
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'entropy']
@@ -82,18 +83,15 @@ def invcdf(p, df):
     not be accurate.  Check the results, and increase the precision of
     the calculation if necessary.
     """
-    if p < 0 or p > 1:
-        raise ValueError('p must be in the interval [0, 1]')
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    if p == 0:
-        return mpmath.ninf
-    if p == 1:
-        return mpmath.inf
-
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
+        if p == 0:
+            return mpmath.ninf
+        if p == 1:
+            return mpmath.inf
         if p > 0.5:
             p0 = mpmath.mp.one - p
         else:
@@ -126,8 +124,7 @@ def invsf(p, df):
     not be accurate.  Check the results, and increase the precision of
     the calculation if necessary.
     """
-    if p < 0 or p > 1:
-        raise ValueError('p must be in the interval [0, 1]')
+    p = _validate_p(p)
     if df <= 0:
         raise ValueError('df must be greater than 0')
 

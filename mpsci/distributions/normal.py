@@ -4,6 +4,7 @@ Normal distribution
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'mle']
@@ -52,16 +53,14 @@ def invcdf(p, mu=0, sigma=1):
     This function is also known as the quantile function or the percent
     point function.
     """
-    if p < 0 or p > 1:
-        return mpmath.nan
+    with mpmath.extradps(5):
+        p = _validate_p(p)
+        mu = mpmath.mpf(mu)
+        sigma = mpmath.mpf(sigma)
 
-    p = mpmath.mpf(p)
-    mu = mpmath.mpf(mu)
-    sigma = mpmath.mpf(sigma)
-
-    a = mpmath.erfinv(2*p - 1)
-    x = mpmath.sqrt(2)*sigma*a + mu
-    return x
+        a = mpmath.erfinv(2*p - 1)
+        x = mpmath.sqrt(2)*sigma*a + mu
+        return x
 
 
 # XXX Add standard errors and confidence intervals for the fitted parameters.

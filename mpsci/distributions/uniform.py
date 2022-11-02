@@ -6,6 +6,7 @@ These functions are for the uniform distribution on [a, b].
 """
 
 import mpmath as _mpmath
+from ._common import _validate_p
 from ..stats import mean as _mean
 
 
@@ -81,10 +82,8 @@ def invcdf(p, a=0, b=1):
     point function.
     """
     with _mpmath.extradps(5):
+        p = _validate_p(p)
         a, b = _validate(a, b)
-        if p < 0 or p > 1:
-            return _mpmath.nan
-        p = _mpmath.mpf(p)
         x = a + p*(b - a)
         return x
 
@@ -94,10 +93,8 @@ def invsf(p, a=0, b=1):
     Unifiorm distribution inverse survival function.
     """
     with _mpmath.extradps(5):
+        p = _validate_p(p)
         a, b = _validate(a, b)
-        if p < 0 or p > 1:
-            return _mpmath.nan
-        p = _mpmath.mpf(p)
         x = b - p*(b - a)
         return x
 

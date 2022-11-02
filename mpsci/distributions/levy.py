@@ -14,6 +14,7 @@ information.
 """
 
 import mpmath
+from ._common import _validate_p
 
 
 __all__ = ['logpdf', 'pdf', 'cdf', 'invcdf', 'sf', 'invsf']
@@ -73,13 +74,10 @@ def invcdf(p, mu=0, sigma=1):
     """
     Inverse of the CDF of the Lévy distribution.
     """
-    if p < 0 or p > 1:
-        raise ValueError('p must be in the interval [0, 1]')
     if sigma <= 0:
         raise ValueError('sigma must be positive.')
-
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         mu = mpmath.mpf(mu)
         sigma = mpmath.mpf(sigma)
         return mu + sigma / (2*_erfcinv(p)**2)
@@ -107,13 +105,10 @@ def invsf(p, mu=0, sigma=1):
     """
     Inverse of the survivial function of the Lévy distribution.
     """
-    if p < 0 or p > 1:
-        raise ValueError('p must be in the interval [0, 1]')
     if sigma <= 0:
         raise ValueError('sigma must be positive.')
-
     with mpmath.extradps(5):
-        p = mpmath.mpf(p)
+        p = _validate_p(p)
         mu = mpmath.mpf(mu)
         sigma = mpmath.mpf(sigma)
         return mu + sigma / (2*mpmath.erfinv(p)**2)
