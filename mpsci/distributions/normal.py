@@ -43,7 +43,7 @@ def sf(x, mu=0, sigma=1):
     """
     Normal distribution survival function.
     """
-    return mpmath.ncdf(-x, mu, sigma)
+    return mpmath.ncdf(-x + 2*mu, mu, sigma)
 
 
 def invcdf(p, mu=0, sigma=1):
@@ -53,12 +53,26 @@ def invcdf(p, mu=0, sigma=1):
     This function is also known as the quantile function or the percent
     point function.
     """
-    with mpmath.extradps(5):
+    with mpmath.extradps(mpmath.mp.dps):
         p = _validate_p(p)
         mu = mpmath.mpf(mu)
         sigma = mpmath.mpf(sigma)
 
         a = mpmath.erfinv(2*p - 1)
+        x = mpmath.sqrt(2)*sigma*a + mu
+        return x
+
+
+def invsf(p, mu=0, sigma=1):
+    """
+    Inverse of the survival function of the normal distribution.
+    """
+    with mpmath.extradps(mpmath.mp.dps):
+        p = _validate_p(p)
+        mu = mpmath.mpf(mu)
+        sigma = mpmath.mpf(sigma)
+
+        a = mpmath.erfinv(1 - 2*p)
         x = mpmath.sqrt(2)*sigma*a + mu
         return x
 
