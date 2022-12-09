@@ -7,6 +7,24 @@ from mpsci.distributions import beta
 mpmath.mp.dps = 40
 
 
+def test_invcdf_cdf_roundtrip():
+    p0 = mpmath.mpf('0.6')
+    a = mpmath.mpf('0.95')
+    b = mpmath.mpf(2)
+    x = beta.invcdf(p0, a, b)
+    p1 = beta.cdf(x, a, b)
+    assert mpmath.almosteq(p1, p0)
+
+
+def test_invsf_sf_roundtrip():
+    p0 = mpmath.mpf('0.6')
+    a = mpmath.mpf('0.95')
+    b = mpmath.mpf(2)
+    x = beta.invsf(p0, a, b)
+    p1 = beta.sf(x, a, b)
+    assert mpmath.almosteq(p1, p0)
+
+
 @pytest.mark.parametrize('a, b, expected',
                          [(1, 3, mpmath.mpf('0.0375')),
                           (0.5, 0.5, 0.125)])

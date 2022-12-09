@@ -6,7 +6,7 @@ See https://en.wikipedia.org/wiki/Beta_prime_distribution
 
 """
 import mpmath
-from ._common import _validate_p
+from ._common import _validate_p, _get_interval_cdf
 from .. import fun as _fun
 
 
@@ -75,21 +75,6 @@ def sf(x, a, b):
         if x < 0:
             return mpmath.mp.one
         return mpmath.betainc(a, b, x1=x/(1+x), x2=1, regularized=True)
-
-
-def _get_interval_cdf(func, p):
-    x0 = mpmath.mp.one
-    while func(x0) > p:
-        x0 = 0.5*x0
-    if func(x0) == p:
-        return (x0, x0)
-    while func(x0) < p:
-        x0 = x0/0.875
-    if func(x0) == p:
-        return (x0, x0)
-    x1 = x0
-    x0 = 0.875*x0
-    return x0, x1
 
 
 def invcdf(p, a, b):

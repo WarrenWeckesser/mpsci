@@ -4,7 +4,7 @@ Beta probability distribution
 
 """
 import mpmath
-from ._common import _validate_p
+from ._common import _validate_p, _get_interval_cdf
 from .. import fun as _fun
 from ..stats import mean as _mean, var as _var
 
@@ -107,10 +107,12 @@ def invcdf(p, a, b):
         if p == 1:
             return mpmath.mp.one
 
-        # XXX Bisection is not the most efficient method.  This also fails in
-        # some cases when p is very close to 0 or 1.
-        x = mpmath.findroot(lambda x: cdf(x, a, b) - p, x0=(0, 1),
-                            solver='bisect')
+        x0, x1 = _get_interval_cdf(lambda x: cdf(x, a, b), p)
+        if x0 == x1:
+            return x0
+
+        x = mpmath.findroot(lambda x: cdf(x, a, b) - p, x0=(x0, x1),
+                            solver='secant')
         return x
 
 
@@ -126,10 +128,12 @@ def invsf(p, a, b):
         if p == 1:
             return mpmath.mp.zero
 
-        # XXX Bisection is not the most efficient method.  This also fails in
-        # some cases when p is very close to 0 or 1.
-        x = mpmath.findroot(lambda x: sf(x, a, b) - p, x0=(0, 1),
-                            solver='bisect')
+        x0, x1 = _get_interval_cdf(lambda x: -sf(x, a, b), -p)
+        if x0 == x1:
+            return x0
+
+        x = mpmath.findroot(lambda x: sf(x, a, b) - p, x0=(x0, x1),
+                            solver='secant')
         return x
 
 
