@@ -6,7 +6,7 @@ See https://en.wikipedia.org/wiki/Beta_prime_distribution
 
 """
 import mpmath
-from ._common import _validate_p, _get_interval_cdf
+from ._common import _validate_p, _find_bracket
 from .. import fun as _fun
 
 
@@ -62,6 +62,8 @@ def cdf(x, a, b):
         x = mpmath.mpf(x)
         if x < 0:
             return mpmath.mp.zero
+        if x == mpmath.inf:
+            return mpmath.mp.one
         return mpmath.betainc(a, b, x1=0, x2=x/(1+x), regularized=True)
 
 
@@ -74,6 +76,8 @@ def sf(x, a, b):
         x = mpmath.mpf(x)
         if x < 0:
             return mpmath.mp.one
+        if x == mpmath.inf:
+            return mpmath.mp.zero
         return mpmath.betainc(a, b, x1=x/(1+x), x2=1, regularized=True)
 
 
@@ -89,7 +93,7 @@ def invcdf(p, a, b):
         if p == 1:
             return mpmath.mp.inf
 
-        x0, x1 = _get_interval_cdf(lambda x: cdf(x, a, b), p)
+        x0, x1 = _find_bracket(lambda x: cdf(x, a, b), p, 0, mpmath.inf)
         if x0 == x1:
             return x0
         x = mpmath.findroot(lambda x: cdf(x, a, b) - p, x0=(x0, x1),
@@ -109,7 +113,7 @@ def invsf(p, a, b):
         if p == 1:
             return mpmath.mp.zero
 
-        x0, x1 = _get_interval_cdf(lambda x: -sf(x, a, b), -p)
+        x0, x1 = _find_bracket(lambda x: sf(x, a, b), p, 0, mpmath.inf)
         if x0 == x1:
             return x0
         x = mpmath.findroot(lambda x: sf(x, a, b) - p, x0=(x0, x1),

@@ -31,3 +31,12 @@ def test_mean_with_quad():
     integral = mp.quad(lambda t: t*rel_breitwigner.pdf(t, rho, scale),
                        [0, rho*scale, mp.inf])
     assert mp.almosteq(mean, integral)
+
+
+@pytest.mark.parametrize('rho', [0.125, 1, 8])
+@pytest.mark.parametrize('x0', [mp.mpf('1e-12'), 1, 25])
+def test_cdf_invcdf_roundtrip(rho, x0):
+    scale = mp.mpf(1.25)
+    p = rel_breitwigner.cdf(x0, rho, scale)
+    x1 = rel_breitwigner.invcdf(p, rho, scale)
+    assert mp.almosteq(x1, x0)

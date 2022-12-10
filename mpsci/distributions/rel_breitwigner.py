@@ -29,7 +29,7 @@ See https://github.com/scipy/scipy/issues/6414 for the details.
 import mpmath
 from mpmath import mp
 
-from ._common import _validate_p
+from ._common import _validate_p,  _find_bracket
 
 
 __all__ = ['pdf', 'cdf', 'invcdf', 'mean', 'mode']
@@ -93,8 +93,8 @@ def invcdf(p, rho, scale):
     with mpmath.extradps(5):
         p = _validate_p(p)
         rho, scale = _validate_rho_scale(rho, scale)
-        # TODO: Investigate a smarter initial guess.
-        root = mp.findroot(lambda t: cdf(t, rho, scale) - p, x0=rho)
+        x0, x1 = _find_bracket(lambda x: cdf(x, rho, scale), p, 0, mp.inf)
+        root = mp.findroot(lambda t: cdf(t, rho, scale) - p, x0=(x0, x1))
         return root
 
 

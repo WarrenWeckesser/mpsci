@@ -4,7 +4,7 @@ Beta probability distribution
 
 """
 import mpmath
-from ._common import _validate_p, _get_interval_cdf
+from ._common import _validate_p, _find_bracket
 from .. import fun as _fun
 from ..stats import mean as _mean, var as _var
 
@@ -107,7 +107,7 @@ def invcdf(p, a, b):
         if p == 1:
             return mpmath.mp.one
 
-        x0, x1 = _get_interval_cdf(lambda x: cdf(x, a, b), p)
+        x0, x1 = _find_bracket(lambda x: cdf(x, a, b), p, 0, 1)
         if x0 == x1:
             return x0
 
@@ -128,7 +128,7 @@ def invsf(p, a, b):
         if p == 1:
             return mpmath.mp.zero
 
-        x0, x1 = _get_interval_cdf(lambda x: -sf(x, a, b), -p)
+        x0, x1 = _find_bracket(lambda x: sf(x, a, b), p, 0, 1)
         if x0 == x1:
             return x0
 
