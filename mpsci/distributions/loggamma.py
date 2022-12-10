@@ -15,7 +15,7 @@ implementation of the log-gamma distribution.
 """
 
 import mpmath
-from ._common import _validate_p
+from ._common import _validate_p, _find_bracket
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
@@ -67,7 +67,7 @@ def cdf(x, k, theta):
         return mpmath.gammainc(k, 0, mpmath.exp(z), regularized=True)
 
 
-def invcdf(p, k, theta, x0):
+def invcdf(p, k, theta):
     """
     Inverse of the CDF for the log-gamma distribution.
 
@@ -75,7 +75,6 @@ def invcdf(p, k, theta, x0):
 
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
-    x0 is an initial guess for the quantile.
     """
     with mpmath.extradps(5):
         p = _validate_p(p)
@@ -85,7 +84,9 @@ def invcdf(p, k, theta, x0):
             return mpmath.inf
         k = mpmath.mpf(k)
         theta = mpmath.mpf(theta)
-        root = mpmath.findroot(lambda t: cdf(t, k, theta) - p, x0)
+        x0, x1 = _find_bracket(lambda t: cdf(t, k, theta), p,
+                               -mpmath.inf, mpmath.inf)
+        root = mpmath.findroot(lambda t: cdf(t, k, theta) - p, x0=(x0, x1))
         return root
 
 
@@ -104,13 +105,12 @@ def sf(x, k, theta):
         return mpmath.gammainc(k, mpmath.exp(z), mpmath.inf, regularized=True)
 
 
-def invsf(p, k, theta, x0):
+def invsf(p, k, theta):
     """
     Inverse of the survival functin for the log-gamma distribution.
 
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
-    x0 is an initial guess for the quantile.
     """
     with mpmath.extradps(5):
         p = _validate_p(p)
@@ -120,6 +120,8 @@ def invsf(p, k, theta, x0):
             return mpmath.ninf
         k = mpmath.mpf(k)
         theta = mpmath.mpf(theta)
+        x0, x1 = _find_bracket(lambda t: sf(t, k, theta), p,
+                               -mpmath.inf, mpmath.inf)
         root = mpmath.findroot(lambda t: sf(t, k, theta) - p, x0)
         return root
 
