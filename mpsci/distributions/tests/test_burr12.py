@@ -30,6 +30,15 @@ def test_cdf_basic():
     assert mp.almosteq(cdf, mp.mpf('33/49'))
 
 
+def test_invcdf_basic():
+    c = 1
+    d = 2
+    scale = 4
+    p = mp.mpf('33/49')
+    x = burr12.invcdf(p, c, d, scale)
+    assert mp.almosteq(x, 3)
+
+
 def test_sf_basic():
     c = 1
     d = 2
@@ -37,6 +46,15 @@ def test_sf_basic():
     x = 3
     sf = burr12.sf(x, c, d, scale)
     assert mp.almosteq(sf, mp.mpf('16/49'))
+
+
+def test_invsf_basic():
+    c = 1
+    d = 2
+    scale = 4
+    p = mp.mpf('16/49')
+    x = burr12.invsf(p, c, d, scale)
+    assert mp.almosteq(x, 3)
 
 
 def test_logsf_basic():

@@ -4,10 +4,11 @@ Burr type XII probability distribution
 """
 
 import mpmath
+from mpsci.distributions._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'logsf', 'mean', 'var',
-           'median', 'mode']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'logsf',
+           'mean', 'var', 'median', 'mode']
 
 
 def _validate_params(c, d, scale):
@@ -56,6 +57,16 @@ def cdf(x, c, d, scale):
         return 1 - sf(x, c, d, scale)
 
 
+def invcdf(p, c, d, scale):
+    """
+    Inverse of the CDF of the Burr type XII distribution.
+    """
+    with mpmath.extradps(5):
+        c, d, scale = _validate_params(c, d, scale)
+        p = _validate_p(p)
+        return scale * mpmath.powm1(1 - p, -1/d)**(1/c)
+
+
 def sf(x, c, d, scale):
     """
     Survival function of the Burr type XII distribution.
@@ -66,6 +77,16 @@ def sf(x, c, d, scale):
         if x < 0:
             return mpmath.mp.one
         return (1 + (x/scale)**c)**(-d)
+
+
+def invsf(p, c, d, scale):
+    """
+    Inverse of the survival function of the Burr type XII distribution.
+    """
+    with mpmath.extradps(5):
+        c, d, scale = _validate_params(c, d, scale)
+        p = _validate_p(p)
+        return scale * mpmath.powm1(p, -1/d)**(1/c)
 
 
 def logsf(x, c, d, scale):
