@@ -78,7 +78,7 @@ def _find_bracket(func, p, a, b, nbisect=None):
     # of bisection to refine.
 
     if nbisect is None:
-        nbisect = max(mp.prec // 2, 8)
+        nbisect = 8
     for k in range(nbisect):
         mid = (x0 + x1)/2
         pmid = func(mid)
