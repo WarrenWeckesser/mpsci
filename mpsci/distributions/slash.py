@@ -43,6 +43,7 @@ def cdf(x):
     with mpmath.extradps(5):
         if x == 0:
             return mpmath.mp.one/2
+        x = mpmath.mpf(x)
         return mpmath.ncdf(x) - (mpmath.npdf(0) - mpmath.npdf(x))/x
 
 
@@ -53,6 +54,7 @@ def sf(x):
     with mpmath.extradps(5):
         if x == 0:
             return mpmath.mp.one/2
+        x = mpmath.mpf(x)
         return mpmath.ncdf(-x) + (mpmath.npdf(0) - mpmath.npdf(x))/x
 
 
