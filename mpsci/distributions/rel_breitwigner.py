@@ -26,13 +26,14 @@ See https://github.com/scipy/scipy/issues/6414 for the details.
 
 """
 
-import mpmath
+import operator
 from mpmath import mp
-
+from ..fun import pow1pm1
 from ._common import _validate_p,  _find_bracket
 
 
-__all__ = ['pdf', 'cdf', 'invcdf', 'mean', 'mode']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'mean', 'var', 'mode',
+           'noncentral_moment']
 
 
 def _validate_rho_scale(rho, scale):
@@ -44,7 +45,8 @@ def _validate_rho_scale(rho, scale):
 
 
 def _k(rho):
-    with mpmath.extradps(5):
+    # FIXME: `_k` is a horrible name!
+    with mp.extradps(5):
         rho = mp.mpf(rho)
         rho2 = rho**2
         s = mp.sqrt(rho2 + 1)
@@ -55,7 +57,7 @@ def pdf(x, rho, scale):
     """
     Probability density function of the relativistic Breit-Wigner distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         x = mp.mpf(x)
         rho, scale = _validate_rho_scale(rho, scale)
         if x < 0:
@@ -66,11 +68,26 @@ def pdf(x, rho, scale):
         return k / ((z**2 - rho2)**2 + rho2) / scale
 
 
+def logpdf(x, rho, scale):
+    """
+    Logarithm of the PDF of the relativistic Breit-Wigner distribution.
+    """
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        rho, scale = _validate_rho_scale(rho, scale)
+        if x < 0:
+            return mp.ninf
+        logk = mp.log(_k(rho))
+        z = x / scale
+        return (logk - 2*mp.log(rho) - mp.log(scale)
+                - mp.log1p(((z + rho)*(z - rho)/rho)**2))
+
+
 def cdf(x, rho, scale):
     """
     Cumulative distribution function of the relativistic Breit-Wigner distr.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         x = mp.mpf(x)
         rho, scale = _validate_rho_scale(rho, scale)
         if x < 0:
@@ -90,7 +107,7 @@ def invcdf(p, rho, scale):
     The implementation uses a numerical root finder, so it may be slow, and
     it may fail to converge for some inputs.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         rho, scale = _validate_rho_scale(rho, scale)
         x0, x1 = _find_bracket(lambda x: cdf(x, rho, scale), p, 0, mp.inf)
@@ -102,10 +119,19 @@ def mean(rho, scale):
     """
     Mean of the relativistic Breit-Wigner distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         rho, scale = _validate_rho_scale(rho, scale)
         k = _k(rho)
         return scale * k / (2*rho) * (mp.pi/2 + mp.atan(rho))
+
+
+def var(rho, scale):
+    """
+    Variance of the relativistic Breit-Wigner distribution.
+    """
+    with mp.extradps(5):
+        rho, scale = _validate_rho_scale(rho, scale)
+        return noncentral_moment(2, rho, scale) - mean(rho, scale)**2
 
 
 def mode(rho, scale):
@@ -114,3 +140,30 @@ def mode(rho, scale):
     """
     rho, scale = _validate_rho_scale(rho, scale)
     return rho*scale
+
+
+def noncentral_moment(n, rho, scale):
+    """
+    n-th noncentral moment of the relativistic Breit-Wigner distribution.
+
+    n must be a nonnegative integer.  For n > 2, the noncentral moment
+    diverges, so `inf` is returned.
+    """
+    rho, scale = _validate_rho_scale(rho, scale)
+    try:
+        n = operator.index(n)
+    except TypeError:
+        raise TypeError('n must be an integer')
+    if n < 0:
+        raise ValueError('n must not be negative')
+    if n == 0:
+        return mp.one
+    if n == 1:
+        return mean(rho, scale)
+    if n == 2:
+        with mp.extradps(5):
+            c = mp.pi/(2*mp.sqrt(2))
+            k = _k(rho)
+            half = mp.one/2
+            return scale**2*c*k/(rho*mp.sqrt(pow1pm1(rho**-2, half)))
+    return mp.inf
