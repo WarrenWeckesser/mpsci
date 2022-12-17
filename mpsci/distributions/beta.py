@@ -10,7 +10,7 @@ from ..stats import mean as _mean, var as _var
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
-           'mean', 'var', 'skewness', 'kurtosis', 'mle', 'mom']
+           'mean', 'var', 'skewness', 'kurtosis', 'nll', 'mle', 'mom']
 
 
 def _validate_a_b(a, b):
@@ -183,6 +183,13 @@ def kurtosis(a, b):
         apb = a + b
         return (6*((a - b)**2*(apb + 1) - a*b*(apb + 2)) /
                 (a*b*(apb + 2)*(apb + 3)))
+
+
+def nll(x, a, b):
+    """
+    Negative log-likelihood for the beta distribution.
+    """
+    return -mpmath.fsum([logpdf(t, a, b) for t in x])
 
 
 def _beta_mle_func(a, b, n, s):

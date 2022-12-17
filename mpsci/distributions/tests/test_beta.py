@@ -1,10 +1,11 @@
 
 import pytest
 import mpmath
+from mpsci.stats import mean, var
 from mpsci.distributions import beta
 
 
-mpmath.mp.dps = 40
+mpmath.mp.dps = 50
 
 
 def test_invcdf_cdf_roundtrip():
@@ -23,6 +24,14 @@ def test_invsf_sf_roundtrip():
     x = beta.invsf(p0, a, b)
     p1 = beta.sf(x, a, b)
     assert mpmath.almosteq(p1, p0)
+
+
+def test_mean():
+    a = mpmath.mpf('0.75')
+    b = mpmath.mpf('4.5')
+    m = beta.mean(a, b)
+    expected = a / (a + b)  # See, e.g. wikipedia, or any other ref.
+    assert mpmath.almosteq(m, expected)
 
 
 @pytest.mark.parametrize('a, b, expected',
@@ -56,19 +65,24 @@ def test_kurtosis():
 
 
 @pytest.mark.parametrize('a, b', [(1, 1), (4, 2), (3, 5)])
-def test_pmf_integer_ab_half(a, b):
+def test_pdf_integer_ab_half(a, b):
     half = mpmath.mpf('0.5')
     p = beta.pdf(half, a, b)
-    assert p == mpmath.power(half, a + b - 2) / mpmath.beta(a, b)
+    expected = mpmath.power(half, a + b - 2) / mpmath.beta(a, b)
+    assert p == expected
+    logp = beta.logpdf(half, a, b)
+    assert mpmath.almosteq(logp, mpmath.log(expected))
 
 
 @pytest.mark.parametrize('a, b', [(1, 1), (4, 2), (3, 5)])
-def test_pmf_integer_ab_fourth(a, b):
+def test_pdf_integer_ab_fourth(a, b):
     fourth = mpmath.mpf('0.25')
     p = beta.pdf(fourth, a, b)
     expected = (mpmath.power(3, b - 1) / mpmath.power(4, a + b - 2) /
                 mpmath.beta(a, b))
     assert mpmath.almosteq(p, expected)
+    logp = beta.logpdf(fourth, a, b)
+    assert mpmath.almosteq(logp, mpmath.log(expected))
 
 
 def test_interval_prob_close_x1_x2():
@@ -89,3 +103,63 @@ def test_interval_prob_close_x1_x2():
         assert mpmath.almosteq(p, expected)
     finally:
         mpmath.mp.dps = save_dps
+
+
+def test_mle():
+    x = [0.25, 0.5, 0.625, 0.875]
+    ahat, bhat = beta.mle(x)
+
+    N = len(x)
+
+    ea = mpmath.fsum([mpmath.log1p(-t) for t in x])/N
+    # First order condition for the MLE.
+    ca = ea + mpmath.psi(0, ahat + bhat) - mpmath.psi(0, bhat)
+    assert mpmath.almosteq(ca, 0)
+
+    eb = mpmath.fsum([mpmath.log(t) for t in x])/N
+    # First order condition for the MLE.
+    cb = eb + mpmath.psi(0, ahat + bhat) - mpmath.psi(0, ahat)
+    assert mpmath.almosteq(cb, 0)
+
+
+def test_mle_b_fixed():
+    b = mpmath.mpf('1.25')
+    x = [0.25, 0.5, 0.625, 0.875]
+    ahat, bhat = beta.mle(x, b=b)
+    assert bhat == b  # because b was fixed.
+
+    N = len(x)
+    ea = mpmath.fsum([mpmath.log(t) for t in x])/N
+    # First order condition for the MLE.
+    ca = ea + mpmath.psi(0, ahat + bhat) - mpmath.psi(0, ahat)
+    assert mpmath.almosteq(ca, 0)
+
+
+def test_mle_a_fixed():
+    a = mpmath.mpf('2.75')
+    x = [0.25, 0.5, 0.625, 0.875]
+    ahat, bhat = beta.mle(x, a=a)
+    assert ahat == a  # because a was fixed.
+
+    N = len(x)
+    eb = mpmath.fsum([mpmath.log1p(-t) for t in x])/N
+    # First order condition for the MLE.
+    cb = eb + mpmath.psi(0, ahat + bhat) - mpmath.psi(0, bhat)
+    assert mpmath.almosteq(cb, 0)
+
+
+def test_mom():
+    # https://en.wikipedia.org/wiki/Beta_distribution#Two_unknown_parameters
+    x = [0.25, 0.5, 0.625, 0.875]
+    ahat, bhat = beta.mom(x)
+
+    xbar = mean(x)
+    vbar = var(x)
+    p = xbar*(1 - xbar)/vbar - 1
+    assert mpmath.almosteq(ahat, xbar*p)
+    assert mpmath.almosteq(bhat, (1 - xbar)*p)
+
+
+def test_bad_a_b():
+    with pytest.raises(ValueError, match='must be greater than 0'):
+        beta.pdf(0.25, -1.0, 2.5)
