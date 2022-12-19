@@ -17,13 +17,15 @@ doi:10.1016/j.stamet.2008.04.001.
 https://en.wikipedia.org/wiki/Kumaraswamy_distribution.
 
 """
+
+import operator
 from mpmath import mp
 from ._common import _validate_p
 from ..fun._powm1 import inv_powm1
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'median']
+           'mean', 'var', 'median', 'skewness', 'noncentral_moment']
 
 
 def _validate_a_b(a, b):
@@ -144,3 +146,34 @@ def median(a, b):
     with mp.extradps(5):
         a, b = _validate_a_b(a, b)
         return inv_powm1(-mp.power(0.5, 1/b), a)
+
+
+def noncentral_moment(n, a, b):
+    """
+    n-th noncentral moment of the Kumaraswamy distribution.
+
+    n must be a nonnegativre integer.
+    """
+    try:
+        n = operator.index(n)
+    except TypeError:
+        raise TypeError('n must be an integer')
+    if n < 0:
+        raise ValueError('n must not be negative')
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        if n == 0:
+            return mp.one
+        return b * mp.beta(1 + n/a, b)
+
+
+def skewness(a, b):
+    """
+    Skewness of the Kumaraswamy distribution.
+    """
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        m = mean(a, b)
+        v = var(a, b)
+        mu3p = noncentral_moment(3, a, b)
+        return (mu3p - m*(3*v + m**2))/v**1.5
