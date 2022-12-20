@@ -96,6 +96,27 @@ def test_interval_prob_close_cdf_values():
     assert mpmath.almosteq(p, expected)
 
 
+def test_noncentral_moment():
+    k = 2.5
+    theta = 3.5
+
+    m0 = gamma.noncentral_moment(0, k, theta)
+    assert m0 == 1
+
+    m1 = gamma.noncentral_moment(1, k, theta)
+    assert m1 == gamma.mean(k, theta)
+
+    m2 = gamma.noncentral_moment(2, k, theta)
+    expected_m2 = mpmath.quad(lambda t: t**2*gamma.pdf(t, k, theta),
+                              [0, 1, mpmath.inf])
+    assert mpmath.almosteq(m2, expected_m2)
+
+    m3 = gamma.noncentral_moment(3, k, theta)
+    expected_m3 = mpmath.quad(lambda t: t**3*gamma.pdf(t, k, theta),
+                              [0, 1, mpmath.inf])
+    assert mpmath.almosteq(m3, expected_m3)
+
+
 def test_mom():
     x = [1, 2, 3, 4]
     k, theta = gamma.mom(x)
