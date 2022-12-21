@@ -3,71 +3,80 @@ Beta probability distribution
 -----------------------------
 
 """
-import mpmath
+
+import operator
+from mpmath import mp
 from ._common import _validate_p, _find_bracket
 from .. import fun as _fun
 from ..stats import mean as _mean, var as _var
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
-           'mean', 'var', 'skewness', 'kurtosis', 'nll', 'mle', 'mom']
+           'mean', 'var', 'skewness', 'kurtosis', 'nll', 'noncentral_moment',
+           'mle', 'mom']
 
 
 def _validate_a_b(a, b):
     if a <= 0 or b <= 0:
         raise ValueError('The shape parameters a and b must be greater '
                          'than 0.')
+    return mp.mpf(a), mp.mpf(b)
 
 
 def pdf(x, a, b):
     """
     Probability density function (PDF) for the beta distribution.
     """
-    _validate_a_b(a, b)
-    x = mpmath.mpf(x)
-    a = mpmath.mpf(a)
-    b = mpmath.mpf(b)
-    if x < 0 or x > 1:
-        return mpmath.mp.zero
-    if x == 0 and a < 1:
-        return mpmath.inf
-    if x == 1 and b < 1:
-        return mpmath.inf
-    return (mpmath.power(x, a - 1) * mpmath.power(1 - x, b - 1) /
-            mpmath.beta(a, b))
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        x = mp.mpf(x)
+        if x < 0 or x > 1:
+            return mp.zero
+        if x == 0 and a < 1:
+            return mp.inf
+        if x == 1 and b < 1:
+            return mp.inf
+        return (mp.power(x, a - 1) * mp.power(1 - x, b - 1) /
+                mp.beta(a, b))
 
 
 def logpdf(x, a, b):
     """
     Natural logarithm of the PDF of the beta distribution.
     """
-    _validate_a_b(a, b)
-    x = mpmath.mpf(x)
-    a = mpmath.mpf(a)
-    b = mpmath.mpf(b)
-    if x < 0 or x > 1:
-        return -mpmath.mp.inf
-    return _fun.xlogy(a - 1, x) + _fun.xlog1py(b - 1, -x) - _fun.logbeta(a, b)
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        x = mp.mpf(x)
+        if x < 0 or x > 1:
+            return -mp.inf
+        return (_fun.xlogy(a - 1, x) + _fun.xlog1py(b - 1, -x)
+                - _fun.logbeta(a, b))
 
 
 def cdf(x, a, b):
     """
     Cumulative distribution function of the beta distribution.
     """
-    _validate_a_b(a, b)
-    if x < 0:
-        return mpmath.mp.zero
-    if x > 1:
-        return mpmath.mp.one
-    return mpmath.betainc(a, b, x1=0, x2=x, regularized=True)
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        if x < 0:
+            return mp.zero
+        if x > 1:
+            return mp.one
+        return mp.betainc(a, b, x1=0, x2=x, regularized=True)
 
 
 def sf(x, a, b):
     """
     Survival function of the beta distribution.
     """
-    _validate_a_b(a, b)
-    return mpmath.betainc(a, b, x1=x, x2=1, regularized=True)
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        if x < 0:
+            return mp.one
+        if x > 1:
+            return mp.zero
+        return mp.betainc(a, b, x1=x, x2=1, regularized=True)
 
 
 def interval_prob(x1, x2, a, b):
@@ -83,36 +92,33 @@ def interval_prob(x1, x2, a, b):
 
     x1 must be less than or equal to x2.
     """
-    _validate_a_b(a, b)
-    if x1 > x2:
-        raise ValueError('x1 must not be greater than x2')
-
-    with mpmath.extradps(5):
-        x1 = mpmath.mpf(x1)
-        x2 = mpmath.mpf(x2)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        return mpmath.betainc(a, b, x1, x2, regularized=True)
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        x1 = mp.mpf(x1)
+        x2 = mp.mpf(x2)
+        if x1 > x2:
+            raise ValueError('x1 must not be greater than x2')
+        return mp.betainc(a, b, x1, x2, regularized=True)
 
 
 def invcdf(p, a, b):
     """
     Inverse of the CDF of the beta distribution.
     """
-    _validate_a_b(a, b)
-    with mpmath.extradps(5):
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
         p = _validate_p(p)
         if p == 0:
-            return mpmath.mp.zero
+            return mp.zero
         if p == 1:
-            return mpmath.mp.one
+            return mp.one
 
         x0, x1 = _find_bracket(lambda x: cdf(x, a, b), p, 0, 1)
         if x0 == x1:
             return x0
 
-        x = mpmath.findroot(lambda x: cdf(x, a, b) - p, x0=(x0, x1),
-                            solver='secant')
+        x = mp.findroot(lambda x: cdf(x, a, b) - p, x0=(x0, x1),
+                        solver='secant')
         return x
 
 
@@ -120,20 +126,20 @@ def invsf(p, a, b):
     """
     Inverse of the survival function of the beta distribution.
     """
-    _validate_a_b(a, b)
-    with mpmath.extradps(5):
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
         p = _validate_p(p)
         if p == 0:
-            return mpmath.mp.one
+            return mp.one
         if p == 1:
-            return mpmath.mp.zero
+            return mp.zero
 
         x0, x1 = _find_bracket(lambda x: sf(x, a, b), p, 0, 1)
         if x0 == x1:
             return x0
 
-        x = mpmath.findroot(lambda x: sf(x, a, b) - p, x0=(x0, x1),
-                            solver='secant')
+        x = mp.findroot(lambda x: sf(x, a, b) - p, x0=(x0, x1),
+                        solver='secant')
         return x
 
 
@@ -141,10 +147,8 @@ def mean(a, b):
     """
     Mean of the beta distribution.
     """
-    _validate_a_b(a, b)
-    with mpmath.extradps(5):
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
         return a/(a + b)
 
 
@@ -152,10 +156,8 @@ def var(a, b):
     """
     Variance of the beta distribution.
     """
-    _validate_a_b(a, b)
-    with mpmath.extradps(5):
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
         apb = a + b
         return a*b/(apb**2 * (apb + 1))
 
@@ -164,37 +166,53 @@ def skewness(a, b):
     """
     Skewness of the beta distribution.
     """
-    _validate_a_b(a, b)
-    with mpmath.extradps(5):
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
         apb = a + b
-        return 2*(b - a)*mpmath.sqrt(apb + 1)/((apb + 2)*(mpmath.sqrt(a*b)))
+        return 2*(b - a)*mp.sqrt(apb + 1)/((apb + 2)*(mp.sqrt(a*b)))
 
 
 def kurtosis(a, b):
     """
     Excess kurtosis of the beta distribution.
     """
-    _validate_a_b(a, b)
-    with mpmath.extradps(5):
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
         apb = a + b
         return (6*((a - b)**2*(apb + 1) - a*b*(apb + 2)) /
                 (a*b*(apb + 2)*(apb + 3)))
+
+
+def noncentral_moment(n, a, b):
+    """
+    n-th noncentral moment of the beta distribution.
+
+    n must be a nonnegativre integer.
+    """
+    try:
+        n = operator.index(n)
+    except TypeError:
+        raise TypeError('n must be an integer')
+    if n < 0:
+        raise ValueError('n must not be negative')
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        mu = mp.one
+        for k in range(n):
+            mu *= (a + k)/(a + b + k)
+        return mu
 
 
 def nll(x, a, b):
     """
     Negative log-likelihood for the beta distribution.
     """
-    return -mpmath.fsum([logpdf(t, a, b) for t in x])
+    return -mp.fsum([logpdf(t, a, b) for t in x])
 
 
 def _beta_mle_func(a, b, n, s):
-    psiab = mpmath.digamma(a + b)
-    return s - n * (-psiab + mpmath.digamma(a))
+    psiab = mp.digamma(a + b)
+    return s - n * (-psiab + mp.digamma(a))
 
 
 def _validate_x(x):
@@ -212,14 +230,14 @@ def mle(x, a=None, b=None):
 
     if a is None and b is None:
         # Fit both parameters
-        s1 = mpmath.fsum(mpmath.log(t) for t in x)
-        s2 = mpmath.fsum(mpmath.log1p(-t) for t in x)
-        fac = xbar * (mpmath.mp.one - xbar) / _var(x) - 1
+        s1 = mp.fsum(mp.log(t) for t in x)
+        s2 = mp.fsum(mp.log1p(-t) for t in x)
+        fac = xbar * (mp.one - xbar) / _var(x) - 1
         a0 = xbar * fac
-        b0 = (mpmath.mp.one - xbar) * fac
-        a1, b1 = mpmath.findroot([lambda a, b: _beta_mle_func(a, b, n, s1),
-                                  lambda a, b: _beta_mle_func(b, a, n, s2)],
-                                 [a0, b0])
+        b0 = (mp.one - xbar) * fac
+        a1, b1 = mp.findroot([lambda a, b: _beta_mle_func(a, b, n, s1),
+                              lambda a, b: _beta_mle_func(b, a, n, s2)],
+                             [a0, b0])
         return a1, b1
 
     if a is not None and b is not None:
@@ -229,13 +247,13 @@ def mle(x, a=None, b=None):
     if b is None:
         swap = True
         b = a
-        x = [mpmath.mp.one - t for t in x]
-        xbar = mpmath.mp.one - xbar
+        x = [mp.one - t for t in x]
+        xbar = mp.one - xbar
 
     # Fit the a parameter, with b given.
-    s1 = mpmath.fsum(mpmath.log(t) for t in x)
-    p0 = b * xbar / (mpmath.mp.one - xbar)
-    p1 = mpmath.findroot(lambda a: _beta_mle_func(a, b, n, s1), p0)
+    s1 = mp.fsum(mp.log(t) for t in x)
+    p0 = b * xbar / (mp.one - xbar)
+    p1 = mp.findroot(lambda a: _beta_mle_func(a, b, n, s1), p0)
     if swap:
         return a, p1
     else:
@@ -251,9 +269,9 @@ def mom(x):
     Returns (a, b).
     """
     _validate_x(x)
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         M1 = _mean(x)
-        M2 = _mean([mpmath.mpf(t)**2 for t in x])
+        M2 = _mean([mp.mpf(t)**2 for t in x])
         c = (M1 - M2) / (M2 - M1**2)
         a = M1*c
         b = (1 - M1)*c
@@ -266,29 +284,29 @@ def mom(x):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 def _nll_cens(a, b, lo, hi):
-    t = -sum(mpmath.log(interval_prob(x1, x2, a, b))
+    t = -sum(mp.log(interval_prob(x1, x2, a, b))
              for (x1, x2) in zip(lo, hi))
     return t
 
 
 def _nll_cens_da(a, b, lo, hi):
-    return mpmath.diff(lambda t: _nll_cens(t, b, lo, hi), a)
+    return mp.diff(lambda t: _nll_cens(t, b, lo, hi), a)
 
 
 def _nll_cens_db(a, b, lo, hi):
-    return mpmath.diff(lambda t: _nll_cens(a, t, lo, hi), b)
+    return mp.diff(lambda t: _nll_cens(a, t, lo, hi), b)
 
 
 def _nll_cens_d2a(a, b, lo, hi):
-    return mpmath.diff(lambda t: _nll_cens(t, b, lo, hi), a, n=2)
+    return mp.diff(lambda t: _nll_cens(t, b, lo, hi), a, n=2)
 
 
 def _nll_cens_d2b(a, b, lo, hi):
-    return mpmath.diff(lambda t: _nll_cens(a, t, lo, hi), b, n=2)
+    return mp.diff(lambda t: _nll_cens(a, t, lo, hi), b, n=2)
 
 
 def _nll_cens_dadb(a, b, lo, hi):
-    return mpmath.diff(lambda t: _nll_cens_da(a, t, lo, hi), b)
+    return mp.diff(lambda t: _nll_cens_da(a, t, lo, hi), b)
 
 
 def _mle_cens(lo, hi, p0=None):
@@ -333,22 +351,22 @@ def _mle_cens(lo, hi, p0=None):
            shape1    shape2
         0.5609800 0.8043017
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         if p0 is None:
             mid = [0.5*(s + t) for (s, t) in zip(lo, hi)]
             p0 = mle(mid)
-        a, b = mpmath.findroot([lambda a, b: _nll_cens_da(a, b, lo, hi),
-                                lambda a, b: _nll_cens_db(a, b, lo, hi)],
-                               p0)
+        a, b = mp.findroot([lambda a, b: _nll_cens_da(a, b, lo, hi),
+                            lambda a, b: _nll_cens_db(a, b, lo, hi)],
+                           p0)
 
-        hess = mpmath.matrix(2)
+        hess = mp.matrix(2)
         hess[0, 0] = _nll_cens_d2a(a, b, lo, hi)
         hess[1, 1] = _nll_cens_d2b(a, b, lo, hi)
         hess[0, 1] = _nll_cens_dadb(a, b, lo, hi)
         hess[1, 0] = hess[0, 1]
 
-        hessinv = mpmath.inverse(hess)
-        se_a = mpmath.sqrt(hessinv[0, 0])
-        se_b = mpmath.sqrt(hessinv[1, 1])
+        hessinv = mp.inverse(hess)
+        se_a = mp.sqrt(hessinv[0, 0])
+        se_b = mp.sqrt(hessinv[1, 1])
 
         return a, b, hess, se_a, se_b
