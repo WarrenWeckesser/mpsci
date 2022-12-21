@@ -64,7 +64,11 @@ def cdf(x, a, b):
             return mpmath.mp.zero
         if x == mpmath.inf:
             return mpmath.mp.one
-        return mpmath.betainc(a, b, x1=0, x2=x/(1+x), regularized=True)
+        if x > 1:
+            c = mpmath.betainc(b, a, x1=1/(1+x), x2=1, regularized=True)
+        else:
+            c = mpmath.betainc(a, b, x1=0, x2=x/(1+x), regularized=True)
+        return c
 
 
 def sf(x, a, b):
@@ -78,7 +82,11 @@ def sf(x, a, b):
             return mpmath.mp.one
         if x == mpmath.inf:
             return mpmath.mp.zero
-        return mpmath.betainc(a, b, x1=x/(1+x), x2=1, regularized=True)
+        if x > 1:
+            c = mpmath.betainc(b, a, x1=0, x2=1/(1+x), regularized=True)
+        else:
+            c = mpmath.betainc(a, b, x1=x/(1+x), x2=1, regularized=True)
+        return c
 
 
 def invcdf(p, a, b):
