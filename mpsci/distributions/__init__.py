@@ -11,7 +11,8 @@ as the corresponding implementations in `scipy.stats`.
 
 from . import (argus, benktander1, benktander2, beta, betaprime, binomial,
                burr12, chi, chi2, cosine, exponweib, f,
-               fishers_noncentral_hypergeometric, gamma, gamma_gompertz,
+               fishers_noncentral_hypergeometric, folded_normal,
+               gamma, gamma_gompertz,
                gauss_kuzmin, genexpon, genextreme, geninvgauss, genpareto,
                gompertz, gumbel_max, gumbel_min,
                hypergeometric, invchi2, invgauss, kumaraswamy, laplace, levy,
