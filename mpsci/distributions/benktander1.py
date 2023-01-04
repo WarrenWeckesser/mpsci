@@ -3,7 +3,8 @@ Benktander I Distribution
 -------------------------
 """
 
-import mpmath
+from mpmath import mp
+from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var']
@@ -16,6 +17,7 @@ def _validate_ab(a, b):
         raise ValueError("'b' must be positive.")
     if b > a*(a + 1)/2:
         raise ValueError("'b' must not be greater than a*(a+1)/2.")
+    return mp.mpf(a), mp.mpf(b)
 
 
 def pdf(x, a, b):
@@ -24,16 +26,14 @@ def pdf(x, a, b):
 
     Variable names follow the convention used on wikipedia.
     """
-    _validate_ab(a, b)
-    if x < 1:
-        return mpmath.mp.zero
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        blogx = b*mpmath.log(x)
+    with mp.extradps(5):
+        a, b = _validate_ab(a, b)
+        x = mp.mpf(x)
+        if x < 1:
+            return mp.zero
+        blogx = b*mp.log(x)
         c = (1 + 2*blogx/a)*(1 + a + 2*blogx) - 2*b/a
-        return c * mpmath.power(x, -(2 + a + blogx))
+        return c * mp.power(x, -(2 + a + blogx))
 
 
 def logpdf(x, a, b):
@@ -42,16 +42,14 @@ def logpdf(x, a, b):
 
     Variable names follow the convention used on wikipedia.
     """
-    _validate_ab(a, b)
-    if x < 1:
-        return mpmath.ninf
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        blogx = b*mpmath.log(x)
+    with mp.extradps(5):
+        a, b = _validate_ab(a, b)
+        x = mp.mpf(x)
+        if x < 1:
+            return mp.ninf
+        blogx = b*mp.log(x)
         c = (1 + 2*blogx/a)*(1 + a + 2*blogx) - 2*b/a
-        return mpmath.log(c) - (2 + a + blogx)*mpmath.log(x)
+        return mp.log(c) - (2 + a + blogx)*mp.log(x)
 
 
 def cdf(x, a, b):
@@ -60,15 +58,13 @@ def cdf(x, a, b):
 
     Variable names follow the convention used on wikipedia.
     """
-    _validate_ab(a, b)
-    if x < 1:
-        return mpmath.mp.zero
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        blogx = b*mpmath.log(x)
-        return 1 - (1 + 2*blogx/a)*mpmath.power(x, -(a + 1 + blogx))
+    with mp.extradps(5):
+        a, b = _validate_ab(a, b)
+        x = mp.mpf(x)
+        if x < 1:
+            return mp.zero
+        blogx = b*mp.log(x)
+        return 1 - (1 + 2*blogx/a)*mp.power(x, -(a + 1 + blogx))
 
 
 def sf(x, a, b):
@@ -77,15 +73,13 @@ def sf(x, a, b):
 
     Variable names follow the convention used on wikipedia.
     """
-    _validate_ab(a, b)
-    if x < 1:
-        return mpmath.mp.one
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        blogx = b*mpmath.log(x)
-        return (1 + 2*blogx/a)*mpmath.power(x, -(a + 1 + blogx))
+    with mp.extradps(5):
+        a, b = _validate_ab(a, b)
+        x = mp.mpf(x)
+        if x < 1:
+            return mp.one
+        blogx = b*mp.log(x)
+        return (1 + 2*blogx/a)*mp.power(x, -(a + 1 + blogx))
 
 
 def invcdf(p, a, b):
@@ -94,20 +88,17 @@ def invcdf(p, a, b):
 
     Variable names follow the convention used on wikipedia.
     """
-    _validate_ab(a, b)
-    with mpmath.extradps(5):
-        p = mpmath.mpf(p)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        one = mpmath.mp.one
-        w = mpmath.log1p(-p)
-        zlow = (-(a + one) + mpmath.sqrt((a + one)**2 - 4*b*w)) / (2*b)
-        q = a + one - 2*b/a
-        zhigh = (-q + mpmath.sqrt(q**2 - 4*b*w)) / (2*b)
-        z = mpmath.findroot(lambda z: (mpmath.log(1 + 2*b/a*z)
-                                       - (a + 1 + b*z)*z - w),
-                            (zlow, zhigh), method='anderson')
-        return mpmath.exp(z)
+    with mp.extradps(5):
+        p = _validate_p(p)
+        a, b = _validate_ab(a, b)
+        w = mp.log1p(-p)
+        zlow = (-(a + mp.one) + mp.sqrt((a + mp.one)**2 - 4*b*w)) / (2*b)
+        q = a + mp.one - 2*b/a
+        zhigh = (-q + mp.sqrt(q**2 - 4*b*w)) / (2*b)
+        z = mp.findroot(lambda z: (mp.log(1 + 2*b/a*z)
+                                   - (a + 1 + b*z)*z - w),
+                        (zlow, zhigh), method='anderson')
+        return mp.exp(z)
 
 
 def invsf(p, a, b):
@@ -116,20 +107,17 @@ def invsf(p, a, b):
 
     Variable names follow the convention used on wikipedia.
     """
-    _validate_ab(a, b)
-    with mpmath.extradps(5):
-        p = mpmath.mpf(p)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        one = mpmath.mp.one
-        w = mpmath.log(p)
-        zlow = (-(a + one) + mpmath.sqrt((a + one)**2 - 4*b*w)) / (2*b)
-        q = a + one - 2*b/a
-        zhigh = (-q + mpmath.sqrt(q**2 - 4*b*w)) / (2*b)
-        z = mpmath.findroot(lambda z: (mpmath.log(1 + 2*b/a*z)
-                                       - (a + 1 + b*z)*z - w),
-                            (zlow, zhigh), method='anderson')
-        return mpmath.exp(z)
+    with mp.extradps(5):
+        p = _validate_p(p)
+        a, b = _validate_ab(a, b)
+        w = mp.log(p)
+        zlow = (-(a + mp.one) + mp.sqrt((a + mp.one)**2 - 4*b*w)) / (2*b)
+        q = a + mp.one - 2*b/a
+        zhigh = (-q + mp.sqrt(q**2 - 4*b*w)) / (2*b)
+        z = mp.findroot(lambda z: (mp.log(1 + 2*b/a*z)
+                                   - (a + 1 + b*z)*z - w),
+                        (zlow, zhigh), method='anderson')
+        return mp.exp(z)
 
 
 def mean(a, b):
@@ -138,9 +126,8 @@ def mean(a, b):
 
     Variable names follow the convention used on wikipedia.
     """
-    _validate_ab(a, b)
-    with mpmath.extradps(5):
-        a = mpmath.mpf(a)
+    with mp.extradps(5):
+        a, b = _validate_ab(a, b)
         return 1 + 1/a
 
 
@@ -150,11 +137,9 @@ def var(a, b):
 
     Variable names follow the convention used on wikipedia.
     """
-    _validate_ab(a, b)
-    with mpmath.extradps(5):
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-        sb = mpmath.sqrt(b)
-        t = (a - mpmath.mp.one)/(2*sb)
-        sqrtpi = mpmath.sqrt(mpmath.pi)
-        return (-sb + a*mpmath.exp(t**2)*sqrtpi*mpmath.erfc(t))/(a**2*sb)
+    with mp.extradps(5):
+        a, b = _validate_ab(a, b)
+        sb = mp.sqrt(b)
+        t = (a - mp.one)/(2*sb)
+        sqrtpi = mp.sqrt(mp.pi)
+        return (-sb + a*mp.exp(t**2)*sqrtpi*mp.erfc(t))/(a**2*sb)
