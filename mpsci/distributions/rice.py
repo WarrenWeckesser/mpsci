@@ -14,7 +14,7 @@ SciPy has a different parametrization::
 
 """
 
-import mpmath
+from mpmath import mp
 from ..fun import marcumq, cmarcumq
 
 
@@ -26,14 +26,14 @@ def pdf(x, nu, sigma):
     PDF for the Rice distribution.
     """
     if x <= 0:
-        return mpmath.mp.zero
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        nu = mpmath.mpf(nu)
-        sigma = mpmath.mpf(sigma)
+        return mp.zero
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        nu = mp.mpf(nu)
+        sigma = mp.mpf(sigma)
         sigma2 = sigma**2
-        p = ((x / sigma2) * mpmath.exp(-(x**2 + nu**2)/(2*sigma2)) *
-             mpmath.besseli(0, x*nu/sigma2))
+        p = ((x / sigma2) * mp.exp(-(x**2 + nu**2)/(2*sigma2)) *
+             mp.besseli(0, x*nu/sigma2))
     return p
 
 
@@ -42,11 +42,11 @@ def cdf(x, nu, sigma):
     CDF for the Rice distribution.
     """
     if x <= 0:
-        return mpmath.mp.zero
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        nu = mpmath.mpf(nu)
-        sigma = mpmath.mpf(sigma)
+        return mp.zero
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        nu = mp.mpf(nu)
+        sigma = mp.mpf(sigma)
         c = cmarcumq(1, nu/sigma, x/sigma)
     return c
 
@@ -56,10 +56,10 @@ def sf(x, nu, sigma):
     Survival function for the Rice distribution.
     """
     if x <= 0:
-        return mpmath.mp.one
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        nu = mpmath.mpf(nu)
-        sigma = mpmath.mpf(sigma)
+        return mp.one
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        nu = mp.mpf(nu)
+        sigma = mp.mpf(sigma)
         s = marcumq(1, nu/sigma, x/sigma)
     return s
