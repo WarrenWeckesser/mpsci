@@ -4,7 +4,7 @@ Gamma probability distribution
 """
 
 import operator
-import mpmath
+from mpmath import mp
 from ..fun import digammainv
 
 
@@ -19,7 +19,7 @@ def _validate_k_theta(k, theta):
         raise ValueError('k must be positive')
     if theta <= 0:
         raise ValueError('theta must be positive')
-    return mpmath.mpf(k), mpmath.mpf(theta)
+    return mp.mpf(k), mp.mpf(theta)
 
 
 def pdf(x, k, theta):
@@ -31,25 +31,25 @@ def pdf(x, k, theta):
 
     Unlike scipy, a location parameter is not included.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
-        x = mpmath.mpf(x)
+        x = mp.mpf(x)
         if x < 0:
-            return mpmath.mp.zero
-        return mpmath.rgamma(k) / theta**k * x**(k-1) * mpmath.exp(-x/theta)
+            return mp.zero
+        return mp.rgamma(k) / theta**k * x**(k-1) * mp.exp(-x/theta)
 
 
 def logpdf(x, k, theta):
     """
     Log of the PDF of the gamma distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
-        x = mpmath.mpf(x)
+        x = mp.mpf(x)
         if x < 0:
-            return mpmath.mp.ninf
-        return (-mpmath.loggamma(k) - k*mpmath.log(theta) +
-                (k - 1)*mpmath.log(x) - x/theta)
+            return mp.ninf
+        return (-mp.loggamma(k) - k*mp.log(theta) +
+                (k - 1)*mp.log(x) - x/theta)
 
 
 def cdf(x, k, theta):
@@ -61,24 +61,24 @@ def cdf(x, k, theta):
 
     Unlike scipy, a location parameter is not included.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
-        x = mpmath.mpf(x)
+        x = mp.mpf(x)
         if x < 0:
-            return mpmath.mp.zero
-        return mpmath.gammainc(k, 0, x/theta, regularized=True)
+            return mp.zero
+        return mp.gammainc(k, 0, x/theta, regularized=True)
 
 
 def sf(x, k, theta):
     """
     Survival function of the gamma distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
-        x = mpmath.mpf(x)
+        x = mp.mpf(x)
         if x < 0:
-            return mpmath.mp.one
-        return mpmath.gammainc(k, x/theta, mpmath.inf, regularized=True)
+            return mp.one
+        return mp.gammainc(k, x/theta, mp.inf, regularized=True)
 
 
 def interval_prob(x1, x2, k, theta):
@@ -94,20 +94,20 @@ def interval_prob(x1, x2, k, theta):
 
     x1 must be less than or equal to x2.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
-        x1 = mpmath.mpf(x1)
-        x2 = mpmath.mpf(x2)
+        x1 = mp.mpf(x1)
+        x2 = mp.mpf(x2)
         if x1 > x2:
             raise ValueError('x1 must not be greater than x2')
-        return mpmath.gammainc(k, x1/theta, x2/theta, regularized=True)
+        return mp.gammainc(k, x1/theta, x2/theta, regularized=True)
 
 
 def mean(k, theta):
     """
     Mean of the gamma distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
         return k * theta
 
@@ -116,7 +116,7 @@ def var(k, theta):
     """
     Variance of the gamma distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
         return k * theta**2
 
@@ -125,16 +125,16 @@ def skewness(k, theta):
     """
     Skewness of the gamma distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
-        return 2/mpmath.sqrt(k)
+        return 2/mp.sqrt(k)
 
 
 def kurtosis(k, theta):
     """
     Excess kurtosis of the gamma distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
         return 6/k
 
@@ -151,11 +151,11 @@ def noncentral_moment(n, k, theta):
         raise TypeError('n must be an integer')
     if n < 0:
         raise ValueError('n must not be negative')
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
         if n == 0:
-            return mpmath.mp.one
-        return theta**n * mpmath.gammaprod([k + n], [k])
+            return mp.one
+        return theta**n * mp.gammaprod([k + n], [k])
 
 
 def mom(x):
@@ -167,9 +167,9 @@ def mom(x):
     Returns the estimates of the shape k and the scale theta.
     """
     n = len(x)
-    with mpmath.extradps(5):
-        m1 = mpmath.fsum(x) / n
-        m2 = mpmath.fsum([mpmath.power(t, 2) for t in x]) / n
+    with mp.extradps(5):
+        m1 = mp.fsum(x) / n
+        m2 = mp.fsum([mp.power(t, 2) for t in x]) / n
         m1sq = m1**2
         k = m1sq / (m2 - m1sq)
         theta = (m2 - m1sq) / m1
@@ -185,40 +185,40 @@ def mle(x, k=None, theta=None):
 
     x must be a sequence of values.
     """
-    meanx = mpmath.fsum(x) / len(x)
-    meanlnx = mpmath.fsum(mpmath.log(t) for t in x) / len(x)
+    meanx = mp.fsum(x) / len(x)
+    meanlnx = mp.fsum(mp.log(t) for t in x) / len(x)
 
     if k is None:
         if theta is None:
             # Solve for k and theta
-            s = mpmath.log(meanx) - meanlnx
-            k_hat = (3 - s + mpmath.sqrt((s - 3)**2 + 24*s)) / (12*s)
+            s = mp.log(meanx) - meanlnx
+            k_hat = (3 - s + mp.sqrt((s - 3)**2 + 24*s)) / (12*s)
             # XXX This loop implements a "dumb" convergence criterion.
             # It exits early if the old k equals the new k, but if that never
             # happens, then whatever value k_hat has after  the last iteration
             # is the value that is returned.
             for _ in range(10):
                 oldk = k_hat
-                delta = ((mpmath.log(k_hat) - mpmath.psi(0, k_hat) - s) /
-                         (1/k_hat - mpmath.psi(1, k_hat)))
+                delta = ((mp.log(k_hat) - mp.psi(0, k_hat) - s) /
+                         (1/k_hat - mp.psi(1, k_hat)))
                 k_hat = k_hat - delta
                 if k_hat == oldk:
                     break
             theta_hat = meanx / k_hat
         else:
             # theta is fixed, only solve for k
-            theta = mpmath.mpf(theta)
-            k_hat = digammainv(meanlnx - mpmath.log(theta))
+            theta = mp.mpf(theta)
+            k_hat = digammainv(meanlnx - mp.log(theta))
             theta_hat = theta
     else:
         if theta is None:
             # Solve for theta, k is fixed.
-            k_hat = mpmath.mpf(k)
+            k_hat = mp.mpf(k)
             theta_hat = meanx / k_hat
         else:
             # Both k and theta are fixed.
-            k_hat = mpmath.mpf(k)
-            theta_hat = mpmath.mpf(theta)
+            k_hat = mp.mpf(k)
+            theta_hat = mp.mpf(theta)
 
     return k_hat, theta_hat
 
@@ -227,15 +227,15 @@ def nll(x, k, theta):
     """
     Gamma distribution negative log-likelihood.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
 
         N = len(x)
-        sumx = mpmath.fsum(x)
-        sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
+        sumx = mp.fsum(x)
+        sumlnx = mp.fsum(mp.log(t) for t in x)
 
-        ll = ((k - 1)*sumlnx - sumx/theta - N*k*mpmath.log(theta) -
-              N*mpmath.loggamma(k))
+        ll = ((k - 1)*sumlnx - sumx/theta - N*k*mp.log(theta) -
+              N*mp.loggamma(k))
         return -ll
 
 
@@ -243,14 +243,14 @@ def nll_grad(x, k, theta):
     """
     Gamma distribution gradient of the negative log-likelihood function.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
 
         N = len(x)
-        sumx = mpmath.fsum(x)
-        sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
+        sumx = mp.fsum(x)
+        sumlnx = mp.fsum(mp.log(t) for t in x)
 
-        dk = sumlnx - N*mpmath.log(theta) - N*mpmath.digamma(k)
+        dk = sumlnx - N*mp.log(theta) - N*mp.digamma(k)
         dtheta = sumx/theta**2 - N*k/theta
         return [-dk, -dtheta]
 
@@ -259,36 +259,36 @@ def nll_hess(x, k, theta):
     """
     Gamma distribution hessian of the negative log-likelihood function.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
 
         N = len(x)
-        sumx = mpmath.fsum(x)
-        # sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
+        sumx = mp.fsum(x)
+        # sumlnx = mp.fsum(mpmath.log(t) for t in x)
 
-        dk2 = -N*mpmath.psi(1, k)
+        dk2 = -N*mp.psi(1, k)
         dkdtheta = -N/theta
         dtheta2 = -2*sumx/theta**3 + N*k/theta**2
 
-        return mpmath.matrix([[-dk2, -dkdtheta], [-dkdtheta, -dtheta2]])
+        return mp.matrix([[-dk2, -dkdtheta], [-dkdtheta, -dtheta2]])
 
 
 def nll_invhess(x, k, theta):
     """
     Gamma distribution inverse of the hessian of the negative log-likelihood.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
 
         N = len(x)
-        sumx = mpmath.fsum(x)
-        # sumlnx = mpmath.fsum(mpmath.log(t) for t in x)
+        sumx = mp.fsum(x)
+        # sumlnx = mp.fsum(mpmath.log(t) for t in x)
 
-        dk2 = -N*mpmath.psi(1, k)
+        dk2 = -N*mp.psi(1, k)
         dkdtheta = -N/theta
         dtheta2 = -2*sumx/theta**3 + N*k/theta**2
 
         det = dk2*dtheta2 - dkdtheta**2
 
-        return mpmath.matrix([[-dtheta2/det, dkdtheta/det],
-                              [dkdtheta/det, -dk2/det]])
+        return mp.matrix([[-dtheta2/det, dkdtheta/det],
+                          [dkdtheta/det, -dk2/det]])
