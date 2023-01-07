@@ -10,6 +10,7 @@ from ..fun import digammainv
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'interval_prob',
            'mean', 'var', 'skewness', 'kurtosis', 'noncentral_moment',
+           'entropy',
            'mom', 'mle',
            'nll', 'nll_grad', 'nll_hess', 'nll_invhess']
 
@@ -156,6 +157,15 @@ def noncentral_moment(n, k, theta):
         if n == 0:
             return mp.one
         return theta**n * mp.gammaprod([k + n], [k])
+
+
+def entropy(k, theta):
+    """
+    Differential entropy of the gamma distribution.
+    """
+    with mp.extradps(5):
+        k, theta = _validate_k_theta(k, theta)
+        return k + mp.log(theta) + mp.loggamma(k) + (1 - k)*mp.psi(0, k)
 
 
 def mom(x):

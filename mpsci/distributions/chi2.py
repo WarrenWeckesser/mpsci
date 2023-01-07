@@ -6,7 +6,8 @@ Chi-square distribution
 from mpmath import mp
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'variance']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'variance',
+           'entropy']
 
 
 def _validate_k(k):
@@ -94,3 +95,13 @@ def variance(k):
     with mp.extradps(5):
         k = _validate_k(k)
         return 2*k
+
+
+def entropy(k):
+    """
+    Differential entropy of the chi-square distribution.
+    """
+    with mp.extradps(5):
+        k = _validate_k(k)
+        k2 = k/2
+        return k2 + mp.log(2) + mp.loggamma(k2) + (1 - k2)*mp.psi(0, k2)

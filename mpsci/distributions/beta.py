@@ -13,7 +13,7 @@ from ..stats import mean as _mean, var as _var
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
            'mean', 'var', 'skewness', 'kurtosis', 'nll', 'noncentral_moment',
-           'mle', 'mom']
+           'entropy', 'mle', 'mom']
 
 
 def _validate_a_b(a, b):
@@ -201,6 +201,18 @@ def noncentral_moment(n, a, b):
         for k in range(n):
             mu *= (a + k)/(a + b + k)
         return mu
+
+
+def entropy(a, b):
+    """
+    Differential entropy of the beta distribution.
+    """
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        return (_fun.logbeta(a, b)
+                - (a - 1)*mp.psi(0, a)
+                - (b - 1)*mp.psi(0, b)
+                + (a + b - 2)*mp.psi(0, a + b))
 
 
 def nll(x, a, b):
