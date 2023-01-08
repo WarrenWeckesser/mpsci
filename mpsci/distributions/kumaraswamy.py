@@ -18,9 +18,8 @@ https://en.wikipedia.org/wiki/Kumaraswamy_distribution.
 
 """
 
-import operator
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_moment_n
 from ..fun._powm1 import inv_powm1
 
 
@@ -154,12 +153,7 @@ def noncentral_moment(n, a, b):
 
     n must be a nonnegativre integer.
     """
-    try:
-        n = operator.index(n)
-    except TypeError:
-        raise TypeError('n must be an integer')
-    if n < 0:
-        raise ValueError('n must not be negative')
+    n = _validate_moment_n(n)
     with mp.extradps(5):
         a, b = _validate_a_b(a, b)
         if n == 0:

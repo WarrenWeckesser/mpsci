@@ -1,4 +1,5 @@
 
+import operator
 from mpmath import mp
 
 
@@ -6,6 +7,16 @@ def _validate_p(p):
     if p < 0 or p > 1:
         raise ValueError('p must be in the interval [0, 1]')
     return mp.mpf(p)
+
+
+def _validate_moment_n(n):
+    try:
+        n = operator.index(n)
+    except TypeError:
+        raise TypeError('n must be an integer')
+    if n < 0:
+        raise ValueError('n must be nonnegative')
+    return n
 
 
 def _median(x):

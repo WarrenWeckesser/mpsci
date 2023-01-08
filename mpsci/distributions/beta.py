@@ -4,9 +4,8 @@ Beta probability distribution
 
 """
 
-import operator
 from mpmath import mp
-from ._common import _validate_p, _find_bracket
+from ._common import _validate_p, _validate_moment_n, _find_bracket
 from .. import fun as _fun
 from ..stats import mean as _mean, var as _var
 
@@ -189,12 +188,7 @@ def noncentral_moment(n, a, b):
 
     n must be a nonnegativre integer.
     """
-    try:
-        n = operator.index(n)
-    except TypeError:
-        raise TypeError('n must be an integer')
-    if n < 0:
-        raise ValueError('n must not be negative')
+    n = _validate_moment_n(n)
     with mp.extradps(5):
         a, b = _validate_a_b(a, b)
         mu = mp.one

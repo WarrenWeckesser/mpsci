@@ -3,8 +3,8 @@ Gamma probability distribution
 ------------------------------
 """
 
-import operator
 from mpmath import mp
+from ._common import _validate_moment_n
 from ..fun import digammainv
 
 
@@ -146,12 +146,7 @@ def noncentral_moment(n, k, theta):
 
     n must be a nonnegativre integer.
     """
-    try:
-        n = operator.index(n)
-    except TypeError:
-        raise TypeError('n must be an integer')
-    if n < 0:
-        raise ValueError('n must not be negative')
+    n = _validate_moment_n(n)
     with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
         if n == 0:

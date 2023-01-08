@@ -7,9 +7,8 @@ of the underlying normal distribution.  These are not the same
 parameters as used in `scipy.stats.lognorm`.
 """
 
-import operator
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_moment_n
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
@@ -154,13 +153,7 @@ def noncentral_moment(n, mu=0, sigma=1):
     """
     Noncentral moment of the lognormal distribution.
     """
-    try:
-        n = operator.index(n)
-    except TypeError:
-        raise TypeError('n must be an integer')
-    if n < 0:
-        raise ValueError('n must be nonnegative')
-
+    n = _validate_moment_n(n)
     with mp.extradps(5):
         sigma = _validate_sigma(sigma)
         mu = mp.mpf(mu)

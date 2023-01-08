@@ -26,10 +26,9 @@ See https://github.com/scipy/scipy/issues/6414 for the details.
 
 """
 
-import operator
 from mpmath import mp
 from ..fun import pow1pm1
-from ._common import _validate_p,  _find_bracket
+from ._common import _validate_p, _validate_moment_n,  _find_bracket
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'mean', 'var', 'mode',
@@ -149,13 +148,8 @@ def noncentral_moment(n, rho, scale):
     n must be a nonnegative integer.  For n > 2, the noncentral moment
     diverges, so `inf` is returned.
     """
+    n = _validate_moment_n(n)
     rho, scale = _validate_rho_scale(rho, scale)
-    try:
-        n = operator.index(n)
-    except TypeError:
-        raise TypeError('n must be an integer')
-    if n < 0:
-        raise ValueError('n must not be negative')
     if n == 0:
         return mp.one
     if n == 1:
