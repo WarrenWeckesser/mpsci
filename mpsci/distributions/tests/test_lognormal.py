@@ -135,3 +135,18 @@ def test_kurtosis():
         expected = mp.mpf(s)
         kurt = lognormal.kurtosis(mu, sigma)
         assert mp.almosteq(kurt, expected)
+
+
+def test_noncentral_moment():
+    mu = 2
+    sigma = 3
+    with mp.workdps(50):
+        assert lognormal.noncentral_moment(0, mu, sigma) == 1
+        assert mp.almosteq(lognormal.noncentral_moment(1, mu, sigma),
+                           mp.exp(13/2))
+        assert mp.almosteq(lognormal.noncentral_moment(2, mu, sigma),
+                           mp.exp(22))
+        assert mp.almosteq(lognormal.noncentral_moment(3, mu, sigma),
+                           mp.exp(93/2))
+        assert mp.almosteq(lognormal.noncentral_moment(4, mu, sigma),
+                           mp.exp(80))

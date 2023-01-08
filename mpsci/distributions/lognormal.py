@@ -7,12 +7,15 @@ of the underlying normal distribution.  These are not the same
 parameters as used in `scipy.stats.lognorm`.
 """
 
+import operator
 from mpmath import mp
 from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'mean', 'var', 'skewness', 'kurtosis', 'mle', 'mom']
+           'mean', 'var', 'skewness', 'kurtosis',
+           'noncentral_moment',
+           'mle', 'mom']
 
 
 def _validate_sigma(sigma):
@@ -145,6 +148,23 @@ def kurtosis(mu=0, sigma=1):
         sigma2 = sigma**2
         return (mp.exp(4*sigma2) + 2*mp.exp(3*sigma2)
                 + 3*mp.exp(2*sigma2) - 6)
+
+
+def noncentral_moment(n, mu=0, sigma=1):
+    """
+    Noncentral moment of the lognormal distribution.
+    """
+    try:
+        n = operator.index(n)
+    except TypeError:
+        raise TypeError('n must be an integer')
+    if n < 0:
+        raise ValueError('n must be nonnegative')
+
+    with mp.extradps(5):
+        sigma = _validate_sigma(sigma)
+        mu = mp.mpf(mu)
+        return mp.exp(n*mu + n**2*sigma**2/2)
 
 
 # XXX Add standard errors and confidence intervals for the fitted parameters.
