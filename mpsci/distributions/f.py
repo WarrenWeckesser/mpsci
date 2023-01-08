@@ -4,7 +4,7 @@ F distribution
 
 """
 
-import mpmath
+from mpmath import mp
 from ..fun import logbeta, xlogy, xlog1py
 
 
@@ -17,20 +17,19 @@ def pdf(x, dfn, dfd):
 
     `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
     """
-    if x <= 0:
-        return mpmath.mp.zero
-    with mpmath.mp.extradps(5):
-        x = mpmath.mp.mpf(x)
-
-        dfn = mpmath.mp.mpf(dfn)
-        dfd = mpmath.mp.mpf(dfd)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        if x <= 0:
+            return mp.zero
+        dfn = mp.mpf(dfn)
+        dfd = mp.mpf(dfd)
         r = dfn / dfd
         hdfn = dfn / 2
         hdfd = dfd / 2
         p = (r**hdfn
              * x**(hdfn - 1)
              * (1 + r*x)**(-(hdfn + hdfd))
-             / mpmath.beta(hdfn, hdfd))
+             / mp.beta(hdfn, hdfd))
         return p
 
 
@@ -40,18 +39,17 @@ def logpdf(x, dfn, dfd):
 
     `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
     """
-    if x <= 0:
-        return -mpmath.inf
-    with mpmath.mp.extradps(5):
-        x = mpmath.mp.mpf(x)
+
+    with mp.extradps(5):
+        x = mp.mpf(x)
         if x <= 0:
-            return mpmath.mp.zero
-        dfn = mpmath.mp.mpf(dfn)
-        dfd = mpmath.mp.mpf(dfd)
+            return -mp.inf
+        dfn = mp.mpf(dfn)
+        dfd = mp.mpf(dfd)
         r = dfn / dfd
         hdfn = dfn / 2
         hdfd = dfd / 2
-        lp = (hdfn * (mpmath.log(dfn) - mpmath.log(dfd))
+        lp = (hdfn * (mp.log(dfn) - mp.log(dfd))
               + xlogy(hdfn - 1, x)
               - xlog1py(hdfn + hdfd, r*x)
               - logbeta(hdfn, hdfd))
@@ -64,15 +62,15 @@ def cdf(x, dfn, dfd):
 
     `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
     """
-    if x <= 0:
-        return mpmath.mp.zero
-    with mpmath.mp.extradps(5):
-        x = mpmath.mp.mpf(x)
-        dfn = mpmath.mp.mpf(dfn)
-        dfd = mpmath.mp.mpf(dfd)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        if x <= 0:
+            return mp.zero
+        dfn = mp.mpf(dfn)
+        dfd = mp.mpf(dfd)
         dfnx = dfn * x
-        return mpmath.betainc(dfn/2, dfd/2, x2=dfnx/(dfnx + dfd),
-                              regularized=True)
+        return mp.betainc(dfn/2, dfd/2, x2=dfnx/(dfnx + dfd),
+                          regularized=True)
 
 
 def sf(x, dfn, dfd):
@@ -81,15 +79,15 @@ def sf(x, dfn, dfd):
 
     `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
     """
-    if x <= 0:
-        return mpmath.mp.one
-    with mpmath.mp.extradps(5):
-        x = mpmath.mp.mpf(x)
-        dfn = mpmath.mp.mpf(dfn)
-        dfd = mpmath.mp.mpf(dfd)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        if x <= 0:
+            return mp.one
+        dfn = mp.mpf(dfn)
+        dfd = mp.mpf(dfd)
         dfnx = dfn * x
-        return mpmath.betainc(dfn/2, dfd/2, x1=dfnx/(dfnx + dfd),
-                              regularized=True)
+        return mp.betainc(dfn/2, dfd/2, x1=dfnx/(dfnx + dfd),
+                          regularized=True)
 
 
 def mean(dfn, dfd):
@@ -101,11 +99,11 @@ def mean(dfn, dfd):
     For a finite mean, `dfd` must be greater than 2.
     If `dfd` is less than or equal to 2, this function returns `inf`.
     """
-    with mpmath.mp.extradps(5):
+    with mp.extradps(5):
         if dfd > 2:
-            dfd = mpmath.mpf(dfd)
+            dfd = mp.mpf(dfd)
             return dfd/(dfd - 2)
-        return mpmath.inf
+        return mp.inf
 
 
 def var(dfn, dfd):
@@ -117,10 +115,10 @@ def var(dfn, dfd):
     For a finite variance, `dfd` must be greater than 4.
     If `dfd` is less than or equal to 4, this function returns `inf`.
     """
-    with mpmath.mp.extradps(5):
+    with mp.extradps(5):
         if dfd > 4:
-            dfn = mpmath.mpf(dfn)
-            dfd = mpmath.mpf(dfd)
+            dfn = mp.mpf(dfn)
+            dfd = mp.mpf(dfd)
             return (2 * dfd**2 * (dfn + dfd - 2)
                     / (dfn * (dfd - 2)**2 * (dfd - 4)))
-        return mpmath.inf
+        return mp.inf
