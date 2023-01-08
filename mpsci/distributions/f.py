@@ -8,7 +8,8 @@ from mpmath import mp
 from ..fun import logbeta, xlogy, xlog1py
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var',
+           'entropy']
 
 
 def pdf(x, dfn, dfd):
@@ -122,3 +123,23 @@ def var(dfn, dfd):
             return (2 * dfd**2 * (dfn + dfd - 2)
                     / (dfn * (dfd - 2)**2 * (dfd - 4)))
         return mp.inf
+
+
+def entropy(dfn, dfd):
+    """
+    Differential entropy of the F distribution.
+
+    `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
+
+    """
+    with mp.extradps(5):
+        dfn = mp.mpf(dfn)
+        dfd = mp.mpf(dfd)
+        dfn2 = dfn/2
+        dfd2 = dfd/2
+        dfmean = dfn2 + dfd2
+        return (mp.log(dfd/dfn)
+                + logbeta(dfn2, dfd2)
+                + (1 - dfn2)*mp.digamma(dfn2)
+                - (1 + dfd2)*mp.digamma(dfd2)
+                + dfmean*mp.digamma(dfmean))
