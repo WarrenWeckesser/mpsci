@@ -1,6 +1,84 @@
 
-import mpmath
+from mpmath import mp
 from mpsci.distributions import lognormal
+
+
+def test_pdf():
+    x = 5.0
+    mu = 2.0
+    sigma = 3.0
+    # Wolfram Alpha:
+    #    PDF[LogNormalDistribution[2, 3], 5]
+    s = '0.026371718579138012712645997572295063382723046111242729868'
+    with mp.workdps(len(s) - 3):
+        expected = mp.mpf(s)
+        pdf = lognormal.pdf(x, mu, sigma)
+        assert mp.almosteq(pdf, expected)
+
+
+def test_logpdf():
+    x = 5.0
+    mu = 2.0
+    sigma = 3.0
+    # Wolfram Alpha:
+    #    log[PDF[LogNormalDistribution[2, 3], 5]]
+    s = '-3.63546310898709577704173062167032566943949209403601586605421466'
+    with mp.workdps(len(s) - 2):
+        expected = mp.mpf(s)
+        logpdf = lognormal.logpdf(x, mu, sigma)
+        assert mp.almosteq(logpdf, expected)
+
+
+def test_cdf():
+    x = 5.0
+    mu = 2.0
+    sigma = 3.0
+    # Wolfram Alpha:
+    #    CDF[LogNormalDistribution[2, 3], 5]
+    s = '0.4482090963664131928987017320145556980701415906740292202885'
+    with mp.workdps(len(s) - 2):
+        expected = mp.mpf(s)
+        cdf = lognormal.cdf(x, mu, sigma)
+        assert mp.almosteq(cdf, expected)
+
+
+def test_invcdf():
+    mu = 2.0
+    sigma = 3.0
+    # Wolfram Alpha:
+    #    InverseCDF[LogNormalDistribution[2, 3], 1/100]
+    s = '0.0068806399035674338044297169530782501683046556866941825057284'
+    with mp.workdps(len(s) - 4):
+        p = mp.mpf('0.01')
+        expected = mp.mpf(s)
+        invcdf = lognormal.invcdf(p, mu, sigma)
+        assert mp.almosteq(invcdf, expected)
+
+
+def test_sf():
+    x = 5.0
+    mu = 2.0
+    sigma = 3.0
+    # Wolfram Alpha:
+    #    SurvivalFunction[LogNormalDistribution[2, 3], 5]
+    s = '0.55179090363358680710129826798544430192985840932597077971147'
+    with mp.workdps(len(s) - 2):
+        expected = mp.mpf(s)
+        sf = lognormal.sf(x, mu, sigma)
+        assert mp.almosteq(sf, expected)
+
+
+def test_invsf():
+    mu = 2.0
+    sigma = 3.0
+    # Wolfram Alpha:
+    #    InverseCDF[LogNormalDistribution[2, 3], 99/100]
+    s = '7935.0395890993380729703921306125939057678238091794644776865236'
+    with mp.workdps(len(s) - 1):
+        p = mp.mpf('0.01')
+        expected = mp.mpf(s)
+        invsf = lognormal.invsf(p, mu, sigma)
+        assert mp.almosteq(invsf, expected)
 
 
 def test_mean():
@@ -11,10 +89,10 @@ def test_mean():
     # returns
     #     665.141633044361840693961494242634383221132254094828803184906532...
     s = '665.141633044361840693961494242634383221132254094828803184906532'
-    with mpmath.workdps(len(s) - 1):
-        expected = mpmath.mpf(s)
+    with mp.workdps(len(s) - 1):
+        expected = mp.mpf(s)
         mean = lognormal.mean(mu, sigma)
-        assert mpmath.almosteq(mean, expected)
+        assert mp.almosteq(mean, expected)
 
 
 def test_var():
@@ -25,10 +103,10 @@ def test_var():
     # returns
     #     0.17934120058305027077170627780841441260829384280347521202891893...
     s = '0.17934120058305027077170627780841441260829384280347521202891893'
-    with mpmath.workdps(len(s) - 1):
-        expected = mpmath.mpf(s)
+    with mp.workdps(len(s) - 1):
+        expected = mp.mpf(s)
         var = lognormal.var(mu, sigma)
-        assert mpmath.almosteq(var, expected)
+        assert mp.almosteq(var, expected)
 
 
 def test_skewness():
@@ -39,10 +117,10 @@ def test_skewness():
     # returns
     #     3.26291272820700198848298205623905499569637496768603483385045187...
     s = '3.2629127282070019884829820562390549956963749676860348338504519'
-    with mpmath.workdps(len(s) - 1):
-        expected = mpmath.mpf(s)
+    with mp.workdps(len(s) - 1):
+        expected = mp.mpf(s)
         skew = lognormal.skewness(mu, sigma)
-        assert mpmath.almosteq(skew, expected)
+        assert mp.almosteq(skew, expected)
 
 
 def test_kurtosis():
@@ -53,7 +131,7 @@ def test_kurtosis():
     # returns
     #     23.5402842333949536453917913054445343888977841929771374742004...'
     s = '23.5402842333949536453917913054445343888977841929771374742004'
-    with mpmath.workdps(len(s) - 1):
-        expected = mpmath.mpf(s)
+    with mp.workdps(len(s) - 1):
+        expected = mp.mpf(s)
         kurt = lognormal.kurtosis(mu, sigma)
-        assert mpmath.almosteq(kurt, expected)
+        assert mp.almosteq(kurt, expected)
