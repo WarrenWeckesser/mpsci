@@ -6,7 +6,7 @@ The implementations here are somewhat naive.  To check the results,
 run multiple times with increasing mpmath precision.
 """
 
-import mpmath
+from mpmath import mp
 from . import normal
 from ._common import _validate_p
 
@@ -18,6 +18,7 @@ __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'median',
 def _validate_params(a, b):
     if a >= b:
         raise ValueError("'a' must be less than 'b'")
+    return mp.mpf(a), mp.mpf(b)
 
 
 def _norm_delta_cdf(a, b):
@@ -26,13 +27,13 @@ def _norm_delta_cdf(a, b):
 
     The function assumes a <= b.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         if a == b:
-            return mpmath.mp.zero
+            return mp.zero
         if a > 0:
-            delta = mpmath.ncdf(-a) - mpmath.ncdf(-b)
+            delta = mp.ncdf(-a) - mp.ncdf(-b)
         else:
-            delta = mpmath.ncdf(b) - mpmath.ncdf(a)
+            delta = mp.ncdf(b) - mp.ncdf(a)
         return delta
 
 
@@ -40,42 +41,39 @@ def pdf(x, a, b):
     """
     PDF of the truncated standard normal distribution.
     """
-    _validate_params(a, b)
-    if x < a or x > b:
-        return mpmath.mp.zero
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
+        x = mp.mpf(x)
+        if x < a or x > b:
+            return mp.zero
         delta = _norm_delta_cdf(a, b)
-        return mpmath.npdf(x) / delta
+        return mp.npdf(x) / delta
 
 
 def logpdf(x, a, b):
     """
     Natural logarithm of the PDF of the truncated standard normal distribution.
     """
-    _validate_params(a, b)
-    if x < a or x > b:
-        return -mpmath.inf
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
+        x = mp.mpf(x)
+        if x < a or x > b:
+            return mp.ninf
         delta = _norm_delta_cdf(a, b)
-        return normal.logpdf(x) - mpmath.log(delta)
+        return normal.logpdf(x) - mp.log(delta)
 
 
 def cdf(x, a, b):
     """
     CDF of the truncated standard normal distribution.
     """
-    _validate_params(a, b)
-    if x <= a:
-        return mpmath.mp.zero
-    if x >= b:
-        return mpmath.mp.one
-    with mpmath.extradps(5):
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
+        x = mp.mpf(x)
+        if x <= a:
+            return mp.zero
+        if x >= b:
+            return mp.one
         return _norm_delta_cdf(a, x) / _norm_delta_cdf(a, b)
 
 
@@ -83,12 +81,13 @@ def sf(x, a, b):
     """
     Survival function of the truncated standard normal distribution.
     """
-    _validate_params(a, b)
-    if x <= a:
-        return mpmath.mp.one
-    if x >= b:
-        return mpmath.mp.zero
-    with mpmath.extradps(5):
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
+        x = mp.mpf(x)
+        if x <= a:
+            return mp.one
+        if x >= b:
+            return mp.zero
         return _norm_delta_cdf(x, b) / _norm_delta_cdf(a, b)
 
 
@@ -99,38 +98,30 @@ def invcdf(p, a, b):
     This function is also known as the quantile function or the percent
     point function.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-
-        p2 = p * _norm_delta_cdf(a, b) + mpmath.ncdf(a)
-        x = normal.invcdf(p2)
-
-    return x
+        a, b = _validate_params(a, b)
+        p2 = p * _norm_delta_cdf(a, b) + mp.ncdf(a)
+        return normal.invcdf(p2)
 
 
 def invsf(p, a, b):
     """
     Inverse of the survival function of the standard normal distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-
-        p2 = -p * _norm_delta_cdf(a, b) + mpmath.ncdf(b)
-        x = normal.invcdf(p2)
-
-    return x
+        a, b = _validate_params(a, b)
+        p2 = -p * _norm_delta_cdf(a, b) + mp.ncdf(b)
+        return normal.invcdf(p2)
 
 
 def mean(a, b):
     """
     Mean of the truncated standard normal distribution.
     """
-    _validate_params(a, b)
-    with mpmath.extradps(5):
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
         return pdf(a, a, b) - pdf(b, a, b)
 
 
@@ -138,8 +129,8 @@ def median(a, b):
     """
     Median of the truncated standard normal distribution.
     """
-    _validate_params(a, b)
-    with mpmath.extradps(5):
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
         return normal.invcdf((normal.cdf(a) + normal.cdf(b))/2)
 
 
@@ -147,10 +138,8 @@ def var(a, b):
     """
     Variance of the truncated standard normal distribution.
     """
-    _validate_params(a, b)
-    with mpmath.extradps(5):
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
         pa = pdf(a, a, b)
         pb = pdf(b, a, b)
         # Avoid the possibility of inf*0:
@@ -167,11 +156,8 @@ def _noncentral_moments(n, a, b):
 
     Returns a list of length n.  n must be a positive integer.
     """
-    _validate_params(a, b)
-    with mpmath.extradps(5):
-        a = mpmath.mpf(a)
-        b = mpmath.mpf(b)
-
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
         pa = pdf(a, a, b)
         pb = pdf(b, a, b)
 
@@ -198,8 +184,8 @@ def skewness(a, b):
     """
     Skewness of the truncated standard normal distribution.
     """
-    _validate_params(a, b)
-    with mpmath.extradps(5):
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
         m1, m2, m3 = _noncentral_moments(3, a, b)
 
         # Central moments (i.e. moments about the mean)
@@ -207,7 +193,7 @@ def skewness(a, b):
         mu3 = m3 + m1 * (-3*m2 + 2*m1**2)
 
         # Skewness
-        g1 = mu3 / mpmath.power(mu2, 1.5)
+        g1 = mu3 / mp.power(mu2, 1.5)
 
         return g1
 
@@ -216,8 +202,8 @@ def kurtosis(a, b):
     """
     Excess kurtosis of the truncated standard normal distribution.
     """
-    _validate_params(a, b)
-    with mpmath.extradps(5):
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
         m1, m2, m3, m4 = _noncentral_moments(4, a, b)
 
         # Central moments (i.e. moments about the mean)
