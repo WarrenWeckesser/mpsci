@@ -12,7 +12,7 @@ from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'median',
-           'var', 'skewness', 'kurtosis']
+           'var', 'skewness', 'kurtosis', 'entropy']
 
 
 def _validate_params(a, b):
@@ -30,6 +30,12 @@ def _norm_delta_cdf(a, b):
     with mp.extradps(5):
         if a == b:
             return mp.zero
+        if a == mp.ninf and b == mp.inf:
+            return mp.one
+        if a == mp.ninf:
+            return mp.ncdf(b)
+        if b == mp.inf:
+            return mp.ncdf(-a)
         if a > 0:
             delta = mp.ncdf(-a) - mp.ncdf(-b)
         else:
@@ -214,3 +220,23 @@ def kurtosis(a, b):
         g2 = mu4 / mu2**2 - 3
 
         return g2
+
+
+def _prod_x_npdfx(x):
+    if mp.isinf(x):
+        return mp.zero
+    return x * mp.npdf(x)
+
+
+def entropy(a, b):
+    """
+    Differential entropy of the truncated standard normal distribution.
+    """
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
+        delta = _norm_delta_cdf(a, b)
+        t1 = (mp.log(2*mp.pi) + 1)/2 + mp.log(delta)
+        s1 = _prod_x_npdfx(a)
+        s2 = _prod_x_npdfx(b)
+        t2 = (s1 - s2)/(2*delta)
+        return t1 + t2

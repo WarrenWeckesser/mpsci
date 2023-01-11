@@ -89,3 +89,20 @@ def test_symmetric():
         assert mean == 0
         median = truncnorm.median(-b, b)
         assert median == 0
+
+
+def test_entropy_against_normal():
+    with mp.workdps(50):
+        e = truncnorm.entropy(-mp.inf, mp.inf)
+        assert mp.almosteq(e, (mp.log(2*mp.pi) + 1)/2)
+
+
+def test_entropy_with_quad():
+    a = -0.5
+    b = 2.5
+    with mp.workdps(50):
+        entr = truncnorm.entropy(a, b)
+        q = mp.quad(lambda t: (-truncnorm.pdf(t, a, b) *
+                               truncnorm.logpdf(t, a, b)),
+                    [a, b])
+        assert mp.almosteq(entr, q)
