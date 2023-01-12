@@ -7,7 +7,7 @@ from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'mle']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'mle', 'entropy']
 
 
 def pdf(x, mu=0, sigma=1):
@@ -79,6 +79,16 @@ def invsf(p, mu=0, sigma=1):
         a = mp.erfinv(1 - 2*p)
         x = mp.sqrt(2)*sigma*a + mu
         return x
+
+
+def entropy(mu=0, sigma=1):
+    """
+    Differential entropy of the normal distribution.
+    """
+    with mp.extradps(5):
+        mu = mp.mpf(mu)
+        sigma = mp.mpf(sigma)
+        return (mp.log(2*mp.pi) + 1)/2 + mp.log(sigma)
 
 
 # XXX Add standard errors and confidence intervals for the fitted parameters.
