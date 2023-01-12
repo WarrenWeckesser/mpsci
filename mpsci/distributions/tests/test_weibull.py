@@ -1,6 +1,7 @@
 from itertools import product
 import pytest
 from mpmath import mp
+from mpsci.fun import xlogy
 from mpsci.distributions import weibull_max, weibull_min
 
 
@@ -66,6 +67,29 @@ def test_kurtosis(dist):
         valstr = '2.8021519350984650074697694858304410798423229238041266467027'
         expected = mp.mpf(valstr)
         assert mp.almosteq(kurt, expected)
+
+
+@pytest.mark.parametrize('dist', [weibull_min, weibull_max])
+def test_entropy(dist):
+
+    def integrand(dist, x, k, loc, scale):
+        if x == loc:
+            p = dist.pdf(x, k, loc, scale)
+            return xlogy(p, p)
+        else:
+            return dist.pdf(x, k, loc, scale) * dist.logpdf(x, k, loc, scale)
+
+    with mp.workdps(50):
+        k = 1.25
+        loc = 1
+        scale = 3
+        entr = dist.entropy(k, loc, scale)
+        if dist == weibull_min:
+            support = [loc, mp.inf]
+        else:
+            support = [mp.ninf, loc]
+        h = -mp.quad(lambda t: integrand(dist, t, k, loc, scale), support)
+        assert mp.almosteq(entr, h)
 
 
 @pytest.mark.parametrize('dist, sgn', [(weibull_min, 1), (weibull_max, -1)])

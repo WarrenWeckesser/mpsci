@@ -21,7 +21,7 @@ from ._weibull_common import _validate_params, _mle_k_eqn1, _mle_k_eqn2
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'skewness', 'kurtosis',
+           'mean', 'var', 'skewness', 'kurtosis', 'entropy',
            'nll', 'mle']
 
 
@@ -190,6 +190,18 @@ def kurtosis(k, loc, scale):
         g4 = mp.gamma(1 + 4/k)
         den = (g2 - g1**2)**2
         return (-6*g1**4 + 12*g1**2*g2 - 3*g2**2 - 4*g1*g3 + g4) / den
+
+
+def entropy(k, loc, scale):
+    """
+    Differential entropy of the Weibull distribution (for minima).
+
+    This is a three-parameter version of the distribution.  The more typical
+    two-parameter version has just the parameters k and scale.
+    """
+    with mp.extradps(5):
+        k, loc, scale = _validate_params(k, loc, scale)
+        return mp.euler*(1 - 1/k) + mp.log(scale) - mp.log(k) + 1
 
 
 def _validate_x(x, loc=0):
