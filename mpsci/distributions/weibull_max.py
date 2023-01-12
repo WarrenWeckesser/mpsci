@@ -12,7 +12,7 @@ This is the same distribution as:
 
 """
 
-import mpmath
+from mpmath import mp
 from ..stats import pmean
 from ._common import _validate_p, _median
 from ._weibull_common import _validate_params, _mle_k_eqn1, _mle_k_eqn2
@@ -30,19 +30,19 @@ def pdf(x, k, loc, scale):
     This is a three-parameter version of the distribution.  The more typical
     two-parameter version has just the parameters k and scale.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        x = mp.mpf(x)
         k, loc, scale = _validate_params(k, loc, scale)
         if x == loc:
             if k < 1:
-                return mpmath.mp.inf
+                return mp.inf
             elif k == 1:
                 return 1/scale
             else:
-                return mpmath.mp.zero
+                return mp.zero
         if x > loc:
-            return mpmath.mp.zero
-        return mpmath.exp(logpdf(x, k, loc, scale))
+            return mp.zero
+        return mp.exp(logpdf(x, k, loc, scale))
 
 
 def logpdf(x, k, loc, scale):
@@ -52,21 +52,21 @@ def logpdf(x, k, loc, scale):
     This is a three-parameter version of the distribution.  The more typical
     two-parameter version has just the parameters k and scale.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        x = mp.mpf(x)
         k, loc, scale = _validate_params(k, loc, scale)
         if x == loc:
             if k < 1:
-                return mpmath.mp.inf
+                return mp.inf
             elif k == 1:
-                return -mpmath.log(scale)
+                return -mp.log(scale)
             else:
-                return mpmath.mp.ninf
+                return mp.ninf
         if x > loc:
-            return mpmath.mp.ninf
+            return mp.ninf
         z = (x - loc) / scale
-        return (mpmath.log(k) - k*mpmath.log(scale) +
-                (k - 1)*mpmath.log(-x+loc) - (-z)**k)
+        return (mp.log(k) - k*mp.log(scale) +
+                (k - 1)*mp.log(-x+loc) - (-z)**k)
 
 
 def cdf(x, k, loc, scale):
@@ -76,13 +76,13 @@ def cdf(x, k, loc, scale):
     This is a three-parameter version of the distribution.  The more typical
     two-parameter version has just the parameters k and scale.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        x = mp.mpf(x)
         k, loc, scale = _validate_params(k, loc, scale)
         if x >= loc:
-            return mpmath.mp.one
+            return mp.one
         z = (x - loc) / scale
-        return mpmath.exp(-(-z)**k)
+        return mp.exp(-(-z)**k)
 
 
 def invcdf(p, k, loc, scale):
@@ -92,10 +92,10 @@ def invcdf(p, k, loc, scale):
     This is a three-parameter version of the distribution.  The more typical
     two-parameter version has just the parameters k and scale.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         k, loc, scale = _validate_params(k, loc, scale)
-        z = -mpmath.power(-mpmath.log(p), 1/k)
+        z = -mp.power(-mp.log(p), 1/k)
         x = scale*z + loc
         return x
 
@@ -107,13 +107,13 @@ def sf(x, k, loc, scale):
     This is a three-parameter version of the distribution.  The more typical
     two-parameter version has just the parameters k and scale.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        x = mp.mpf(x)
         k, loc, scale = _validate_params(k, loc, scale)
         if x >= loc:
-            return mpmath.mp.zero
+            return mp.zero
         z = (x - loc) / scale
-        return -mpmath.expm1(-(-z)**k)
+        return -mp.expm1(-(-z)**k)
 
 
 def invsf(p, k, loc, scale):
@@ -123,10 +123,10 @@ def invsf(p, k, loc, scale):
     This is a three-parameter version of the distribution.  The more typical
     two-parameter version has just the parameters k and scale.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         k, loc, scale = _validate_params(k, loc, scale)
-        z = -mpmath.power(-mpmath.log1p(-p), 1/k)
+        z = -mp.power(-mp.log1p(-p), 1/k)
         x = scale*z + loc
         return x
 
@@ -138,9 +138,9 @@ def mean(k, loc, scale):
     This is a three-parameter version of the distribution.  The more typical
     two-parameter version has just the parameters k and scale.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, loc, scale = _validate_params(k, loc, scale)
-        return loc - scale * mpmath.gamma(1 + 1/k)
+        return loc - scale * mp.gamma(1 + 1/k)
 
 
 def var(k, loc, scale):
@@ -150,11 +150,11 @@ def var(k, loc, scale):
     This is a three-parameter version of the distribution.  The more typical
     two-parameter version has just the parameters k and scale.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, loc, scale = _validate_params(k, loc, scale)
         v1 = 1 + 1/k
         v2 = 1 + 2/k
-        return scale**2 * (mpmath.gamma(v2) - mpmath.gamma(v1)**2)
+        return scale**2 * (mp.gamma(v2) - mp.gamma(v1)**2)
 
 
 def skewness(k, loc, scale):
@@ -164,12 +164,12 @@ def skewness(k, loc, scale):
     This is a three-parameter version of the distribution.  The more typical
     two-parameter version has just the parameters k and scale.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, loc, scale = _validate_params(k, loc, scale)
-        g1 = mpmath.gamma(1 + 1/k)
-        g2 = mpmath.gamma(1 + 2/k)
-        g3 = mpmath.gamma(1 + 3/k)
-        return -(g3 - 3*g1*g2 + 2*g1**3) / mpmath.power(g2 - g1**2, 1.5)
+        g1 = mp.gamma(1 + 1/k)
+        g2 = mp.gamma(1 + 2/k)
+        g3 = mp.gamma(1 + 3/k)
+        return -(g3 - 3*g1*g2 + 2*g1**3) / mp.power(g2 - g1**2, 1.5)
 
 
 def kurtosis(k, loc, scale):
@@ -179,12 +179,12 @@ def kurtosis(k, loc, scale):
     This is a three-parameter version of the distribution.  The more typical
     two-parameter version has just the parameters k and scale.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         k, loc, scale = _validate_params(k, loc, scale)
-        g1 = mpmath.gamma(1 + 1/k)
-        g2 = mpmath.gamma(1 + 2/k)
-        g3 = mpmath.gamma(1 + 3/k)
-        g4 = mpmath.gamma(1 + 4/k)
+        g1 = mp.gamma(1 + 1/k)
+        g2 = mp.gamma(1 + 2/k)
+        g3 = mp.gamma(1 + 3/k)
+        g4 = mp.gamma(1 + 4/k)
         den = (g2 - g1**2)**2
         return (-6*g1**4 + 12*g1**2*g2 - 3*g2**2 - 4*g1*g3 + g4) / den
 
@@ -200,8 +200,8 @@ def nll(x, k, loc, scale):
     """
     _validate_params(k, loc, scale)
     _validate_x(x, loc=loc)
-    with mpmath.extradps(5):
-        return -mpmath.fsum([logpdf(t, k, loc, scale) for t in x])
+    with mp.extradps(5):
+        return -mp.fsum([logpdf(t, k, loc, scale) for t in x])
 
 
 def mle(x, k=None, loc=None, scale=None):
@@ -215,12 +215,12 @@ def mle(x, k=None, loc=None, scale=None):
     if loc is None:
         raise ValueError("The 'loc' parameter must be given explicitly.")
     _validate_x(x, loc)
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         # Transform x to loc - x.  After that transformation, this
         # function is the same as weibull_min. (XXX FIXME: There is some
         # D.R.Y. clean up to be done here.)
-        loc = mpmath.mpf(loc)
-        x = [-mpmath.mpf(1.0*t) + loc for t in x]
+        loc = mp.mpf(loc)
+        x = [-mp.mpf(1.0*t) + loc for t in x]
 
         if k is not None and k <= 0:
             raise ValueError('k must be greater than 0')
@@ -230,28 +230,28 @@ def mle(x, k=None, loc=None, scale=None):
         if k is None and scale is None:
             # Solve for k and scale.
             # TO DO: Is there a better guess for k than 1?
-            k_hat = mpmath.findroot(lambda k: _mle_k_eqn1(k, x), 1.0)
+            k_hat = mp.findroot(lambda k: _mle_k_eqn1(k, x), 1.0)
             scale_hat = pmean(x, k_hat)
         elif k is not None and scale is None:
             # Solve for scale.
-            k_hat = mpmath.mpf(k)
+            k_hat = mp.mpf(k)
             scale_hat = pmean(x, k_hat)
         elif k is None and scale is not None:
             # Solve for k only.
-            scale_hat = mpmath.mpf(scale)
+            scale_hat = mp.mpf(scale)
             # Use the formula for the median,
             #    median = scale * ln(2)**(1/k)
             # to derive the initial guess for k.
             med = _median(x)
-            lnr = mpmath.log(med/scale_hat)
+            lnr = mp.log(med/scale_hat)
             if lnr >= 0:
                 k0 = 1.0
             else:
-                k0 = mpmath.log(mpmath.log(2))/lnr
-            k_hat = mpmath.findroot(lambda k: _mle_k_eqn2(k, x, scale_hat), k0)
+                k0 = mp.log(mp.log(2))/lnr
+            k_hat = mp.findroot(lambda k: _mle_k_eqn2(k, x, scale_hat), k0)
         else:
             # Both k and scale are not None--nothing to do.
-            k_hat = mpmath.mpf(k)
-            scale_hat = mpmath.mpf(scale)
+            k_hat = mp.mpf(k)
+            scale_hat = mp.mpf(scale)
 
     return k_hat, loc, scale_hat
