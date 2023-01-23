@@ -15,7 +15,7 @@ from ._common import _validate_p
 __all__ = ['pdf', 'logpdf',
            'cdf', 'logcdf', 'invcdf',
            'sf', 'logsf', 'invsf',
-           'mean', 'mode', 'variance']
+           'mean', 'mode', 'variance', 'entropy']
 
 
 def _validate_params(mu, loc, scale):
@@ -193,3 +193,15 @@ def variance(mu, loc=0, scale=1):
     with mp.extradps(5):
         mu, loc, scale = _validate_params(mu, loc, scale)
         return mu**3*scale**2
+
+
+def entropy(mu, loc=0, scale=1):
+    """
+    Differential entropy of the inverse Gaussian distribution.
+    """
+    # Lots of extradps to handle small mu.
+    with mp.extradps(5):
+        mu, loc, scale = _validate_params(mu, loc, scale)
+        t1 = (mp.log(2*mp.pi) + 3*mp.log(mu) + 1)/2
+        t2 = 3*(mp.exp(2/mu) * mp.expint(1, 2/mu))/2
+        return t1 - t2 + mp.log(scale)
