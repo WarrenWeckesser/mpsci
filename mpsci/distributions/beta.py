@@ -323,7 +323,9 @@ def _mle_cens(lo, hi, p0=None):
 
     Examples
     --------
-    >>> mpmath.mp.dps = 60
+    >>> from mpmath import mp
+    >>> from mpsci.distributions import beta
+    >>> mp.dps = 60
     >>> lo = [0.0, 0.2, 0.4, 0.6, 0.8]
     >>> hi = [0.2, 0.4, 0.6, 0.8, 1.0]
     >>> counts = [5, 4, 7, 3, 1]
@@ -339,23 +341,29 @@ def _mle_cens(lo, hi, p0=None):
 
     Compare that to the result of the following R code::
 
-        > library(fitdistrplus)
-        > lo <- c(0. , 0. , 0. , 0. , 0. , 0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4,
-        +         0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.8)
-        > hi <- c(0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6,
-        +         0.6, 0.6, 0.6, 0.6, 0.8, 0.8, 0.8, 1. )
-        > data <- data.frame(left=lo, right=hi)
-        > result <- fitdistcens(data, 'beta', control=list(reltol=1e-13))
-        > result
-        Fitting of the distribution ' beta ' on censored data by
-        maximum likelihood
-        Parameters:
+        library(fitdistrplus)
+        lo <- c(0. , 0. , 0. , 0. , 0. , 0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4,
+                0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.8)
+        hi <- c(0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6,
+                0.6, 0.6, 0.6, 0.6, 0.8, 0.8, 0.8, 1. )
+        data <- data.frame(left=lo, right=hi)
+        result <- fitdistcens(data, 'beta', control=list(reltol=1e-13))
+        print(result)
+        cat("\nStandard deviations of parameter estimates:\n")
+        print(result$sd)
+
+    which prints (perhaps with slightly different line wrapping)::
+
+        Fitting of the distribution ' beta ' on censored data by maximum
+        likelihood Parameters:
                estimate
         shape1 1.430639
         shape2 2.101466
-        > result$sd
+
+        Standard deviations of parameter estimates:
            shape1    shape2
         0.5609800 0.8043017
+
     """
     with mp.extradps(5):
         if p0 is None:
