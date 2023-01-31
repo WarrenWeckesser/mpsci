@@ -8,7 +8,7 @@ Relativistic Breit-Wigner distribution
 
 In the wikipedia article
 https://en.wikipedia.org/wiki/Relativistic_Breit%E2%80%93Wigner_distribution,
-the parameters are M and Γ.  The relations between those parmeters and
+the parameters are M and Γ.  The relations between those parameters and
 the parameters use here are:
 
 * from (M, Γ) to mpsci's (rho, scale)::
