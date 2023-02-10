@@ -23,7 +23,8 @@ from mpsci import stats
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf',
-           'mean', 'var', 'nll', 'mle']
+           'mean', 'var', 'entropy',
+           'nll', 'mle']
 
 
 def _validate_params(nu, loc=0, scale=1):
@@ -108,6 +109,16 @@ def var(nu, loc=0, scale=1):
         gratio = mp.gammaprod([nu + 0.5], [nu])
         var0 = 1 - gratio**2/nu
         return scale**2 * var0
+
+
+def entropy(nu, loc=0, scale=1):
+    """
+    Differential entropy of the Nakagami distribution.
+    """
+    with mp.extradps(5):
+        nu, loc, scale = _validate_params(nu, loc, scale)
+        return ((mp.one/2 - nu)*mp.digamma(nu) - mp.log(nu)/2
+                + nu + mp.loggamma(nu) - mp.log(2) + mp.log(scale))
 
 
 def _validate_x(x, loc=0):
