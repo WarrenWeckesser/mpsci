@@ -31,7 +31,7 @@ def _validate_params(nu, loc=0, scale=1):
     if nu <= 0:
         raise ValueError('nu must be positive')
     if scale <= 0:
-        raise ValueError('sigma must be positive')
+        raise ValueError('scale must be positive')
     return mp.mpf(nu), mp.mpf(loc), mp.mpf(scale)
 
 
