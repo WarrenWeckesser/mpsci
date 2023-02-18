@@ -3,9 +3,7 @@ from mpmath import mp
 from mpsci.distributions import gompertz
 
 
-mp.dps = 60
-
-
+@mp.workdps(60)
 def test_pdf():
     x = mp.mpf(1.25)
     c = mp.mpf(3.0)
@@ -18,6 +16,7 @@ def test_pdf():
     assert mp.almosteq(pdf, expected)
 
 
+@mp.workdps(60)
 def test_logpdf():
     x = mp.mpf(1.25)
     c = mp.mpf(3.0)
@@ -30,6 +29,7 @@ def test_logpdf():
     assert mp.almosteq(logpdf, expected)
 
 
+@mp.workdps(60)
 def test_cdf():
     x = mp.mpf(1.25)
     c = mp.mpf(3.0)
@@ -39,6 +39,7 @@ def test_cdf():
     assert mp.almosteq(cdf, expected)
 
 
+@mp.workdps(60)
 def test_invcdf():
     p = mp.mpf(0.25)
     c = mp.mpf(3.0)
@@ -46,10 +47,11 @@ def test_invcdf():
     x = gompertz.invcdf(p, c, scale)
     # Quantile reported by Wolfram Alpha:
     #   Quantile[GompertzDistribution[1/scale, c], 1/4]
-    expected = mp.log(1 + mp.log(mp.mpf('4/3'))/3)/2
+    expected = mp.log1p(mp.log(mp.mpf('4/3'))/3)/2
     assert mp.almosteq(x, expected)
 
 
+@mp.workdps(60)
 def test_sf():
     x = mp.mpf(1.25)
     c = mp.mpf(3.0)
@@ -59,15 +61,17 @@ def test_sf():
     assert mp.almosteq(sf, expected)
 
 
+@mp.workdps(60)
 def test_invsf():
     p = mp.mpf(0.25)
     c = mp.mpf(3.0)
     scale = mp.mpf(0.5)
     x = gompertz.invsf(p, c, scale)
-    expected = scale * mp.log(1 - mp.log(p)/c)
+    expected = scale * mp.log1p(-mp.log(p)/c)
     assert mp.almosteq(x, expected)
 
 
+@mp.workdps(60)
 def test_mean():
     c = mp.mpf(3.0)
     scale = mp.mpf(0.5)
