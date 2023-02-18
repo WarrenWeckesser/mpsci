@@ -15,7 +15,7 @@ The parameters used here map to the wikipedia article as follows::
 
 """
 
-import mpmath
+from mpmath import mp
 from ._common import _validate_p
 
 
@@ -27,7 +27,7 @@ def _validate_c_scale(c, scale):
         raise ValueError('c must be positive')
     if scale <= 0:
         raise ValueError('scale must be positive')
-    return mpmath.mpf(c), mpmath.mpf(scale)
+    return mp.mpf(c), mp.mpf(scale)
 
 
 def pdf(x, c, scale):
@@ -37,15 +37,15 @@ def pdf(x, c, scale):
     Note that `scale` is the reciprocal of the `b` parameter in the wikipedia
     article https://en.wikipedia.org/wiki/Gompertz_distribution.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        x = mp.mpf(x)
         c, scale = _validate_c_scale(c, scale)
         if x < 0:
-            return mpmath.mp.zero
-        if mpmath.isinf(x):
-            return mpmath.mp.zero
+            return mp.zero
+        if mp.isinf(x):
+            return mp.zero
         z = x/scale
-        return c * mpmath.exp(c + z - c*mpmath.exp(z)) / scale
+        return c * mp.exp(c + z - c*mp.exp(z)) / scale
 
 
 def logpdf(x, c, scale):
@@ -55,15 +55,15 @@ def logpdf(x, c, scale):
     Note that `scale` is the reciprocal of the `b` parameter in the wikipedia
     article https://en.wikipedia.org/wiki/Gompertz_distribution.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        x = mp.mpf(x)
         c, scale = _validate_c_scale(c, scale)
         if x < 0:
-            return mpmath.ninf
-        if mpmath.isinf(x):
-            return mpmath.ninf
+            return mp.ninf
+        if mp.isinf(x):
+            return mp.ninf
         z = x/scale
-        return mpmath.log(c) + c + z - c*mpmath.exp(z) - mpmath.log(scale)
+        return mp.log(c) + c + z - c*mp.exp(z) - mp.log(scale)
 
 
 def cdf(x, c, scale):
@@ -73,13 +73,13 @@ def cdf(x, c, scale):
     Note that `scale` is the reciprocal of the `b` parameter in the wikipedia
     article https://en.wikipedia.org/wiki/Gompertz_distribution.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        x = mp.mpf(x)
         c, scale = _validate_c_scale(c, scale)
         if x <= 0:
-            return mpmath.mp.zero
+            return mp.zero
         z = x/scale
-        return -mpmath.expm1(-c*mpmath.expm1(z))
+        return -mp.expm1(-c*mp.expm1(z))
 
 
 def invcdf(p, c, scale):
@@ -89,14 +89,14 @@ def invcdf(p, c, scale):
     Note that `scale` is the reciprocal of the `b` parameter in the wikipedia
     article https://en.wikipedia.org/wiki/Gompertz_distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         c, scale = _validate_c_scale(c, scale)
         if p == 0:
-            return mpmath.mp.zero
+            return mp.zero
         elif p == 1:
-            return mpmath.inf
-        return scale*mpmath.log1p(-mpmath.log1p(-p)/c)
+            return mp.inf
+        return scale*mp.log1p(-mp.log1p(-p)/c)
 
 
 def sf(x, c, scale):
@@ -106,13 +106,13 @@ def sf(x, c, scale):
     Note that `scale` is the reciprocal of the `b` parameter in the wikipedia
     article https://en.wikipedia.org/wiki/Gompertz_distribution.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        x = mp.mpf(x)
         c, scale = _validate_c_scale(c, scale)
         if x <= 0:
-            return mpmath.mp.one
+            return mp.one
         z = x/scale
-        return mpmath.exp(-c*mpmath.expm1(z))
+        return mp.exp(-c*mp.expm1(z))
 
 
 def invsf(p, c, scale):
@@ -122,14 +122,14 @@ def invsf(p, c, scale):
     Note that `scale` is the reciprocal of the `b` parameter in the wikipedia
     article https://en.wikipedia.org/wiki/Gompertz_distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         c, scale = _validate_c_scale(c, scale)
         if p == 0:
-            return mpmath.inf
+            return mp.inf
         elif p == 1:
-            return mpmath.mp.zero
-        return scale*mpmath.log1p(-mpmath.log(p)/c)
+            return mp.zero
+        return scale*mp.log1p(-mp.log(p)/c)
 
 
 def mean(c, scale):
@@ -139,6 +139,6 @@ def mean(c, scale):
     Note that `scale` is the reciprocal of the `b` parameter in the wikipedia
     article https://en.wikipedia.org/wiki/Gompertz_distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         c, scale = _validate_c_scale(c, scale)
-        return scale * mpmath.exp(c) * mpmath.e1(c)
+        return scale * mp.exp(c) * mp.e1(c)
