@@ -1,11 +1,11 @@
 
 import pytest
-import mpmath
+from mpmath import mp
 from mpsci.distributions import gamma
 from ._utils import check_mle
 
 
-mpmath.mp.dps = 16
+mp.dps = 16
 
 
 def test_pdf_outside_support():
@@ -15,7 +15,7 @@ def test_pdf_outside_support():
 
 def test_logpdf_outside_support():
     logp = gamma.logpdf(-10, k=0.5, theta=1)
-    assert logp == mpmath.mp.ninf
+    assert logp == mp.ninf
 
 
 # This is the value of CDF[GammaDistribution[2, 3], 1] computed with
@@ -26,8 +26,8 @@ _cdf123str = ("0.04462491923494766609919453743282711006251725357136112381217"
 
 def test_cdf():
     c = gamma.cdf(1, k=2, theta=3)
-    expected = mpmath.mpf(_cdf123str)
-    assert mpmath.almosteq(c, expected)
+    expected = mp.mpf(_cdf123str)
+    assert mp.almosteq(c, expected)
 
 
 def test_cdf_outside_support():
@@ -37,8 +37,8 @@ def test_cdf_outside_support():
 
 def test_sf():
     s = gamma.sf(1, k=2, theta=3)
-    expected = 1 - mpmath.mpf(_cdf123str)
-    assert mpmath.almosteq(s, expected)
+    expected = 1 - mp.mpf(_cdf123str)
+    assert mp.almosteq(s, expected)
 
 
 def test_sf_outside_support():
@@ -61,7 +61,7 @@ def test_interval_prob():
     x2 = 3.0
     p = gamma.interval_prob(x1, x2, 2, 1)
     expected = gamma.cdf(x2, 2, 1) - gamma.cdf(x1, 2, 1)
-    assert mpmath.almosteq(p, expected)
+    assert mp.almosteq(p, expected)
 
 
 def test_interval_prob_x1_x2_close():
@@ -77,8 +77,8 @@ def test_interval_prob_x1_x2_close():
     # gives the following:
     valstr = ("6.0100938997381721747992665891975556663629544173547573"
               "3648532458638642871160406995189e-16")
-    expected = mpmath.mpf(valstr)
-    assert mpmath.almosteq(p, expected)
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(p, expected)
 
 
 def test_interval_prob_close_cdf_values():
@@ -92,8 +92,8 @@ def test_interval_prob_close_cdf_values():
     # gives the following:
     valstr = ("2.18475096145748735561473657875134307117716635897865537"
               "4359464779918152310943256631294315558843429839e-18")
-    expected = mpmath.mpf(valstr)
-    assert mpmath.almosteq(p, expected)
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(p, expected)
 
 
 def test_noncentral_moment():
@@ -107,21 +107,21 @@ def test_noncentral_moment():
     assert m1 == gamma.mean(k, theta)
 
     m2 = gamma.noncentral_moment(2, k, theta)
-    expected_m2 = mpmath.quad(lambda t: t**2*gamma.pdf(t, k, theta),
-                              [0, 1, mpmath.inf])
-    assert mpmath.almosteq(m2, expected_m2)
+    expected_m2 = mp.quad(lambda t: t**2*gamma.pdf(t, k, theta),
+                          [0, 1, mp.inf])
+    assert mp.almosteq(m2, expected_m2)
 
     m3 = gamma.noncentral_moment(3, k, theta)
-    expected_m3 = mpmath.quad(lambda t: t**3*gamma.pdf(t, k, theta),
-                              [0, 1, mpmath.inf])
-    assert mpmath.almosteq(m3, expected_m3)
+    expected_m3 = mp.quad(lambda t: t**3*gamma.pdf(t, k, theta),
+                          [0, 1, mp.inf])
+    assert mp.almosteq(m3, expected_m3)
 
 
 def test_mom():
     x = [1, 2, 3, 4]
     k, theta = gamma.mom(x)
-    assert k == mpmath.mpf(5)
-    assert theta == mpmath.mpf('0.5')
+    assert k == mp.mpf(5)
+    assert theta == mp.mpf('0.5')
 
 
 @pytest.mark.parametrize(

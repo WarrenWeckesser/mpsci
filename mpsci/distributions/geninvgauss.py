@@ -4,7 +4,7 @@ Generalized inverse Gaussian distribution
 """
 
 import re
-import mpmath
+from mpmath import mp
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode']
@@ -45,18 +45,18 @@ def pdf(x, p, b, loc=0, scale=1):
     where s is the scale, z = (x - loc)/s, and K_p(b) is the modified Bessel
     function of the second kind.  For x <= loc, the PDF is zero.
     """
-    x = mpmath.mpf(x)
-    p = mpmath.mpf(p)
-    b = mpmath.mpf(b)
-    loc = mpmath.mpf(loc)
-    scale = mpmath.mpf(scale)
+    x = mp.mpf(x)
+    p = mp.mpf(p)
+    b = mp.mpf(b)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
 
     if x <= loc:
-        return mpmath.mp.zero
+        return mp.zero
     z = (x - loc)/scale
-    return (mpmath.power(z, p - 1)
-            * mpmath.exp(-b*(z + 1/z)/2)
-            / (2*mpmath.besselk(p, b))
+    return (mp.power(z, p - 1)
+            * mp.exp(-b*(z + 1/z)/2)
+            / (2*mp.besselk(p, b))
             / scale)
 
 
@@ -76,19 +76,19 @@ def logpdf(x, p, b, loc=0, scale=1):
     where s is the scale, z = (x - loc)/s, and K_p(b) is the modified Bessel
     function of the second kind.  For x <= loc, the PDF is zero.
     """
-    x = mpmath.mpf(x)
-    p = mpmath.mpf(p)
-    b = mpmath.mpf(b)
-    loc = mpmath.mpf(loc)
-    scale = mpmath.mpf(scale)
+    x = mp.mpf(x)
+    p = mp.mpf(p)
+    b = mp.mpf(b)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
 
     if x <= loc:
-        return -mpmath.mp.inf
+        return mp.ninf
     z = (x - loc)/scale
-    return ((p - 1)*mpmath.log(z)
+    return ((p - 1)*mp.log(z)
             - b*(z + 1/z)/2
-            - mpmath.log(2*mpmath.besselk(p, b))
-            - mpmath.log(scale))
+            - mp.log(2*mp.besselk(p, b))
+            - mp.log(scale))
 
 
 logpdf._docstring_re_subs = _pdf_docstring_re_subs
@@ -101,23 +101,23 @@ def cdf(x, p, b, loc=0, scale=1):
 
     The CDF is computed by using mpmath.quad to numerically integrate the PDF.
     """
-    x = mpmath.mpf(x)
-    p = mpmath.mpf(p)
-    b = mpmath.mpf(b)
-    loc = mpmath.mpf(loc)
-    scale = mpmath.mpf(scale)
+    x = mp.mpf(x)
+    p = mp.mpf(p)
+    b = mp.mpf(b)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
 
     if x <= loc:
-        return mpmath.mp.zero
+        return mp.zero
     m = mode(p, b, loc, scale)
     # If the mode is in the integration interval, use it to do the integral
     # in two parts.  Otherwise do just one integral.
     if x <= m:
-        c = mpmath.quad(lambda t: pdf(t, p, b, loc, scale), [loc, x])
+        c = mp.quad(lambda t: pdf(t, p, b, loc, scale), [loc, x])
     else:
-        c = (mpmath.quad(lambda t: pdf(t, p, b, loc, scale), [loc, m]) +
-             mpmath.quad(lambda t: pdf(t, p, b, loc, scale), [m, x]))
-    c = min(c, mpmath.mp.one)
+        c = (mp.quad(lambda t: pdf(t, p, b, loc, scale), [loc, m]) +
+             mp.quad(lambda t: pdf(t, p, b, loc, scale), [m, x]))
+    c = min(c, mp.one)
     return c
 
 
@@ -128,22 +128,22 @@ def sf(x, p, b, loc=0, scale=1):
     The survival function is computed by using mpmath.quad to numerically
     integrate the PDF.
     """
-    x = mpmath.mpf(x)
-    p = mpmath.mpf(p)
-    b = mpmath.mpf(b)
-    loc = mpmath.mpf(loc)
-    scale = mpmath.mpf(scale)
+    x = mp.mpf(x)
+    p = mp.mpf(p)
+    b = mp.mpf(b)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
 
     if x <= loc:
-        return mpmath.mp.one
+        return mp.one
     m = mode(p, b, loc, scale)
     # If the mode is in the integration interval, use it to do the integral
     # in two parts.  Otherwise do just one integral.
     if x >= m:
-        s = mpmath.quad(lambda t: pdf(t, p, b, loc, scale), [x, mpmath.inf])
+        s = mp.quad(lambda t: pdf(t, p, b, loc, scale), [x, mp.inf])
     else:
-        s = (mpmath.quad(lambda t: pdf(t, p, b, loc, scale), [x, m]) +
-             mpmath.quad(lambda t: pdf(t, p, b, loc, scale), [m, mpmath.inf]))
+        s = (mp.quad(lambda t: pdf(t, p, b, loc, scale), [x, m]) +
+             mp.quad(lambda t: pdf(t, p, b, loc, scale), [m, mp.inf]))
     return s
 
 
@@ -160,12 +160,12 @@ def mean(p, b, loc=0, scale=1):
     where K_n(x) is the modified Bessel function of the second kind
     (implemented in mpmath as besselk(n, x)).
     """
-    p = mpmath.mpf(p)
-    b = mpmath.mpf(b)
-    loc = mpmath.mpf(loc)
-    scale = mpmath.mpf(scale)
+    p = mp.mpf(p)
+    b = mp.mpf(b)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
 
-    return loc + scale*mpmath.besselk(p + 1, b)/mpmath.besselk(p, b)
+    return loc + scale*mp.besselk(p + 1, b)/mp.besselk(p, b)
 
 
 _mean_latex = r"""
@@ -191,12 +191,12 @@ def mode(p, b, loc=0, scale=1):
         loc + scale -------------------------------
                                   b
     """
-    p = mpmath.mpf(p)
-    b = mpmath.mpf(b)
-    loc = mpmath.mpf(loc)
-    scale = mpmath.mpf(scale)
+    p = mp.mpf(p)
+    b = mp.mpf(b)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
 
-    return loc + scale*(p - 1 + mpmath.sqrt((p - 1)**2 + b**2))/b
+    return loc + scale*(p - 1 + mp.sqrt((p - 1)**2 + b**2))/b
 
 
 _mode_latex = r"""

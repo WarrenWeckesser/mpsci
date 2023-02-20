@@ -17,7 +17,7 @@ This is the same distribution as:
 
 """
 
-import mpmath
+from mpmath import mp
 from .. import stats
 from mpsci.stats import mean as _mean
 
@@ -33,11 +33,11 @@ def pdf(x, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
-        return mpmath.exp(logpdf(x, loc, scale))
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        loc = mp.mpf(loc)
+        scale = mp.mpf(scale)
+        return mp.exp(logpdf(x, loc, scale))
 
 
 def logpdf(x, loc, scale):
@@ -47,12 +47,12 @@ def logpdf(x, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        loc = mp.mpf(loc)
+        scale = mp.mpf(scale)
         z = (x - loc) / scale
-        return -(z + mpmath.exp(-z)) - mpmath.log(scale)
+        return -(z + mp.exp(-z)) - mp.log(scale)
 
 
 def cdf(x, loc, scale):
@@ -62,12 +62,12 @@ def cdf(x, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        loc = mp.mpf(loc)
+        scale = mp.mpf(scale)
         z = (x - loc) / scale
-        return mpmath.exp(-mpmath.exp(-z))
+        return mp.exp(-mp.exp(-z))
 
 
 def invcdf(p, loc, scale):
@@ -77,11 +77,11 @@ def invcdf(p, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mpmath.extradps(5):
-        p = mpmath.mpf(p)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
-        z = -mpmath.log(-mpmath.log(p))
+    with mp.extradps(5):
+        p = mp.mpf(p)
+        loc = mp.mpf(loc)
+        scale = mp.mpf(scale)
+        z = -mp.log(-mp.log(p))
         x = scale*z + loc
         return x
 
@@ -93,12 +93,12 @@ def sf(x, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        loc = mp.mpf(loc)
+        scale = mp.mpf(scale)
         z = (x - loc) / scale
-        return -mpmath.expm1(-mpmath.exp(-z))
+        return -mp.expm1(-mp.exp(-z))
 
 
 def invsf(p, loc, scale):
@@ -108,11 +108,11 @@ def invsf(p, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mpmath.extradps(5):
-        p = mpmath.mpf(p)
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
-        z = -mpmath.log(-mpmath.log1p(-p))
+    with mp.extradps(5):
+        p = mp.mpf(p)
+        loc = mp.mpf(loc)
+        scale = mp.mpf(scale)
+        z = -mp.log(-mp.log1p(-p))
         x = scale*z + loc
         return x
 
@@ -124,10 +124,10 @@ def mean(loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mpmath.extradps(5):
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
-        return loc + mpmath.euler*scale
+    with mp.extradps(5):
+        loc = mp.mpf(loc)
+        scale = mp.mpf(scale)
+        return loc + mp.euler*scale
 
 
 def var(loc, scale):
@@ -137,10 +137,10 @@ def var(loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mpmath.extradps(5):
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
-        return mpmath.pi**2/6 * scale**2
+    with mp.extradps(5):
+        loc = mp.mpf(loc)
+        scale = mp.mpf(scale)
+        return mp.pi**2/6 * scale**2
 
 
 def nll(x, loc, scale):
@@ -150,21 +150,21 @@ def nll(x, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mpmath.extradps(5):
-        loc = mpmath.mpf(loc)
-        scale = mpmath.mpf(scale)
+    with mp.extradps(5):
+        loc = mp.mpf(loc)
+        scale = mp.mpf(scale)
         n = len(x)
-        z = [(mpmath.mpf(xi) - loc)/scale for xi in x]
-        t1 = n*mpmath.log(scale)
-        t2 = mpmath.fsum(z)
-        t3 = mpmath.fsum([mpmath.exp(-zi) for zi in z])
+        z = [(mp.mpf(xi) - loc)/scale for xi in x]
+        t1 = n*mp.log(scale)
+        t2 = mp.fsum(z)
+        t3 = mp.fsum([mp.exp(-zi) for zi in z])
         return t1 + t2 + t3
 
 
 def _mle_scale_func(scale, x, xbar):
-    emx = [mpmath.exp(-xi/scale) for xi in x]
-    s1 = mpmath.fsum([xi * emxi for xi, emxi in zip(x, emx)])
-    s2 = mpmath.fsum(emx)
+    emx = [mp.exp(-xi/scale) for xi in x]
+    s1 = mp.fsum([xi * emxi for xi, emxi in zip(x, emx)])
+    s2 = mp.fsum(emx)
     return s2*(xbar - scale) - s1
 
 
@@ -181,14 +181,14 @@ def _solve_mle_scale(x):
     # gumbel_min._mle_scale_func.
     s1 = s0
     s2 = s0
-    sign2 = mpmath.sign(_mle_scale_func(s2, x, xbar))
+    sign2 = mp.sign(_mle_scale_func(s2, x, xbar))
     while True:
         s1 = 0.9*s1
-        sign1 = mpmath.sign(_mle_scale_func(s1, x, xbar))
+        sign1 = mp.sign(_mle_scale_func(s1, x, xbar))
         if (sign1 * sign2) <= 0:
             break
         s2 = 1.1*s2
-        sign2 = mpmath.sign(_mle_scale_func(s2, x, xbar))
+        sign2 = mp.sign(_mle_scale_func(s2, x, xbar))
         if (sign1 * sign2) <= 0:
             break
 
@@ -199,15 +199,15 @@ def _solve_mle_scale(x):
     if sign2 == 0:
         return s2
 
-    root = mpmath.findroot(lambda t: _mle_scale_func(t, x, xbar),
-                           [s1, s2], solver='anderson')
+    root = mp.findroot(lambda t: _mle_scale_func(t, x, xbar),
+                       [s1, s2], solver='anderson')
 
     return root
 
 
 def _mle_scale_with_fixed_loc(scale, x, loc):
     z = [(xi - loc) / scale for xi in x]
-    ez = [mpmath.expm1(-zi)*zi for zi in z]
+    ez = [mp.expm1(-zi)*zi for zi in z]
     return stats.mean(ez) + 1
 
 
@@ -228,8 +228,8 @@ def mle(x, loc=None, scale=None):
     --------
     Imports and mpmath configuration:
 
-    >>> import mpmath
-    >>> mpmath.mp.dps = 20
+    >>> from mpmath import mp
+    >>> mp.dps = 20
     >>> from mpsci.distributions import gumbel_max
 
     The data to be fit:
@@ -246,15 +246,15 @@ def mle(x, loc=None, scale=None):
     >>> gumbel_max.mle(x, scale=2)
     (mpf('9.1305625326153555632872'), mpf('2.0'))
     """
-    with mpmath.extradps(5):
-        x = [mpmath.mpf(xi) for xi in x]
+    with mp.extradps(5):
+        x = [mp.mpf(xi) for xi in x]
 
         if scale is None and loc is not None:
             # Estimate scale with fixed loc.
-            loc = mpmath.mpf(loc)
+            loc = mp.mpf(loc)
             # Initial guess for findroot.
             s0 = stats.std([xi - loc for xi in x])
-            scale = mpmath.findroot(
+            scale = mp.findroot(
                 lambda t: _mle_scale_with_fixed_loc(t, x, loc), s0
             )
             return loc, scale
@@ -262,13 +262,13 @@ def mle(x, loc=None, scale=None):
         if scale is None:
             scale = _solve_mle_scale(x)
         else:
-            scale = mpmath.mpf(scale)
+            scale = mp.mpf(scale)
 
         if loc is None:
-            ex = [mpmath.exp(-xi / scale) for xi in x]
-            loc = -scale * mpmath.log(stats.mean(ex))
+            ex = [mp.exp(-xi / scale) for xi in x]
+            loc = -scale * mp.log(stats.mean(ex))
         else:
-            loc = mpmath.mpf(loc)
+            loc = mp.mpf(loc)
 
         return loc, scale
 
@@ -281,9 +281,9 @@ def mom(x):
 
     Returns (loc, scale).
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         M1 = _mean(x)
-        M2 = _mean([mpmath.mpf(t)**2 for t in x])
-        scale = mpmath.sqrt(6*(M2 - M1**2))/mpmath.pi
-        loc = M1 - scale*mpmath.euler
+        M2 = _mean([mp.mpf(t)**2 for t in x])
+        scale = mp.sqrt(6*(M2 - M1**2))/mp.pi
+        loc = M1 - scale*mp.euler
         return loc, scale
