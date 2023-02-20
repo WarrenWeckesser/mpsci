@@ -13,7 +13,7 @@ information.
 
 """
 
-import mpmath
+from mpmath import mp
 from ._common import _validate_p
 
 
@@ -21,8 +21,8 @@ __all__ = ['logpdf', 'pdf', 'cdf', 'invcdf', 'sf', 'invsf']
 
 
 def _erfcinv(y):
-    with mpmath.extradps(5):
-        return mpmath.erfinv(1 - y)
+    with mp.extradps(5):
+        return mp.erfinv(1 - y)
 
 
 def logpdf(x, mu=0, sigma=1):
@@ -33,15 +33,15 @@ def logpdf(x, mu=0, sigma=1):
         raise ValueError('sigma must be positive.')
 
     if x <= mu:
-        return mpmath.ninf
+        return mp.ninf
 
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        mu = mpmath.mpf(mu)
-        sigma = mpmath.mpf(sigma)
-        t1 = mpmath.log(sigma)/2 - mpmath.log(2*mpmath.pi)/2
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        mu = mp.mpf(mu)
+        sigma = mp.mpf(sigma)
+        t1 = mp.log(sigma)/2 - mp.log(2*mp.pi)/2
         t2 = -sigma / (2*(x - mu))
-        t3 = mpmath.log(x - mu)*3/2
+        t3 = mp.log(x - mu)*3/2
         return t1 + t2 - t3
 
 
@@ -49,7 +49,7 @@ def pdf(x, mu=0, sigma=1):
     """
     PDF of the Lévy distribution.
     """
-    return mpmath.exp(logpdf(x, mu, sigma))
+    return mp.exp(logpdf(x, mu, sigma))
 
 
 def cdf(x, mu=0, sigma=1):
@@ -60,14 +60,14 @@ def cdf(x, mu=0, sigma=1):
         raise ValueError('sigma must be positive.')
 
     if x <= mu:
-        return mpmath.zero
+        return mp.zero
 
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        mu = mpmath.mpf(mu)
-        sigma = mpmath.mpf(sigma)
-        arg = mpmath.sqrt(sigma / (2*(x - mu)))
-        return mpmath.erfc(arg)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        mu = mp.mpf(mu)
+        sigma = mp.mpf(sigma)
+        arg = mp.sqrt(sigma / (2*(x - mu)))
+        return mp.erfc(arg)
 
 
 def invcdf(p, mu=0, sigma=1):
@@ -76,10 +76,10 @@ def invcdf(p, mu=0, sigma=1):
     """
     if sigma <= 0:
         raise ValueError('sigma must be positive.')
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
-        mu = mpmath.mpf(mu)
-        sigma = mpmath.mpf(sigma)
+        mu = mp.mpf(mu)
+        sigma = mp.mpf(sigma)
         return mu + sigma / (2*_erfcinv(p)**2)
 
 
@@ -91,14 +91,14 @@ def sf(x, mu=0, sigma=1):
         raise ValueError('sigma must be positive.')
 
     if x <= mu:
-        return mpmath.one
+        return mp.one
 
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        mu = mpmath.mpf(mu)
-        sigma = mpmath.mpf(sigma)
-        arg = mpmath.sqrt(sigma / (2*(x - mu)))
-        return mpmath.erf(arg)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        mu = mp.mpf(mu)
+        sigma = mp.mpf(sigma)
+        arg = mp.sqrt(sigma / (2*(x - mu)))
+        return mp.erf(arg)
 
 
 def invsf(p, mu=0, sigma=1):
@@ -107,8 +107,8 @@ def invsf(p, mu=0, sigma=1):
     """
     if sigma <= 0:
         raise ValueError('sigma must be positive.')
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
-        mu = mpmath.mpf(mu)
-        sigma = mpmath.mpf(sigma)
-        return mu + sigma / (2*mpmath.erfinv(p)**2)
+        mu = mp.mpf(mu)
+        sigma = mp.mpf(sigma)
+        return mu + sigma / (2*mp.erfinv(p)**2)

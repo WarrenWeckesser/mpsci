@@ -11,7 +11,7 @@ See https://en.wikipedia.org/wiki/Gauss%E2%80%93Kuzmin_distribution
 
 """
 
-import mpmath
+from mpmath import mp
 from ._common import _validate_p
 
 
@@ -26,11 +26,11 @@ def pmf(k):
     `k` is expected be an integer; the code does not check this.
     """
     if k < 1:
-        return mpmath.mp.zero
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
+        return mp.zero
+    with mp.extradps(5):
+        k = mp.mpf(k)
         r = 1/(k + 1)
-        return -(mpmath.log1p(-r) + mpmath.log1p(r)) / mpmath.log(2)
+        return -(mp.log1p(-r) + mp.log1p(r)) / mp.log(2)
 
 
 def logpmf(k):
@@ -40,10 +40,10 @@ def logpmf(k):
     `k` is expected be an integer; the code does not check this.
     """
     if k < 0:
-        return mpmath.ninf
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
-        return mpmath.log(pmf(k))
+        return mp.ninf
+    with mp.extradps(5):
+        k = mp.mpf(k)
+        return mp.log(pmf(k))
 
 
 def cdf(k):
@@ -53,13 +53,13 @@ def cdf(k):
     `k` is expected be an integer; the code does not check this.
     """
     if k < 0:
-        return mpmath.mp.zero
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
-        if mpmath.isinf(k):
-            return mpmath.mp.one
+        return mp.zero
+    with mp.extradps(5):
+        k = mp.mpf(k)
+        if mp.isinf(k):
+            return mp.one
         r = 1/(k + 1)
-        return mpmath.mp.one - mpmath.log1p(r)/mpmath.log(2)
+        return mp.one - mp.log1p(r)/mp.log(2)
 
 
 def invcdf(p):
@@ -69,12 +69,12 @@ def invcdf(p):
     The distribution is discrete, but mpmath.mpf values are returned,
     to allow for returning `inf` when p is 1.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         if p == 1:
-            return mpmath.inf
-        t = mpmath.powm1(2, 1 - p)
-        return mpmath.powm1(t, -1)
+            return mp.inf
+        t = mp.powm1(2, 1 - p)
+        return mp.powm1(t, -1)
 
 
 def sf(k):
@@ -84,11 +84,11 @@ def sf(k):
     `k` is expected be an integer; the code does not check this.
     """
     if k < 0:
-        return mpmath.mp.one
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
+        return mp.one
+    with mp.extradps(5):
+        k = mp.mpf(k)
         r = 1/(k + 1)
-        return mpmath.log1p(r)/mpmath.log(2)
+        return mp.log1p(r)/mp.log(2)
 
 
 def invsf(p):
@@ -98,37 +98,37 @@ def invsf(p):
     The distribution is discrete, but mpmath.mpf values are returned,
     to allow for returning `inf` when p is 0.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         if p == 0:
-            return mpmath.inf
-        t = mpmath.powm1(2, p)
-        return mpmath.powm1(t, -1)
+            return mp.inf
+        t = mp.powm1(2, p)
+        return mp.powm1(t, -1)
 
 
 def mode():
     """
     Mode of the Gauss-Kuzmin distribution.
     """
-    return mpmath.mp.one
+    return mp.one
 
 
 def median():
     """
     Median of the Gauss-Kuzmin distribution.
     """
-    return mpmath.mpf(2)
+    return mp.mpf(2)
 
 
 def mean():
     """
     Mean of the Gauss-Kuzmin distribution.
     """
-    return mpmath.inf
+    return mp.inf
 
 
 def var():
     """
     Variance of the Gauss-Kuzmin distribution.
     """
-    return mpmath.inf
+    return mp.inf

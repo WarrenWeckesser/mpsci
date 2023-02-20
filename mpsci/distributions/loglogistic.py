@@ -12,7 +12,7 @@ shape parameter.
 
 """
 
-import mpmath
+from mpmath import mp
 from ._common import _validate_p
 
 
@@ -24,20 +24,19 @@ def _validate_params(beta, scale):
         raise ValueError('beta must be greater than 0')
     if scale <= 0:
         raise ValueError('scale must be greater than 0')
+    return mp.mpf(beta), mp.mpf(scale)
 
 
 def pdf(x, beta, scale):
     """
     PDF of the log-logistic distribution.
     """
-    _validate_params(beta, scale)
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        beta, scale = _validate_params(beta, scale)
+        x = mp.mpf(x)
         if x <= 0:
-            p = mpmath.mp.zero
+            p = mp.zero
         else:
-            beta = mpmath.mpf(beta)
-            scale = mpmath.mpf(scale)
             z = x / scale
             p = (beta/scale) * z**(beta - 1) / (1 + z**beta)**2
     return p
@@ -47,18 +46,15 @@ def logpdf(x, beta, scale):
     """
     Logarithm of the PDF of the log-logistic distribution.
     """
-    _validate_params(beta, scale)
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        beta, scale = _validate_params(beta, scale)
+        x = mp.mpf(x)
         if x <= 0:
-            logp = mpmath.mp.ninf
+            logp = mp.ninf
         else:
-            beta = mpmath.mpf(beta)
-            scale = mpmath.mpf(scale)
             z = x / scale
-            logp = (mpmath.log(beta) - mpmath.log(scale)
-                    + (beta - 1)*mpmath.log(z)
-                    - 2*mpmath.log1p(z**beta))
+            logp = (mp.log(beta) - mp.log(scale) + (beta - 1)*mp.log(z)
+                    - 2*mp.log1p(z**beta))
     return logp
 
 
@@ -66,14 +62,12 @@ def cdf(x, beta, scale):
     """
     CDF of the log-logistic distribution.
     """
-    _validate_params(beta, scale)
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        beta, scale = _validate_params(beta, scale)
+        x = mp.mpf(x)
         if x <= 0:
-            p = mpmath.mp.zero
+            p = mp.zero
         else:
-            beta = mpmath.mpf(beta)
-            scale = mpmath.mpf(scale)
             z = x / scale
             p = 1 / (1 + z**-beta)
     return p
@@ -83,14 +77,12 @@ def sf(x, beta, scale):
     """
     Survival function of the log-logistic distribution.
     """
-    _validate_params(beta, scale)
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
+    with mp.extradps(5):
+        beta, scale = _validate_params(beta, scale)
+        x = mp.mpf(x)
         if x <= 0:
-            p = mpmath.mp.one
+            p = mp.one
         else:
-            beta = mpmath.mpf(beta)
-            scale = mpmath.mpf(scale)
             z = x / scale
             r = z**-beta
             p = r / (1 + r)
@@ -104,13 +96,11 @@ def invcdf(p, beta, scale):
     This function is also known as the quantile function or the percent
     point function.
     """
-    _validate_params(beta, scale)
-    with mpmath.extradps(5):
+    with mp.extradps(5):
+        beta, scale = _validate_params(beta, scale)
         p = _validate_p(p)
         if p == 1:
-            return mpmath.inf
-        beta = mpmath.mpf(beta)
-        scale = mpmath.mpf(scale)
+            return mp.inf
         x = scale * (p / (1 - p))**(1/beta)
     return x
 
@@ -119,13 +109,11 @@ def invsf(p, beta, scale):
     """
     Inverse survival function of the log-logistic distribution.
     """
-    _validate_params(beta, scale)
-    with mpmath.extradps(5):
+    with mp.extradps(5):
+        beta, scale = _validate_params(beta, scale)
         p = _validate_p(p)
         if p == 0:
-            return mpmath.inf
-        beta = mpmath.mpf(beta)
-        scale = mpmath.mpf(scale)
+            return mp.inf
         x = scale * ((1 - p) / p)**(1/beta)
     return x
 
@@ -136,13 +124,11 @@ def mean(beta, scale):
 
     `nan` is returned if beta <= 1.
     """
-    _validate_params(beta, scale)
-    with mpmath.extradps(5):
-        beta = mpmath.mpf(beta)
-        scale = mpmath.mpf(scale)
+    with mp.extradps(5):
+        beta, scale = _validate_params(beta, scale)
         if beta > 1:
-            return scale / mpmath.sincpi(1/beta)
-    return mpmath.nan
+            return scale / mp.sincpi(1/beta)
+    return mp.nan
 
 
 def var(beta, scale):
@@ -151,11 +137,9 @@ def var(beta, scale):
 
     `nan` is returned if beta <= 2.
     """
-    _validate_params(beta, scale)
-    with mpmath.extradps(5):
-        beta = mpmath.mpf(beta)
-        scale = mpmath.mpf(scale)
+    with mp.extradps(5):
+        beta, scale = _validate_params(beta, scale)
         if beta > 2:
-            return scale**2 * (1/mpmath.sincpi(2/beta)
-                               - 1/mpmath.sincpi(1/beta)**2)
-    return mpmath.nan
+            return scale**2 * (1/mp.sincpi(2/beta)
+                               - 1/mp.sincpi(1/beta)**2)
+    return mp.nan
