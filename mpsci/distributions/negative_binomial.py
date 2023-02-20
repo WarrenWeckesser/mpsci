@@ -9,7 +9,7 @@ the number of "failures" drawn is `r`.  `p` is the probability of drawing
 a "success".
 """
 
-import mpmath
+from mpmath import mp
 from ..fun import logbinomial, xlogy, xlog1py
 
 
@@ -27,10 +27,10 @@ def logpmf(k, r, p):
     p : float
         Probability of success.
     """
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
-        r = mpmath.mpf(r)
-        p = mpmath.mpf(p)
+    with mp.extradps(5):
+        k = mp.mpf(k)
+        r = mp.mpf(r)
+        p = mp.mpf(p)
         return logbinomial(k + r - 1, k) + xlog1py(r, -p) + xlogy(k, p)
 
 
@@ -45,7 +45,7 @@ def pmf(k, r, p):
     p : float
         Probability of success.
     """
-    return mpmath.exp(logpmf(k, r, p))
+    return mp.exp(logpmf(k, r, p))
 
 
 def sf(k, r, p):
@@ -59,11 +59,11 @@ def sf(k, r, p):
     p : float
         Probability of success.
     """
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
-        r = mpmath.mpf(r)
-        p = mpmath.mpf(p)
-        return mpmath.betainc(k + 1, r, 0, p, regularized=True)
+    with mp.extradps(5):
+        k = mp.mpf(k)
+        r = mp.mpf(r)
+        p = mp.mpf(p)
+        return mp.betainc(k + 1, r, 0, p, regularized=True)
 
 
 def cdf(k, r, p):
@@ -77,11 +77,11 @@ def cdf(k, r, p):
     p : float
         Probability of success.
     """
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
-        r = mpmath.mpf(r)
-        p = mpmath.mpf(p)
-        return mpmath.betainc(k + 1, r, p, 1, regularized=True)
+    with mp.extradps(5):
+        k = mp.mpf(k)
+        r = mp.mpf(r)
+        p = mp.mpf(p)
+        return mp.betainc(k + 1, r, p, 1, regularized=True)
 
 
 def mean(r, p):
@@ -95,9 +95,9 @@ def mean(r, p):
     p : float
         Probability of success.
     """
-    with mpmath.extradps(5):
-        r = mpmath.mpf(r)
-        p = mpmath.mpf(p)
+    with mp.extradps(5):
+        r = mp.mpf(r)
+        p = mp.mpf(p)
         return p*r / (1 - p)
 
 
@@ -112,7 +112,7 @@ def var(r, p):
     p : float
         Probability of success.
     """
-    with mpmath.extradps(5):
-        r = mpmath.mpf(r)
-        p = mpmath.mpf(p)
+    with mp.extradps(5):
+        r = mp.mpf(r)
+        p = mp.mpf(p)
         return p*r / (1 - p)**2

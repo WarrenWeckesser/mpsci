@@ -1,49 +1,50 @@
 
 import statistics
 import pytest
-import mpmath
+from mpmath import mp
 from mpsci.distributions import poisson
 
 
-mpmath.mp.dps = 40
-
-
-@pytest.mark.parametrize('lam', [mpmath.mp.one, mpmath.mpf('1.5')])
+@pytest.mark.parametrize('lam', [1, 1.5])
 def test_pmf(lam):
-    with mpmath.extradps(5):
-        u = [(poisson.pmf(i, lam) / mpmath.exp(-lam) *
-              mpmath.factorial(i) / mpmath.power(lam, i)) for i in range(25)]
+    with mp.workdps(40):
+        with mp.extradps(5):
+            u = [(poisson.pmf(i, lam) / mp.exp(-lam) *
+                  mp.factorial(i) / mp.power(lam, i)) for i in range(25)]
 
-    assert all([abs(v - mpmath.mp.one) < 1e-40 for v in u])
+    assert all([abs(v - mp.one) < 1e-40 for v in u])
 
 
 @pytest.mark.parametrize('k', [0, 1, 5, 20])
-@pytest.mark.parametrize('lam', [mpmath.mp.one, mpmath.mpf('1.5')])
+@pytest.mark.parametrize('lam', [1, 1.5])
 def test_cdf(k, lam):
-    with mpmath.extradps(5):
-        c = poisson.cdf(k, lam)
-        S = sum([mpmath.power(lam, i) / mpmath.factorial(i)
-                 for i in range(k+1)])
-        expected = mpmath.exp(-lam) * S
+    with mp.workdps(40):
+        with mp.extradps(5):
+            c = poisson.cdf(k, lam)
+            S = sum([mp.power(lam, i) / mp.factorial(i)
+                    for i in range(k+1)])
+            expected = mp.exp(-lam) * S
 
     assert abs(c - expected) < 1e-40
 
 
 @pytest.mark.parametrize('k', [0, 1, 5, 20])
-@pytest.mark.parametrize('lam', [mpmath.mp.one, mpmath.mpf('1.5')])
+@pytest.mark.parametrize('lam', [1, 1.5])
 def test_sf(k, lam):
-    with mpmath.extradps(5):
-        sf = poisson.sf(k, lam)
-        S = sum([mpmath.power(lam, i) / mpmath.factorial(i)
-                 for i in range(k+1)])
-        expected = 1 - mpmath.exp(-lam) * S
+    with mp.workdps(40):
+        with mp.extradps(5):
+            sf = poisson.sf(k, lam)
+            S = sum([mp.power(lam, i) / mp.factorial(i)
+                    for i in range(k+1)])
+            expected = 1 - mp.exp(-lam) * S
 
     assert abs(sf - expected) < 1e-40
 
 
 def test_mle():
-    sample = [2.0, 4.0, 8.0, 16.0]
-    lam = poisson.mle(sample)
-    # For the values in sample, statistics.mean(sample) will give the
-    # exact result.
-    assert mpmath.almosteq(lam, statistics.mean(sample))
+    with mp.workdps(40):
+        sample = [2.0, 4.0, 8.0, 16.0]
+        lam = poisson.mle(sample)
+        # For the values in sample, statistics.mean(sample) will give the
+        # exact result.
+        assert mp.almosteq(lam, statistics.mean(sample))

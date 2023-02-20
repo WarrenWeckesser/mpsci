@@ -14,7 +14,7 @@ implementation of the log-gamma distribution.
 
 """
 
-import mpmath
+from mpmath import mp
 from ._common import _validate_p, _find_bracket
 
 
@@ -29,12 +29,12 @@ def pdf(x, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
         z = x/theta
-        return mpmath.exp(k*z - mpmath.exp(z))/mpmath.gamma(k)/theta
+        return mp.exp(k*z - mp.exp(z))/mp.gamma(k)/theta
 
 
 def logpdf(x, k, theta):
@@ -44,12 +44,12 @@ def logpdf(x, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
         z = x/theta
-        return (k*z - mpmath.exp(z)) - mpmath.loggamma(k) - mpmath.log(theta)
+        return (k*z - mp.exp(z)) - mp.loggamma(k) - mp.log(theta)
 
 
 def cdf(x, k, theta):
@@ -59,12 +59,12 @@ def cdf(x, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
         z = x/theta
-        return mpmath.gammainc(k, 0, mpmath.exp(z), regularized=True)
+        return mp.gammainc(k, 0, mp.exp(z), regularized=True)
 
 
 def invcdf(p, k, theta):
@@ -76,17 +76,16 @@ def invcdf(p, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         if p == 0:
-            return mpmath.ninf
+            return mp.ninf
         if p == 1:
-            return mpmath.inf
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
-        x0, x1 = _find_bracket(lambda t: cdf(t, k, theta), p,
-                               -mpmath.inf, mpmath.inf)
-        root = mpmath.findroot(lambda t: cdf(t, k, theta) - p, x0=(x0, x1))
+            return mp.inf
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
+        x0, x1 = _find_bracket(lambda t: cdf(t, k, theta), p, -mp.inf, mp.inf)
+        root = mp.findroot(lambda t: cdf(t, k, theta) - p, x0=(x0, x1))
         return root
 
 
@@ -97,12 +96,12 @@ def sf(x, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
         z = x/theta
-        return mpmath.gammainc(k, mpmath.exp(z), mpmath.inf, regularized=True)
+        return mp.gammainc(k, mp.exp(z), mp.inf, regularized=True)
 
 
 def invsf(p, k, theta):
@@ -112,17 +111,16 @@ def invsf(p, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         if p == 0:
-            return mpmath.inf
+            return mp.inf
         if p == 1:
-            return mpmath.ninf
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
-        x0, x1 = _find_bracket(lambda t: sf(t, k, theta), p,
-                               -mpmath.inf, mpmath.inf)
-        root = mpmath.findroot(lambda t: sf(t, k, theta) - p, x0)
+            return mp.ninf
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
+        x0, x1 = _find_bracket(lambda t: sf(t, k, theta), p, -mp.inf, mp.inf)
+        root = mp.findroot(lambda t: sf(t, k, theta) - p, x0)
         return root
 
 
@@ -145,15 +143,14 @@ def interval_prob(x1, x2, k, theta):
     if x1 > x2:
         raise ValueError('x1 must not be greater than x2')
 
-    with mpmath.extradps(5):
-        x1 = mpmath.mpf(x1)
-        x2 = mpmath.mpf(x2)
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
+    with mp.extradps(5):
+        x1 = mp.mpf(x1)
+        x2 = mp.mpf(x2)
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
         z1 = x1/theta
         z2 = x2/theta
-        return mpmath.gammainc(k, mpmath.exp(z1), mpmath.exp(z2),
-                               regularized=True)
+        return mp.gammainc(k, mp.exp(z1), mp.exp(z2), regularized=True)
 
 
 def mean(k, theta):
@@ -163,10 +160,10 @@ def mean(k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
-        return theta * mpmath.psi(0, k)
+    with mp.extradps(5):
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
+        return theta * mp.psi(0, k)
 
 
 def var(k, theta):
@@ -176,10 +173,10 @@ def var(k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
-        return theta**2 * mpmath.psi(1, k)
+    with mp.extradps(5):
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
+        return theta**2 * mp.psi(1, k)
 
 
 def skewness(k, theta):
@@ -189,10 +186,10 @@ def skewness(k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
-        return mpmath.psi(2, k) / mpmath.psi(1, k)**1.5
+    with mp.extradps(5):
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
+        return mp.psi(2, k) / mp.psi(1, k)**1.5
 
 
 def kurtosis(k, theta):
@@ -202,7 +199,7 @@ def kurtosis(k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mpmath.extradps(5):
-        k = mpmath.mpf(k)
-        theta = mpmath.mpf(theta)
-        return mpmath.psi(3, k) / mpmath.psi(1, k)**2
+    with mp.extradps(5):
+        k = mp.mpf(k)
+        theta = mp.mpf(theta)
+        return mp.psi(3, k) / mp.psi(1, k)**2

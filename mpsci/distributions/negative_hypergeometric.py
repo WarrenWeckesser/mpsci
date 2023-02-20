@@ -3,7 +3,7 @@ Negative hypergeometric distribution
 ------------------------------------
 """
 
-import mpmath
+from mpmath import mp
 from ..fun import logbinomial
 from .hypergeometric import cdf as hg_cdf, sf as hg_sf
 
@@ -27,12 +27,12 @@ def pmf(k, ntotal, ngood, untilnbad):
     _validate(ntotal, ngood, untilnbad)
 
     if k < 0 or k > ngood:
-        return mpmath.mp.zero
+        return mp.zero
 
-    with mpmath.extradps(5):
-        b1 = mpmath.binomial(k + untilnbad - 1, k)
-        b2 = mpmath.binomial(ntotal - untilnbad - k, ngood - k)
-        b3 = mpmath.binomial(ntotal, ngood)
+    with mp.extradps(5):
+        b1 = mp.binomial(k + untilnbad - 1, k)
+        b2 = mp.binomial(ntotal - untilnbad - k, ngood - k)
+        b3 = mp.binomial(ntotal, ngood)
         return b1 * (b2 / b3)
 
 
@@ -43,13 +43,13 @@ def logpmf(k, ntotal, ngood, untilnbad):
     _validate(ntotal, ngood, untilnbad)
 
     if k < 0 or k > ngood:
-        return mpmath.mp.ninf
+        return mp.ninf
 
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         t1 = logbinomial(k + untilnbad - 1, k)
         t2 = logbinomial(ntotal - untilnbad - k, ngood - k)
         t3 = logbinomial(ntotal, ngood)
-        return mpmath.fsum([t1, t2, -t3])
+        return mp.fsum([t1, t2, -t3])
 
 
 def cdf(k, ntotal, ngood, untilnbad):
@@ -59,9 +59,9 @@ def cdf(k, ntotal, ngood, untilnbad):
     _validate(ntotal, ngood, untilnbad)
 
     if k < 0:
-        return mpmath.mp.zero
+        return mp.zero
     if k >= ngood:
-        return mpmath.mp.one
+        return mp.one
     return hg_sf(untilnbad - 1, ntotal, ntotal - ngood, k + untilnbad)
 
 
@@ -72,9 +72,9 @@ def sf(k, ntotal, ngood, untilnbad):
     _validate(ntotal, ngood, untilnbad)
 
     if k < 0:
-        return mpmath.mp.one
+        return mp.one
     if k >= ngood:
-        return mpmath.mp.zero
+        return mp.zero
     return hg_cdf(untilnbad - 1, ntotal, ntotal - ngood, k + untilnbad)
 
 
@@ -84,7 +84,7 @@ def mean(ntotal, ngood, untilnbad):
     """
     _validate(ntotal, ngood, untilnbad)
 
-    return mpmath.mpf(untilnbad) * ngood / (ntotal - ngood + 1)
+    return mp.mpf(untilnbad) * ngood / (ntotal - ngood + 1)
 
 
 def var(ntotal, ngood, untilnbad):
@@ -94,8 +94,8 @@ def var(ntotal, ngood, untilnbad):
     _validate(ntotal, ngood, untilnbad)
 
     nbad = ntotal - ngood
-    r = mpmath.mpf(untilnbad)
-    v = (r * (ntotal + 1) * ngood * (mpmath.mp.one - r / (nbad + 1))
+    r = mp.mpf(untilnbad)
+    v = (r * (ntotal + 1) * ngood * (mp.one - r / (nbad + 1))
          / (nbad + 1) / (nbad + 2))
     return v
 

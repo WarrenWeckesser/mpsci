@@ -3,7 +3,7 @@ Hypergeometric distribution
 ---------------------------
 """
 
-import mpmath
+from mpmath import mp
 from ..fun import logbeta
 
 
@@ -28,9 +28,9 @@ def pmf(k, ntotal, ngood, nsample):
     """
     _validate(ntotal, ngood, nsample)
     nbad = ntotal - ngood
-    numer = (ntotal + 1) * mpmath.beta(ntotal - nsample + 1, nsample + 1)
-    denom = ((ngood + 1) * (nbad + 1) * mpmath.beta(k + 1, ngood - k + 1) *
-             mpmath.beta(nsample - k + 1, nbad - nsample + k + 1))
+    numer = (ntotal + 1) * mp.beta(ntotal - nsample + 1, nsample + 1)
+    denom = ((ngood + 1) * (nbad + 1) * mp.beta(k + 1, ngood - k + 1) *
+             mp.beta(nsample - k + 1, nbad - nsample + k + 1))
     pmf = numer / denom
     return pmf
 
@@ -44,16 +44,16 @@ def logpmf(k, ntotal, ngood, nsample):
     """
     _validate(ntotal, ngood, nsample)
     nbad = ntotal - ngood
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         # numerator terms
-        terms = [mpmath.log(ntotal + 1),
+        terms = [mp.log(ntotal + 1),
                  logbeta(ntotal - nsample + 1, nsample + 1)]
         # denominator terms
-        terms.extend([-mpmath.log(ngood + 1),
-                      -mpmath.log(nbad + 1),
+        terms.extend([-mp.log(ngood + 1),
+                      -mp.log(nbad + 1),
                       -logbeta(k + 1, ngood - k + 1),
                       -logbeta(nsample - k + 1, nbad - nsample + k + 1)])
-        return mpmath.fsum(terms)
+        return mp.fsum(terms)
 
 
 def cdf(k, ntotal, ngood, nsample):
@@ -69,11 +69,11 @@ def sf(k, ntotal, ngood, nsample):
     Survival function of the hypergeometric distribution.
     """
     _validate(ntotal, ngood, nsample)
-    h = mpmath.hyp3f2(1, k + 1 - ngood, k + 1 - nsample, k + 2,
-                      ntotal + k + 2 - ngood - nsample, 1)
-    num = (mpmath.binomial(nsample, k + 1) *
-           mpmath.binomial(ntotal - nsample, ngood - k - 1))
-    den = mpmath.binomial(ntotal, ngood)
+    h = mp.hyp3f2(1, k + 1 - ngood, k + 1 - nsample, k + 2,
+                  ntotal + k + 2 - ngood - nsample, 1)
+    num = (mp.binomial(nsample, k + 1) *
+           mp.binomial(ntotal - nsample, ngood - k - 1))
+    den = mp.binomial(ntotal, ngood)
     sf = (num / den) * h
     return sf
 

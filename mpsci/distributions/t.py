@@ -3,7 +3,7 @@ Student's t distribution
 ------------------------
 """
 
-import mpmath
+from mpmath import mp
 from ._common import _validate_p
 
 
@@ -17,14 +17,14 @@ def logpdf(x, df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        df = mpmath.mpf(df)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        df = mp.mpf(df)
         h = (df + 1) / 2
-        logp = (mpmath.loggamma(h)
-                - mpmath.log(df * mpmath.pi)/2
-                - mpmath.loggamma(df/2)
-                - h * mpmath.log1p(x**2/df))
+        logp = (mp.loggamma(h)
+                - mp.log(df * mp.pi)/2
+                - mp.loggamma(df/2)
+                - h * mp.log1p(x**2/df))
     return logp
 
 
@@ -35,7 +35,7 @@ def pdf(x, df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    return mpmath.exp(logpdf(x, df))
+    return mp.exp(logpdf(x, df))
 
 
 def cdf(x, df):
@@ -45,14 +45,14 @@ def cdf(x, df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mpmath.extradps(5):
-        half = mpmath.mp.one/2
-        x = mpmath.mpf(x)
-        df = mpmath.mpf(df)
+    with mp.extradps(5):
+        half = mp.one/2
+        x = mp.mpf(x)
+        df = mp.mpf(df)
         h = (df + 1) / 2
-        p1 = x * mpmath.gamma(h)
-        p2 = mpmath.hyp2f1(half, h, 3*half, -x**2/df)
-        return half + p1*p2/mpmath.sqrt(mpmath.pi*df)/mpmath.gamma(df/2)
+        p1 = x * mp.gamma(h)
+        p2 = mp.hyp2f1(half, h, 3*half, -x**2/df)
+        return half + p1*p2/mp.sqrt(mp.pi*df)/mp.gamma(df/2)
 
 
 def sf(x, df):
@@ -62,14 +62,14 @@ def sf(x, df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mpmath.extradps(5):
-        half = mpmath.mp.one/2
-        x = mpmath.mpf(x)
-        df = mpmath.mpf(df)
+    with mp.extradps(5):
+        half = mp.one/2
+        x = mp.mpf(x)
+        df = mp.mpf(df)
         h = (df + 1) / 2
-        p1 = x * mpmath.gamma(h)
-        p2 = mpmath.hyp2f1(half, h, 3*half, -x**2/df)
-        return half - p1*p2/mpmath.sqrt(mpmath.pi*df)/mpmath.gamma(df/2)
+        p1 = x * mp.gamma(h)
+        p2 = mp.hyp2f1(half, h, 3*half, -x**2/df)
+        return half - p1*p2/mp.sqrt(mp.pi*df)/mp.gamma(df/2)
 
 
 def invcdf(p, df):
@@ -86,30 +86,30 @@ def invcdf(p, df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         if p == 0:
-            return mpmath.ninf
+            return mp.ninf
         if p == 1:
-            return mpmath.inf
+            return mp.inf
         if p > 0.5:
-            p0 = mpmath.mp.one - p
+            p0 = mp.one - p
         else:
             p0 = p
-        df = mpmath.mpf(df)
+        df = mp.mpf(df)
 
-        x0 = -mpmath.mp.one
+        x0 = -mp.one
         count = 0
         while cdf(x0, df) > p0:
             x0 = 2*x0
             count += 1
-            if count > mpmath.mp.prec / 2:
+            if count > mp.prec / 2:
                 raise RuntimeError('failed to find a bracketing interval')
 
         def _func(x):
             return cdf(x, df) - p0
 
-        x = mpmath.findroot(_func, (x0, x0/2), solver='anderson')
+        x = mp.findroot(_func, (x0, x0/2), solver='anderson')
         if p > 0.5:
             x = -x
 
@@ -138,9 +138,9 @@ def entropy(df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mpmath.extradps(5):
-        df = mpmath.mpf(df)
+    with mp.extradps(5):
+        df = mp.mpf(df)
         h = df/2
         h1 = (df + 1)/2
-        return (h1*(mpmath.digamma(h1) - mpmath.digamma(h)) +
-                mpmath.log(mpmath.sqrt(df)*mpmath.beta(h, 0.5)))
+        return (h1*(mp.digamma(h1) - mp.digamma(h)) +
+                mp.log(mp.sqrt(df)*mp.beta(h, 0.5)))

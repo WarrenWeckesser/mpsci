@@ -6,7 +6,7 @@ The multivariate hypergeometric distribution is a generalization of the
 hypergeometric distribution.
 """
 
-import mpmath
+from mpmath import mp
 
 
 __all__ = ['support', 'pmf_dict', 'mean', 'cov', 'entropy']
@@ -86,12 +86,12 @@ def pmf_dict(colors, nsample):
     """
     _validate_params(colors, nsample)
     total = sum(colors)
-    denom = mpmath.binomial(total, nsample)
+    denom = mp.binomial(total, nsample)
     pmf = {}
     for coords in support(colors, nsample):
         numer = 1
         for color, k in zip(colors, coords):
-            numer *= mpmath.binomial(color, k)
+            numer *= mp.binomial(color, k)
         prob = numer/denom
         pmf[tuple(coords)] = prob
     return pmf
@@ -105,8 +105,8 @@ def mean(colors, nsample):
     --------
     First configure the default mpmath precision.
 
-    >>> import mpmath
-    >>> mpmath.mp.dps = 25
+    >>> from mpmath import mp
+    >>> mp.dps = 25
 
     Some examples of the `mean` function.
 
@@ -122,12 +122,12 @@ def mean(colors, nsample):
      mpf('10.32258064516129032258064516')]
     """
     _validate_params(colors, nsample)
-    with mpmath.extradps(5):
-        s = mpmath.fsum(colors)
+    with mp.extradps(5):
+        s = mp.fsum(colors)
         if nsample == s:
             # This includes the edge case where colors = [0, ..., 0]
             # and nsample = 0.
-            return [mpmath.mp.one * k for k in colors]
+            return [mp.one * k for k in colors]
         return [nsample * (k / s) for k in colors]
 
 
@@ -145,8 +145,8 @@ def cov(colors, nsample):
     for nicer printed output.
 
     >>> from pprint import pprint
-    >>> import mpmath
-    >>> mpmath.mp.dps = 25
+    >>> from mpmath import mp
+    >>> mp.dps = 25
 
     Some examples of the `cov` function.
 
@@ -183,10 +183,10 @@ def cov(colors, nsample):
     """
     _validate_params(colors, nsample)
     n = len(colors)
-    with mpmath.extradps(5):
-        s = mpmath.fsum(colors)
+    with mp.extradps(5):
+        s = mp.fsum(colors)
         if nsample == s:
-            return [[mpmath.mp.zero]*n for _ in range(n)]
+            return [[mp.zero]*n for _ in range(n)]
         u = [k / s for k in colors]
         f = nsample * (s - nsample) / (s - 1)
         c = [[None]*n for _ in range(n)]
@@ -209,8 +209,8 @@ def entropy(colors, nsample):
     --------
     First configure the default mpmath precision.
 
-    >>> import mpmath
-    >>> mpmath.mp.dps = 25
+    >>> from mpmath import mp
+    >>> mp.dps = 25
 
     Some examples of the `entropy` function.
 
@@ -222,6 +222,6 @@ def entropy(colors, nsample):
     mpf('2.877874138861812367967354693')
     """
     _validate_params(colors, nsample)
-    with mpmath.extradps(5):
-        return -mpmath.fsum(p * mpmath.log(p)
-                            for p in pmf_dict(colors, nsample).values())
+    with mp.extradps(5):
+        return -mp.fsum(p * mp.log(p)
+                        for p in pmf_dict(colors, nsample).values())
