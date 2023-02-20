@@ -1,6 +1,6 @@
 
 import pytest
-import mpmath as mp
+from mpmath import mp
 from mpsci.distributions import invgauss
 
 

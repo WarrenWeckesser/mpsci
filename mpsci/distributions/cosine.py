@@ -5,7 +5,7 @@ Raised cosine distribution
 """
 
 import re
-import mpmath
+from mpmath import mp
 from ._common import _validate_p
 
 
@@ -26,11 +26,11 @@ def pdf(x):
 
     on the interval (-pi, pi) and zero elsewhere.
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        if x <= -mpmath.pi or x >= mpmath.pi:
-            return mpmath.mp.zero
-        return (mpmath.cos(x) + 1)/(2*mpmath.pi)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        if x <= -mp.pi or x >= mp.pi:
+            return mp.zero
+        return (mp.cos(x) + 1)/(2*mp.pi)
 
 
 _pdf_docstring_replace = r"""
@@ -56,10 +56,10 @@ def logpdf(x):
 
     on the interval (-pi, pi) and zero elsewhere.
     """
-    with mpmath.extradps(5):
-        if x <= -mpmath.pi or x >= mpmath.pi:
-            return -mpmath.inf
-        return mpmath.log1p(mpmath.cos(x)) - mpmath.log(2*mpmath.pi)
+    with mp.extradps(5):
+        if x <= -mp.pi or x >= mp.pi:
+            return -mp.inf
+        return mp.log1p(mp.cos(x)) - mp.log(2*mp.pi)
 
 
 logpdf._docstring_re_subs = [
@@ -76,13 +76,13 @@ def cdf(x):
 
         F(x) = (pi + x + sin(x))/(2*pi)
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        if x <= -mpmath.pi:
-            return mpmath.mp.zero
-        if x >= mpmath.pi:
-            return mpmath.mp.one
-        return mpmath.mpf('1/2') + (x + mpmath.sin(x))/(2*mpmath.pi)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        if x <= -mp.pi:
+            return mp.zero
+        if x >= mp.pi:
+            return mp.one
+        return mp.mpf('1/2') + (x + mp.sin(x))/(2*mp.pi)
 
 
 _cdf_docstring_replace = r"""
@@ -101,7 +101,7 @@ cdf._docstring_re_subs = [
 # mpmath floats.
 
 def _p2(t):
-    t = mpmath.mpf(t)
+    t = mp.mpf(t)
     return (0.5
             + t*(-0.06532856457583547
                  + t*(0.0020893844847965047
@@ -109,7 +109,7 @@ def _p2(t):
 
 
 def _q2(t):
-    t = mpmath.mpf(t)
+    t = mp.mpf(t)
     return (1.0
             + t*(-0.15149046248500425
                  + t*(0.006293153604697265
@@ -132,39 +132,39 @@ def _poly_approx(s):
     #
     # Here we include terms up to s**9.
     s2 = s**2
-    return (s*(mpmath.mp.one
-               + s2*(mpmath.mpf('1/60')
-                     + s2*(mpmath.mpf('1/1400')
-                           + s2*(mpmath.mpf('1/25200')
-                                 + s2*mpmath.mpf('43/17248000'))))))
+    return (s*(mp.one
+               + s2*(mp.mpf('1/60')
+                     + s2*(mp.mpf('1/1400')
+                           + s2*(mp.mpf('1/25200')
+                                 + s2*mp.mpf('43/17248000'))))))
 
 
 def invcdf(p):
     """
     Inverse of the CDF of the raised cosine distribution.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         p = _validate_p(p)
         if p == 0:
-            return -mpmath.pi
+            return -mp.pi
         if p == 1:
-            return mpmath.pi
+            return mp.pi
 
         if p < 0.094:
-            x = _poly_approx(mpmath.cbrt(12*mpmath.pi*p)) - mpmath.pi
+            x = _poly_approx(mp.cbrt(12*mp.pi*p)) - mp.pi
         elif p > 0.906:
-            x = mpmath.pi - _poly_approx(mpmath.cbrt(12*mpmath.pi*(1 - p)))
+            x = mp.pi - _poly_approx(mp.cbrt(12*mp.pi*(1 - p)))
         else:
-            y = mpmath.pi*(2*p - 1)
+            y = mp.pi*(2*p - 1)
             y2 = y**2
             x = y * _p2(y2) / _q2(y2)
 
         solver = 'mnewton'
-        x = mpmath.findroot(f=lambda t: cdf(t) - p,
-                            x0=x,
-                            df=lambda t: (1 + mpmath.cos(t))/(2*mpmath.pi),
-                            df2=lambda t: -mpmath.sin(t)/(2*mpmath.pi),
-                            solver=solver)
+        x = mp.findroot(f=lambda t: cdf(t) - p,
+                        x0=x,
+                        df=lambda t: (1 + mp.cos(t))/(2*mp.pi),
+                        df2=lambda t: -mp.sin(t)/(2*mp.pi),
+                        solver=solver)
 
         return x
 
@@ -189,7 +189,7 @@ def mean():
 
     The mean is 0.
     """
-    return mpmath.mp.zero
+    return mp.zero
 
 
 def var():
@@ -198,7 +198,7 @@ def var():
 
     The variance is pi**2/3 - 2.
     """
-    return mpmath.pi**2/3 - 2
+    return mp.pi**2/3 - 2
 
 
 def skewness():
@@ -207,7 +207,7 @@ def skewness():
 
     The skewness is 0.
     """
-    return mpmath.mp.zero
+    return mp.zero
 
 
 def kurtosis():
@@ -216,5 +216,5 @@ def kurtosis():
 
     The excess kurtosis is (6/5)*(90 - pi**4)/(pi**2 - 6)**2.
     """
-    pi2 = mpmath.pi**2
+    pi2 = mp.pi**2
     return (90 - pi2**2)/(pi2 - 6)**2 * 6 / 5

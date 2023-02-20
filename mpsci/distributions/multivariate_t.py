@@ -16,7 +16,7 @@ Multivariate t Distribution
 #     ≈ 0.0280719251273608075819567901706183442574259902571887726816304...
 
 
-import mpmath
+from mpmath import mp
 
 
 __all__ = ['logpdf', 'pdf']
@@ -35,30 +35,30 @@ def logpdf(x, nu, loc, scale, scale_inv=None):
     If given, `scale_inv` must be the inverse of `scale`.
     """
 
-    p = mpmath.mpf(len(loc))
-    with mpmath.extradps(5):
-        nu = mpmath.mpf(nu)
+    p = mp.mpf(len(loc))
+    with mp.extradps(5):
+        nu = mp.mpf(nu)
         if scale_inv is None:
-            with mpmath.extradps(5):
-                scale_inv = mpmath.inverse(scale)
-        tmp = mpmath.matrix(scale.cols, 1)
+            with mp.extradps(5):
+                scale_inv = mp.inverse(scale)
+        tmp = mp.matrix(scale.cols, 1)
         for k, v in enumerate(loc):
-            tmp[k] = mpmath.mpf(v)
+            tmp[k] = mp.mpf(v)
         loc = tmp
-        tmp = mpmath.matrix(scale.cols, 1)
+        tmp = mp.matrix(scale.cols, 1)
         for k, v in enumerate(x):
-            tmp[k] = mpmath.mpf(v)
+            tmp[k] = mp.mpf(v)
         x = tmp
         delta = x - loc
         c = (nu + p)/2
-        t1 = -c * mpmath.log1p((delta.T * scale_inv * delta)[0, 0] / nu)
-        t2 = mpmath.loggamma(c)
-        t3 = mpmath.loggamma(nu/2)
-        t4 = (p/2)*mpmath.log(nu)
-        t5 = (p/2)*mpmath.log(mpmath.pi)
-        with mpmath.extradps(5):
-            det = mpmath.det(scale)
-        t6 = mpmath.log(det)/2
+        t1 = -c * mp.log1p((delta.T * scale_inv * delta)[0, 0] / nu)
+        t2 = mp.loggamma(c)
+        t3 = mp.loggamma(nu/2)
+        t4 = (p/2)*mp.log(nu)
+        t5 = (p/2)*mp.log(mp.pi)
+        with mp.extradps(5):
+            det = mp.det(scale)
+        t6 = mp.log(det)/2
         return t2 - t3 - t4 - t5 - t6 + t1
 
 
@@ -73,4 +73,4 @@ def pdf(x, nu, loc, scale, scale_inv=None):
     If given, `scale_inv` must be the inverse of `scale`.
     """
 
-    return mpmath.exp(logpdf(x, nu, loc, scale, scale_inv))
+    return mp.exp(logpdf(x, nu, loc, scale, scale_inv))

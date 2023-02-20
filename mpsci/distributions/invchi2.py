@@ -17,7 +17,7 @@ inverse chi-square distribution with nu degrees of freedom.
 """
 
 import re
-import mpmath
+from mpmath import mp
 
 
 # module docstring substitution
@@ -38,21 +38,21 @@ __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'variance']
 def _validate_nu(nu):
     if nu <= 0:
         raise ValueError('nu must be positive')
+    return mp.mpf(nu)
 
 
 def pdf(x, nu):
     """
     PDF for the inverse chi-square distribution.
     """
-    _validate_nu(nu)
-    if x <= 0:
-        return mpmath.mp.zero
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        nu = mpmath.mpf(nu)
+    with mp.extradps(5):
+        nu = _validate_nu(nu)
+        x = mp.mpf(x)
+        if x <= 0:
+            return mp.zero
         hnu = nu/2
-        p = (mpmath.power(2, -hnu) * x**(-hnu - 1) * mpmath.exp(-1/(2*x))
-             / mpmath.gamma(hnu))
+        p = (mp.power(2, -hnu) * x**(-hnu - 1) * mp.exp(-1/(2*x))
+             / mp.gamma(hnu))
         return p
 
 
@@ -60,15 +60,14 @@ def logpdf(x, nu):
     """
     Logarithm of the PDF for the inverse chi-square distribution.
     """
-    _validate_nu(nu)
-    if x <= 0:
-        return mpmath.ninf
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        nu = mpmath.mpf(nu)
+    with mp.extradps(5):
+        nu = _validate_nu(nu)
+        x = mp.mpf(x)
+        if x <= 0:
+            return mp.ninf
         hnu = nu/2
-        logp = (-hnu*mpmath.log(2) + (-hnu - 1)*mpmath.log(x) - 1/(2*x)
-                - mpmath.loggamma(hnu))
+        logp = (-hnu*mp.log(2) + (-hnu - 1)*mp.log(x) - 1/(2*x)
+                - mp.loggamma(hnu))
         return logp
 
 
@@ -76,13 +75,12 @@ def cdf(x, nu):
     """
     CDF for the inverse chi-square distribution.
     """
-    _validate_nu(nu)
-    if x <= 0:
-        return mpmath.mp.zero
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        nu = mpmath.mpf(nu)
-        c = mpmath.gammainc(nu/2, a=1/(2*x), b=mpmath.inf, regularized=True)
+    with mp.extradps(5):
+        nu = _validate_nu(nu)
+        x = mp.mpf(x)
+        if x <= 0:
+            return mp.zero
+        c = mp.gammainc(nu/2, a=1/(2*x), b=mp.inf, regularized=True)
     return c
 
 
@@ -90,13 +88,12 @@ def sf(x, nu):
     """
     Survival function for the inverse chi-square distribution.
     """
-    _validate_nu(nu)
-    if x <= 0:
-        return mpmath.mp.one
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        nu = mpmath.mpf(nu)
-        s = mpmath.gammainc(nu/2, a=0, b=1/(2*x), regularized=True)
+    with mp.extradps(5):
+        nu = _validate_nu(nu)
+        x = mp.mpf(x)
+        if x <= 0:
+            return mp.one
+        s = mp.gammainc(nu/2, a=0, b=1/(2*x), regularized=True)
     return s
 
 
@@ -107,10 +104,9 @@ def mean(nu):
     For nu > 2, the mean is 1/(nu - 2).
 
     """
-    _validate_nu(nu)
-    with mpmath.extradps(5):
-        nu = mpmath.mpf(nu)
-        return mpmath.mp.one / (nu - 2) if nu > 2 else mpmath.nan
+    with mp.extradps(5):
+        nu = _validate_nu(nu)
+        return mp.one / (nu - 2) if nu > 2 else mp.nan
 
 
 mean._docstring_re_subs = [
@@ -130,9 +126,8 @@ def mode(nu):
 
     The mode is max(k - 2, 0).
     """
-    _validate_nu(nu)
-    with mpmath.extradps(5):
-        nu = mpmath.mpf(nu)
+    with mp.extradps(5):
+        nu = _validate_nu(nu)
         return 1 / (nu + 2)
 
 
@@ -145,10 +140,9 @@ def variance(nu):
         2 / ((nu - 2)**2 (nu - 4))
 
     """
-    _validate_nu(nu)
-    with mpmath.extradps(5):
-        nu = mpmath.mpf(nu)
-        return 2/(nu - 2)**2 / (nu - 4) if nu > 4 else mpmath.nan
+    with mp.extradps(5):
+        nu = _validate_nu(nu)
+        return 2/(nu - 2)**2 / (nu - 4) if nu > 4 else mp.nan
 
 
 variance._docstring_re_subs = [
