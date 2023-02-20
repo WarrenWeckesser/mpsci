@@ -1,5 +1,5 @@
 
-import mpmath
+from mpmath import mp
 
 
 # The function _bell_incomplete_poly was copied from sympy
@@ -19,11 +19,11 @@ def _bell_incomplete_poly(n, k, symbols):
         `B_{0,k} = 0; for k \ge 1`
     """
     if (n == 0) and (k == 0):
-        return mpmath.mp.one
+        return mp.one
     elif (n == 0) or (k == 0):
-        return mpmath.mp.zero
-    s = mpmath.mp.zero
-    a = mpmath.mp.one
+        return mp.zero
+    s = mp.zero
+    a = mp.one
     for m in range(1, n - k + 2):
         s += a * _bell_incomplete_poly(n - m, k - 1, symbols) * symbols[m - 1]
         a = a * (n - m) / m
@@ -52,7 +52,7 @@ def revert(coeffs, taylor=True):
 
     if taylor:
         # Rescale the coefficients to the derivative values.
-        f = [c * mpmath.factorial(i) for i, c in enumerate(coeffs)]
+        f = [c * mp.factorial(i) for i, c in enumerate(coeffs)]
     else:
         f = coeffs
 
@@ -64,14 +64,14 @@ def revert(coeffs, taylor=True):
     g[1] = 1/f[1]
 
     for n in range(2, m):
-        s = sum((-1)**k * mpmath.rf(n, k) *
+        s = sum((-1)**k * mp.rf(n, k) *
                 _bell_incomplete_poly(n-1, k, f_hat[:n-k])
                 for k in range(1, n))
         g[n] = s / f[1]**n
 
     if taylor:
         # Convert the derivatives to the Taylor coefficients
-        inv_coeffs = [c/mpmath.factorial(k) for k, c in enumerate(g)]
+        inv_coeffs = [c/mp.factorial(k) for k, c in enumerate(g)]
     else:
         inv_coeffs = g
 
@@ -92,13 +92,13 @@ def inverse_taylor(f, x0, n):
 
     Examples
     --------
-    >>> import mpmath
-    >>> mpmath.mp.dps = 40
+    >>> from mpmath import mp
+    >>> mp.dps = 40
 
     Compute the Taylor coefficients of the inverse of the sine function
     sin(x) at x=1.
 
-    >>> inverse_taylor(mpmath.sin, 1, 5)
+    >>> inverse_taylor(mp.sin, 1, 5)
     [mpf('1.0'),
      mpf('1.850815717680925617911753241398650193470396'),
      mpf('2.667464736243829370645086306803786566557799'),
@@ -109,7 +109,7 @@ def inverse_taylor(f, x0, n):
     Compare that to computing the Taylor polynomial coefficients of
     the arcsine function directly:
 
-    >>> mpmath.taylor(mpmath.asin, mpmath.sin(1), 5)
+    >>> mp.taylor(mp.asin, mp.sin(1), 5)
     [mpf('1.0'),
      mpf('1.850815717680925617911753241398650193470396'),
      mpf('2.667464736243829370645086306803786566557799'),
@@ -117,11 +117,11 @@ def inverse_taylor(f, x0, n):
      mpf('34.55691117453807764026147509020588920253199'),
      mpf('152.9343377104818039879748855586655382173702')]
     """
-    x0 = mpmath.mpf(x0)
-    c = mpmath.taylor(f, x0, n)
+    x0 = mp.mpf(x0)
+    c = mp.taylor(f, x0, n)
     r, c0 = revert(c)
     r[0] = x0
-    return [mpmath.mpf(t) for t in r]
+    return [mp.mpf(t) for t in r]
 
 
 inverse_taylor._docstring_re_subs = [
@@ -147,12 +147,12 @@ def inverse_pade(f, x0, m, n):
 
     Examples
     --------
-    >>> import mpmath
-    >>> mpmath.mp.dps = 40
+    >>> from mpmath import mp
+    >>> mp.dps = 40
 
     Compute the Padé approximant to the inverse of sin(x) at x=1.
 
-    >>> inverse_pade(mpmath.sin, 1, 5, 4)
+    >>> inverse_pade(mp.sin, 1, 5, 4)
     ([mpf('1.0'),
       mpf('-5.428836087225345782152614868037223199487785'),
       mpf('-14.59025586448337482707922792297134121701713'),
@@ -168,8 +168,8 @@ def inverse_pade(f, x0, m, n):
     Compare that to computing the Padé approximant of the arcsine
     function directly.
 
-    >>> c = mpmath.taylor(mpmath.asin, mpmath.sin(1), 10)
-    >>> mpmath.pade(c, 5, 4)
+    >>> c = mp.taylor(mp.asin, mp.sin(1), 10)
+    >>> mp.pade(c, 5, 4)
     ([mpf('1.0'),
       mpf('-5.428836087225345782152614868037223199022362'),
       mpf('-14.59025586448337482707922792297134122127003'),
@@ -185,7 +185,7 @@ def inverse_pade(f, x0, m, n):
     """
     d = m + n + 1
     c = inverse_taylor(f, x0, d)
-    pc, qc = mpmath.pade(c, m, n)
+    pc, qc = mp.pade(c, m, n)
     return pc, qc
 
 

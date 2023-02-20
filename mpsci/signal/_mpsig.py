@@ -4,7 +4,7 @@ Some signal functions.
 
 from __future__ import division
 from functools import reduce
-import mpmath
+from mpmath import mp
 
 
 __all__ = ['butter_lp', 'butter_bp', 'butter_lp_ord', 'cheby1_lp',
@@ -74,11 +74,11 @@ def _zpklp2bp(z, p, k, wo, bw):
     p_lp = [pole*bw/2 for pole in p]
 
     # Duplicate poles and zeros and shift from baseband to +wo and -wo
-    z_bp = ([zero + mpmath.sqrt(zero**2 - wo**2) for zero in z_lp] +
-            [zero - mpmath.sqrt(zero**2 - wo**2) for zero in z_lp])
+    z_bp = ([zero + mp.sqrt(zero**2 - wo**2) for zero in z_lp] +
+            [zero - mp.sqrt(zero**2 - wo**2) for zero in z_lp])
 
-    p_bp = ([pole + mpmath.sqrt(pole**2 - wo**2) for pole in p_lp] +
-            [pole - mpmath.sqrt(pole**2 - wo**2) for pole in p_lp])
+    p_bp = ([pole + mp.sqrt(pole**2 - wo**2) for pole in p_lp] +
+            [pole - mp.sqrt(pole**2 - wo**2) for pole in p_lp])
 
     degree = _relative_degree(z, p)
 
@@ -101,7 +101,7 @@ def _butter_analog_poles(n):
     """
     poles = []
     for k in range(-n+1, n, 2):
-        poles.append(-mpmath.exp(1j*mpmath.pi*k/(2*n)))
+        poles.append(-mp.exp(1j*mp.pi*k/(2*n)))
     return poles
 
 
@@ -117,7 +117,7 @@ def butter_lp(n, Wn):
     poles = _butter_analog_poles(n)
     k = 1
     fs = 2
-    warped = 2 * fs * mpmath.tan(mpmath.pi * Wn / fs)
+    warped = 2 * fs * mp.tan(mp.pi * Wn / fs)
     z, p, k = _zpklp2lp(zeros, poles, k, wo=warped)
     z, p, k = _zpkbilinear(z, p, k, fs=fs)
     return z, p, k
@@ -132,10 +132,10 @@ def butter_bp(n, wlo, whi):
     k = 1
     fs = 2
 
-    warpedlo = 2 * fs * mpmath.tan(mpmath.pi * wlo / fs)
-    warpedhi = 2 * fs * mpmath.tan(mpmath.pi * whi / fs)
+    warpedlo = 2 * fs * mp.tan(mp.pi * wlo / fs)
+    warpedhi = 2 * fs * mp.tan(mp.pi * whi / fs)
     bw = warpedhi - warpedlo
-    wo = mpmath.sqrt(warpedlo * warpedhi)
+    wo = mp.sqrt(warpedlo * warpedhi)
     z, p, k = _zpklp2bp(zeros, poles, k, wo=wo, bw=bw)
     z, p, k = _zpkbilinear(z, p, k, fs=fs)
     return z, p, k
@@ -147,9 +147,9 @@ def butter_lp_ord(wp, ws, deltap, deltas, fs=1):
     """
     r = ((1/deltas)**2 - 1) / ((1/(1-deltap))**2 - 1)
     print(r)
-    t = mpmath.tan(mpmath.pi*ws/fs)/mpmath.tan(mpmath.pi*wp/fs)
+    t = mp.tan(mp.pi*ws/fs)/mp.tan(mp.pi*wp/fs)
     print(t)
-    n = mpmath.log(r) / (2*mpmath.log(t))
+    n = mp.log(r) / (2*mp.log(t))
     return n
 
 
@@ -167,24 +167,24 @@ def cheby1_lp(N, rp, Wn):
     zeros = []
 
     # Ripple factor (epsilon)
-    rp = mpmath.mp.mpf(rp)
-    eps = mpmath.sqrt(mpmath.power(10, (rp/10)) - 1)
-    mu = mpmath.asinh(1 / eps) / N
+    rp = mp.mpf(rp)
+    eps = mp.sqrt(mp.power(10, (rp/10)) - 1)
+    mu = mp.asinh(1 / eps) / N
 
     # Arrange poles in an ellipse on the left half of the S-plane
     poles = []
-    k = mpmath.mp.mpf(1)
+    k = mp.mpf(1)
     for m in range(-N+1, N, 2):
-        theta = mpmath.pi * m / (2*N)
-        pole = -mpmath.sinh(mu + 1j*theta)
+        theta = mp.pi * m / (2*N)
+        pole = -mp.sinh(mu + 1j*theta)
         poles.append(pole)
         k *= -pole
 
     if N % 2 == 0:
-        k = k / mpmath.sqrt(1 + eps * eps)
+        k = k / mp.sqrt(1 + eps * eps)
 
-    fs = mpmath.mp.mpf(2)
-    warped = 2 * fs * mpmath.tan(mpmath.pi * Wn / fs)
+    fs = mp.mpf(2)
+    warped = 2 * fs * mp.tan(mp.pi * Wn / fs)
     z, p, k = _zpklp2lp(zeros, poles, k, wo=warped)
     z, p, k = _zpkbilinear(z, p, k, fs=fs)
     return z, p, k
@@ -201,13 +201,13 @@ def zpkfreqz(z, p, k, worN=None):
     """
     if worN is None or isinstance(worN, int):
         N = worN or 512
-        ws = [mpmath.pi * mpmath.mpf(j) / N for j in range(N)]
+        ws = [mp.pi * mp.mpf(j) / N for j in range(N)]
     else:
         ws = worN
 
     h = []
     for wk in ws:
-        zm1 = mpmath.exp(1j * wk)
+        zm1 = mp.exp(1j * wk)
         numer = _prod([zm1 - t for t in z])
         denom = _prod([zm1 - t for t in p])
         hk = k * numer / denom
@@ -226,7 +226,7 @@ def freqz(b, a=1, worN=None):
     """
     if worN is None or isinstance(worN, int):
         N = worN or 512
-        ws = [mpmath.pi * mpmath.mpf(j) / N for j in range(N)]
+        ws = [mp.pi * mp.mpf(j) / N for j in range(N)]
     else:
         ws = worN
 
@@ -235,17 +235,17 @@ def freqz(b, a=1, worN=None):
         len(b)
     except TypeError:
         b = [b]
-    b = [mpmath.mp.mpf(t) for t in b]
+    b = [mp.mpf(t) for t in b]
     try:
         len(a)
     except TypeError:
         a = [a]
-    a = [mpmath.mp.mpf(t) for t in a]
+    a = [mp.mpf(t) for t in a]
 
     h = []
     for wk in ws:
-        z = mpmath.exp(-1j * wk)
-        hk = mpmath.polyval(b[::-1], z) / mpmath.polyval(a[::-1], z)
+        z = mp.exp(-1j * wk)
+        hk = mp.polyval(b[::-1], z) / mp.polyval(a[::-1], z)
         h.append(hk)
 
     return ws, h
