@@ -110,6 +110,15 @@ def var(loc=0, scale=1):
         return scale**2 * mp.pi**2 / 3
 
 
+def entropy(loc=0, scale=1):
+    """
+    Differential entropy of the logistic distribution.
+    """
+    with mp.extradps(5):
+        scale = mp.mpf(scale)
+        return mp.log(scale) + 2
+
+
 def mom(x):
     """
     Method of moments parameter estimation for the logistic distribution.
