@@ -1,4 +1,4 @@
-
+import pytest
 from mpmath import mp
 from mpsci.distributions import gamma_gompertz
 
@@ -73,3 +73,22 @@ def test_cdf_invcdf_roundtrip():
         x = gamma_gompertz.invcdf(p, 5, 2, 3)
         p1 = gamma_gompertz.cdf(x, 5, 2, 3)
         assert mp.almosteq(p1, p, rel_eps=rel_eps)
+
+
+def test_mean_beta_1():
+    c = 2
+    beta = 1
+    scale = 4
+    m = gamma_gompertz.mean(c, beta, scale)
+    assert mp.almosteq(m, scale/c)
+
+
+@pytest.mark.parametrize('c, beta, scale',
+                         [(0.5, 3.0, 1.0),
+                          (0.5, 1.0, 2.5),
+                          (1.0, 3.5, 1.0),
+                          (1.5, 0.25, 6.0)])
+def test_mean_with_integral(c, beta, scale):
+    m = gamma_gompertz.mean(c, beta, scale)
+    q = mp.quad(lambda t: t*gamma_gompertz.pdf(t, c, beta, scale), [0, mp.inf])
+    assert mp.almosteq(m, q)

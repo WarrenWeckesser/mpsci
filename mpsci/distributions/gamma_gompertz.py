@@ -21,7 +21,7 @@ from ._common import _validate_p
 from ..fun import pow1pm1
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean']
 
 
 def _validate_params(c, beta, scale):
@@ -72,9 +72,13 @@ def cdf(x, c, beta, scale):
         x = mp.mpf(x)
         if x < 0:
             return mp.zero
-        ex = mp.exp(x/scale)
-        p = -mp.powm1(beta / (beta - 1 + ex), c)
-        return p
+        z = x/scale
+        if beta == 1:
+            return -mp.expm1(-c*z)
+        else:
+            ex = mp.exp(z)
+            p = -mp.powm1(beta / (beta - 1 + ex), c)
+            return p
 
 
 def invcdf(p, c, beta, scale):
@@ -98,9 +102,13 @@ def sf(x, c, beta, scale):
         x = mp.mpf(x)
         if x < 0:
             return mp.one
-        ex = mp.exp(x/scale)
-        p = mp.power(beta / (beta - 1 + ex), c)
-        return p
+        z = x/scale
+        if beta == 1:
+            return mp.exp(-c*z)
+        else:
+            ex = mp.exp(z)
+            p = mp.power(beta / (beta - 1 + ex), c)
+            return p
 
 
 def invsf(p, c, beta, scale):
@@ -113,3 +121,16 @@ def invsf(p, c, beta, scale):
         r = mp.powm1(p, -1/c)
         x = scale * mp.log1p(beta * r)
         return x
+
+
+def mean(c, beta, scale):
+    """
+    Mean of the Gamma/Gompertz distribution.
+    """
+    with mp.extradps(5):
+        c, beta, scale = _validate_params(c, beta, scale)
+        if beta == 1:
+            return scale/c
+        if c == 1:
+            return scale * beta/(beta - 1) * mp.log(beta)
+        return scale/c * mp.hyp2f1(c, 1, c+1, (beta - 1)/beta)
