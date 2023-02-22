@@ -37,7 +37,7 @@ def print_impl_table(dists, function_names):
         print(f'{dist.__name__.split(".")[-1]:{funcname_col_width}s} ', end='')
         for funcname in function_names:
             flag = hasattr(dist, funcname)
-            print(f'{"🗹" if flag else "☐":3s}', end='')
+            print(f'{"✔" if flag else "-":3s}', end='')
         print()
 
 
