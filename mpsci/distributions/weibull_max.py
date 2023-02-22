@@ -19,7 +19,7 @@ from ._weibull_common import _validate_params, _mle_k_eqn1, _mle_k_eqn2
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'skewness', 'entropy',
+           'mode', 'mean', 'var', 'skewness', 'entropy',
            'nll', 'mle']
 
 
@@ -129,6 +129,19 @@ def invsf(p, k, loc, scale):
         z = -mp.power(-mp.log1p(-p), 1/k)
         x = scale*z + loc
         return x
+
+
+def mode(k, loc, scale):
+    """
+    Mode of the Weibull distribution (for maxima).
+
+    This is a three-parameter version of the distribution.  The more typical
+    two-parameter version has just the parameters k and scale.
+    """
+    with mp.extradps(5):
+        k, loc, scale = _validate_params(k, loc, scale)
+        m = scale * mp.power((k - 1)/k, 1/k) if k > 1 else 0
+        return loc - m
 
 
 def mean(k, loc, scale):
