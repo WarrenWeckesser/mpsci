@@ -1,4 +1,5 @@
 
+import pytest
 from mpmath import mp
 from mpsci.distributions import hypergeometric
 
@@ -34,3 +35,19 @@ def test_basic():
             assert mp.almosteq(c, expected_cdf[k])
             s = hypergeometric.sf(k, ntotal, ngood, nsample)
             assert mp.almosteq(s, 1 - expected_cdf[k])
+
+
+@pytest.mark.parametrize('ntotal, ngood, nsample, mean',
+                         [(9, 3, 3, 1.0), (16, 4, 6, 1.5)])
+def test_mean(ntotal, ngood, nsample, mean):
+    # The reference values were computed "by hand" from the formula.
+    m = hypergeometric.mean(ntotal, ngood, nsample)
+    assert mp.almosteq(m, mean)
+
+
+@pytest.mark.parametrize('ntotal, ngood, nsample, var',
+                         [(9, 3, 3, 0.5), (16, 4, 6, 0.75)])
+def test_var(ntotal, ngood, nsample, var):
+    # The reference value was computed "by hand" from the formula.
+    v = hypergeometric.var(ntotal, ngood, nsample)
+    assert mp.almosteq(v, var)
