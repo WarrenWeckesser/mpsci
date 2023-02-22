@@ -3,7 +3,7 @@ from mpmath import mp
 from mpsci.distributions import gamma_gompertz
 
 
-def test_basic_pdf_cdf():
+def test_basic_pdf_logpdf_cdf():
     with mp.workdps(50):
         x = 3 * mp.log(5)
         c = 2
@@ -13,6 +13,9 @@ def test_basic_pdf_cdf():
         # For the above values, the exact value of the PDF is 10/96.
         p = gamma_gompertz.pdf(x, c, beta, scale)
         assert mp.almosteq(p, mp.mpf('10/96'))
+
+        logp = gamma_gompertz.logpdf(x, c, beta, scale)
+        assert mp.almosteq(logp, mp.log(mp.mpf('10/96')))
 
         # For the above values, the exact value of the CDF is 3/4.
         p = gamma_gompertz.cdf(x, c, beta, scale)

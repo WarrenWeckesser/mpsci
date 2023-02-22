@@ -1,5 +1,5 @@
 """
-Gamma-Gompertz distribution
+Gamma/Gompertz distribution
 ---------------------------
 
 The distribution is described in:
@@ -18,41 +18,60 @@ The parameters used here map to the wikipedia article as follows::
 
 from mpmath import mp
 from ._common import _validate_p
+from ..fun import pow1pm1
 
 
-__all__ = ['pdf', 'cdf', 'invcdf', 'sf', 'invsf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf']
+
+
+def _validate_params(c, beta, scale):
+    if c <= 0:
+        raise ValueError('c must be greater than 0')
+    if beta <= 0:
+        raise ValueError('beta must be greater than 0')
+    if scale <= 0:
+        raise ValueError('scale must be greater than 0')
+    return mp.mpf(c), mp.mpf(beta), mp.mpf(scale)
 
 
 def pdf(x, c, beta, scale):
     """
-    Probability density function of the Gamma-Gompertz distribution.
+    Probability density function of the Gamma/Gompertz distribution.
     """
     with mp.extradps(5):
+        c, beta, scale = _validate_params(c, beta, scale)
+        x = mp.mpf(x)
         if x < 0:
             return mp.zero
-        x = mp.mpf(x)
-        beta = mp.mpf(beta)
-        c = mp.mpf(c)
-        scale = mp.mpf(scale)
-
-        ex = mp.exp(x/scale)
-        num = c * ex * mp.power(beta, c)
-        den = scale * mp.power(beta - 1 + ex, c + 1)
+        z = x/scale
+        num = c * mp.exp(z) * mp.power(beta, c)
+        den = scale * mp.power(beta + mp.expm1(z), c + 1)
         return num / den
+
+
+def logpdf(x, c, beta, scale):
+    """
+    Probability density function of the Gamma/Gompertz distribution.
+    """
+    with mp.extradps(5):
+        c, beta, scale = _validate_params(c, beta, scale)
+        x = mp.mpf(x)
+        if x < 0:
+            return mp.ninf
+        z = x/scale
+        return (mp.log(c) + z + c*mp.log(beta)
+                - (c + 1)*mp.log(beta + mp.expm1(z)) - mp.log(scale))
 
 
 def cdf(x, c, beta, scale):
     """
-    Cumulative distribution function of the Gamma-Gompertz distribution.
+    Cumulative distribution function of the Gamma/Gompertz distribution.
     """
     with mp.extradps(5):
+        c, beta, scale = _validate_params(c, beta, scale)
+        x = mp.mpf(x)
         if x < 0:
             return mp.zero
-        x = mp.mpf(x)
-        beta = mp.mpf(beta)
-        c = mp.mpf(c)
-        scale = mp.mpf(scale)
-
         ex = mp.exp(x/scale)
         p = -mp.powm1(beta / (beta - 1 + ex), c)
         return p
@@ -60,32 +79,25 @@ def cdf(x, c, beta, scale):
 
 def invcdf(p, c, beta, scale):
     """
-    Inverse CDF (i.e. quantile function) of the Gamma-Gompertz distribution.
+    Inverse CDF (i.e. quantile function) of the Gamma/Gompertz distribution.
     """
     with mp.extradps(5):
+        c, beta, scale = _validate_params(c, beta, scale)
         p = _validate_p(p)
-        beta = mp.mpf(beta)
-        c = mp.mpf(c)
-        scale = mp.mpf(scale)
-        # XXX It would be nice if the result could be formulated in a
-        # way that avoids computing 1 - p.
-        r = mp.powm1(1 - p, -1/c)
+        r = pow1pm1(-p, -1/c)
         x = scale * mp.log1p(beta * r)
         return x
 
 
 def sf(x, c, beta, scale):
     """
-    Cumulative distribution function of the Gamma-Gompertz distribution.
+    Cumulative distribution function of the Gamma/Gompertz distribution.
     """
     with mp.extradps(5):
+        c, beta, scale = _validate_params(c, beta, scale)
+        x = mp.mpf(x)
         if x < 0:
             return mp.one
-        x = mp.mpf(x)
-        beta = mp.mpf(beta)
-        c = mp.mpf(c)
-        scale = mp.mpf(scale)
-
         ex = mp.exp(x/scale)
         p = mp.power(beta / (beta - 1 + ex), c)
         return p
@@ -93,13 +105,11 @@ def sf(x, c, beta, scale):
 
 def invsf(p, c, beta, scale):
     """
-    Inverse survival function of the Gamma-Gompertz distribution.
+    Inverse survival function of the Gamma/Gompertz distribution.
     """
     with mp.extradps(5):
+        c, beta, scale = _validate_params(c, beta, scale)
         p = _validate_p(p)
-        beta = mp.mpf(beta)
-        c = mp.mpf(c)
-        scale = mp.mpf(scale)
         r = mp.powm1(p, -1/c)
         x = scale * mp.log1p(beta * r)
         return x
