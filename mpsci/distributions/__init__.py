@@ -9,8 +9,8 @@ as the corresponding implementations in `scipy.stats`.
 
 """
 
-from . import (argus, benktander1, benktander2, beta, betaprime, binomial,
-               burr12, chi, chi2, cosine, exponweib, f,
+from . import (argus, benktander1, benktander2, beta, betabinomial, betaprime,
+               binomial, burr12, chi, chi2, cosine, exponweib, f,
                fishers_noncentral_hypergeometric, folded_normal,
                gamma, gamma_gompertz,
                gauss_kuzmin, genexpon, genextreme, geninvgauss, genpareto,
