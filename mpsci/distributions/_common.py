@@ -19,6 +19,41 @@ def _validate_moment_n(n):
     return n
 
 
+def _validate_x_bounds(x, low=None, high=None,
+                       strict_low=False, strict_high=False,
+                       lowname=None, highname=None):
+    """
+    Verify that all the values in the sequence ``x`` are not less than ``loc``.
+
+    If ``strict`` is True, each value must be strictly greater then ``loc``.
+    """
+    if low is not None:
+        if strict_low:
+            bad = any(t <= low for t in x)
+        else:
+            bad = any(t < low for t in x)
+        if bad:
+            t1 = "or equal to " if not strict_low else ""
+            if lowname is None:
+                t2 = f'{low}'
+            else:
+                t2 = f'{lowname} ({low})'
+            raise ValueError(f'All values in x must be greater than {t1}{t2}.')
+    if high is not None:
+        if strict_high:
+            bad = any(t >= high for t in x)
+        else:
+            bad = any(t > high for t in x)
+        if bad:
+            t1 = "or equal to " if not strict_high else ""
+            if highname is None:
+                t2 = f'{high}'
+            else:
+                t2 = f'{highname} ({high})'
+            raise ValueError(f'All values in x must be less than {t1}{t2}.')
+    return [mp.mpf(t) for t in x]
+
+
 def _median(x):
     """
     Compute the median of the sequence x.

@@ -20,6 +20,7 @@ infinity as x approaches 0.
 
 from mpmath import mp
 from mpsci import stats
+from ._common import _validate_x_bounds
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf',
@@ -121,11 +122,6 @@ def entropy(nu, loc=0, scale=1):
                 + nu + mp.loggamma(nu) - mp.log(2) + mp.log(scale))
 
 
-def _validate_x(x, loc=0):
-    if any(t <= loc for t in x):
-        raise ValueError(f'All values in x must be greater than loc ({loc}).')
-
-
 def nll(x, nu, loc, scale):
     """
     Negative log-likelihood function for the Nakagami distribution.
@@ -133,7 +129,7 @@ def nll(x, nu, loc, scale):
     n = len(x)
     with mp.extradps(5):
         nu, loc, scale = _validate_params(nu, loc, scale)
-        _validate_x(x, loc=loc)
+        x = _validate_x_bounds(x, low=loc, strict_low=True, lowname='loc')
         z = [(t - loc)/scale for t in x]
         logsum = mp.fsum([mp.log(t) for t in z])
         sqsum = mp.fsum([t**2 for t in z])
@@ -149,7 +145,7 @@ def nll_grad(x, nu, loc, scale):
     n = len(x)
     with mp.extradps(5):
         nu, loc, scale = _validate_params(nu, loc, scale)
-        _validate_x(x, loc=loc)
+        x = _validate_x_bounds(x, low=loc, strict_low=True, lowname='loc')
         xloc = [(t - loc) for t in x]
         dldnu = (n*(1 + mp.log(nu) - mp.digamma(nu))
                  + 2*mp.fsum([mp.log(t/scale) for t in xloc])
@@ -195,13 +191,14 @@ def mle(x, nu=None, loc=None, scale=None):
 
     if loc is not None:
         # loc is fixed; handle this by subtracting loc from x.
-        _validate_x(x, loc)
         with mp.extradps(5):
+            x = _validate_x_bounds(x, low=loc, strict_low=True, lowname='loc')
             loc0 = mp.mpf(loc)
             x = [t - loc0 for t in x]
     else:
         raise ValueError('Fitting `loc` is not implemented yet. '
-                         '`loc` must be given.')
+                         '`loc` must be given.  All values in `x` must'
+                         'be strictly greater than `loc`.')
 
     # If here, loc is fixed, and we've handled that by shifting x.
     # Either nu or scale (or both) are not fixed.

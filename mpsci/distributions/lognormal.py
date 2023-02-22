@@ -8,7 +8,7 @@ parameters as used in `scipy.stats.lognorm`.
 """
 
 from mpmath import mp
-from ._common import _validate_p, _validate_moment_n
+from ._common import _validate_p, _validate_moment_n, _validate_x_bounds
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
@@ -163,12 +163,6 @@ def noncentral_moment(n, mu=0, sigma=1):
 # XXX Add standard errors and confidence intervals for the fitted parameters.
 
 
-def _validate_x(x):
-    if any(t <= 0 for t in x):
-        raise ValueError('All values in x must be greater than 0.')
-    return [mp.mpf(t) for t in x]
-
-
 def mle(x):
     """
     Log-normal distribution maximum likelihood parameter estimation.
@@ -178,7 +172,7 @@ def mle(x):
     Returns (mu, sigma).
     """
     with mp.extradps(5):
-        x = _validate_x(x)
+        x = _validate_x_bounds(x, low=0, strict_low=True)
         lnx = [mp.log(t) for t in x]
         N = len(x)
         meanx = sum(lnx) / N
@@ -196,7 +190,7 @@ def mom(x):
     Returns (mu, sigma).
     """
     with mp.extradps(5):
-        x = _validate_x(x)
+        x = _validate_x_bounds(x, low=0, strict_low=True)
         logsumx = mp.log(mp.fsum(x))
         logsumx2 = mp.log(mp.fsum([mp.mpf(t)**2 for t in x]))
         logn = mp.log(len(x))

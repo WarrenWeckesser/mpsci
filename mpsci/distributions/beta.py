@@ -5,7 +5,8 @@ Beta probability distribution
 """
 
 from mpmath import mp
-from ._common import _validate_p, _validate_moment_n, _find_bracket
+from ._common import (_validate_p, _validate_moment_n, _validate_x_bounds,
+                      _find_bracket)
 from .. import fun as _fun
 from ..stats import mean as _mean, var as _var
 
@@ -213,6 +214,7 @@ def nll(x, a, b):
     """
     Negative log-likelihood for the beta distribution.
     """
+    x = _validate_x_bounds(x, low=0, high=1, strict_low=True, strict_high=True)
     return -mp.fsum([logpdf(t, a, b) for t in x])
 
 
@@ -221,16 +223,11 @@ def _beta_mle_func(a, b, n, s):
     return s - n * (-psiab + mp.digamma(a))
 
 
-def _validate_x(x):
-    if any((t <= 0 or t >= 1) for t in x):
-        raise ValueError('Values in x must greater than 0 and less than 1')
-
-
 def mle(x, a=None, b=None):
     """
     Maximum likelihood estimation for the beta distribution.
     """
-    _validate_x(x)
+    x = _validate_x_bounds(x, low=0, high=1, strict_low=True, strict_high=True)
     n = len(x)
     xbar = _mean(x)
 
@@ -274,8 +271,9 @@ def mom(x):
 
     Returns (a, b).
     """
-    _validate_x(x)
     with mp.extradps(5):
+        x = _validate_x_bounds(x, low=0, high=1,
+                               strict_low=True, strict_high=True)
         M1 = _mean(x)
         M2 = _mean([mp.mpf(t)**2 for t in x])
         c = (M1 - M2) / (M2 - M1**2)

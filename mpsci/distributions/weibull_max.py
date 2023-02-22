@@ -14,7 +14,7 @@ This is the same distribution as:
 
 from mpmath import mp
 from ..stats import pmean
-from ._common import _validate_p, _median
+from ._common import _validate_p, _validate_x_bounds, _median
 from ._weibull_common import _validate_params, _mle_k_eqn1, _mle_k_eqn2
 
 
@@ -214,18 +214,13 @@ def entropy(k, loc, scale):
         return mp.euler*(1 - 1/k) + mp.log(scale) - mp.log(k) + 1
 
 
-def _validate_x(x, loc=0):
-    if any(t >= loc for t in x):
-        raise ValueError(f'All values in x must be less than loc ({loc}).')
-
-
 def nll(x, k, loc, scale):
     """
     Negative log-likelihood function for the Weibull(min) distribution.
     """
     _validate_params(k, loc, scale)
-    _validate_x(x, loc=loc)
     with mp.extradps(5):
+        x = _validate_x_bounds(x, high=loc, strict_high=True, highname='loc')
         return -mp.fsum([logpdf(t, k, loc, scale) for t in x])
 
 
@@ -239,8 +234,8 @@ def mle(x, k=None, loc=None, scale=None):
     """
     if loc is None:
         raise ValueError("The 'loc' parameter must be given explicitly.")
-    _validate_x(x, loc)
     with mp.extradps(5):
+        x = _validate_x_bounds(x, high=loc, strict_high=True, highname='loc')
         # Transform x to loc - x.  After that transformation, this
         # function is the same as weibull_min. (XXX FIXME: There is some
         # D.R.Y. clean up to be done here.)
