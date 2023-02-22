@@ -32,7 +32,7 @@ _docstring_re_subs = [
 ]
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'variance']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'var']
 
 
 def _validate_nu(nu):
@@ -131,7 +131,7 @@ def mode(nu):
         return 1 / (nu + 2)
 
 
-def variance(nu):
+def var(nu):
     """
     Variance of the inverse chi-square distribution.
 
@@ -145,7 +145,7 @@ def variance(nu):
         return 2/(nu - 2)**2 / (nu - 4) if nu > 4 else mp.nan
 
 
-variance._docstring_re_subs = [
+var._docstring_re_subs = [
     (r'     *2.*4\)\)$',
      '\n'.join([r'.. math::',
                 r'        \\frac{2}{(\\nu - 2)^2 (\\nu - 4)}',

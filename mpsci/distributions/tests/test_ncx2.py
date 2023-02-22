@@ -34,6 +34,6 @@ def test_basic_cdf_sf():
 
 
 @mp.workdps(50)
-def test_basic_mean_variance():
+def test_basic_mean_var():
     assert ncx2.mean(2, 3) == 5
-    assert ncx2.variance(2, 3) == 16
+    assert ncx2.var(2, 3) == 16

@@ -73,9 +73,9 @@ def test_mean():
         assert invchi2.mean(4) == mp.mpf('0.5')
 
 
-def test_variance():
+def test_var():
     with mp.workdps(50):
-        assert mp.almosteq(invchi2.variance(6), mp.one/16)
+        assert mp.almosteq(invchi2.var(6), mp.one/16)
 
 
 def test_mode():

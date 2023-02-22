@@ -6,7 +6,7 @@ Chi-square distribution
 from mpmath import mp
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'variance',
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'var',
            'entropy']
 
 
@@ -88,7 +88,7 @@ def mode(k):
         return max(k - 2, mp.zero)
 
 
-def variance(k):
+def var(k):
     """
     Variance of the chi-square distribution.
     """

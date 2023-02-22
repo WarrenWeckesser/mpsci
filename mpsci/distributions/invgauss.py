@@ -15,7 +15,7 @@ from ._common import _validate_p
 __all__ = ['pdf', 'logpdf',
            'cdf', 'logcdf', 'invcdf',
            'sf', 'logsf', 'invsf',
-           'mean', 'mode', 'variance', 'entropy']
+           'mean', 'mode', 'var', 'entropy']
 
 
 def _validate_params(mu, loc, scale):
@@ -186,7 +186,7 @@ def mode(mu, loc=0, scale=1):
         return scale*m + loc
 
 
-def variance(mu, loc=0, scale=1):
+def var(mu, loc=0, scale=1):
     """
     Variance of the inverse Gaussian distribution.
     """

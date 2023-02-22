@@ -73,10 +73,10 @@ def test_basic_sf():
         assert mp.almosteq(chi2.sf(50, 25/2), expected)
 
 
-def test_basic_mean_variance():
+def test_basic_mean_var():
     with mp.workdps(50):
         assert chi2.mean(5) == 5
-        assert chi2.variance(5) == 10
+        assert chi2.var(5) == 10
 
 
 def test_mode():

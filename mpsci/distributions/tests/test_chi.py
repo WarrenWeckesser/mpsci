@@ -52,9 +52,9 @@ def test_basic_mean():
         assert mp.almosteq(chi.mean(3), 2*mp.sqrt(2/mp.pi))
 
 
-def test_basic_variance():
+def test_basic_var():
     with mp.workdps(50):
-        assert mp.almosteq(chi.variance(3), 3 - 8/mp.pi)
+        assert mp.almosteq(chi.var(3), 3 - 8/mp.pi)
 
 
 def test_basic_mode():
