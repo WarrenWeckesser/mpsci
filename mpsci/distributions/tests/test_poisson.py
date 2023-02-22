@@ -41,6 +41,20 @@ def test_sf(k, lam):
     assert abs(sf - expected) < 1e-40
 
 
+def test_skewness():
+    with mp.workdps(25):
+        lam = 16
+        sk = poisson.skewness(lam)
+        assert mp.almosteq(sk, 0.25)
+
+
+def test_kurtosis():
+    with mp.workdps(25):
+        lam = 8
+        kurt = poisson.kurtosis(lam)
+        assert mp.almosteq(kurt, 0.125)
+
+
 def test_mle():
     with mp.workdps(40):
         sample = [2.0, 4.0, 8.0, 16.0]

@@ -7,7 +7,8 @@ Poisson distribution
 from mpmath import mp
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var', 'mle']
+__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var', 'skewness', 'kurtosis',
+           'mle']
 
 
 def pmf(k, lam):
@@ -66,6 +67,20 @@ def var(lam):
     Variance of the Poisson distribution.
     """
     return mp.mpf(lam)
+
+
+def skewness(lam):
+    """
+    Skewness of the Poisson distribution.
+    """
+    return 1/mp.sqrt(mp.mpf(lam))
+
+
+def kurtosis(lam):
+    """
+    Excess kurtosis of the Poisson distribution.
+    """
+    return 1/mp.mpf(lam)
 
 
 def mle(x):
