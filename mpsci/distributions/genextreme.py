@@ -7,10 +7,11 @@ of the corresponding shape parameter in `scipy.stats.genextreme`.
 """
 
 from mpmath import mp
+from ._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var', 'skewness',
-           'kurtosis']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'mean', 'var', 'skewness', 'kurtosis']
 
 
 def _validate_params(xi, mu, sigma):
@@ -26,6 +27,13 @@ def pdf(x, xi, mu=0, sigma=1):
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
 
+        if xi != 0:
+            bound = mu - sigma/xi
+            if xi > 0 and x <= bound:
+                return mp.zero
+            if xi < 0 and x >= bound:
+                return mp.zero
+
         # Formula from wikipedia, which has a sign convention for xi that
         # is the opposite of scipy's shape parameter.
         z = (x - mu)/sigma
@@ -33,7 +41,7 @@ def pdf(x, xi, mu=0, sigma=1):
             t = mp.power(1 + z*xi, -1/xi)
         else:
             t = mp.exp(-z)
-        p = mp.power(t, xi+1) * mp.exp(-t) / sigma
+        p = mp.power(t, xi + 1) * mp.exp(-t) / sigma
         return p
 
 
@@ -43,6 +51,14 @@ def logpdf(x, xi, mu=0, sigma=1):
     """
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
+
+        if xi != 0:
+            bound = mu - sigma/xi
+            if xi > 0 and x <= bound:
+                return mp.ninf
+            if xi < 0 and x >= bound:
+                return mp.ninf
+
         # Formula from wikipedia, which has a sign convention for xi that
         # is the opposite of scipy's shape parameter.
         z = (x - mu)/sigma
@@ -62,6 +78,14 @@ def cdf(x, xi, mu=0, sigma=1):
     """
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
+
+        if xi != 0:
+            bound = mu - sigma/xi
+            if xi > 0 and x <= bound:
+                return mp.zero
+            if xi < 0 and x >= bound:
+                return mp.one
+
         # Formula from wikipedia, which has a sign convention for xi that
         # is the opposite of scipy's shape parameter.
         if xi != 0:
@@ -71,12 +95,34 @@ def cdf(x, xi, mu=0, sigma=1):
         return mp.exp(-t)
 
 
+def invcdf(p, xi, mu=0, sigma=1):
+    """
+    Inverse of the CDF of the generalized extreme value distribution.
+    """
+    with mp.extradps(5):
+        p = _validate_p(p)
+        xi, mu, sigma = _validate_params(xi, mu, sigma)
+        if xi != 0:
+            x = mu + (sigma/xi)*mp.powm1(-mp.log(p), -xi)
+        else:
+            x = mu - sigma*mp.log(-mp.log(p))
+        return x
+
+
 def sf(x, xi, mu=0, sigma=1):
     """
     Generalized extreme value distribution survival function.
     """
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
+
+        if xi != 0:
+            bound = mu - sigma/xi
+            if xi > 0 and x <= bound:
+                return mp.one
+            if xi < 0 and x >= bound:
+                return mp.zero
+
         # Formula from wikipedia, which has a sign convention for xi that
         # is the opposite of scipy's shape parameter.
         if xi != 0:
@@ -84,6 +130,20 @@ def sf(x, xi, mu=0, sigma=1):
         else:
             t = mp.exp(-(x - mu)/sigma)
         return -mp.expm1(-t)
+
+
+def invsf(p, xi, mu=0, sigma=1):
+    """
+    Inverse of the survival function of the generalized extreme value dist.
+    """
+    with mp.extradps(5):
+        p = _validate_p(p)
+        xi, mu, sigma = _validate_params(xi, mu, sigma)
+        if xi != 0:
+            x = mu + (sigma/xi)*mp.powm1(-mp.log1p(-p), -xi)
+        else:
+            x = mu - sigma*mp.log(-mp.log1p(-p))
+        return x
 
 
 def mean(xi, mu=0, sigma=1):
