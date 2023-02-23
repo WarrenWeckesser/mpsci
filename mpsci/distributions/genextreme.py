@@ -7,11 +7,12 @@ of the corresponding shape parameter in `scipy.stats.genextreme`.
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_moment_n
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'skewness', 'kurtosis']
+           'mean', 'var', 'skewness', 'kurtosis', 'entropy',
+           'noncentral_moment']
 
 
 def _validate_params(xi, mu, sigma):
@@ -214,3 +215,47 @@ def kurtosis(xi, mu=0, sigma=1):
             return num/den
         else:
             return mp.inf
+
+
+def entropy(xi, mu=0, sigma=1):
+    """
+    Differential entropy of the generalized extreme value distribution.
+    """
+    with mp.extradps(5):
+        xi, mu, sigma = _validate_params(xi, mu, sigma)
+        return mp.log(sigma) + mp.euler*(xi + 1) + 1
+
+
+def _standard_noncentral_moment(n, xi):
+    with mp.extradps(5):
+        if n == 0:
+            return mp.one
+        if xi < mp.one/n:
+            v = [mp.binomial(n, k) * (-1)**k * mp.gamma(1 - xi*k)
+                 for k in range(n+1)]
+            return mp.fsum(v)/(-xi)**n
+        else:
+            return mp.nan
+
+
+def noncentral_moment(n, xi, mu=0, sigma=1):
+    """
+    Noncentral moment of the generalized extreme value distribution.
+
+    The value is also known as the raw moment.
+    """
+    # Except for the check xi >= 1/n, this is a generic calculation that
+    # could be applied to any loc/scale family if there is a function for
+    # the standard (i.e. loc=0, scale=1) noncentral moment.
+    with mp.extradps(5):
+        _validate_moment_n(n)
+        xi, mu, sigma = _validate_params(xi, mu, sigma)
+        if n == 0:
+            return mp.one
+        if xi >= mp.one/n:
+            # Maybe return inf if xi == 1/n?
+            return mp.nan
+        terms = [(mp.binomial(n, k) * mp.power(mu, n - k) * mp.power(sigma, k)
+                  * _standard_noncentral_moment(k, xi))
+                 for k in range(n + 1)]
+        return mp.fsum(terms)

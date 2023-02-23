@@ -108,3 +108,19 @@ def test_var_xi_zero():
 @mp.workdps(50)
 def test_inf_var():
     assert genextreme.var(2, 3, 2) == mp.inf
+
+
+@pytest.mark.parametrize('xi, mu, sigma',
+                         [(0.25, 0, 1),
+                          (-3, 2, 5)])
+@mp.workdps(50)
+def test_noncentral_moment_trivial_cases(xi, mu, sigma):
+    mom0 = genextreme.noncentral_moment(0, xi, mu, sigma)
+    assert mom0 == 1
+
+    mom1 = genextreme.noncentral_moment(1, xi, mu, sigma)
+    assert mp.almosteq(mom1, genextreme.mean(xi, mu, sigma))
+
+    mom2 = genextreme.noncentral_moment(2, xi, mu, sigma)
+    altmom2 = genextreme.var(xi, mu, sigma) + genextreme.mean(xi, mu, sigma)**2
+    assert mp.almosteq(mom2, altmom2)
