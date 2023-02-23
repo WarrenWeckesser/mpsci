@@ -1,6 +1,34 @@
 """
 Generalized inverse Gaussian distribution
 -----------------------------------------
+
+The parametrization used here is not the same as the parametrization
+used in the wikipedia article
+
+    https://en.wikipedia.org/wiki/Generalized_inverse_Gaussian_distribution
+
+A location parameters is not included in the parameters used in the wikipedia
+article.
+
+Given the parmeters (a, b, p) used in the wikipedia article, the corresponding
+parameters used here are:
+
+    mpsci     wikipedia
+    p      =  p
+    b      =  sqrt(a*b)
+    loc    =  0
+    scale  =  sqrt(b/a)
+
+Going the other way, and assuming the location is zero, the formulas to
+convert from the parameters use here to those used in the wikipedia article
+are:
+
+
+    wikipedia     mpsci
+    a          =  b/scale
+    b          =  scale*b
+    p          =  p
+
 """
 
 import re
@@ -15,7 +43,7 @@ def _validate_params(p, b, loc, scale):
     return mp.mpf(p), mp.mpf(b), mp.mpf(loc), mp.mpf(scale)
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'entropy']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mode', 'mean', 'var', 'entropy']
 
 
 _latex_pdf = r"""
@@ -203,6 +231,18 @@ _mode_latex = r"""
 mode._docstring_re_subs = [
     (r'[ ]+p.*  b', _mode_latex, 0, re.DOTALL),
 ]
+
+
+def var(p, b, loc=0, scale=1):
+    """
+    Variance of the generalized inverse Gaussian distribution.
+    """
+    with mp.extradps(5):
+        p, b, loc, scale = _validate_params(p, b, loc, scale)
+        kpb = mp.besselk(p, b)
+        r1 = mp.besselk(p + 2, b) / kpb
+        r2 = mp.besselk(p + 1, b) / kpb
+        return scale**2 * (r1 - r2**2)
 
 
 def _besselk_nderiv(n, k):
