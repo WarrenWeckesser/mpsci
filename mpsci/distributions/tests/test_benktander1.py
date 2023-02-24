@@ -1,4 +1,5 @@
 
+import pytest
 from mpmath import mp
 from mpsci.distributions import benktander1
 
@@ -49,6 +50,15 @@ def test_sf_invsf():
         assert mp.almosteq(p, expected)
         x1 = benktander1.invsf(expected, 2, 3)
         assert mp.almosteq(x1, x)
+
+
+@pytest.mark.parametrize('p, expected', [(0, 1), (1, 'inf')])
+def test_invcdf_invsf_bounds(p, expected):
+    with mp.workdps(50):
+        x = benktander1.invcdf(p, 2, 3)
+        assert x == mp.mpf(expected)
+        x = benktander1.invsf(1 - p, 2, 3)
+        assert x == mp.mpf(expected)
 
 
 def test_mean():

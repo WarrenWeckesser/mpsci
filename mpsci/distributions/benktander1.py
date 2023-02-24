@@ -91,6 +91,10 @@ def invcdf(p, a, b):
     with mp.extradps(5):
         p = _validate_p(p)
         a, b = _validate_ab(a, b)
+        if p == 0:
+            return mp.one
+        if p == 1:
+            return mp.inf
         w = mp.log1p(-p)
         zlow = (-(a + mp.one) + mp.sqrt((a + mp.one)**2 - 4*b*w)) / (2*b)
         q = a + mp.one - 2*b/a
@@ -110,6 +114,10 @@ def invsf(p, a, b):
     with mp.extradps(5):
         p = _validate_p(p)
         a, b = _validate_ab(a, b)
+        if p == 0:
+            return mp.inf
+        if p == 1:
+            return mp.one
         w = mp.log(p)
         zlow = (-(a + mp.one) + mp.sqrt((a + mp.one)**2 - 4*b*w)) / (2*b)
         q = a + mp.one - 2*b/a
