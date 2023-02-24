@@ -19,13 +19,24 @@ def _validate_moment_n(n):
     return n
 
 
+def _seq_to_mp(x):
+    """
+    Convert a 1D sequence of values in x to a sequence of mpmath numerial
+    values.  ``mp.mpmathify`` can handle the various integer and float
+    types in NumPy, and objects such as ``fractions.Fraction``.
+    """
+    return [mp.mpmathify(t) for t in x]
+
+
 def _validate_x_bounds(x, low=None, high=None,
                        strict_low=False, strict_high=False,
                        lowname=None, highname=None):
     """
-    Verify that all the values in the sequence ``x`` are not less than ``loc``.
+    Verify that all values in the sequence ``x`` are within the given bounds.
 
-    If ``strict`` is True, each value must be strictly greater then ``loc``.
+    If ``strict_low`` is True, each value must be strictly greater than
+    ``low``.  Similarly, if ``strict_high`` is True, each value must be
+    strictly less than ``high``.
     """
     if low is not None:
         if strict_low:
@@ -51,7 +62,7 @@ def _validate_x_bounds(x, low=None, high=None,
             else:
                 t2 = f'{highname} ({high})'
             raise ValueError(f'All values in x must be less than {t1}{t2}.')
-    return [mp.mpf(t) for t in x]
+    return _seq_to_mp(x)
 
 
 def _median(x):

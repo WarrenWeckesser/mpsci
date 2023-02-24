@@ -12,6 +12,7 @@ This is the same distribution as:
 from mpmath import mp
 from .. import stats
 from mpsci.stats import mean as _mean
+from ._common import _seq_to_mp
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean', 'var',
@@ -239,7 +240,7 @@ def mle(x, loc=None, scale=None):
     (mpf('13.18226169025112165358'), mpf('2.0'))
     """
     with mp.extradps(5):
-        x = [mp.mpf(xi) for xi in x]
+        x = _seq_to_mp(x)
 
         if scale is None and loc is not None:
             # Estimate scale with fixed loc.

@@ -239,8 +239,8 @@ def mle(x, k=None, loc=None, scale=None):
         # Transform x to loc - x.  After that transformation, this
         # function is the same as weibull_min. (XXX FIXME: There is some
         # D.R.Y. clean up to be done here.)
-        loc = mp.mpf(loc)
-        x = [-mp.mpf(1.0*t) + loc for t in x]
+        loc = mp.mpmathify(loc)
+        x = [-t + loc for t in x]
 
         if k is not None and k <= 0:
             raise ValueError('k must be greater than 0')

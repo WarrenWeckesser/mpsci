@@ -240,8 +240,8 @@ def mle(x, k=None, loc=None, scale=None):
     with mp.extradps(5):
         x = _validate_x_bounds(x, low=loc, strict_low=True, lowname='loc')
         # Shift x by loc.
-        loc = mp.mpf(loc)
-        x = [mp.mpf(t) - loc for t in x]
+        loc = mp.mpmathify(loc)
+        x = [t - loc for t in x]
 
         if k is not None and k <= 0:
             raise ValueError('k must be greater than 0')
