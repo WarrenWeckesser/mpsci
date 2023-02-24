@@ -4,7 +4,7 @@ Normal distribution
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _seq_to_mp
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'mle', 'entropy']
@@ -99,7 +99,7 @@ def mle(x):
 
     Returns (mu, sigma).
     """
-    x = [mp.mpf(t) for t in x]
+    x = _seq_to_mp(x)
     N = len(x)
     meanx = sum(x) / N
     var = sum((xi - meanx)**2 for xi in x) / N

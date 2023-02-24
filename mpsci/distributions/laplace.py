@@ -8,6 +8,7 @@ The parameters are mu (the location) and b (the scale).
 
 from mpmath import mp
 from mpsci.stats import mean as _mean
+from ._common import _seq_to_mp
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
@@ -140,14 +141,14 @@ def mle(x, mu=None, b=None):
         if mu is not None:
             # mu is fixed.
             mu_est = mp.mpf(mu)
-            x = list(mp.mpf(t) for t in x)
+            x = _seq_to_mp(x)
         else:
             # The MLE for mu (the location) is the median of x.
             # When len(x) is even, it is more correct to say that
             # the median is *an* estimate rather than *the* estimate,
             # since the likelihood function does not have a unique
             # maximum in this case.
-            x = sorted(mp.mpf(t) for t in x)
+            x = sorted(_seq_to_mp(x))
             n = len(x)
             m, r = divmod(n, 2)
             if r == 1:

@@ -6,7 +6,7 @@ These functions are for the uniform distribution on [a, b].
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _seq_to_mp
 from ..stats import mean as _mean
 
 
@@ -142,7 +142,7 @@ def mle(x):
     Returns (a, b).
     """
     with mp.extradps(5):
-        x = [mp.mpf(t) for t in x]
+        x = _seq_to_mp(x)
         return min(x), max(x)
 
 
@@ -153,7 +153,8 @@ def mom(x):
     Returns (a, b).
     """
     with mp.extradps(5):
+        x = _seq_to_mp(x)
         M1 = _mean(x)
-        M2 = _mean([mp.mpf(t)**2 for t in x])
+        M2 = _mean([t**2 for t in x])
         v = mp.sqrt(3*(M2 - M1**2))
         return M1 - v, M1 + v

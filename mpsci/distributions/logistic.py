@@ -8,6 +8,7 @@ The logistic distribution is also known as the sech-squared distribution.
 
 from mpmath import mp
 from mpsci.stats import mean as _mean
+from ._common import _seq_to_mp
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
@@ -128,6 +129,7 @@ def mom(x):
     Returns (loc, scale).
     """
     with mp.extradps(5):
+        x = _seq_to_mp(x)
         M1 = _mean(x)
-        M2 = _mean([mp.mpf(t)**2 for t in x])
+        M2 = _mean([t**2 for t in x])
         return M1, mp.sqrt(3*(M2 - M1**2))/mp.pi

@@ -275,7 +275,7 @@ def mom(x):
         x = _validate_x_bounds(x, low=0, high=1,
                                strict_low=True, strict_high=True)
         M1 = _mean(x)
-        M2 = _mean([mp.mpf(t)**2 for t in x])
+        M2 = _mean([t**2 for t in x])
         c = (M1 - M2) / (M2 - M1**2)
         a = M1*c
         b = (1 - M1)*c
