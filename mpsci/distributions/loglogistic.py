@@ -13,10 +13,11 @@ shape parameter.
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_moment_n
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
+           'noncentral_moment']
 
 
 def _validate_params(beta, scale):
@@ -143,3 +144,20 @@ def var(beta, scale):
             return scale**2 * (1/mp.sincpi(2/beta)
                                - 1/mp.sincpi(1/beta)**2)
     return mp.nan
+
+
+def noncentral_moment(n, beta, scale):
+    """
+    Noncentral moment (i.e. raw moment) of the log-logistic distribution.
+
+    ``n`` is the order of the moment to be computed.
+
+    The moment does not exist if ``n >= beta``.  ``nan`` is returned in
+    that case.
+    """
+    with mp.extradps(5):
+        n = _validate_moment_n(n)
+        beta, scale = _validate_params(beta, scale)
+        if n >= beta:
+            return mp.nan
+        return scale**n / mp.sinc(mp.pi*n/beta)
