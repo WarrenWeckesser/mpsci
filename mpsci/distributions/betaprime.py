@@ -6,12 +6,13 @@ See https://en.wikipedia.org/wiki/Beta_prime_distribution
 
 """
 from mpmath import mp
-from ._common import _validate_p, _find_bracket
+from ._common import _validate_p, _validate_moment_n, _find_bracket
 from .. import fun as _fun
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'mode', 'var', 'skewness']
+           'mean', 'mode', 'var', 'skewness',
+           'noncentral_moment']
 
 
 def _validate_a_b(a, b):
@@ -173,3 +174,18 @@ def skewness(a, b):
         t1 = 2 * (2*a + b - 1) / (b - 3)
         t2 = mp.sqrt((b - 2) / (a*(a + b - 1)))
         return t1 * t2
+
+
+def noncentral_moment(n, a, b):
+    """
+    Noncentral moment (i.e. raw moment) of the beta prime distribution.
+
+    ``n`` is the order of the moment.  The moment is not defined if
+    ``n >= b``; ``nan`` is returned in that case.
+    """
+    with mp.extradps(5):
+        n = _validate_moment_n(n)
+        a, b = _validate_a_b(a, b)
+        if n >= b:
+            return mp.nan
+        return mp.beta(a + n, b - n) / mp.beta(a, b)
