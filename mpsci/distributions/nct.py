@@ -7,10 +7,12 @@ noncentrality `nc`) are implemented.
 
 """
 
+from functools import lru_cache
 from mpmath import mp
+from ._common import _validate_moment_n
 
 
-__all__ = ['pdf', 'mean', 'var']
+__all__ = ['pdf', 'mean', 'var', 'noncentral_moment']
 
 
 def pdf(x, df, nc):
@@ -76,3 +78,41 @@ def var(df, nc):
         nc = mp.mpf(nc)
         c = mp.exp(mp.loggamma((df - 1)/2) - mp.loggamma(df/2))
         return df/(df - 2) * (1 + nc**2) - df/2 * nc**2 * c**2
+
+
+@lru_cache
+def _poly_coeffs(k):
+    """
+    Generate the coefficients of the polynomial that is the
+    result of the expression exp(-x**2/2) * (d^k/dx^k)exp(x**2/2).
+    """
+    if k == 0:
+        return [1]
+    c = [0, 1]
+    if k == 1:
+        return c
+    for _ in range(2, k+1):
+        c = [a + b for a, b in zip([i*j for i, j in enumerate(c[1:], start=1)],
+                                   [0] + c[:-2])]
+        c.extend([0, 1])
+    return c
+
+
+def noncentral_moment(n, df, nc):
+    """
+    Noncentral moment (i.e. raw moment) for the noncentral t distribution.
+
+    n is the order of the moment to be computed.  The moment is only
+    defined for n < df.  If n >= df, nan is returned.
+    """
+    n = _validate_moment_n(n)
+    with mp.extradps(5):
+        df = mp.mpf(df)
+        nc = mp.mpmathify(nc)
+        if df <= n:
+            return mp.nan
+        c = _poly_coeffs(n)
+        return (mp.exp((n/2)*mp.log(df/2)
+                       + mp.loggamma((df - n)/2)
+                       - mp.loggamma(df/2))
+                * mp.polyval(c[::-1], nc))

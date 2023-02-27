@@ -1,4 +1,4 @@
-
+import pytest
 from mpmath import mp
 from mpsci.distributions import nct
 
@@ -28,3 +28,26 @@ def test_basic_var():
         #   Variance[NoncentralStudentTDistribution[7, 1/2]]
         expected = mp.mpf(7)/4 - 224/(225*mp.pi)
         assert mp.almosteq(v, expected)
+
+
+# The exected values in the following were computed by numerical integration,
+# e.g. for n=3, df=4, mu=1:
+#
+# >>> mp.dps = 60
+# >>> mp.quad(lambda t: t**3*nct.pdf(t, 4, 1.0), [-mp.inf, 1, mp.inf])
+# mpf('20.0530261970480040193261222784883620240558939248795065330393877')
+#
+# For this numerical integration, mp.dps generally needs to be at least
+# twice as large as the actual desired precision of the result.
+# Because the implementation of the pdf function is currently slow, the
+# numerical integration to compute the noncentral moment is *extremely*
+# slow, so the expected values have been precomputed.
+#
+@pytest.mark.parametrize('n, df, nc, val',
+                         [(3, 3.5, 2.0, '127.8560034015895779185670077'),
+                          (3, 4.0, 1.0, '20.05302619704800401932612228'),
+                          (6, 9.0, 0.125, '109.050005558558872767857143')])
+def test_noncentral_moment(n, df, nc, val):
+    with mp.workdps(25):
+        m = nct.noncentral_moment(n, df, nc)
+        assert mp.almosteq(m, mp.mpf(val))
