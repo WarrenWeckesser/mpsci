@@ -83,14 +83,16 @@ def var(df, nc):
 @lru_cache
 def _poly_coeffs(k):
     """
-    Generate the coefficients of the polynomial that is the
-    result of the expression exp(-x**2/2) * (d^k/dx^k)exp(x**2/2).
+    Generate the coefficients of the polynomial that is the result of
+    the expression exp(-x**2/2) * (d^k/dx^k)exp(x**2/2).
+
+    The coefficients are returned in increasing order of the power.
+    That is, the return value [c0, c1, c2, c3] represents the polynomial
+    c0 + c1*x + c2*x**2 + c3*x**3.
     """
     if k == 0:
         return [1]
     c = [0, 1]
-    if k == 1:
-        return c
     for _ in range(2, k+1):
         c = [a + b for a, b in zip([i*j for i, j in enumerate(c[1:], start=1)],
                                    [0] + c[:-2])]
@@ -108,7 +110,7 @@ def noncentral_moment(n, df, nc):
     n = _validate_moment_n(n)
     with mp.extradps(5):
         df = mp.mpf(df)
-        nc = mp.mpmathify(nc)
+        nc = mp.mpf(nc)
         if df <= n:
             return mp.nan
         c = _poly_coeffs(n)
