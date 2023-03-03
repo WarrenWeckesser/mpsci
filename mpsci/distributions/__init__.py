@@ -19,5 +19,5 @@ from . import (argus, benktander1, benktander2, beta, betabinomial, betaprime,
                loggamma, logistic, loglogistic, lognormal, logseries, maxwell,
                multivariate_hypergeometric, multivariate_t, nakagami, ncf, nct,
                ncx2, negative_binomial, negative_hypergeometric, normal,
-               poisson, rel_breitwigner, rice, slash, t, truncnorm, uniform,
-               vonmises, weibull_max, weibull_min)
+               poisson, power_normal, rel_breitwigner, rice, slash, t,
+               truncnorm, uniform, vonmises, weibull_max, weibull_min)
