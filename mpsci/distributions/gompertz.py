@@ -19,7 +19,8 @@ from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
+           'entropy']
 
 
 def _validate_c_scale(c, scale):
@@ -164,3 +165,15 @@ def var(c, scale):
         return scale**2 * expc * (-2*c*_hyp3f3_111222(c) + mp.euler**2
                                   + mp.pi**2/6 + 2*mp.euler*lnc + lnc**2
                                   - expc*mp.e1(c)**2)
+
+
+def entropy(c, scale):
+    """
+    Differential entropy of the Gompertz distribution.
+
+    Note that `scale` is the reciprocal of the `b` parameter in the wikipedia
+    article https://en.wikipedia.org/wiki/Gompertz_distribution.
+    """
+    with mp.extradps(5):
+        c, scale = _validate_c_scale(c, scale)
+        return mp.one - mp.log(c) - mp.exp(c)*mp.e1(c) + mp.log(scale)

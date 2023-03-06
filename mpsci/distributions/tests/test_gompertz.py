@@ -81,3 +81,15 @@ def test_mean():
     expected = mp.mpf(
         '0.131041870127659248094359303011216347787736766926224587908757')
     assert mp.almosteq(m, expected)
+
+
+@mp.workdps(60)
+def test_entropy_against_integral():
+    c = mp.mpf(3.0)
+    scale = mp.mpf(0.5)
+    h = gompertz.entropy(c, scale)
+    hi = -mp.quad(lambda t: (gompertz.pdf(t, c, scale) *
+                             gompertz.logpdf(t, c, scale)),
+                  [0, (gompertz.mean(c, scale)
+                       + 100*mp.sqrt(gompertz.var(c, scale)))])
+    assert mp.almosteq(h, hi)
