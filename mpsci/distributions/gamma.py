@@ -6,6 +6,7 @@ Gamma probability distribution
 from mpmath import mp
 from ._common import _validate_moment_n
 from ..fun import digammainv
+from . import normal
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'interval_prob',
@@ -297,3 +298,56 @@ def nll_invhess(x, k, theta):
 
         return mp.matrix([[-dtheta2/det, dkdtheta/det],
                           [dkdtheta/det, -dk2/det]])
+
+
+#
+# The following are experimental and not thoroughly checked.
+#
+
+def _mle_se(x, k, theta):
+    """
+    Standard errors of the MLE estimates k and theta for the sequence x.
+
+    This function assumes that both k and theta were estimated from x.
+    """
+    with mp.extradps(5):
+        k, theta = _validate_k_theta(k, theta)
+        invhess_diag = _nll_invhess_diag(x, k, theta)
+        return (mp.sqrt(invhess_diag[0]), mp.sqrt(invhess_diag[1]))
+
+
+def _mle_ci(x, k, theta, alpha):
+    """
+    Confidence intervals of the MLE estimates k and theta for the sequence x.
+
+    This function assumes that both k and theta were estimated from x.
+
+    The values are based on the asymptotic normality of the estimates.
+    These are not the exact confidence intervals.
+    """
+    with mp.extradps(5):
+        k, theta = _validate_k_theta(k, theta)
+        kse, thetase = _mle_se(x, k, theta)
+        w = normal.invcdf(alpha/2)
+        return (k + w*kse, k - w*kse), (theta + w*thetase, theta - w*thetase)
+
+
+def _nll_invhess_diag(x, k, theta):
+    """
+    Diagonal elements of the inverse of the hessian of the negative
+    log-likelihood of the gamma distribution.
+    """
+    with mp.extradps(5):
+        k, theta = _validate_k_theta(k, theta)
+
+        N = len(x)
+        sumx = mp.fsum(x)
+        # sumlnx = mp.fsum(mp.log(t) for t in x)
+
+        dk2 = -N*mp.psi(1, k)
+        dkdtheta = -N/theta
+        dtheta2 = -2*sumx/theta**3 + N*k/theta**2
+
+        det = dk2*dtheta2 - dkdtheta**2
+
+        return (-dtheta2/det, -dk2/det)
