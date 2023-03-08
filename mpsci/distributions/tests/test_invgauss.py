@@ -50,6 +50,31 @@ def test_sf_invsf_roundtrip():
     assert mp.almosteq(x1, x0)
 
 
+# Reference values were computed with Wolfram Alpha, e.g, the input
+#     moment InverseGaussianDistribution 24 3
+# generates a table of raw moments.  The conversion from Wolfram Alpha's
+# parameters (mu, lambda) to invgauss's parameters (m, scale) is
+#   m     = mu/lambda
+#   scale = lambda
+@pytest.mark.parametrize('order, m, scale, ref',
+                         [(1, 3/2, 2, 3),
+                          (2, 3/2, 2, '45/2'),
+                          (3, 3/2, 2, '1_323/4'),
+                          (4, 3/2, 2, '61_155/8'),
+                          (5, 3/2, 2, '3_900_393/16'),
+                          (6, 3/2, 2, '318_133_413/32'),
+                          (7, 3/2, 2, '31_635_622_035/64'),
+                          (8, 3/2, 2, '3_712_820_580_963/128'),
+                          (9, 3/2, 2, '502_369_660_823_265/256'),
+                          (1, 8, 3, 24),
+                          (2, 8, 3, 5184),
+                          (3, 8, 3, 2_999_808),
+                          (4, 8, 3, 2_882_801_664)])
+def test_noncentral_moment(order, m, scale, ref):
+    moment = invgauss.noncentral_moment(order, m, scale=scale)
+    assert mp.almosteq(moment, mp.mpf(ref))
+
+
 @pytest.mark.parametrize('m', ['1e-6', 3])
 def test_entropy_against_integral(m):
 

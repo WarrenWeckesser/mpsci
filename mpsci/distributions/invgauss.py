@@ -33,13 +33,14 @@ To go the other way::
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_moment_n
 
 
 __all__ = ['pdf', 'logpdf',
            'cdf', 'logcdf', 'invcdf',
            'sf', 'logsf', 'invsf',
-           'mean', 'mode', 'var', 'entropy']
+           'mean', 'mode', 'var', 'entropy',
+           'noncentral_moment']
 
 
 def _validate_params(m, loc, scale):
@@ -227,3 +228,36 @@ def entropy(m, loc=0, scale=1):
         t1 = (mp.log(2*mp.pi) + 3*mp.log(m) + 1)/2
         t2 = 3*(mp.exp(2/m) * mp.expint(1, 2/m))/2
         return t1 - t2 + mp.log(scale)
+
+
+def _standard_noncentral_moment(n, m):
+    with mp.extradps(5):
+        if n == 0:
+            return mp.one
+        # This formulation is derived from the special formula for
+        # the modified Bessel function of the second kind K_nu(z)
+        # for half-integer order nu.
+        terms = [mp.gammaprod([n + k], [(k + 1), n - k])*(m/2)**k
+                 for k in range(n)]
+        return m**n * mp.fsum(terms)
+
+
+def noncentral_moment(n, m, loc=0, scale=1):
+    """
+    Noncentral moment of the generalized extreme value distribution.
+
+    The value is also known as the raw moment.
+    """
+    # This is a generic calculation that could be applied to any
+    # loc/scale family if there is a function for the standard
+    # (i.e. loc=0, scale=1) noncentral moment.
+    # Cf. genextreme.noncentral_moment()
+    with mp.extradps(5):
+        n = _validate_moment_n(n)
+        m, loc, scale = _validate_params(m, loc, scale)
+        if n == 0:
+            return mp.one
+        terms = [(mp.binomial(n, k) * mp.power(loc, n - k) * mp.power(scale, k)
+                  * _standard_noncentral_moment(k, m))
+                 for k in range(n + 1)]
+        return mp.fsum(terms)
