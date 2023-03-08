@@ -16,9 +16,10 @@ SciPy has a different parametrization::
 
 from mpmath import mp
 from ..fun import marcumq, cmarcumq
+from ._common import _validate_moment_n
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'noncentral_moment']
 
 
 def _validate_params(nu, sigma):
@@ -96,3 +97,21 @@ def mean(nu, sigma):
         nu, sigma = _validate_params(nu, sigma)
         return (sigma * mp.sqrt(mp.pi/2)
                 * mp.laguerre(0.5, 0, -(nu/sigma)**2/2))
+
+
+def noncentral_moment(n, nu, sigma):
+    """
+    Noncentral moment of the Rice distribution.
+
+    The value is also known as the raw moment.
+    """
+    with mp.extradps(5):
+        n = _validate_moment_n(n)
+        nu, sigma = _validate_params(nu, sigma)
+        if n == 0:
+            return mp.one
+        t1 = n*mp.log(sigma)
+        t2 = (n/2)*mp.log(2)
+        t3 = mp.loggamma(1 + n/2)
+        t4 = mp.log(mp.hyp1f1(-n/2, 1, -(nu/sigma)**2/2))
+        return mp.exp(mp.fsum([t1, t2, t3, t4]))
