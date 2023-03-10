@@ -31,8 +31,8 @@ from ..fun import pow1pm1
 from ._common import _validate_p, _validate_moment_n,  _find_bracket
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'mean', 'var', 'mode',
-           'noncentral_moment']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'mean', 'var', 'mode', 'noncentral_moment']
 
 
 def _validate_rho_scale(rho, scale):
@@ -111,6 +111,30 @@ def invcdf(p, rho, scale):
         rho, scale = _validate_rho_scale(rho, scale)
         x0, x1 = _find_bracket(lambda x: cdf(x, rho, scale), p, 0, mp.inf)
         root = mp.findroot(lambda t: cdf(t, rho, scale) - p, x0=(x0, x1))
+        return root
+
+
+def sf(x, rho, scale):
+    """
+    Survival function of the relativistic Breit-Wigner distribution.
+    """
+    # Double the precision and return 1 - CDF.  Expensive, but easy :)
+    with mp.extradps(mp.dps):
+        return 1 - cdf(x, rho, scale)
+
+
+def invsf(p, rho, scale):
+    """
+    Inverse of the survival function of the relativistic Breit-Wigner distr.
+
+    The implementation uses a numerical root finder, so it may be slow, and
+    it may fail to converge for some inputs.
+    """
+    with mp.extradps(5):
+        p = _validate_p(p)
+        rho, scale = _validate_rho_scale(rho, scale)
+        x0, x1 = _find_bracket(lambda x: sf(x, rho, scale), p, 0, mp.inf)
+        root = mp.findroot(lambda t: sf(t, rho, scale) - p, x0=(x0, x1))
         return root
 
 

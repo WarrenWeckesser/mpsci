@@ -33,6 +33,25 @@ def test_cdf_invcdf_roundtrip(rho, x0):
     assert mp.almosteq(x1, x0)
 
 
+@pytest.mark.parametrize('x', [0.1, 1, 100, 1e20])
+def test_sf_with_quad(x):
+    rho = mp.mpf(0.5)
+    scale = mp.mpf(2.5)
+    sf = rel_breitwigner.sf(x, rho, scale)
+    expected = mp.quad(lambda t: rel_breitwigner.pdf(t, rho, scale),
+                       [x, mp.inf])
+    assert mp.almosteq(sf, expected)
+
+
+@pytest.mark.parametrize('rho', [0.125, 1, 8])
+@pytest.mark.parametrize('x0', [mp.mpf('1e-12'), 1, 25])
+def test_sf_invsf_roundtrip(rho, x0):
+    scale = mp.mpf(1.25)
+    p = rel_breitwigner.sf(x0, rho, scale)
+    x1 = rel_breitwigner.invsf(p, rho, scale)
+    assert mp.almosteq(x1, x0)
+
+
 @pytest.mark.parametrize('rho, scale', [(mp.mpf(1.125), mp.mpf(2)),
                                         (mp.mpf(5.0), mp.mpf(0.125))])
 def test_mean_with_quad(rho, scale):
