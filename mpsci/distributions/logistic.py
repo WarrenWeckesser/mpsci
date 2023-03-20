@@ -12,7 +12,7 @@ from ._common import _seq_to_mp
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
-           'mom']
+           'mom', 'nll', 'mle']
 
 
 def pdf(x, loc=0, scale=1):
@@ -124,7 +124,7 @@ def mom(x):
     """
     Method of moments parameter estimation for the logistic distribution.
 
-    x must be a sequence of numbers.
+    `x` must be a sequence of numbers.
 
     Returns (loc, scale).
     """
@@ -133,3 +133,55 @@ def mom(x):
         M1 = _mean(x)
         M2 = _mean([t**2 for t in x])
         return M1, mp.sqrt(3*(M2 - M1**2))/mp.pi
+
+
+def nll(x, loc, scale):
+    """
+    Negative log-likelihood function for the logistic equation.
+
+    `x` must be a sequence of numbers.
+    """
+    with mp.extradps(5):
+        x = _seq_to_mp(x)
+        loc = mp.mpf(loc)
+        scale = mp.mpf(scale)
+        v = [mp.log(mp.sech((t - loc)/(2*scale))) for t in x]
+        n = len(x)
+        return n*mp.log(4*scale) - 2*mp.fsum(v)
+
+
+def _mle_loc_eq(loc, scale, x):
+    v = [mp.tanh((t - loc)/(2*scale)) for t in x]
+    return mp.fsum(v)
+
+
+def _mle_scale_eq(loc, scale, x):
+    n = len(x)
+    v = [t*mp.tanh((t - loc)/(2*scale)) for t in x]
+    return -n + mp.fsum(v)/scale
+
+
+def mle(x):
+    """
+    Maximum likelihood estimate for the logistic distribution.
+
+    `x` must be a sequence of numbers.
+
+    Returns (loc, scale).
+
+    This function uses `mp.findroot` to numerically solve for the
+    maximum likelihood estimate.
+    """
+    with mp.extradps(mp.dps//4):
+        loc0, scale0 = mom(x)
+        x = _seq_to_mp(x)
+        loc1, scale1 = mp.findroot(
+            lambda loc, scale: [_mle_loc_eq(loc, scale, x),
+                                _mle_scale_eq(loc, scale, x)],
+            x0=[loc0, scale0]
+        )
+        # Because of the symmetry with respect to scale of the first order
+        # equations, `findroot` might return a negative scale.
+        # If (loc1, scale1) solves the equations, then so does (loc1, -scale1),
+        # so we can return the absolute value of scale1.
+        return loc1, abs(scale1)

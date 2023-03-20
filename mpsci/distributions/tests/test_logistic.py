@@ -62,3 +62,15 @@ def test_invsf(p):
 def test_entropy(scale):
     ent = logistic.entropy(scale=scale)
     assert mp.almosteq(ent, mp.log(scale) + 2)
+
+
+@mp.workdps(50)
+def test_mle():
+    # For the specially constructed data set in `data`, the MLE is
+    # loc=3 and scale=0.5.
+    alpha = mp.findroot(lambda t: t*mp.tanh(t) - 0.75, 1.0)
+    loc = mp.mpf(3)
+    data = [loc - alpha, loc, loc + alpha]
+    loc1, scale1 = logistic.mle(data)
+    assert mp.almosteq(loc1, loc)
+    assert mp.almosteq(scale1, 0.5)
