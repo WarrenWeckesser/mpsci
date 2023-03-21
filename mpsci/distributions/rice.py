@@ -19,7 +19,7 @@ from ..fun import marcumq, cmarcumq
 from ._common import _validate_moment_n
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'noncentral_moment']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var', 'noncentral_moment']
 
 
 def _validate_params(nu, sigma):
@@ -97,6 +97,15 @@ def mean(nu, sigma):
         nu, sigma = _validate_params(nu, sigma)
         return (sigma * mp.sqrt(mp.pi/2)
                 * mp.laguerre(0.5, 0, -(nu/sigma)**2/2))
+
+
+def var(nu, sigma):
+    """
+    Variance of the Rice distribution.
+    """
+    with mp.extradps(5):
+        nu, sigma = _validate_params(nu, sigma)
+        return noncentral_moment(2, nu, sigma) - mean(nu, sigma)**2
 
 
 def noncentral_moment(n, nu, sigma):

@@ -44,6 +44,17 @@ def test_mean():
     assert mp.almosteq(m, mp.mpf(val))
 
 
+@mp.workdps(55)
+def test_var():
+    nu = 2
+    sigma = 3
+    v = rice.var(nu, sigma)
+    # Expected value computed with Wolfram Alpha:
+    #   Variance[RiceDistribution[2, 3]]
+    val = '4.64007472116951582653420522824375044825113849704596201317590'
+    assert mp.almosteq(v, mp.mpf(val))
+
+
 @pytest.mark.parametrize('nu, sigma',
                          [(0.5, 3.0),
                           (0.125, 25.0),
