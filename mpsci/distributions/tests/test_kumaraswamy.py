@@ -75,3 +75,19 @@ def test_var():
     #    Variance[KumaraswamyDistribution[6, 1/2]]
     expected = mp.mpf('0.0118546424864767865065319749025960710717792871')
     assert mp.almosteq(v, expected, rel_eps=10**(-mp.dps + 12))
+
+
+@mp.workdps(50)
+def test_entropy_with_integral():
+    a = 0.75
+    b = 2.75
+    entr = kumaraswamy.entropy(a, b)
+
+    with mp.extradps(2*mp.dps):
+
+        def integrand(t):
+            return kumaraswamy.pdf(t, a, b) * kumaraswamy.logpdf(t, a, b)
+
+        intgrl = -mp.quad(integrand, [0, 1])
+
+    assert mp.almosteq(entr, intgrl)

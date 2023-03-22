@@ -24,7 +24,8 @@ from ..fun._powm1 import inv_powm1
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'median', 'skewness', 'noncentral_moment']
+           'mean', 'var', 'median', 'skewness', 'noncentral_moment',
+           'entropy']
 
 
 def _validate_a_b(a, b):
@@ -171,3 +172,17 @@ def skewness(a, b):
         v = var(a, b)
         mu3p = noncentral_moment(3, a, b)
         return (mu3p - m*(3*v + m**2))/v**1.5
+
+
+def _harmonic_number(n):
+    return mp.digamma(n + 1) + mp.euler
+
+
+def entropy(a, b):
+    """
+    Differential entropy of the Kumaraswamy distribution.
+    """
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        return ((1 - 1/b) + (1 - 1/a)*_harmonic_number(b)
+                - mp.log(a) - mp.log(b))
