@@ -12,6 +12,15 @@ This is the same distribution as:
 * the Weibull distribution in the text "Statistical Distribution" (fourth ed.)
   by Forbes, Evans, Hastings and Peacock (Wiley, 2011).
 
+This is the same distributions as `weibull_max`, but with `x` replaced
+by `-x`.  The `weibull_max` distribution is the same distribution as:
+
+* `scipy.stats.weibull_max`;
+* the Type III extreme value distribution used in the text "An Introduction
+  to Statistical Modeling of Extreme Values" by Stuart Coles (Springer, 2001);
+* the Weibull distribution given in the text "Modelling Extremal Events" by
+  Embrechts, Klüppelberg and Mikosch (Springer, 1997).
+
 """
 
 from mpmath import mp

@@ -10,6 +10,17 @@ This is the same distribution as:
 * the Weibull distribution given in the text "Modelling Extremal Events" by
   Embrechts, Klüppelberg and Mikosch (Springer, 1997).
 
+This is the same distributions as `weibull_min`, but with `x` replaced
+by `-x`.  The `weibull_min` distribution is the same distribution as:
+
+* `scipy.stats.weibull_min`;
+* `numpy.random.Generator.weibull` (restricted to loc=0 and scale=1);
+* Wolfram Alpha's `WeibullDistribution`;
+* the distribution discussed in the wikipedia article "Weibull distribution"
+  (https://en.wikipedia.org/wiki/Weibull_distribution);
+* the Weibull distribution in the text "Statistical Distribution" (fourth ed.)
+  by Forbes, Evans, Hastings and Peacock (Wiley, 2011).
+
 """
 
 from mpmath import mp
