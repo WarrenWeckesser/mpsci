@@ -12,15 +12,15 @@ from ._common import _validate_p, _validate_moment_n, _validate_x_bounds
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'mean', 'var', 'skewness', 'kurtosis',
+           'mean', 'var', 'skewness', 'kurtosis', 'entropy',
            'noncentral_moment',
            'mle', 'mom']
 
 
-def _validate_sigma(sigma):
+def _validate_params(mu, sigma):
     if sigma <= 0:
         raise ValueError('sigma must be positive')
-    return mp.mpf(sigma)
+    return mp.mpf(mu), mp.mpf(sigma)
 
 
 def pdf(x, mu=0, sigma=1):
@@ -28,7 +28,7 @@ def pdf(x, mu=0, sigma=1):
     Log-normal distribution probability density function.
     """
     with mp.extradps(5):
-        sigma = _validate_sigma(sigma)
+        mu, sigma = _validate_params(mu, sigma)
         x = mp.mpf(x)
         if x <= 0:
             return mp.zero
@@ -41,8 +41,7 @@ def logpdf(x, mu=0, sigma=1):
     Natural logarithm of the PDF of the log-normal distribution.
     """
     with mp.extradps(5):
-        sigma = _validate_sigma(sigma)
-        mu = mp.mpf(mu)
+        mu, sigma = _validate_params(mu, sigma)
         x = mp.mpf(x)
         if x <= 0:
             return -mp.inf
@@ -57,8 +56,7 @@ def cdf(x, mu=0, sigma=1):
     Log-normal distribution cumulative distribution function.
     """
     with mp.extradps(5):
-        sigma = _validate_sigma(sigma)
-        mu = mp.mpf(mu)
+        mu, sigma = _validate_params(mu, sigma)
         x = mp.mpf(x)
         if x <= 0:
             return mp.zero
@@ -71,8 +69,7 @@ def sf(x, mu=0, sigma=1):
     Log-normal distribution survival function.
     """
     with mp.extradps(5):
-        sigma = _validate_sigma(sigma)
-        mu = mp.mpf(mu)
+        mu, sigma = _validate_params(mu, sigma)
         x = mp.mpf(x)
         if x <= 0:
             return mp.mp.one
@@ -89,8 +86,7 @@ def invcdf(p, mu=0, sigma=1):
     """
     with mp.extradps(5):
         p = _validate_p(p)
-        sigma = _validate_sigma(sigma)
-        mu = mp.mpf(mu)
+        mu, sigma = _validate_params(mu, sigma)
         a = mp.erfinv(2*p - 1)
         x = mp.exp(mp.sqrt(2)*sigma*a + mu)
         return x
@@ -102,8 +98,7 @@ def invsf(p, mu=0, sigma=1):
     """
     with mp.extradps(5):
         p = _validate_p(p)
-        sigma = _validate_sigma(sigma)
-        mu = mp.mpf(mu)
+        mu, sigma = _validate_params(mu, sigma)
         return invcdf(1 - p, mu, sigma)
 
 
@@ -112,8 +107,7 @@ def mean(mu=0, sigma=1):
     Mean of the lognormal distribution.
     """
     with mp.extradps(5):
-        sigma = _validate_sigma(sigma)
-        mu = mp.mpf(mu)
+        mu, sigma = _validate_params(mu, sigma)
         return mp.exp(mu + sigma**2/2)
 
 
@@ -122,8 +116,7 @@ def var(mu=0, sigma=1):
     Variance of the lognormal distribution.
     """
     with mp.extradps(5):
-        sigma = _validate_sigma(sigma)
-        mu = mp.mpf(mu)
+        mu, sigma = _validate_params(mu, sigma)
         sigma2 = sigma**2
         return mp.expm1(sigma2) * mp.exp(2*mu + sigma2)
 
@@ -133,7 +126,7 @@ def skewness(mu=0, sigma=1):
     Skewness of the lognormal distribution.
     """
     with mp.extradps(5):
-        sigma = _validate_sigma(sigma)
+        mu, sigma = _validate_params(mu, sigma)
         sigma2 = sigma**2
         return (mp.exp(sigma2) + 2) * mp.sqrt(mp.expm1(sigma2))
 
@@ -143,10 +136,19 @@ def kurtosis(mu=0, sigma=1):
     Kurtosis of the lognormal distribution.
     """
     with mp.extradps(5):
-        sigma = _validate_sigma(sigma)
+        mu, sigma = _validate_params(mu, sigma)
         sigma2 = sigma**2
         return (mp.exp(4*sigma2) + 2*mp.exp(3*sigma2)
                 + 3*mp.exp(2*sigma2) - 6)
+
+
+def entropy(mu=0, sigma=1):
+    """
+    Differential entropy of the lognormal distribution.
+    """
+    with mp.extradps(5):
+        mu, sigma = _validate_params(mu, sigma)
+        return mp.log(sigma) + mu + 0.5 + 0.5*mp.log(2*mp.pi)
 
 
 def noncentral_moment(n, mu=0, sigma=1):
@@ -155,8 +157,7 @@ def noncentral_moment(n, mu=0, sigma=1):
     """
     n = _validate_moment_n(n)
     with mp.extradps(5):
-        sigma = _validate_sigma(sigma)
-        mu = mp.mpf(mu)
+        mu, sigma = _validate_params(mu, sigma)
         return mp.exp(n*mu + n**2*sigma**2/2)
 
 

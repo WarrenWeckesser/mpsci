@@ -137,6 +137,21 @@ def test_kurtosis():
         assert mp.almosteq(kurt, expected)
 
 
+@mp.workdps(50)
+def test_entropy_with_integral():
+    mu = 2
+    sigma = 3
+    entr = lognormal.entropy(mu, sigma)
+    with mp.extradps(mp.dps // 2):
+
+        def integrand(t):
+            return lognormal.pdf(t, mu, sigma) * lognormal.logpdf(t, mu, sigma)
+
+        intgrl = mp.quad(integrand, [0, mp.inf])
+
+    assert mp.almosteq(entr, -intgrl)
+
+
 def test_noncentral_moment():
     mu = 2
     sigma = 3
