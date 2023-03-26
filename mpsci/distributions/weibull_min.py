@@ -16,13 +16,14 @@ This is the same distribution as:
 
 from mpmath import mp
 from ..stats import pmean
-from ._common import _validate_p, _validate_x_bounds, _median
+from ._common import (_validate_p, _validate_moment_n, _validate_x_bounds,
+                      _median)
 from ._weibull_common import _validate_params, _mle_k_eqn1, _mle_k_eqn2
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
            'mode', 'mean', 'var', 'skewness', 'kurtosis', 'entropy',
-           'nll', 'mle']
+           'noncentral_moment', 'nll', 'mle']
 
 
 def pdf(x, k, loc, scale):
@@ -215,6 +216,33 @@ def entropy(k, loc, scale):
     with mp.extradps(5):
         k, loc, scale = _validate_params(k, loc, scale)
         return mp.euler*(1 - 1/k) + mp.log(scale) - mp.log(k) + 1
+
+
+def _standard_noncentral_moment(n, k):
+    with mp.extradps(5):
+        if n == 0:
+            return mp.one
+        return mp.gamma(1 + mp.mpf(n)/k)
+
+
+def noncentral_moment(n, k, loc=0, scale=1):
+    """
+    Noncentral moment of the Weibull distribution (for minima).
+
+    The value is also known as the raw moment.
+    """
+    # Except for the check xi >= 1/n, this is a generic calculation that
+    # could be applied to any loc/scale family if there is a function for
+    # the standard (i.e. loc=0, scale=1) noncentral moment.
+    with mp.extradps(5):
+        _validate_moment_n(n)
+        k, loc, sigma = _validate_params(k, loc, scale)
+        if n == 0:
+            return mp.one
+        terms = [(mp.binomial(n, i) * mp.power(loc, n - i) * mp.power(scale, i)
+                  * _standard_noncentral_moment(i, k))
+                 for i in range(n + 1)]
+        return mp.fsum(terms)
 
 
 def nll(x, k, loc, scale):
