@@ -8,7 +8,8 @@ def is_discrete_dist(dist):
 
 
 def get_distributions():
-    names = [name for name in dir(dists) if not name.startswith('_')]
+    names = [name for name in dir(dists)
+             if not name.startswith('_') and name != 'Initial']
     objects = [getattr(dists, name) for name in names]
     discrete_flag = [is_discrete_dist(dist) for dist in objects]
     foo = sorted(zip(discrete_flag, objects), key=lambda t: t[0])
