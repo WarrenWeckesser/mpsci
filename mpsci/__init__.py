@@ -5,7 +5,7 @@ calculations.
 
 """
 
-__version__ = "0.0.1.dev64"
+__version__ = "0.0.1.dev65"
 
 from . import distributions
 from . import fun

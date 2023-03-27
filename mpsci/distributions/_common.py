@@ -1,6 +1,12 @@
 
+from dataclasses import dataclass
 import operator
 from mpmath import mp
+
+
+@dataclass
+class Initial:
+    initial: mp.mpf
 
 
 def _validate_p(p):

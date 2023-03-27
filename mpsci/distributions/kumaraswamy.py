@@ -19,13 +19,14 @@ https://en.wikipedia.org/wiki/Kumaraswamy_distribution.
 """
 
 from mpmath import mp
-from ._common import _validate_p, _validate_moment_n
+from ._common import (_validate_p, _validate_moment_n, _validate_x_bounds,
+                      Initial)
 from ..fun._powm1 import inv_powm1
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'median', 'skewness', 'noncentral_moment',
-           'entropy']
+           'mean', 'var', 'median', 'skewness', 'noncentral_moment', 'entropy',
+           'nll', 'mle']
 
 
 def _validate_a_b(a, b):
@@ -62,7 +63,7 @@ def logpdf(x, a, b):
         if x < 0 or x > 1:
             return mp.ninf
         return (mp.log(a) + mp.log(b) + (a - 1)*mp.log(x)
-                + (b - 1)*mp.log(-mp.powm1(x, a)))
+                + (b - 1)*mp.log1p(-x**a))
 
 
 def cdf(x, a, b):
@@ -186,3 +187,75 @@ def entropy(a, b):
         a, b = _validate_a_b(a, b)
         return ((1 - 1/b) + (1 - 1/a)*_harmonic_number(b)
                 - mp.log(a) - mp.log(b))
+
+
+def nll(x, a, b):
+    """
+    Negative log-likelihood function for the Kumaraswamy distribution.
+
+    `x` must be a sequence of numbers with values in the open interval (0, 1).
+    """
+    with mp.extradps(5):
+        x = _validate_x_bounds(x, low=0, high=1,
+                               strict_low=True, strict_high=True)
+        a, b = _validate_a_b(a, b)
+        return -mp.fsum([logpdf(t, a, b) for t in x])
+
+
+def _mle_a_eqn(a, x, sumlogx):
+    n = len(x)
+    s2 = mp.fsum([mp.log1p(-t**a) for t in x])
+    s3 = mp.fsum([t**a * mp.log(t) / (-mp.powm1(t, a)) for t in x])
+    return n/a + sumlogx + (1 + n/s2)*s3
+
+
+def _mle_a_eqn_b_fixed(a, b, x, sumlogx):
+    n = len(x)
+    s3 = mp.fsum([t**a * mp.log(t) / (-mp.powm1(t, a)) for t in x])
+    return n/a + sumlogx + (1 - b)*s3
+
+
+def mle(x, *, a=None, b=None):
+    """
+    Maximum likelihood estimate for the Kumaraswamy distribution.
+
+    `x` must be a sequence of numbers with values in the open interval (0, 1).
+
+    Returns (a, b), the maximum likelihood estimate for the given data.
+
+    When `a` is not given, the MLE equations are solved numerically,
+    and the solver may fail to converge for some inputs.  If this happens,
+    a different initial guess for `a` may be given by setting the input
+    parameter to `mpsci.distributions.Initial(a0)`, where `a0` is the
+    initial guess to use for the estimate of `a`.  The default initial
+    guess for `a` is 1.
+
+    """
+    with mp.extradps(5):
+        x = _validate_x_bounds(x, low=0, high=1,
+                               strict_low=True, strict_high=True)
+        n = len(x)
+        sumlogx = mp.fsum([mp.log(t) for t in x])
+        if (a is None or isinstance(a, Initial)) and b is None:
+            if isinstance(a, Initial):
+                a0 = a.initial
+            else:
+                a0 = 1
+            a = mp.findroot(lambda t: _mle_a_eqn(t, x, sumlogx), a0)
+            b = -n / mp.fsum([mp.log1p(-t**a) for t in x])
+            return a, b
+        if (a is not None and not isinstance(a, Initial)) and b is not None:
+            a, b = _validate_a_b(a, b)
+            return a, b
+        if a is None or isinstance(a, Initial):
+            _, b = _validate_a_b(1, b)
+            if isinstance(a, Initial):
+                a0 = a.initial
+            else:
+                a0 = 1
+            a = mp.findroot(lambda t: _mle_a_eqn_b_fixed(t, b, x, sumlogx), a0)
+            return a, b
+        # a is fixed, b is not.
+        a, _ = _validate_a_b(a, 1)
+        b = -n / mp.fsum([mp.log1p(-t**a) for t in x])
+        return a, b

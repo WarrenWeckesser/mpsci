@@ -22,3 +22,4 @@ from . import (argus, benktander1, benktander2, beta, betabinomial, betaprime,
                negative_hypergeometric, normal, poisson, power_normal,
                rel_breitwigner, rice, slash, t, truncnorm, uniform, vonmises,
                weibull_max, weibull_min)
+from ._common import Initial
