@@ -6,7 +6,9 @@ See https://en.wikipedia.org/wiki/Beta_prime_distribution
 
 """
 from mpmath import mp
-from ._common import _validate_p, _validate_moment_n, _find_bracket
+from ._common import (_validate_p, _validate_moment_n, _find_bracket,
+                      _validate_x_bounds, Initial)
+from ..stats import mean as _mean
 from .. import fun as _fun
 
 
@@ -189,3 +191,61 @@ def noncentral_moment(n, a, b):
         if n >= b:
             return mp.nan
         return mp.beta(a + n, b - n) / mp.beta(a, b)
+
+
+def nll(x, a, b):
+    """
+    Negative log-likelihood of the beta prime distribution.
+
+    `x` must be a sequence of nonnegative numbers.
+    """
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        x = _validate_x_bounds(x, low=0, high=mp.inf,
+                               strict_low=False, strict_high=True)
+        return -mp.fsum([logpdf(t, a, b) for t in x])
+
+
+def _mle_eqn_a_b(a, b, meanlogx, meanlog1px):
+    d1 = mp.digamma(a + b)
+    eq1 = mp.digamma(a) - d1 - (meanlogx - meanlog1px)
+    eq2 = mp.digamma(b) - d1 + meanlog1px
+    return eq1, eq2
+
+
+def mle(x, *, a=None, b=None):
+    """
+    Maximum likelihood estimate for the beta prime distribution.
+
+    `x` must be a sequence of nonnegative numbers.
+
+    Returns (a, b), the maximum likelihood estimate.
+
+    A numerical equation solver (`mpmath.mp.findroot`) is used to solve
+    for the maximum likelihood estimate.  For some data, this solver may
+    fail to converge.  If that happens, different initial guesses for the
+    parameter values may be given by passing instances of the
+    `mpsci.distributions.Initial` class for `a` or `b`, e.g.
+
+        from mpsci.distributions import Initial
+        ahat, bhat = mle(x, b=Initial(12))
+
+    The default initial guesses for `a` and `b` are 1.
+    """
+    with mp.extradps(5):
+        x = _validate_x_bounds(x, low=0, high=mp.inf,
+                               strict_low=False, strict_high=True)
+        meanlog1px = _mean([mp.log1p(t) for t in x])
+        meanlogx = _mean([mp.log(t) for t in x])
+
+        def eqns(a, b):
+            return _mle_eqn_a_b(a, b, meanlogx, meanlog1px)
+
+        if ((a is None or isinstance(a, Initial))
+                and (b is None or isinstance(b, Initial))):
+            a0 = 1 if a is None else a.initial
+            b0 = 1 if b is None else b.initial
+            ahat, bhat = mp.findroot(eqns, [a0, b0])
+            return ahat, bhat
+        raise NotImplementedError('Only implemented for both a and b free '
+                                  'parameters')

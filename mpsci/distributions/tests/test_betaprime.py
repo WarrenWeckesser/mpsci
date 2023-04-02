@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import betaprime
+from ._utils import check_mle
 
 
 # Expected values were computed with Wolfram Alpha, e.g.
@@ -95,3 +96,12 @@ def test_skewness():
         s = betaprime.skewness(a, b)
         expected = 13*mp.sqrt(mp.mpf('2/3'))
         assert mp.almosteq(s, expected)
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[0.03125, 0.0625, 0.125, 0.25, 0.5, 1],
+     [1, 2, 3, 5, 8, 13, 21, 34, 55, 89]]
+)
+def test_mle(x):
+    check_mle(betaprime, x)
