@@ -3,7 +3,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import gumbel_max
-from ._utils import check_mle
+from ._utils import call_and_check_mle
 
 
 @pytest.mark.parametrize('scale', [1, 2])
@@ -67,4 +67,4 @@ def test_cdf():
      [-990, -750, -375, -305, -300, -210, -60, 2]]
 )
 def test_mle(x):
-    check_mle(gumbel_max, x)
+    call_and_check_mle(gumbel_max.mle, gumbel_max.nll, x)

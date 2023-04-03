@@ -2,7 +2,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import gamma
-from ._utils import check_mle
+from ._utils import call_and_check_mle
 
 
 mp.dps = 16
@@ -132,4 +132,4 @@ def test_mom():
       28.0, 23.5, 16.0, 39.5, 38.5, 43.5, 23.0, 22.5, 33.5, 92.0, 44.5]]
 )
 def test_mle(x):
-    check_mle(gamma, x)
+    call_and_check_mle(gamma.mle, gamma.nll, x)
