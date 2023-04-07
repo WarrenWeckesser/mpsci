@@ -2,6 +2,8 @@
 Beta probability distribution
 -----------------------------
 
+This is the "standard" beta distribution, with shape parameters
+`a` and `b`, and support on the interval [0, 1].
 """
 
 from mpmath import mp

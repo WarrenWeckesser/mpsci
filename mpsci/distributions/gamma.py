@@ -1,6 +1,13 @@
 """
 Gamma probability distribution
 ------------------------------
+
+The parameters used here are `k`, the shape parameter, and
+`theta`, the scale parameter.
+
+Another common parameterization is shape `k` and the "rate" `lambda`.
+`theta` is the reciprocal of `lambda`.
+
 """
 
 from mpmath import mp
