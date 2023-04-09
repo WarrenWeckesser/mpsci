@@ -3,6 +3,7 @@ Chi distribution
 ----------------
 """
 
+import re
 from mpmath import mp
 from ._common import _validate_moment_n
 
@@ -20,12 +21,32 @@ def _validate_k(k):
 def pdf(x, k):
     """
     PDF for the chi distribution.
+
+    The PDF is
+
+        f(x; k) = x**(k - 1) * exp(-x**2/2) / (2**(k/2 - 1) * Gamma(k/2))
+
+    for x >= 0.
     """
     with mp.extradps(5):
         k = _validate_k(k)
         if x < 0:
             return mp.zero
         return mp.exp(logpdf(x, k))
+
+
+_pdf_docstring_replace = r"""
+    .. math::
+
+       f(x; k) = \\frac{x^{k-1}e^{-x^2/2}}{2^{k/2-1}\\Gamma\\left(\\frac{k}{2}\\right)}
+
+"""
+
+pdf._docstring_re_subs = [
+    (r'    f.*k/2\)\)', _pdf_docstring_replace, 0, re.DOTALL),
+    (r'x >= 0', r':math:`x \\ge 0`', 0, 0),
+
+]
 
 
 def logpdf(x, k):
