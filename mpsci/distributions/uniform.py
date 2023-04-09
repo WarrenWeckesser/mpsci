@@ -6,12 +6,13 @@ These functions are for the uniform distribution on [a, b].
 """
 
 from mpmath import mp
-from ._common import _validate_p, _seq_to_mp
+from ._common import _validate_p, _seq_to_mp, _validate_moment_n
 from ..stats import mean as _mean
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'mean', 'var', 'median', 'entropy', 'mle', 'mom']
+           'mean', 'var', 'median', 'entropy', 'noncentral_moment',
+           'mle', 'mom']
 
 
 def _validate(a, b):
@@ -133,6 +134,20 @@ def entropy(a=0, b=1):
     with mp.extradps(5):
         a, b = _validate(a, b)
         return mp.log(b - a)
+
+
+def noncentral_moment(n, a=0, b=1):
+    """
+    n-th noncentral moment of the uniform distribution.
+
+    n must be a nonnegativre integer.
+    """
+    n = _validate_moment_n(n)
+    with mp.extradps(5):
+        a, b = _validate(a, b)
+        if n == 0:
+            return mp.one
+        return mp.fsum([a**i*b**(n - i) for i in range(n + 1)])/(n + 1)
 
 
 def mle(x):
