@@ -189,7 +189,7 @@ def noncentral_moment(n, a, b):
     """
     n-th noncentral moment of the beta distribution.
 
-    n must be a nonnegativre integer.
+    n must be a nonnegative integer.
     """
     n = _validate_moment_n(n)
     with mp.extradps(5):

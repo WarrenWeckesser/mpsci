@@ -140,7 +140,7 @@ def noncentral_moment(n, a=0, b=1):
     """
     n-th noncentral moment of the uniform distribution.
 
-    n must be a nonnegativre integer.
+    n must be a nonnegative integer.
     """
     n = _validate_moment_n(n)
     with mp.extradps(5):
