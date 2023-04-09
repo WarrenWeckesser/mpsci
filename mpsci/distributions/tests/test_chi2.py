@@ -83,3 +83,12 @@ def test_mode():
     with mp.workdps(50):
         assert chi2.mode(5) == 3
         assert chi2.mode(1.5) == 0
+
+
+@mp.workdps(50)
+def test_noncentral_moment():
+    k = 3
+    m = [chi2.noncentral_moment(t, k) for t in range(1, 5)]
+    # References values were double-checked with Wolfram Alpha:
+    #     moments ChiSquareDistribution 3
+    assert m == [3, 15, 105, 945]
