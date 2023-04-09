@@ -60,3 +60,15 @@ def test_basic_var():
 def test_basic_mode():
     with mp.workdps(50):
         assert mp.almosteq(chi.mode(3), mp.sqrt(2))
+
+
+@mp.workdps(50)
+def test_noncentral_moment():
+    k = 3
+    m = [chi.noncentral_moment(t, k) for t in range(1, 5)]
+    # References values were computed with Wolfram Alpha:
+    #     moments ChiDistribution 3
+    sqrt2opi = mp.sqrt(2/mp.pi)
+    ref = [2*sqrt2opi, 3, 8*sqrt2opi, 15]
+    for mn, refn in zip(m, ref):
+        assert mp.almosteq(mn, refn)

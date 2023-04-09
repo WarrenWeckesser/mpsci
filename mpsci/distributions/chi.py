@@ -4,10 +4,11 @@ Chi distribution
 """
 
 from mpmath import mp
+from ._common import _validate_moment_n
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mode', 'mean', 'var',
-           'entropy']
+           'entropy', 'noncentral_moment']
 
 
 def _validate_k(k):
@@ -118,3 +119,17 @@ def entropy(k):
         k = _validate_k(k)
         k2 = k/2
         return mp.loggamma(k2) + (k - mp.log(2) - (k - 1)*mp.psi(0, k2))/2
+
+
+def noncentral_moment(n, k):
+    """
+    n-th noncentral moment of the chi distribution.
+
+    n must be a nonnegative integer.
+    """
+    n = _validate_moment_n(n)
+    with mp.extradps(5):
+        k = _validate_k(k)
+        if n == 0:
+            return mp.one
+        return mp.mpf(2)**(n/2) * mp.gammaprod([(n + k)/2], [k/2])
