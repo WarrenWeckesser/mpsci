@@ -16,11 +16,11 @@ The parameters used here map to the wikipedia article as follows::
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_x_bounds
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
-           'entropy']
+           'entropy', 'nll']
 
 
 def _validate_c_scale(c, scale):
@@ -177,3 +177,16 @@ def entropy(c, scale):
     with mp.extradps(5):
         c, scale = _validate_c_scale(c, scale)
         return mp.one - mp.log(c) - mp.exp(c)*mp.e1(c) + mp.log(scale)
+
+
+def nll(x, c, scale):
+    """
+    Negative log-likelihood of a sample for the Gompertz distribution.
+
+    x must be a sequence of numbers.
+    """
+    with mp.extradps(5):
+        c, scale = _validate_c_scale(c, scale)
+        x = _validate_x_bounds(x, low=0, high=mp.inf,
+                               strict_low=False, strict_high=True)
+        return -mp.fsum([logpdf(xi, c, scale) for xi in x])
