@@ -5,14 +5,13 @@ from mpsci.distributions import gamma
 from ._utils import call_and_check_mle
 
 
-mp.dps = 16
-
-
+@mp.workdps(25)
 def test_pdf_outside_support():
     p = gamma.pdf(-10, k=0.5, theta=1)
     assert p == 0
 
 
+@mp.workdps(25)
 def test_logpdf_outside_support():
     logp = gamma.logpdf(-10, k=0.5, theta=1)
     assert logp == mp.ninf
@@ -24,38 +23,45 @@ _cdf123str = ("0.04462491923494766609919453743282711006251725357136112381217"
               "305716359456368679682785494521477976673845")
 
 
+@mp.workdps(80)
 def test_cdf():
     c = gamma.cdf(1, k=2, theta=3)
     expected = mp.mpf(_cdf123str)
     assert mp.almosteq(c, expected)
 
 
+@mp.workdps(25)
 def test_cdf_outside_support():
     c = gamma.cdf(-10, k=0.5, theta=1)
     assert c == 0
 
 
+@mp.workdps(80)
 def test_sf():
     s = gamma.sf(1, k=2, theta=3)
     expected = 1 - mp.mpf(_cdf123str)
     assert mp.almosteq(s, expected)
 
 
+@mp.workdps(25)
 def test_sf_outside_support():
     c = gamma.sf(-10, k=0.5, theta=1)
     assert c == 1
 
 
+@mp.workdps(25)
 def test_skewness():
     s = gamma.skewness(k=16, theta=3)
     assert s == 0.5
 
 
+@mp.workdps(25)
 def test_kurtosis():
     k = gamma.kurtosis(k=16, theta=3)
     assert k == 3/8
 
 
+@mp.workdps(80)
 def test_interval_prob():
     x1 = 2.0
     x2 = 3.0
@@ -64,6 +70,7 @@ def test_interval_prob():
     assert mp.almosteq(p, expected)
 
 
+@mp.workdps(80)
 def test_interval_prob_x1_x2_close():
     # With mpmath.mps.dps = 16, this test would fail if interval_prob
     # was computed as the difference of the CDF values.
@@ -81,6 +88,7 @@ def test_interval_prob_x1_x2_close():
     assert mp.almosteq(p, expected)
 
 
+@mp.workdps(80)
 def test_interval_prob_close_cdf_values():
     # With mpmath.mps.dps = 16, this test would fail if interval_prob
     # was computed as the difference of the CDF values.
@@ -96,6 +104,7 @@ def test_interval_prob_close_cdf_values():
     assert mp.almosteq(p, expected)
 
 
+@mp.workdps(80)
 def test_noncentral_moment():
     k = 2.5
     theta = 3.5
@@ -117,6 +126,7 @@ def test_noncentral_moment():
     assert mp.almosteq(m3, expected_m3)
 
 
+@mp.workdps(25)
 def test_mom():
     x = [1, 2, 3, 4]
     k, theta = gamma.mom(x)
@@ -131,6 +141,7 @@ def test_mom():
       13.0, 21.5, 40.0, 48.0, 22.0, 15.0, 47.5, 48.0, 26.5, 33.0, 21.0,
       28.0, 23.5, 16.0, 39.5, 38.5, 43.5, 23.0, 22.5, 33.5, 92.0, 44.5]]
 )
+@mp.workdps(50)
 def test_mle(x):
     call_and_check_mle(gamma.mle, gamma.nll, x)
 
