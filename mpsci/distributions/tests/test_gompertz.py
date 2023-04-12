@@ -1,6 +1,7 @@
-
+import pytest
 from mpmath import mp
 from mpsci.distributions import gompertz
+from ._utils import call_and_check_mle, check_mle
 
 
 @mp.workdps(60)
@@ -93,3 +94,33 @@ def test_entropy_against_integral():
                   [0, (gompertz.mean(c, scale)
                        + 100*mp.sqrt(gompertz.var(c, scale)))])
     assert mp.almosteq(h, hi)
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[2.2, 2.2, 3.1, 0.7, 3.6, 0.6, 0.8, 1.1, 0.1],
+     [0.05, 0.09, 0.12, 0.06, 0.25, 0.30, 0.10, 0.41,
+      0.02, 0.05, 0.11, 0.03, 0.07, 0.02, 0.13, 0.33]]
+)
+@mp.workdps(50)
+def test_mle(x):
+    call_and_check_mle(gompertz.mle, gompertz.nll, x)
+
+
+@mp.workdps(50)
+def test_mle_scale_fixed():
+    x = [2.2, 2.2, 3.1, 0.7, 3.6, 0.6, 0.8, 1.1, 0.1]
+    # Fix the scale to be 1.
+    c1, scale1 = gompertz.mle(x, scale=1)
+    assert scale1 == 1
+    check_mle(lambda x, c: gompertz.nll(x, c, scale=1), x, (c1,))
+
+
+@mp.workdps(50)
+def test_mle_c_fixed():
+    x = [2.2, 2.2, 3.1, 0.7, 3.6, 0.6, 0.8, 1.1, 0.1]
+    # Fix c to be 0.125
+    c1, scale1 = gompertz.mle(x, c=0.125)
+    assert c1 == 0.125
+    check_mle(lambda x, scale: gompertz.nll(x, c=0.125, scale=scale),
+              x, (scale1,))

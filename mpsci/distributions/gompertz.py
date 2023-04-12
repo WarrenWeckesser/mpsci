@@ -16,11 +16,12 @@ The parameters used here map to the wikipedia article as follows::
 """
 
 from mpmath import mp
-from ._common import _validate_p, _validate_x_bounds
+from mpsci.stats import mean as _mean
+from ._common import _validate_p, _validate_x_bounds, Initial
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
-           'entropy', 'nll']
+           'entropy', 'nll', 'mle']
 
 
 def _validate_c_scale(c, scale):
@@ -190,3 +191,56 @@ def nll(x, c, scale):
         x = _validate_x_bounds(x, low=0, high=mp.inf,
                                strict_low=False, strict_high=True)
         return -mp.fsum([logpdf(xi, c, scale) for xi in x])
+
+
+def mle(x, c=None, scale=None):
+    """
+    Maximum likelihood estimate for the Gompertz distribution.
+
+    `x` must be a sequence of numbers.
+
+    `scale` can be an instance of `mpsci.distributions.Initial` to allow
+    an initial guess to be provided to the numerical solver.
+    """
+    scale_fixed = not (scale is None or isinstance(scale, Initial))
+    with mp.extradps(5):
+        x = _validate_x_bounds(x, low=0, high=mp.inf,
+                               strict_low=False, strict_high=True)
+        if c is None:
+            if scale_fixed:
+                # c is free, scale is fixed.
+                _, scale = _validate_c_scale(1, scale)
+                meanexpx = _mean([mp.exp(xi/scale) for xi in x])
+                chat = 1/(meanexpx - 1)
+                return chat, scale
+            else:
+                # Both parameters are free; scale might hold an initial guess.
+                scale0 = scale.initial if isinstance(scale, Initial) else 1
+                meanx = _mean(x)
+
+                def mle_scale_eqn(scale):
+                    meanexpx = _mean([mp.exp(xi/scale) for xi in x])
+                    meanxexpx = _mean([xi*mp.exp(xi/scale) for xi in x])
+                    return -scale - meanx + meanxexpx/(meanexpx - 1)
+
+                scalehat = mp.findroot(mle_scale_eqn, scale0)
+                meanexpx = _mean([mp.exp(xi/scalehat) for xi in x])
+                chat = 1/(meanexpx - 1)
+                return chat, scalehat
+        else:
+            # c is fixed.
+            if scale_fixed:
+                # Both parameters fixed, nothing to do.
+                c, scale = _validate_c_scale(c, scale)
+                return c, scale
+            else:
+                c, _ = _validate_c_scale(c, 1)
+                scale0 = scale.initial if isinstance(scale, Initial) else 1
+                meanx = _mean(x)
+
+                def mle_scale_eqn(scale):
+                    meanxexpx = _mean([xi*mp.exp(xi/scale) for xi in x])
+                    return -scale - meanx + c*meanxexpx
+
+                scalehat = mp.findroot(mle_scale_eqn, scale0)
+                return c, scalehat
