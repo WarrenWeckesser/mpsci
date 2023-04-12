@@ -14,7 +14,7 @@ from ._common import _validate_p, _validate_moment_n, _validate_x_bounds
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
            'mean', 'var', 'skewness', 'kurtosis', 'entropy',
            'noncentral_moment',
-           'mle', 'mom']
+           'nll', 'mle', 'mom']
 
 
 def _validate_params(mu, sigma):
@@ -159,6 +159,19 @@ def noncentral_moment(n, mu=0, sigma=1):
     with mp.extradps(5):
         mu, sigma = _validate_params(mu, sigma)
         return mp.exp(n*mu + n**2*sigma**2/2)
+
+
+def nll(x, mu, sigma):
+    """
+    Negative log-likelihood of a sample for the log-normal distribution.
+
+    x must be a sequence of numbers.
+    """
+    with mp.extradps(5):
+        mu, sigma = _validate_params(mu, sigma)
+        x = _validate_x_bounds(x, low=0, high=mp.inf,
+                               strict_low=True, strict_high=True)
+        return -mp.fsum([logpdf(xi, mu, sigma) for xi in x])
 
 
 # XXX Add standard errors and confidence intervals for the fitted parameters.

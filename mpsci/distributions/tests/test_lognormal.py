@@ -1,6 +1,7 @@
-
+import pytest
 from mpmath import mp
 from mpsci.distributions import lognormal
+from ._utils import call_and_check_mle
 
 
 def test_pdf():
@@ -165,3 +166,14 @@ def test_noncentral_moment():
                            mp.exp(93/2))
         assert mp.almosteq(lognormal.noncentral_moment(4, mu, sigma),
                            mp.exp(80))
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[0.03125, 0.0625, 0.125, 0.25, 0.5, 1],
+     [1, 2, 3, 5, 8, 13, 21, 34, 55, 89],
+     [3, 3.25, 4.25, 8, 8.5, 9.125]]
+)
+@mp.workdps(50)
+def test_mle(x):
+    call_and_check_mle(lognormal.mle, lognormal.nll, x)
