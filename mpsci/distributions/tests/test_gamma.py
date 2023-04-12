@@ -133,3 +133,8 @@ def test_mom():
 )
 def test_mle(x):
     call_and_check_mle(gamma.mle, gamma.nll, x)
+
+
+def test_nll_bad_x():
+    with pytest.raises(ValueError, match='All values in x'):
+        gamma.nll([1, 3, -1.5, 2], 2, 3)

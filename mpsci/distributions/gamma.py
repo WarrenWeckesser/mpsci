@@ -11,7 +11,7 @@ Another common parameterization is shape `k` and the "rate" `lambda`.
 """
 
 from mpmath import mp
-from ._common import _validate_moment_n
+from ._common import _validate_moment_n, _validate_x_bounds
 from ..fun import digammainv
 from . import normal
 
@@ -242,7 +242,8 @@ def nll(x, k, theta):
     """
     with mp.extradps(5):
         k, theta = _validate_k_theta(k, theta)
-
+        x = _validate_x_bounds(x, low=0, high=mp.inf,
+                               strict_low=False, strict_high=True)
         N = len(x)
         sumx = mp.fsum(x)
         sumlnx = mp.fsum(mp.log(t) for t in x)
