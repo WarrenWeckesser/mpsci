@@ -79,7 +79,7 @@ def pmf(k, r, p):
     p : float
         Probability of success.
     """
-    return mp.exp(logpmf(k, r))
+    return mp.exp(logpmf(k, r, p))
 
 
 def sf(k, r, p):
