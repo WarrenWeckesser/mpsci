@@ -19,7 +19,7 @@ Multivariate t Distribution
 from mpmath import mp
 
 
-__all__ = ['logpdf', 'pdf']
+__all__ = ['logpdf', 'pdf', 'entropy']
 
 _multivariate = True
 
@@ -74,3 +74,25 @@ def pdf(x, nu, loc, scale, scale_inv=None):
     """
 
     return mp.exp(logpdf(x, nu, loc, scale, scale_inv))
+
+
+def entropy(nu, loc, scale):
+    """
+    Differential entropy of the multivariate t distribution.
+
+    `loc` must be a sequence.  `scale` is the scale matrix; it must be an
+    instance of `mpmath.matrix`.  `scale` must be positive definite; the
+    function does not check this.  If `scale` is not positive definite,
+    the return value might not be meaningful.
+    """
+    d = mp.mpf(len(loc))
+    with mp.extradps(5):
+        nu = mp.mpf(nu)
+        loc = [mp.mpf(t) for t in loc]
+        mean_nu_d = (nu + d)/2
+        half_nu = nu/2
+        return (-mp.loggamma(mean_nu_d)
+                + mp.loggamma(half_nu)
+                + (d/2)*mp.log(nu*mp.pi)
+                + mean_nu_d*(mp.digamma(mean_nu_d) - mp.digamma(half_nu))
+                + mp.log(abs(mp.det(scale)))/2)
