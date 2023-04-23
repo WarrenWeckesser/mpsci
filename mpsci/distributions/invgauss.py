@@ -39,7 +39,7 @@ from ._common import _validate_p, _validate_moment_n
 __all__ = ['pdf', 'logpdf',
            'cdf', 'logcdf', 'invcdf',
            'sf', 'logsf', 'invsf',
-           'mean', 'mode', 'var', 'entropy',
+           'mean', 'median', 'mode', 'var', 'entropy',
            'noncentral_moment']
 
 
@@ -195,6 +195,15 @@ def mean(m, loc=0, scale=1):
     with mp.extradps(5):
         m, loc, scale = _validate_params(m, loc, scale)
         return scale*m + loc
+
+
+def median(m, loc=0, scale=1):
+    """
+    Median of the inverse Gaussian distribution.
+    """
+    with mp.extradps(5):
+        m, loc, scale = _validate_params(m, loc, scale)
+        return invcdf(mp.one/2, m, loc=loc, scale=scale)
 
 
 def mode(m, loc=0, scale=1):
