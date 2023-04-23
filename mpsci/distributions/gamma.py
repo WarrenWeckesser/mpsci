@@ -11,12 +11,13 @@ Another common parameterization is shape `k` and the "rate" `lambda`.
 """
 
 from mpmath import mp
-from ._common import _validate_moment_n, _validate_x_bounds
+from ._common import (_validate_p, _validate_moment_n, _validate_x_bounds,
+                      _find_bracket)
 from ..fun import digammainv
 from . import normal
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'interval_prob',
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
            'mean', 'var', 'skewness', 'kurtosis', 'noncentral_moment',
            'entropy',
            'mom', 'mle',
@@ -78,6 +79,27 @@ def cdf(x, k, theta):
         return mp.gammainc(k, 0, x/theta, regularized=True)
 
 
+def invcdf(p, k, theta):
+    """
+    Inverse of the CDF of the gamma distribution.
+    """
+    with mp.extradps(max(10, mp.dps)):
+        k, theta = _validate_k_theta(k, theta)
+        p = _validate_p(p)
+        if p == 0:
+            return mp.zero
+        if p == 1:
+            return mp.inf
+
+        x0, x1 = _find_bracket(lambda x: cdf(x, k, theta), p, 0, mp.inf,
+                               nbisect=16)
+        if x0 == x1:
+            return x0
+        x = mp.findroot(lambda x: cdf(x, k, theta) - p, x0=(x0, x1),
+                        solver='secant')
+        return x
+
+
 def sf(x, k, theta):
     """
     Survival function of the gamma distribution.
@@ -88,6 +110,27 @@ def sf(x, k, theta):
         if x < 0:
             return mp.one
         return mp.gammainc(k, x/theta, mp.inf, regularized=True)
+
+
+def invsf(p, k, theta):
+    """
+    Inverse of the survival function of the gamma distribution.
+    """
+    with mp.extradps(max(10, mp.dps)):
+        k, theta = _validate_k_theta(k, theta)
+        p = _validate_p(p)
+        if p == 0:
+            return mp.inf
+        if p == 1:
+            return mp.zero
+
+        x0, x1 = _find_bracket(lambda x: sf(x, k, theta), p, 0, mp.inf,
+                               nbisect=16)
+        if x0 == x1:
+            return x0
+        x = mp.findroot(lambda x: sf(x, k, theta) - p, x0=(x0, x1),
+                        solver='secant')
+        return x
 
 
 def interval_prob(x1, x2, k, theta):

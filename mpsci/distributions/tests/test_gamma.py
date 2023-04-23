@@ -49,6 +49,30 @@ def test_sf_outside_support():
     assert c == 1
 
 
+@pytest.mark.parametrize('x, k, theta', [(0.01, 2, 3),
+                                         (1, 2, 3),
+                                         (0.5, 1, 1),
+                                         (10.0, 5, 1),
+                                         (10.0, 0.015625, 1)])
+@mp.workdps(50)
+def test_cdf_invcdf_roundtrip(x, k, theta):
+    p = gamma.cdf(x, k, theta)
+    x1 = gamma.invcdf(p, k, theta)
+    assert mp.almosteq(x1, x)
+
+
+@pytest.mark.parametrize('x, k, theta', [(0.01, 2, 3),
+                                         (1, 2, 3),
+                                         (0.5, 1, 1),
+                                         (10.0, 5, 1),
+                                         (10.0, 0.015625, 1)])
+@mp.workdps(50)
+def test_sf_invsf_roundtrip(x, k, theta):
+    p = gamma.sf(x, k, theta)
+    x1 = gamma.invsf(p, k, theta)
+    assert mp.almosteq(x1, x)
+
+
 @mp.workdps(25)
 def test_skewness():
     s = gamma.skewness(k=16, theta=3)
