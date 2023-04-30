@@ -3,16 +3,16 @@ from mpmath import mp
 from ..fun import pow1pm1, inv_pow1pm1
 
 
-__all__ = ['yeo_johnson', 'inv_yeo_johnson']
+__all__ = ['yeojohnson', 'inv_yeojohnson']
 
 
-def yeo_johnson(x, lmbda):
+def yeojohnson(x, lmbda):
     r"""
     Yeo-Johnson transformation of x.
 
     See https://en.wikipedia.org/wiki/Power_transform#Yeo%E2%80%93Johnson_transformation
 
-    *See also:* :func:`inv_yeo_johnson`
+    *See also:* :func:`inv_yeojohnson`
     """
     with mp.extradps(5):
         x = mp.mpf(x)
@@ -30,13 +30,13 @@ def yeo_johnson(x, lmbda):
                 return -pow1pm1(-x, lmb2) / lmb2
 
 
-def inv_yeo_johnson(x, lmbda):
+def inv_yeojohnson(x, lmbda):
     """
     Inverse Yeo-Johnson transformation.
 
     See https://en.wikipedia.org/wiki/Power_transform#Yeo%E2%80%93Johnson_transformation
 
-    *See also:* :func:`yeo_johnson`
+    *See also:* :func:`yeojohnson`
     """
     with mp.extradps(5):
         x = mp.mpf(x)
