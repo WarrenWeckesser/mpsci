@@ -1,6 +1,6 @@
 
 from mpmath import mp
-from ._powm1 import pow1pm1, inv_pow1pm1
+from ..fun import pow1pm1, inv_pow1pm1
 
 
 __all__ = ['yeo_johnson', 'inv_yeo_johnson']

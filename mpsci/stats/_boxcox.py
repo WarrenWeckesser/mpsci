@@ -1,7 +1,8 @@
 
 from mpmath import mp
 import re
-from ._powm1 import pow1pm1, inv_powm1, inv_pow1pm1
+from ..fun import pow1pm1, inv_powm1, inv_pow1pm1
+
 
 __all__ = ['boxcox', 'boxcox1p']
 
