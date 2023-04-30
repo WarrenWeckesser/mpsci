@@ -1,5 +1,5 @@
 
-import mpmath
+from mpmath import mp
 import re
 from ._powm1 import pow1pm1, inv_powm1, inv_pow1pm1
 
@@ -20,12 +20,12 @@ def boxcox(x, lmbda):
 
     *See also:* :func:`inv_boxcox`,  :func:`boxcox1p`
     """
-    x = mpmath.mpf(x)
-    lmbda = mpmath.mpf(lmbda)
+    x = mp.mpf(x)
+    lmbda = mp.mpf(lmbda)
     if lmbda == 0:
-        return mpmath.log(x)
+        return mp.log(x)
     else:
-        return mpmath.powm1(x, lmbda) / lmbda
+        return mp.powm1(x, lmbda) / lmbda
 
 
 _boxcox_latex_f = r"""
@@ -59,10 +59,10 @@ def boxcox1p(x, lmbda):
 
     *See also:* :func:`boxcox`, :func:`inv_boxcox1p`
     """
-    x = mpmath.mpf(x)
-    lmbda = mpmath.mpf(lmbda)
+    x = mp.mpf(x)
+    lmbda = mp.mpf(lmbda)
     if lmbda == 0:
-        return mpmath.log1p(x)
+        return mp.log1p(x)
     else:
         return pow1pm1(x, lmbda) / lmbda
 
@@ -87,10 +87,10 @@ def inv_boxcox(y, lmbda):
 
     *See also:* :func:`boxcox`
     """
-    y = mpmath.mpf(y)
-    lmbda = mpmath.mpf(lmbda)
+    y = mp.mpf(y)
+    lmbda = mp.mpf(lmbda)
     if lmbda == 0:
-        return mpmath.exp(y)
+        return mp.exp(y)
     else:
         return inv_powm1(lmbda*y, lmbda)
 
@@ -101,9 +101,9 @@ def inv_boxcox1p(y, lmbda):
 
     *See also:* :func:`boxcox1p`
     """
-    y = mpmath.mpf(y)
-    lmbda = mpmath.mpf(lmbda)
+    y = mp.mpf(y)
+    lmbda = mp.mpf(lmbda)
     if lmbda == 0:
-        return mpmath.expm1(y)
+        return mp.expm1(y)
     else:
         return inv_pow1pm1(lmbda*y, lmbda)
