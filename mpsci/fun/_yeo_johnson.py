@@ -1,5 +1,5 @@
 
-import mpmath
+from mpmath import mp
 from ._powm1 import pow1pm1, inv_pow1pm1
 
 
@@ -14,17 +14,17 @@ def yeo_johnson(x, lmbda):
 
     *See also:* :func:`inv_yeo_johnson`
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        lmbda = mpmath.mpf(lmbda)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        lmbda = mp.mpf(lmbda)
         if x >= 0:
             if lmbda == 0:
-                return mpmath.log1p(x)
+                return mp.log1p(x)
             else:
                 return pow1pm1(x, lmbda) / lmbda
         else:
             if lmbda == 2:
-                return -mpmath.log1p(-x)
+                return -mp.log1p(-x)
             else:
                 lmb2 = 2 - lmbda
                 return -pow1pm1(-x, lmb2) / lmb2
@@ -38,17 +38,17 @@ def inv_yeo_johnson(x, lmbda):
 
     *See also:* :func:`yeo_johnson`
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        lmbda = mpmath.mpf(lmbda)
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        lmbda = mp.mpf(lmbda)
         if x >= 0:
             if lmbda == 0:
-                return mpmath.expm1(x)
+                return mp.expm1(x)
             else:
                 return inv_pow1pm1(lmbda*x, lmbda)
         else:
             if lmbda == 2:
-                return -mpmath.expm1(-x)
+                return -mp.expm1(-x)
             else:
                 lmb2 = 2 - lmbda
                 return -pow1pm1(-lmb2*x, lmb2)
