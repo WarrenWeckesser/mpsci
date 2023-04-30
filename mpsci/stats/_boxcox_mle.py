@@ -3,17 +3,17 @@ Code for the maximum likelihood estimation of the
 Box-Cox transformation.
 """
 
-import mpmath
+from mpmath import mp
 from ._basic import var
 
 
 def _boxcox_llf(lam, x):
-    lam = mpmath.mpf(lam)
-    x = [mpmath.mpf(t) for t in x]
+    lam = mp.mpf(lam)
+    x = [mp.mpf(t) for t in x]
     n = len(x)
 
-    logdata = [mpmath.log(t) for t in x]
-    sumlogdata = mpmath.fsum(logdata)
+    logdata = [mp.log(t) for t in x]
+    sumlogdata = mp.fsum(logdata)
 
     # Compute the variance of the transformed data.
     if lam == 0:
@@ -24,15 +24,15 @@ def _boxcox_llf(lam, x):
         # lead to loss of precision.
         variance = var([t**lam / lam for t in x])
 
-    return (lam - 1) * sumlogdata - n/2 * mpmath.log(variance)
+    return (lam - 1) * sumlogdata - n/2 * mp.log(variance)
 
 
 def _boxcox_llf_deriv(lam, x):
     """
     Use mpmath.diff to estimate the derivative of boxcox_llf w.r.t. lam.
     """
-    with mpmath.extradps(10):
-        return mpmath.diff(lambda t: _boxcox_llf(t, x), lam)
+    with mp.extradps(10):
+        return mp.diff(lambda t: _boxcox_llf(t, x), lam)
 
 
 def boxcox_mle(x, lam0=0):
@@ -62,4 +62,4 @@ def boxcox_mle(x, lam0=0):
     mpf('0.1902293418567596520673395974496886925599866')
 
     """
-    return mpmath.findroot(lambda t: _boxcox_llf_deriv(t, x), lam0)
+    return mp.findroot(lambda t: _boxcox_llf_deriv(t, x), lam0)
