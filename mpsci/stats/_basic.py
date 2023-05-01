@@ -15,7 +15,7 @@ pmean
     Power (or generalized) mean
 """
 
-import mpmath
+from mpmath import mp
 from ..fun import xlogy as _xlogy
 
 
@@ -36,14 +36,14 @@ def mean(x, weights=None):
         if len(weights) != n:
             raise ValueError('x and weights must have the same length.')
 
-    with mpmath.extraprec(16):
+    with mp.extraprec(16):
         if weights is None:
-            return mpmath.fsum(x) / len(x)
+            return mp.fsum(x) / len(x)
         else:
-            if mpmath.fsum(weights) == 0:
+            if mp.fsum(weights) == 0:
                 raise ZeroDivisionError('sum(weights) must be nonzero.')
-            return (mpmath.fsum(t*w for t, w in zip(x, weights)) /
-                    mpmath.fsum(weights))
+            return (mp.fsum(t*w for t, w in zip(x, weights)) /
+                    mp.fsum(weights))
 
 
 def var(x, ddof=0):
@@ -51,10 +51,10 @@ def var(x, ddof=0):
     Variance of the values in the sequence x.
     """
     n = len(x)
-    with mpmath.extraprec(16):
-        sumx = mpmath.fsum(x)
+    with mp.extraprec(16):
+        sumx = mp.fsum(x)
         meanx = sumx / n
-        varx = mpmath.fsum((mpmath.mpf(t) - meanx)**2 for t in x)/(n - ddof)
+        varx = mp.fsum((mp.mpf(t) - meanx)**2 for t in x)/(n - ddof)
     return varx
 
 
@@ -62,8 +62,8 @@ def std(x, ddof=0):
     """
     Standard deviation of the values in the sequence x.
     """
-    with mpmath.extraprec(16):
-        return mpmath.sqrt(var(x, ddof))
+    with mp.extraprec(16):
+        return mp.sqrt(var(x, ddof))
 
 
 def variation(x, ddof=1):
@@ -91,7 +91,7 @@ def variation(x, ddof=1):
     >>> variation([2, 3, 5, 8, 13, 21], ddof=0)
     >>> mpf('0.76149961050858964')
     """
-    with mpmath.extraprec(16):
+    with mp.extraprec(16):
         s = std(x, ddof=ddof)
         m = mean(x)
         return s / m
@@ -108,19 +108,19 @@ def gmean(x, weights=None):
     """
     if any(t < 0 for t in x):
         raise ValueError("all values in x must be nonnegative.")
-    with mpmath.extraprec(16):
+    with mp.extraprec(16):
         if weights is None:
             if 0 in x:
-                return mpmath.mp.zero
-            return mpmath.exp(mean([mpmath.log(t) for t in x]))
+                return mp.zero
+            return mp.exp(mean([mp.log(t) for t in x]))
         else:
             # Weighted geometric mean
-            wsum = mpmath.fsum(weights)
+            wsum = mp.fsum(weights)
             if wsum == 0:
                 raise ValueError('sum of weights must not be 0.')
-            wlogxsum = mpmath.fsum([_xlogy(wi, xi)
-                                    for (xi, wi) in zip(x, weights)])
-            return mpmath.exp(wlogxsum / wsum)
+            wlogxsum = mp.fsum([_xlogy(wi, xi)
+                                for (xi, wi) in zip(x, weights)])
+            return mp.exp(wlogxsum / wsum)
 
 
 def hmean(x):
@@ -141,8 +141,8 @@ def hmean(x):
     Examples
     --------
     >>> from mpsci.stats import hmean
-    >>> import mpmath
-    >>> mpmath.mp.dps = 25
+    >>> from mpmath import mp
+    >>> mp.dps = 25
 
     >>> hmean([1, 3, 3])
     mpf('1.8')
@@ -156,13 +156,13 @@ def hmean(x):
     >>> hmean([2, -2])
     mpf('nan')
 
-    >>> hmean([mpmath.inf, mpmath.inf, mpmath.inf])
+    >>> hmean([mp.inf, mp.inf, mp.inf])
     mpf('+inf')
 
-    >>> hmean([mpmath.inf, mpmath.inf, -mpmath.inf])
+    >>> hmean([mp.inf, mp.inf, -mp.inf])
     mpf('nan')
 
-    >>> hmean([-mpmath.inf, -mpmath.inf, -mpmath.inf])
+    >>> hmean([-mp.inf, -mp.inf, -mp.inf])
     >>> mpf('-inf')
 
     """
@@ -177,17 +177,17 @@ def hmean(x):
         else:
             nzero += 1
     if nzero > 0:
-        return mpmath.mp.zero
+        return mp.zero
     mixed_signs = npos > 0 and nneg > 0
-    with mpmath.extraprec(16):
-        m = mean([1/mpmath.mpf(t) for t in x])
+    with mp.extraprec(16):
+        m = mean([1/mp.mpf(t) for t in x])
         if m == 0:
             if mixed_signs:
-                return mpmath.mp.nan
+                return mp.nan
             elif npos > 0:
-                return mpmath.mp.inf
+                return mp.inf
             else:
-                return -mpmath.mp.inf
+                return -mp.inf
         else:
             return 1 / m
 
@@ -203,13 +203,13 @@ def pmean(x, p):
         return mean(x)
     elif p == -1:
         return hmean(x)
-    elif mpmath.isinf(p):
-        with mpmath.extraprec(16):
+    elif mp.isinf(p):
+        with mp.extraprec(16):
             if p > 0:
-                return max(mpmath.mpf(t) for t in x)
+                return max(mp.mpf(t) for t in x)
             else:
-                return min(mpmath.mpf(t) for t in x)
+                return min(mp.mpf(t) for t in x)
 
-    with mpmath.extraprec(16):
-        p = mpmath.mpf(p)
-        return mpmath.power(mean([mpmath.mpf(t)**p for t in x]), 1/p)
+    with mp.extraprec(16):
+        p = mp.mpf(p)
+        return mp.power(mean([mp.mpf(t)**p for t in x]), 1/p)

@@ -1,5 +1,4 @@
-
-import mpmath
+from mpmath import mp
 
 
 __all__ = ['digammainv']
@@ -27,34 +26,34 @@ def digammainv(y):
     Examples
     --------
 
-    >>> import mpmath
+    >>> from mpmath import mp
     >>> from mpsci.fun import digammainv
-    >>> mpmath.mp.dps = 25
+    >>> mp.dps = 25
     >>> y = mpmath.mpf('7.89123')
     >>> y
     mpf('7.891230000000000000000000011')
     >>> x = digammainv(y)
     >>> x
     mpf('2674.230572001301673812839151')
-    >>> mpmath.digamma(x)
+    >>> mp.digamma(x)
     mpf('7.891230000000000000000000011')
     """
 
     # XXX I'm not sure this extra dps is necessary.
-    with mpmath.extradps(5):
-        y = mpmath.mpf(y)
+    with mp.extradps(5):
+        y = mp.mpf(y)
 
         # Find a good initial guess for the root.
         if y > -0.125:
-            x0 = mpmath.exp(y) + mpmath.mpf('0.5')
+            x0 = mp.exp(y) + mp.mpf('0.5')
         elif y > -3:
-            x0 = mpmath.exp(y/mpmath.mpf(2.332)) + mpmath.mpf(0.08661)
+            x0 = mp.exp(y/mp.mpf(2.332)) + mp.mpf(0.08661)
         else:
-            x0 = -1 / (y + mpmath.euler)
+            x0 = -1 / (y + mp.euler)
 
         solver = 'anderson'
         x0 = (4*x0/5, 5*x0/4)
-        x = mpmath.findroot(lambda x: mpmath.digamma(x) - y, x0, solver=solver)
+        x = mp.findroot(lambda x: mp.digamma(x) - y, x0, solver=solver)
 
     return x
 

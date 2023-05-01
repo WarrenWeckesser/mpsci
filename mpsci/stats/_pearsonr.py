@@ -1,6 +1,4 @@
-
-
-import mpmath
+from mpmath import mp
 from ..distributions import normal
 
 
@@ -21,8 +19,8 @@ def pearsonr(x, y, alternative='two-sided'):
     Examples
     --------
     >>> from mpsci.stats import pearsonr
-    >>> import mpmath
-    >>> mpmath.mp.dps = 25
+    >>> from mpmath import mp
+    >>> mp.dps = 25
     >>> x = [1, 2, 3, 5, 8, 10]
     >>> y = [0.25, 2, 2, 2.5, 2.4, 5.5]
 
@@ -50,13 +48,13 @@ def pearsonr(x, y, alternative='two-sided'):
         raise ValueError('lengths of x and y must be the same.')
 
     if all(x[0] == t for t in x[1:]) or all(y[0] == t for t in y[1:]):
-        return mpmath.nan, mpmath.nan
+        return mp.nan, mp.nan
 
     if len(x) == 2:
-        return mpmath.sign(x[1] - x[0])*mpmath.sign(y[1] - y[0]), mpmath.mpf(1)
+        return mp.sign(x[1] - x[0])*mp.sign(y[1] - y[0]), mp.one
 
-    x = [mpmath.mp.mpf(float(t)) for t in x]
-    y = [mpmath.mp.mpf(float(t)) for t in y]
+    x = [mp.mpf(float(t)) for t in x]
+    y = [mp.mpf(float(t)) for t in y]
 
     xmean = sum(x) / len(x)
     ymean = sum(y) / len(y)
@@ -65,18 +63,18 @@ def pearsonr(x, y, alternative='two-sided'):
     ym = [t - ymean for t in y]
 
     num = sum(s*t for s, t in zip(xm, ym))
-    den = mpmath.sqrt(sum(t**2 for t in xm) * sum(t**2 for t in ym))
+    den = mp.sqrt(sum(t**2 for t in xm) * sum(t**2 for t in ym))
     r = num / den
 
     n = len(x)
-    a = mpmath.mpf(float(n))/2 - 1
+    a = mp.mpf(float(n))/2 - 1
     if alternative == 'two-sided':
-        p = 2*mpmath.betainc(a, a, x2=0.5*(1-abs(r)))/mpmath.beta(a, a)
+        p = 2*mp.betainc(a, a, x2=0.5*(1-abs(r)))/mp.beta(a, a)
     elif alternative == 'less':
-        p = mpmath.betainc(a, a, x2=0.5*(1+r))/mpmath.beta(a, a)
+        p = mp.betainc(a, a, x2=0.5*(1+r))/mp.beta(a, a)
     else:
         # alternative == 'greater'
-        p = mpmath.betainc(a, a, x2=0.5*(1-r))/mpmath.beta(a, a)
+        p = mp.betainc(a, a, x2=0.5*(1-r))/mp.beta(a, a)
 
     return r, p
 
@@ -92,8 +90,8 @@ def pearsonr_ci(r, n, alpha, alternative='two-sided'):
     --------
     Imports:
 
-    >>> import mpmath
-    >>> mpmath.mp.dps = 20
+    >>> from mpmath import mp
+    >>> mp.dps = 20
     >>> from mpsci.stats import pearsonr, pearsonr_ci
 
     Sample data:
@@ -122,26 +120,26 @@ def pearsonr_ci(r, n, alpha, alternative='two-sided'):
         raise ValueError("alternative must be 'two-sided', 'less', or "
                          "'greater'.")
 
-    with mpmath.mp.extradps(5):
-        zr = mpmath.atanh(r)
-        n = mpmath.mp.mpf(n)
-        alpha = mpmath.mp.mpf(alpha)
-        s = mpmath.sqrt(1/(n - 3))
+    with mp.extradps(5):
+        zr = mp.atanh(r)
+        n = mp.mpf(n)
+        alpha = mp.mpf(alpha)
+        s = mp.sqrt(1/(n - 3))
         if alternative == 'two-sided':
             h = normal.invcdf(1 - alpha/2)
             zlo = zr - h*s
             zhi = zr + h*s
-            rlo = mpmath.tanh(zlo)
-            rhi = mpmath.tanh(zhi)
+            rlo = mp.tanh(zlo)
+            rhi = mp.tanh(zhi)
         elif alternative == 'less':
             h = normal.invcdf(1 - alpha)
             zhi = zr + h*s
-            rhi = mpmath.tanh(zhi)
-            rlo = -mpmath.mp.one
+            rhi = mp.tanh(zhi)
+            rlo = -mp.one
         else:
             # alternative == 'greater'
             h = normal.invcdf(1 - alpha)
             zlo = zr - h*s
-            rlo = mpmath.tanh(zlo)
-            rhi = mpmath.mp.one
+            rlo = mp.tanh(zlo)
+            rhi = mp.one
         return rlo, rhi

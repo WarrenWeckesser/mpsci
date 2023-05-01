@@ -1,14 +1,13 @@
-
 import re
-import mpmath
+from mpmath import mp
 
 
 __all__ = ['marcumq', 'cmarcumq']
 
 
 def _integrand(x, m, a):
-    e2 = mpmath.exp(-(x**2 + a**2)/2)
-    return x*(x/a)**(m - 1)*e2*mpmath.besseli(m-1, a*x)
+    e2 = mp.exp(-(x**2 + a**2)/2)
+    return x*(x/a)**(m - 1)*e2*mp.besseli(m-1, a*x)
 
 
 def marcumq(m, a, b):
@@ -34,22 +33,22 @@ def marcumq(m, a, b):
 
     Examples
     --------
-    >>> import mpmath
+    >>> from mpmath import mp
     >>> from mpsci.fun import marcumq
-    >>> mpmath.mp.dps = 40
+    >>> mp.dps = 40
     >>> marcumq(2, 0.5, 3.0)
     mpf('0.07558718754263240906718640000640082605610073')
 
     """
     if a == 0:
         if m == 1:
-            q = mpmath.exp(-b**2/2)
+            q = mp.exp(-b**2/2)
         else:
-            q = mpmath.gammainc(m, b**2/2, regularized=True)
+            q = mp.gammainc(m, b**2/2, regularized=True)
     elif b == 0 and m > 0:
-        q = mpmath.mpf(1)
+        q = mp.one
     else:
-        q = mpmath.quad(lambda x: _integrand(x, m, a), [b, mpmath.inf])
+        q = mp.quad(lambda x: _integrand(x, m, a), [b, mp.inf])
     return q
 
 
@@ -81,11 +80,11 @@ def cmarcumq(m, a, b):
     """
     if a == 0:
         if m == 1:
-            q = -mpmath.expm1(-b**2/2)
+            q = -mp.expm1(-b**2/2)
         else:
-            q = mpmath.gammainc(m, 0, b**2/2, regularized=True)
+            q = mp.gammainc(m, 0, b**2/2, regularized=True)
     elif b == 0 and m > 0:
-        q = mpmath.mpf(0)
+        q = mp.zero
     else:
-        q = mpmath.quad(lambda x: _integrand(x, m, a), [0, b])
+        q = mp.quad(lambda x: _integrand(x, m, a), [0, b])
     return q

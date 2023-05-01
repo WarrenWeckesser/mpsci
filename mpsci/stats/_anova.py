@@ -1,5 +1,4 @@
-
-import mpmath
+from mpmath import mp
 from ._basic import mean
 from ..distributions import f
 
@@ -14,8 +13,8 @@ def anova_oneway(*args):
 
     Example
     -------
-    >>> import mpmath
-    >>> mpmath.mp.dps = 20
+    >>> from mpmath import mp
+    >>> mp.dps = 20
     >>> from mpsci.stats import anova_oneway
 
     This example is based on the article "One-way anova" from the
@@ -41,21 +40,20 @@ def anova_oneway(*args):
     mpf('0.00028122423145345577062353')
 
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         num_groups = len(args)
-        groups = [[mpmath.mp.mpf(x) for x in group]
-                  for group in args]
+        groups = [[mp.mpf(x) for x in group] for group in args]
         n = 0
-        grand_total = mpmath.mp.zero
+        grand_total = mp.zero
         for group in groups:
             n += len(group)
-            grand_total += mpmath.fsum(group)
+            grand_total += mp.fsum(group)
         grand_mean = grand_total / n
 
-        v = mpmath.fsum(mpmath.fsum((g - grand_mean)**2 for g in group)
-                        for group in groups)
-        vb = mpmath.fsum(len(group)*(mean(group) - grand_mean)**2
-                         for group in groups)
+        v = mp.fsum(mp.fsum((g - grand_mean)**2 for g in group)
+                    for group in groups)
+        vb = mp.fsum(len(group)*(mean(group) - grand_mean)**2
+                     for group in groups)
         vw = v - vb
         F = vb/(num_groups - 1) / (vw/(n - num_groups))
         dof_num = num_groups - 1

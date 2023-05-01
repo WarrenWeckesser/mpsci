@@ -1,5 +1,4 @@
-
-import mpmath
+from mpmath import mp
 from ._xlogy import xlog1py
 
 
@@ -13,10 +12,10 @@ def inv_powm1(t, y):
         raise ValueError('y must not be 0.')
     if t <= -1:
         raise ValueError('t must be greater than -1.')
-    with mpmath.extradps(5):
-        t = mpmath.mpf(t)
-        y = mpmath.mpf(y)
-        return mpmath.exp(xlog1py(1/y, t))
+    with mp.extradps(5):
+        t = mp.mpf(t)
+        y = mp.mpf(y)
+        return mp.exp(xlog1py(1/y, t))
 
 
 def pow1pm1(x, y):
@@ -25,10 +24,10 @@ def pow1pm1(x, y):
 
     *See also:* :func:`inv_pow1pm1`
     """
-    with mpmath.extradps(5):
-        x = mpmath.mpf(x)
-        y = mpmath.mpf(y)
-        return mpmath.expm1(xlog1py(y, x))
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        y = mp.mpf(y)
+        return mp.expm1(xlog1py(y, x))
 
 
 def inv_pow1pm1(t, y):
@@ -41,7 +40,7 @@ def inv_pow1pm1(t, y):
         raise ValueError('y must not be 0.')
     if t <= -1:
         raise ValueError('t must be greater than -1.')
-    with mpmath.extradps(5):
-        t = mpmath.mpf(t)
-        y = mpmath.mpf(y)
-        return mpmath.expm1(xlog1py(1/y, t))
+    with mp.extradps(5):
+        t = mp.mpf(t)
+        y = mp.mpf(y)
+        return mp.expm1(xlog1py(1/y, t))

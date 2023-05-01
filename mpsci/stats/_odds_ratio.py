@@ -1,6 +1,6 @@
 
 from dataclasses import dataclass
-import mpmath
+from mpmath import mp
 from ..distributions import (fishers_noncentral_hypergeometric as fnch,
                              hypergeometric, normal)
 from ._fisher_exact import fisher_exact
@@ -13,10 +13,10 @@ def _unpack_table(table):
 
 def _unpack_table_to_mpf(table):
     a, b, c, d = _unpack_table(table)
-    a = mpmath.mpf(a)
-    b = mpmath.mpf(b)
-    c = mpmath.mpf(c)
-    d = mpmath.mpf(d)
+    a = mp.mpf(a)
+    b = mp.mpf(b)
+    c = mp.mpf(c)
+    d = mp.mpf(d)
     return a, b, c, d
 
 
@@ -33,14 +33,14 @@ def _sample_odds_ratio(table):
     Return nan if the numerator and denominator are 0.
     Return inf if just the denominator is 0.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         a, b, c, d = _unpack_table_to_mpf(table)
         if c > 0 and b > 0:
             oddsratio = a*d / (c*b)
         elif a == 0 or d == 0:
-            oddsratio = mpmath.nan
+            oddsratio = mp.nan
         else:
-            oddsratio = mpmath.inf
+            oddsratio = mp.inf
         return oddsratio
 
 
@@ -48,18 +48,18 @@ def _solve(func):
     """
     Solve func(nc) = 0.  func must be an increasing function.
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         # We could just as well call the variable `x` instead of `nc`, but we
         # always call this function with functions for which nc (the
         # noncentrality parameter) is the variable for which we are solving.
-        nc = mpmath.mp.one
+        nc = mp.one
         value = func(nc)
         if value == 0:
             return nc
 
         # Multiplicative factor by which to increase or decrease nc when
         # searching for a bracketing interval.
-        factor = mpmath.mpf(2)
+        factor = mp.mpf(2)
         # Find a bracketing interval.
         if value > 0:
             nc /= factor
@@ -75,7 +75,7 @@ def _solve(func):
             hi = nc
 
         # lo and hi bracket the solution for nc.
-        nc = mpmath.findroot(func, (lo, hi), solver='illinois')
+        nc = mp.findroot(func, (lo, hi), solver='illinois')
         return nc
 
 
@@ -102,8 +102,8 @@ def _ci_upper(table, alpha):
     """
     Compute the upper end of the confidence interval.
     """
-    if mpmath.isinf(_sample_odds_ratio(table)):
-        return mpmath.mp.inf
+    if mp.isinf(_sample_odds_ratio(table)):
+        return mp.inf
 
     x, total, ngood, nsample = _hypergeom_params_from_table(table)
 
@@ -118,7 +118,7 @@ def _ci_lower(table, alpha):
     Compute the lower end of the confidence interval.
     """
     if _sample_odds_ratio(table) == 0:
-        return mpmath.mp.zero
+        return mp.zero
 
     x, total, ngood, nsample = _hypergeom_params_from_table(table)
 
@@ -138,10 +138,10 @@ def _conditional_oddsratio(table):
     # the odds ratio is either 0 or inf.
     if x == sup[0]:
         # x is at the low end of the support.
-        return mpmath.mp.zero
+        return mp.zero
     if x == sup[-1]:
         # x is at the high end of the support.
-        return mpmath.mp.inf
+        return mp.inf
 
     nc = _nc_hypergeom_mean_inverse(x, total, ngood, nsample)
     return nc
@@ -171,46 +171,46 @@ def _conditional_oddsratio_ci(table, confidence_level,
     See "Example 1" starting on page 48.
 
     """
-    with mpmath.extradps(5):
-        confidence_level = mpmath.mpf(confidence_level)
+    with mp.extradps(5):
+        confidence_level = mp.mpf(confidence_level)
         if alternative == 'two-sided':
-            alpha = (mpmath.mp.one - confidence_level)/2
+            alpha = (mp.one - confidence_level)/2
             lower = _ci_lower(table, alpha)
             upper = _ci_upper(table, alpha)
         elif alternative == 'less':
-            lower = mpmath.mp.zero
-            upper = _ci_upper(table, mpmath.mp.one - confidence_level)
+            lower = mp.zero
+            upper = _ci_upper(table, mp.one - confidence_level)
         else:
             # alternative == 'greater'
-            lower = _ci_lower(table, mpmath.mp.one - confidence_level)
-            upper = mpmath.inf
+            lower = _ci_lower(table, mp.one - confidence_level)
+            upper = mp.inf
 
         return lower, upper
 
 
 def _sample_odds_ratio_ci(table, confidence_level,
                           alternative='two-sided'):
-    confidence_level = mpmath.mpf(confidence_level)
+    confidence_level = mp.mpf(confidence_level)
     oddsratio = _sample_odds_ratio(table)
-    log_or = mpmath.log(oddsratio)
+    log_or = mp.log(oddsratio)
     a, b, c, d = _unpack_table_to_mpf(table)
-    se = mpmath.sqrt(sum(1/a + 1/b + 1/c + 1/d))
+    se = mp.sqrt(sum(1/a + 1/b + 1/c + 1/d))
     if alternative == 'less':
         z = normal.invcdf(confidence_level)
-        loglow = mpmath.ninf
+        loglow = mp.ninf
         loghigh = log_or + z*se
     elif alternative == 'greater':
         z = normal.invcdf(confidence_level)
         loglow = log_or - z*se
-        loghigh = mpmath.inf
+        loghigh = mp.inf
     else:
         # alternative is 'two-sided'
-        half = mpmath.mpf(0.5)
+        half = mp.mpf(0.5)
         z = normal.invcdf(half*confidence_level + half)
         loglow = log_or - z*se
         loghigh = log_or + z*se
 
-    return mpmath.exp(loglow), mpmath.exp(loghigh)
+    return mp.exp(loglow), mp.exp(loghigh)
 
 
 @dataclass
@@ -315,7 +315,7 @@ class OddsRatioResult:
         if _row_or_column_zero(self.table):
             # If both values in a row or column are zero, the p-value is 1,
             # the odds ratio is NaN and the confidence interval is (0, inf).
-            ci = (0, mpmath.inf)
+            ci = (0, mp.inf)
         else:
             ci = _conditional_oddsratio_ci(self.table,
                                            confidence_level=confidence_level,
@@ -332,7 +332,7 @@ class OddsRatioResult:
         if _row_or_column_zero(self.table):
             # If both values in a row or column are zero, the p-value is 1,
             # the odds ratio is NaN and the confidence interval is (0, inf).
-            ci = (0, mpmath.inf)
+            ci = (0, mp.inf)
         else:
             ci = _sample_odds_ratio_ci(self.table,
                                        confidence_level=confidence_level,
@@ -418,19 +418,19 @@ def odds_ratio(table, kind='conditional', alternative='two-sided'):
         # the odds ratio is NaN.
         result = OddsRatioResult(table=table, kind=kind,
                                  alternative=alternative,
-                                 odds_ratio=mpmath.nan, pvalue=1)
+                                 odds_ratio=mp.nan, pvalue=1)
         return result
 
     if kind == 'sample':
         oddsratio = _sample_odds_ratio(table)
-        log_or = mpmath.log(oddsratio)
-        se = mpmath.sqrt(1/a + 1/b + 1/c + 1/d)
+        log_or = mp.log(oddsratio)
+        se = mp.sqrt(1/a + 1/b + 1/c + 1/d)
         if alternative == 'two-sided':
-            pvalue = 2*mpmath.ncdf(-abs(log_or)/se)
+            pvalue = 2*mp.ncdf(-abs(log_or)/se)
         elif alternative == 'less':
-            pvalue = mpmath.ncdf(log_or/se)
+            pvalue = mp.ncdf(log_or/se)
         else:
-            pvalue = mpmath.ncdf(-log_or/se)
+            pvalue = mp.ncdf(-log_or/se)
     else:
         # kind is 'conditional'
         oddsratio = _conditional_oddsratio(table)

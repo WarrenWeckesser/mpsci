@@ -1,5 +1,4 @@
-
-import mpmath
+from mpmath import mp
 
 
 __all__ = ['logbinomial']
@@ -11,8 +10,8 @@ def logbinomial(n, k):
 
     Examples
     --------
-    >>> import mpmath
-    >>> mpmath.mp.dps = 25
+    >>> from mpmath import mp
+    >>> mp.dps = 25
     >>> from mpsci.fun import logbinomial
 
     Compute the log of C(1500, 450).
@@ -22,7 +21,7 @@ def logbinomial(n, k):
 
     Verify that it is the expected value.
 
-    >>> mpmath.log(mpmath.binomial(1500, 450))
+    >>> mp.log(mp.binomial(1500, 450))
     mpf('912.5010192350457701746286773')
     """
     if n < 0:
@@ -32,7 +31,7 @@ def logbinomial(n, k):
     if k > n:
         raise ValueError('k must not exceed n')
 
-    with mpmath.extradps(5):
-        return (mpmath.loggamma(n + 1)
-                - mpmath.loggamma(k + 1)
-                - mpmath.loggamma(mpmath.fsum([n + 1, -k])))
+    with mp.extradps(5):
+        return (mp.loggamma(n + 1)
+                - mp.loggamma(k + 1)
+                - mp.loggamma(mp.fsum([n + 1, -k])))

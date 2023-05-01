@@ -53,8 +53,8 @@ def boxcox_mle(x, lam0=0):
 
     Examples
     --------
-    >>> import mpmath
-    >>> mpmath.mp.dps = 40
+    >>> from mpmath import mp
+    >>> mp.dps = 40
 
     >>> from mpsci.stats import boxcox_mle
     >>> x = [12.5, 13, 18.2, 20, 24.9, 25.3, 32.8]

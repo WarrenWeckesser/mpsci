@@ -1,5 +1,4 @@
-
-import mpmath
+from mpmath import mp
 
 
 __all__ = ['logsumexp']
@@ -13,8 +12,8 @@ def logsumexp(logs, weights=None):
     --------
     Imports and configuration:
 
-    >>> import mpmath
-    >>> mpmath.mp.dps = 25
+    >>> from mpmath import mp
+    >>> mp.dps = 25
     >>> from mpsci.fun import logsumexp
 
     Test data:
@@ -26,7 +25,7 @@ def logsumexp(logs, weights=None):
 
     Compare that result to:
 
-    >>> mpmath.log(mpmath.fsum([mpmath.exp(xi) for xi in x]))
+    >>> mp.log(mp.fsum([mp.exp(xi) for xi in x]))
     mpf('3.202253447679351758368594507')
 
     Weight the data with the weights [1, 2, 0, 2]:
@@ -38,15 +37,15 @@ def logsumexp(logs, weights=None):
 
     Compare to:
 
-    >>> mpmath.log(mpmath.fsum([wi*mpmath.exp(xi) for xi, wi in zip(x, w)]))
+    >>> mp.log(mp.fsum([wi*mp.exp(xi) for xi, wi in zip(x, w)]))
     mpf('1.838387764326144472528490234')
     """
-    with mpmath.extradps(5):
+    with mp.extradps(5):
         log_max = max(logs)
-        exps = [mpmath.exp(t - log_max) for t in logs]
+        exps = [mp.exp(t - log_max) for t in logs]
         if weights is None:
-            result = mpmath.log(mpmath.fsum(exps)) + log_max
+            result = mp.log(mp.fsum(exps)) + log_max
         else:
             weighted = [w*e for w, e in zip(weights, exps)]
-            result = mpmath.log(mpmath.fsum(weighted)) + log_max
+            result = mp.log(mp.fsum(weighted)) + log_max
         return result
