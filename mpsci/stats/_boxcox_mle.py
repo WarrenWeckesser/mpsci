@@ -7,24 +7,28 @@ from mpmath import mp
 from ._basic import var
 
 
-def _boxcox_llf(lam, x):
-    lam = mp.mpf(lam)
-    x = [mp.mpf(t) for t in x]
-    n = len(x)
+def boxcox_llf(lam, x):
+    """
+    Log-likelihood for maximum likelihood estimation of the Box-Cox parameters.
+    """
+    with mp.extradps(5):
+        lam = mp.mpf(lam)
+        x = [mp.mpf(t) for t in x]
+        n = len(x)
 
-    logdata = [mp.log(t) for t in x]
-    sumlogdata = mp.fsum(logdata)
+        logdata = [mp.log(t) for t in x]
+        sumlogdata = mp.fsum(logdata)
 
-    # Compute the variance of the transformed data.
-    if lam == 0:
-        variance = var(logdata)
-    else:
-        # Transform without the constant offset 1/lam.  The offset does
-        # not effect the variance, and the subtraction of the offset can
-        # lead to loss of precision.
-        variance = var([t**lam / lam for t in x])
+        # Compute the variance of the transformed data.
+        if lam == 0:
+            variance = var(logdata)
+        else:
+            # Transform without the constant offset 1/lam.  The offset does
+            # not effect the variance, and the subtraction of the offset can
+            # lead to loss of precision.
+            variance = var([t**lam / lam for t in x])
 
-    return (lam - 1) * sumlogdata - n/2 * mp.log(variance)
+        return (lam - 1) * sumlogdata - n/2 * mp.log(variance)
 
 
 def _boxcox_llf_deriv(lam, x):
@@ -32,7 +36,7 @@ def _boxcox_llf_deriv(lam, x):
     Use mpmath.diff to estimate the derivative of boxcox_llf w.r.t. lam.
     """
     with mp.extradps(10):
-        return mp.diff(lambda t: _boxcox_llf(t, x), lam)
+        return mp.diff(lambda t: boxcox_llf(t, x), lam)
 
 
 def boxcox_mle(x, lam0=0):
