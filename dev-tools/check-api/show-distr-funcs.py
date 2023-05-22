@@ -50,11 +50,10 @@ cont_function_names = ['pdf', 'logpdf',
                        'mean', 'var', 'skewness', 'kurtosis', 'entropy',
                        'noncentral_moment',
                        'nll', 'mle', 'mom']
-disc_function_names = ['pmf', 'pmf_dict', 'logpmf',
+disc_function_names = ['pmf', 'pmf_dict', 'logpmf', 'logpmf_dict', 'support',
                        'cdf', 'invcdf', 'sf', 'invsf',
                        'mode', 'median',
                        'mean', 'var', 'cov', 'skewness', 'kurtosis', 'entropy',
-                       'noncentral_moment',
                        'nll', 'mle', 'mom']
 
 print_impl_table(cont_dists, cont_function_names)
