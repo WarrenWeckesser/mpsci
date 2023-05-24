@@ -9,7 +9,8 @@ hypergeometric distribution.
 from mpmath import mp
 from ..fun import logbinomial
 
-__all__ = ['support', 'pmf_dict', 'logpmf_dict', 'mean', 'cov', 'entropy']
+__all__ = ['support', 'pmf', 'pmf_dict', 'logpmf', 'logpmf_dict',
+           'mean', 'cov', 'entropy']
 
 _multivariate = True
 
@@ -89,16 +90,17 @@ def pmf_dict(colors, nsample):
     mpf('0.17982017982017982017982018')
     """
     _validate_params(colors, nsample)
-    total = sum(colors)
-    denom = mp.binomial(total, nsample)
-    pmf = {}
-    for coords in support(colors, nsample):
-        numer = 1
-        for color, k in zip(colors, coords):
-            numer *= mp.binomial(color, k)
-        prob = numer/denom
-        pmf[tuple(coords)] = prob
-    return pmf
+    with mp.extradps(5):
+        total = sum(colors)
+        logdenom = logbinomial(total, nsample)
+        p = {}
+        for coords in support(colors, nsample):
+            lognumer = 0
+            for color, k in zip(colors, coords):
+                lognumer += logbinomial(color, k)
+            logprob = lognumer - logdenom
+            p[tuple(coords)] = mp.exp(logprob)
+        return p
 
 
 def logpmf_dict(colors, nsample):
@@ -122,16 +124,57 @@ def logpmf_dict(colors, nsample):
     mpf('-1.71579792842501020899506948')
     """
     _validate_params(colors, nsample)
-    total = sum(colors)
-    logdenom = logbinomial(total, nsample)
-    logpmf = {}
-    for coords in support(colors, nsample):
+    with mp.extradps(5):
+        total = sum(colors)
+        logdenom = logbinomial(total, nsample)
+        logpmf = {}
+        for coords in support(colors, nsample):
+            lognumer = 0
+            for color, k in zip(colors, coords):
+                lognumer += logbinomial(color, k)
+            logprob = lognumer - logdenom
+            logpmf[tuple(coords)] = logprob
+        return logpmf
+
+
+def logpmf(point, colors, nsample):
+    """
+    Log of the PMF of the multivariate hypergeometric distribution.
+
+    Example
+    -------
+    >>> from mpmath import mp
+    >>> mp.dps = 25
+    >>> from mpsci.distributions import multivariate_hypergeometric
+
+    >>> multivariate_hypergeometric.logpmf((2, 1, 3), [4, 5, 6], 6)
+    mpf('-2.121263036533174590973082873')
+    """
+    _validate_params(colors, nsample)
+    with mp.extradps(5):
+        total = sum(colors)
+        logdenom = logbinomial(total, nsample)
         lognumer = 0
-        for color, k in zip(colors, coords):
+        for color, k in zip(colors, point):
             lognumer += logbinomial(color, k)
-        logprob = lognumer - logdenom
-        logpmf[tuple(coords)] = logprob
-    return logpmf
+        logp = lognumer - logdenom
+        return logp
+
+
+def pmf(point, colors, nsample):
+    """
+    Probability mass function of the multivariate hypergeometric distribution.
+
+    Example
+    -------
+    >>> from mpmath import mp
+    >>> mp.dps = 25
+    >>> from mpsci.distributions import multivariate_hypergeometric
+
+    >>> multivariate_hypergeometric.logpmf((2, 1, 3), [4, 5, 6], 6)
+    mpf('0.1198801198801198801198801199')
+    """
+    return mp.exp(logpmf(point, colors, nsample))
 
 
 def mean(colors, nsample):
