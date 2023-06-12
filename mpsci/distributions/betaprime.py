@@ -234,7 +234,7 @@ def mle(x, *, a=None, b=None, scale=None):
     for the maximum likelihood estimate.  For some data, this solver may
     fail to converge.  If that happens, different initial guesses for the
     parameter values may be given by passing instances of the
-    `mpsci.distributions.Initial` class for `a` or `b`, e.g.
+    :class:`mpsci.distributions.Initial` class for `a` or `b`, e.g.::
 
         from mpsci.distributions import Initial
         ahat, bhat, scalehat = mle(x, b=Initial(12))

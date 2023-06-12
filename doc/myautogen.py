@@ -273,7 +273,7 @@ dist_sections = [('Univariate continuous', univariate_continuous_dists),
                  ('Multivariate discrete', multivariate_discrete_dists)]
 for header, dists in dist_sections:
     # lines.extend(['', '.. currentmodule:: %s' % submodule.__name__, ''])
-    lines.extend(['', '*' + header + ' distributions*', ''])
+    lines.extend(['', f'*{header} distributions*', ''])
     lines.extend(['.. autosummary::', ''])
     names = [dist.__name__.split('.')[-1] for dist in dists]
     for name in names:
@@ -288,6 +288,8 @@ for header, dists in dist_sections:
             f.write('   :members:\n\n')
         print("Created", filename)
 
+lines.extend(['', '*Utility classes*', ''])
+lines.extend(['.. autoclass:: Initial'])
 
 content = '\n'.join(lines)
 rst = os.path.join('source', modname + '.rst')

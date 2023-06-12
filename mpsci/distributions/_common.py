@@ -6,6 +6,12 @@ from mpmath import mp
 
 @dataclass
 class Initial:
+    """
+    This class allows an initial guess of a parameter to be passed to
+    the `mle` function of a probability distribution.
+    """
+
+    # The value of the initial guess.
     initial: mp.mpf
 
 

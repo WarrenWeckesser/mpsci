@@ -174,8 +174,8 @@ def mle(x, *, n=None, a=None, b=None):
     Returns (n, a, b), where each value is the maximum likelihood
     estimate of the parameter if it was not given in the function call.
 
-    The function works best when a good initial guess is provided for
-    the parameters to be fit. Use `mpsci.distributions.Initial` to specify
+    The function works best when a good initial guess is provided for the
+    parameters to be fit. Use :class:`mpsci.distributions.Initial` to specify
     an initial guess for the parameter.
     """
     if n is None:

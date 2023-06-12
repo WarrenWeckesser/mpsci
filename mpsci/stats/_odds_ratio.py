@@ -381,7 +381,7 @@ def odds_ratio(table, kind='conditional', alternative='two-sided'):
               normal approximation to the distribution of the log of
               the sample odds ratio.
             * If `kind` is ``'conditional'``, the p-value is computed
-              by `mpsci.stats.fisher_exact`.
+              by :func:`mpsci.stats.fisher_exact`.
 
         The object also stores the input arguments `table`, `kind`
         and `alternative` as attributes.

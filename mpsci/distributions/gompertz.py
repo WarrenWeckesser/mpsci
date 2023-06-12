@@ -199,8 +199,8 @@ def mle(x, c=None, scale=None):
 
     `x` must be a sequence of numbers.
 
-    `scale` can be an instance of `mpsci.distributions.Initial` to allow
-    an initial guess to be provided to the numerical solver.
+    `scale` can be an instance of :class:`mpsci.distributions.Initial` to
+    allow an initial guess to be provided to the numerical solver.
     """
     scale_fixed = not (scale is None or isinstance(scale, Initial))
     with mp.extradps(5):
