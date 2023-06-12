@@ -17,6 +17,20 @@ def logbeta(x, y):
                        Gamma(x + y)
 
     where Gamma(z) is the Gamma function.
+
+    Examples
+    --------
+    >>> from mpmath import mp
+    >>> from mpsci.distributions import logbeta
+
+    >>> mp.dps = 25
+
+    >>> logbeta(mp.pi, 1.25)
+    mpf('-1.575224779107371741939220563')
+
+    >>> mp.log(mp.beta(mp.pi, 1.25))
+    mpf('-1.575224779107371741939220592')
+
     """
     with mp.extradps(5):
         return (mp.loggamma(x) + mp.loggamma(y) - mp.loggamma(mp.fsum([x, y])))
