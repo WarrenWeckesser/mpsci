@@ -15,7 +15,7 @@ from ..stats import mean as _mean
 from ._common import Initial
 
 
-__all__ = ['pmf', 'logpmf', 'sf', 'cdf', 'mean', 'var', 'nll']
+__all__ = ['pmf', 'logpmf', 'sf', 'cdf', 'mean', 'var', 'nll', 'mle']
 
 
 def _validate_params(r, p, allow_noninteger_r=True):

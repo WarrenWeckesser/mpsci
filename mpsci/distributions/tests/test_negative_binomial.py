@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import negative_binomial
+from ._utils import call_and_check_mle
 
 
 # In the following, the Wolfram Alpha distribution NegativeBinomialDistribution
@@ -59,3 +60,32 @@ def test_var():
     p = 0.125
     var = negative_binomial.var(r, p)
     assert mp.almosteq(var, mp.mpf('100/49'))
+
+
+@mp.workdps(25)
+@pytest.mark.parametrize('x', [[0, 1, 2, 3, 5, 8, 13],
+                               [0]*155 + [1]*39 + [2]*6 + [3]*1])
+def test_mle_basic(x):
+    call_and_check_mle(negative_binomial.mle, negative_binomial.nll, x)
+
+
+@mp.workdps(25)
+def test_mle_fixed_r():
+    # Note: I haven't tried to verify this, but the numerical result
+    # suggests that with r fixed to be 5, the MLE for p is 5/6.
+    x = [21, 29, 19, 10, 33, 28, 16, 21, 17, 22, 31, 53]
+    call_and_check_mle(
+        lambda x: negative_binomial.mle(x, r=5)[1:],
+        lambda x, p: negative_binomial.nll(x, r=5, p=p),
+        x
+    )
+
+
+@mp.workdps(25)
+def test_mle_fixed_p():
+    x = [21, 29, 19, 10, 33, 28, 16, 21, 17, 22, 31, 53]
+    call_and_check_mle(
+        lambda x: negative_binomial.mle(x, p=0.75)[:1],
+        lambda x, r: negative_binomial.nll(x, r=r, p=0.75),
+        x
+    )

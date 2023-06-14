@@ -5,7 +5,14 @@ from mpmath import mp
 
 def check_mle(nll, x, p_hat, delta=None):
     """
-    `nll` must be a callable with signature `nll(x, *p)`.
+    `nll` must be a callable with signature `nll(x, *p)`. It is the
+    negative log-likelihood function.
+
+    `x` is the input data to which the distribution was fit to
+    produce `p_hat`.
+
+    `delta` is the step size to use when sampling the negative
+    log-likelihood function.
     """
     if delta is None:
         delta = mp.power(mp.eps, 0.25)
