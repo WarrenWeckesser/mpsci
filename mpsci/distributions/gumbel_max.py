@@ -179,7 +179,7 @@ def _solve_mle_scale(x):
         return s0
 
     # Find an interval in which there is a sign change of
-    # gumbel_min._mle_scale_func.
+    # _mle_scale_func.
     s1 = s0
     s2 = s0
     sign2 = mp.sign(_mle_scale_func(s2, x, xbar))
