@@ -13,7 +13,10 @@ This is the same distribution as:
 * the Gumbel distribution given in the text "Modelling Extremal Events" by
   Embrechts, Klüppelberg and Mikosch (Springer, 1997);
 * the Gumbel distribution in the text "Statistical Distribution" (fourth ed.)
-  by Forbes, Evans, Hastings and Peacock (Wiley, 2011).
+  by Forbes, Evans, Hastings and Peacock (Wiley, 2011);
+* the `extreme_value_distribution` class implemented in the Boost/math C++
+  library;
+* the `Gumbel` distribution in the Rust `rand_distr` crate.
 
 """
 

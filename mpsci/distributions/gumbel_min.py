@@ -5,7 +5,9 @@ Gumbel probability distribution (for minima)
 This is the same distribution as:
 
 * `scipy.stats.gumbel_l`;
-* Wolfram Alpha's `GumbelDistribution`.
+* Wolfram Alpha's `GumbelDistribution`;
+* the distribution implemented by the MATLAB functions `evpdf`, `evcdf`,
+  `evrnd`, etc.
 
 """
 
