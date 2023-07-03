@@ -7,7 +7,7 @@ from mpmath import mp
 from ._common import _validate_p, _seq_to_mp
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'mle', 'entropy']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mle', 'entropy']
 
 
 def pdf(x, mu=0, sigma=1):
