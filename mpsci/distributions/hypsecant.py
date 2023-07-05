@@ -12,11 +12,12 @@ a 2/pi times the scale parameter used in the wikipedia article.
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_x_bounds, Initial
+from .. import stats
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'mean', 'var', 'entropy']
+           'mean', 'var', 'entropy', 'nll', 'mle']
 
 
 def _validate_loc_scale(loc, scale):
@@ -120,3 +121,79 @@ def entropy(loc=0, scale=1):
     with mp.extradps(5):
         loc, scale = _validate_loc_scale(loc, scale)
         return mp.log(2*mp.pi) + mp.log(scale)
+
+
+def nll(x, loc, scale):
+    """
+    Negative log-likelihood of the hyperbolic secant distribution.
+
+    `x` must be a sequence of nonnegative numbers.
+    """
+    with mp.extradps(5):
+        loc, scale = _validate_loc_scale(loc, scale)
+        x = _validate_x_bounds(x)
+        return -mp.fsum([logpdf(t, loc, scale) for t in x])
+
+
+def mle(x, loc=None, scale=None):
+    """
+    Maximum likelihood estimate for the hyperbolic secant distribution.
+
+    `x` must be a sequence of numbers.
+
+    Provide a numerical argument to `loc` or `scale` to fix that
+    parameter.  Provide an instance of `mpsci.distributions.Initial`
+    to override the default initial value for the parmeter to be used
+    in the numerical root-finding.
+    """
+    with mp.extradps(10):
+        x = _validate_x_bounds(x)
+        n = len(x)
+
+        if ((loc is None or isinstance(loc, Initial)) and
+                (scale is None or isinstance(scale, Initial))):
+            # Fit both parameters.
+            loc0 = stats.mean(x) if loc is None else mp.mpf(loc.initial)
+            scale0 = stats.std(x) if scale is None else mp.mpf(scale.initial)
+
+            def mle_eqns(loc, scale):
+                eq1 = mp.fsum(mp.tanh((t - loc)/scale) for t in x)
+                s2 = mp.fsum((t - loc)*mp.tanh((t - loc)/scale)/scale
+                             for t in x)
+                eq2 = s2 - n
+                return eq1, eq2
+
+            loc_hat, scale_hat = mp.findroot(mle_eqns, [loc0, scale0])
+            return loc_hat, scale_hat
+
+        if loc is None or isinstance(loc, Initial):
+            # Fit loc only; scale is fixed.
+            loc0 = stats.mean(x) if loc is None else mp.mpf(loc.initial)
+            loc0, scale = _validate_loc_scale(loc0, scale)
+
+            def mle_loc_eqn(loc):
+                return mp.fsum(mp.tanh((t - loc)/scale) for t in x)
+
+            loc_hat = mp.findroot(mle_loc_eqn, loc0)
+            return loc_hat, scale
+
+        if scale is None or isinstance(scale, Initial):
+            # Fit scale; loc is fixed.
+            loc = mp.mpf(loc)
+            if scale is None:
+                scale0 = stats.std([t - loc for t in x])
+            else:
+                scale0 = mp.mpf(scale.initial)
+            loc, scale0 = _validate_loc_scale(loc, scale0)
+
+            def mle_scale_eqn(scale):
+                s = mp.fsum((t - loc)*mp.tanh((t - loc)/scale)/scale
+                            for t in x)
+                return s - n
+
+            scale_hat = mp.findroot(mle_scale_eqn, scale0)
+            return loc, scale_hat
+
+        # Both parameters fixed, nothing to do.
+        loc, scale = _validate_loc_scale(loc, scale)
+        return loc, scale

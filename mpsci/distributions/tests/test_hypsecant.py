@@ -1,6 +1,7 @@
-
+import pytest
 from mpmath import mp
 from mpsci.distributions import hypsecant
+from ._utils import check_mle, call_and_check_mle
 
 
 @mp.workdps(50)
@@ -62,3 +63,41 @@ def test_entropy_with_integral():
     )
     expected = -intgrl
     assert mp.almosteq(entr, expected)
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[-2, 4, -8, 16],
+     [-4.87, -5.13, -5.09, -5.07, -4.94, -5.03, -4.91, -4.89, -4.59, -5.19]],
+)
+@mp.workdps(60)
+def test_mle(x):
+    call_and_check_mle(hypsecant.mle, hypsecant.nll, x)
+
+
+@mp.workdps(60)
+def test_mle_scale_fixed():
+    x = [-25, -13, -2, 1.5, 3, 4, 16, 39]
+    # Fix the scale to be 25.
+    fscale = 25
+    loc1, scale1 = hypsecant.mle(x, scale=fscale)
+    assert scale1 == fscale
+    check_mle(lambda x, loc: hypsecant.nll(x, loc=loc, scale=fscale),
+              x, (loc1,))
+
+
+@mp.workdps(60)
+def test_mle_loc_fixed():
+    x = [-25, -13, -2, 1.5, 3, 4, 16, 39]
+    # Fix loc to be 0.
+    floc = 0
+    loc1, scale1 = hypsecant.mle(x, loc=floc)
+    assert loc1 == floc
+    check_mle(lambda x, scale: hypsecant.nll(x, loc=floc, scale=scale),
+              x, (scale1,))
+
+
+def test_mle_all_fixed():
+    x = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+    loc1, scale1 = hypsecant.mle(x, loc=1, scale=25)
+    assert loc1 == 1 and scale1 == 25
