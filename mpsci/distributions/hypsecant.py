@@ -8,7 +8,7 @@ The wikipedia article
 
 provides information about the distribution.  The scale parameter
 used here matches that of SciPy's `scipy.special.hypsecant`; it is
-a 2/pi times the scale parameter used in the wikipedia article.
+2/pi times the scale parameter used in the wikipedia article.
 """
 
 from mpmath import mp
