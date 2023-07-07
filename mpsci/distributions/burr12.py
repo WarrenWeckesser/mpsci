@@ -107,6 +107,8 @@ def mean(c, d, scale):
     """
     with mp.extradps(5):
         c, d, scale = _validate_params(c, d, scale)
+        if c*d <= 1:
+            return mp.nan
         return d*mp.beta(d - 1/c, 1 + 1/c)*scale
 
 
@@ -116,6 +118,8 @@ def var(c, d, scale):
     """
     with mp.extradps(5):
         c, d, scale = _validate_params(c, d, scale)
+        if c*d <= 2:
+            return mp.nan
         mu1 = mean(c, d, 1)
         mu2 = d*mp.beta(d - 2/c, 1 + 2/c)
         return scale**2 * (-mu1**2 + mu2)
