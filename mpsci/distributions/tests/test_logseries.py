@@ -29,3 +29,19 @@ def test_mean():
         # From https://en.wikipedia.org/wiki/Logarithmic_distribution
         ref = -p / mp.log1p(-p) / (1 - p)
         assert mp.almosteq(mean, ref)
+
+
+@mp.workdps(50)
+def test_skewness():
+    sk = logseries.skewness(mp.mpf('4/10'))
+    # From WolframAlpha: Skewness[LogSeriesDistribution[4/10]]
+    ref = mp.mpf('3.09972644609562838193869934419957172962931406008544')
+    assert mp.almosteq(sk, ref)
+
+
+@mp.workdps(50)
+def test_kurtosis():
+    kurt = logseries.kurtosis(mp.mpf('4/10'))
+    # From WolframAlpha: Kurtosis[LogSeriesDistribution[4/10]] - 3
+    ref = mp.mpf('13.6455565131823427023041223124429449608551024593506')
+    assert mp.almosteq(kurt, ref)
