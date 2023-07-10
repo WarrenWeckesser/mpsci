@@ -63,7 +63,8 @@ def cdf(x, a, b):
         x = mp.mpf(x)
         if x < 1:
             return mp.zero
-        return 1 - x**(b - 1)*mp.exp((a/b) * -mp.powm1(x, b))
+        p = (b - 1)*mp.log(x) + a/b*-mp.powm1(x, b)
+        return -mp.expm1(p)
 
 
 def sf(x, a, b):

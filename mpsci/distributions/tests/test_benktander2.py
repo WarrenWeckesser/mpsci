@@ -45,6 +45,19 @@ def test_cdf_invcdf():
         assert mp.almosteq(x1, x)
 
 
+@mp.workdps(50)
+def test_cdf_precision():
+    x = mp.mpf('10000001/10000000')
+    a = mp.mpf(0.5)
+    b = mp.mpf('9999/10000')
+    p = benktander2.cdf(x, a, b)
+    # Expected value computed with Wolfram Alpha:
+    #    CDF[BenktanderWeibullDistribution[1/2, 9999/10000], 1000001/1000000]
+    valstr = '5.0009998748749970925010566936263405843182136875870792461e-8'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(p, expected)
+
+
 def test_invcdf_b1():
     with mp.workdps(50):
         p = mp.mpf('0.001')
