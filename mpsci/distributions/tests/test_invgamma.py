@@ -55,3 +55,23 @@ def test_var():
     scale = 3
     v = invgamma.var(a, scale=scale)
     assert v == mp.mpf(3)/16
+
+
+@mp.workdps(50)
+def test_skewness():
+    a = 5
+    scale = 3
+    sk = invgamma.skewness(a, scale=scale)
+    # Wolfram Alpha: Skewness[InverseGammaDistribution[5, 3]]
+    ref = 2*mp.sqrt(3)
+    assert mp.almosteq(sk, ref)
+
+
+@mp.workdps(50)
+def test_kurtosis():
+    a = 5
+    scale = 3
+    sk = invgamma.kurtosis(a, scale=scale)
+    # Wolfram Alpha: Kurtosis[InverseGammaDistribution[5, 3]] - 3
+    ref = 42
+    assert mp.almosteq(sk, ref)

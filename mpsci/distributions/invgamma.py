@@ -18,7 +18,8 @@ from ._common import _validate_p, _validate_moment_n
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'mode', 'var', 'entropy', 'noncentral_moment']
+           'mean', 'mode', 'var', 'skewness', 'kurtosis',
+           'entropy', 'noncentral_moment']
 
 
 def _validate_params(a, loc, scale):
@@ -156,6 +157,24 @@ def var(a, loc=0, scale=1):
     with mp.extradps(5):
         a, loc, scale = _validate_params(a, loc, scale)
         return scale**2/(a - 1)**2/(a - 2) if a > 2 else mp.nan
+
+
+def skewness(a, loc=0, scale=1):
+    """
+    Skewness of the inverse gamma distribution.
+    """
+    with mp.extradps(5):
+        a, loc, scale = _validate_params(a, loc, scale)
+        return 4*mp.sqrt(a - 2)/(a - 3) if a > 3 else mp.nan
+
+
+def kurtosis(a, loc=0, scale=1):
+    """
+    Excess kurtosis of the inverse gamma distribution.
+    """
+    with mp.extradps(5):
+        a, loc, scale = _validate_params(a, loc, scale)
+        return 6*(5*a - 11)/(a - 3)/(a - 4) if a > 4 else mp.nan
 
 
 def entropy(a, loc=0, scale=1):
