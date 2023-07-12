@@ -19,6 +19,30 @@ from ._common import _validate_p
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf']
 
 
+# This is a fuzzy threshold, so using a Python float is OK.
+_delta_x2_threshold = 9e-6
+
+
+def _delta(x):
+    """
+    Compute ϕ(0) - ϕ(x), where ϕ is the PDF of the normal distribution.
+    """
+    x2 = x*x
+    if x2 < _delta_x2_threshold:
+        # When x is small, use this:
+        #     ϕ(0) - ϕ(x) = (1 - exp(-x**2/2))/sqrt(2*pi)
+        #                 = -expm1(-x**2/x)/sqrt(2*pi)
+        # (An alternative would be to use a Taylor or Padé
+        # approximation.)
+        # This formula is not used for all x, because numerical
+        # experiments showed that when x2 exceeds the threshold,
+        # `npdf(0) - npdf(x)` is more accurate.
+        delta = -mp.expm1(-x2/2)/mp.sqrt(2*mp.pi)
+    else:
+        delta = mp.npdf(0) - mp.npdf(x)
+    return delta
+
+
 def pdf(x):
     """
     Probability density function of the slash distribution.
@@ -27,7 +51,7 @@ def pdf(x):
         if x == 0:
             return 1/(2*mp.sqrt(2*mp.pi))
         x = mp.mpf(x)
-        return (mp.npdf(0) - mp.npdf(x))/x**2
+        return _delta(x)/(x**2)
 
 
 def logpdf(x):
@@ -38,8 +62,8 @@ def logpdf(x):
         if x == 0:
             return mp.log(pdf(0))
         x = mp.mpf(x)
-        return (mp.log(mp.npdf(0) - mp.npdf(x))
-                - 2*mp.log(mp.absmax(x)))
+        delta = _delta(x)
+        return mp.log(delta) - 2*mp.log(mp.absmax(x))
 
 
 def cdf(x):
@@ -50,7 +74,8 @@ def cdf(x):
         if x == 0:
             return mp.one/2
         x = mp.mpf(x)
-        return mp.ncdf(x) - (mp.npdf(0) - mp.npdf(x))/x
+        delta = _delta(x)
+        return mp.ncdf(x) - delta/x
 
 
 def sf(x):
@@ -61,10 +86,8 @@ def sf(x):
         if x == 0:
             return mp.one/2
         x = mp.mpf(x)
-        return mp.ncdf(-x) + (mp.npdf(0) - mp.npdf(x))/x
-
-
-_npdf0 = mp.npdf(0)
+        delta = _delta(x)
+        return mp.ncdf(-x) + delta/x
 
 
 def invcdf(p):
@@ -77,6 +100,7 @@ def invcdf(p):
     may be slow, and in some cases it may fail to find a solution.
     """
     with mp.extradps(5):
+        _npdf0 = mp.npdf(0)
         p = _validate_p(p)
         if p == 0:
             return mp.ninf
@@ -99,6 +123,7 @@ def invsf(p):
     may be slow, and in some cases it may fail to find a solution.
     """
     with mp.extradps(5):
+        _npdf0 = mp.npdf(0)
         p = _validate_p(p)
         if p == 0:
             return mp.inf

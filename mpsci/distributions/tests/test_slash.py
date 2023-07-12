@@ -20,6 +20,33 @@ def test_pdf_logpdf(x):
     assert mp.almosteq(logp1, logp2)
 
 
+@mp.workdps(50)
+def test_pdf_small_x():
+    x = mp.mpf('1/100000000')
+    p = slash.pdf(x)
+    # Wolfram Alpha:
+    #    (PDF[NormalDistribution[0, 1], 0]
+    #     - PDF[NormalDistribution[0, 1], 1/100000000])
+    #    /(1/100000000)^2
+    valstr = '0.19947114020071633398319452494928254310157865003450084'
+    ref = mp.mpf(valstr)
+    assert mp.almosteq(p, ref)
+
+
+@mp.workdps(50)
+def test_cdf_small_x():
+    x = mp.mpf('1/100000000')
+    c = slash.cdf(x)
+    # Wolfram Alpha:
+    #    CDF[NormalDistribution[0, 1], 1/100000000] -
+    #    (PDF[NormalDistribution[0, 1], 0]
+    #     - PDF[NormalDistribution[0, 1], 1/100000000])
+    #    /(1/100000000)
+    valstr = '0.50000000199471140200716337307713528294554792777415749'
+    ref = mp.mpf(valstr)
+    assert mp.almosteq(c, ref)
+
+
 @pytest.mark.parametrize('x', [-3, 0, 1, 25])
 def test_cdf_with_quad(x):
     cdf = slash.cdf(x)
