@@ -374,6 +374,7 @@ def odds_ratio(table, kind='conditional', alternative='two-sided'):
               the noncentrality parameter of Fisher's noncentral
               hypergeometric distribution with the same hypergeometric
               parameters as `table` and whose mean is ``table[0, 0]``.
+              See [1]_ and [2]_.
         pvalue : fractions.Fraction or mpmath.mpf
             The p-value associated with the computed odds ratio.
 
