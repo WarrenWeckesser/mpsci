@@ -4,10 +4,12 @@ Benktander I Distribution
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ..stats import mean as _mean
+from ._common import _validate_p, _validate_x_bounds, Initial
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
+           'nll']
 
 
 def _validate_ab(a, b):
@@ -151,3 +153,59 @@ def var(a, b):
         t = (a - mp.one)/(2*sb)
         sqrtpi = mp.sqrt(mp.pi)
         return (-sb + a*mp.exp(t**2)*sqrtpi*mp.erfc(t))/(a**2*sb)
+
+
+def nll(x, a, b):
+    """
+    Negative log-likelihood function for the Benktander I distribution.
+
+    `x` must be a sequence of numbers with values greater than or equal
+    to 1.
+    """
+    with mp.extradps(5):
+        x = _validate_x_bounds(x, low=1)
+        a, b = _validate_ab(a, b)
+        return -mp.fsum([logpdf(t, a, b) for t in x])
+
+
+def mle(x, a=None, b=None):
+    """
+    Maximum likelihood estimation for the Benktander I distribution.
+    """
+    if ((a is not None and not isinstance(a, Initial))
+            or (b is not None and not isinstance(b, Initial))):
+        raise ValueError('fixed parameters not implemented yet; a and b must '
+                         'be None or Initial(val) for now')
+    with mp.extradps(5):
+        x = _validate_x_bounds(x, low=1)
+        logx = [mp.log(t) for t in x]
+        n = len(x)
+
+        def mle_eqns(a, b):
+            t1 = [2*a + 4*b*lnx + 1 for lnx in logx]
+            t2 = [a**2 + 4*a*b*lnx + a + 4*b**2*lnx**2 + 2*b*lnx - 2*b
+                  for lnx in logx]
+            dlda = -n/a + mp.fsum((z1/z2) - lnx
+                                  for z1, z2, lnx in zip(t1, t2, logx))
+            dldb = mp.fsum((z1 * 2*lnx - 2)/z2 - lnx**2
+                           for z1, z2, lnx in zip(t1, t2, logx))
+            return dlda, dldb
+
+        if isinstance(a, Initial):
+            a0 = a.initial
+        else:
+            mu_hat = _mean(x)
+            a0 = 1/(mu_hat - 1)
+        b0 = b.initial if isinstance(b, Initial) else a0*(a0 + 1)/2
+        a0, b0 = _validate_ab(a0, b0)
+        a_hat, b_hat = mp.findroot(mle_eqns, [a0, b0])
+        if a_hat <= 0:
+            raise RuntimeError('findroot found invalid parameters: '
+                               'a_hat is not positive')
+        if b_hat <= 0:
+            raise RuntimeError('findroot found invalid parameters: '
+                               'b_hat is not positive')
+        if b_hat > a_hat*(a_hat + 1)/2:
+            raise RuntimeError('findroot found invalid parameters: '
+                               'b_hat > a_hat*(a_hat + 1)/2')
+        return a_hat, b_hat

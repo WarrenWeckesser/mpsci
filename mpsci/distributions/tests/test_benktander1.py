@@ -2,6 +2,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import benktander1
+from ._utils import check_mle
 
 
 def test_pdf():
@@ -79,3 +80,20 @@ def test_var():
         valstr = '0.129886916731278610514259475545032373691162070980680465530'
         expected = mp.mpf(valstr)
         assert mp.almosteq(m, expected)
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[1.3, 1.5, 2.8, 1.7, 2.4, 6.6, 2.5, 1.4, 1.8, 1.8, 2.0, 2.3, 1.2,
+      7.8, 38.3, 1.4, 1.4, 1.3, 10.5, 1.3, 1.3, 2.2, 8.6, 1.3, 1.6],
+     [1.58, 1.20, 1.13, 1.86, 1.15, 1.30, 1.06, 1.07, 1.07, 1.63,
+      1.67, 1.25, 1.01, 1.37, 1.01, 1.57, 1.23, 1.53, 1.03, 1.06],
+     [1.014, 1.035, 1.122, 1.043, 1.025, 1.049,
+      1.002, 1.008, 1.007, 1.019, 1.020, 1.044]],
+)
+@mp.workdps(50)
+def test_mle(x):
+    # benktander1.mle() is not reliable--it typically fails--but for the
+    # data sets in this test, it works.
+    p = benktander1.mle(x)
+    check_mle(benktander1.nll, x, p)
