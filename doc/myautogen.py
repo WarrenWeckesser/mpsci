@@ -126,15 +126,12 @@ lines = []
 lines.extend(preamble_lines)
 lines.extend(['mpsci', '=====', ''])
 lines.extend([main_descr, ''])
-lines.extend(['.. toctree::',
-              '   :maxdepth: 1',
-              '   :titlesonly:',
-              ''])
-lines.extend(['   fun', ''])
-lines.extend(['   signal', ''])
-lines.extend(['   stats', ''])
-lines.extend(['   distributions', ''])
-lines.extend(['   polyapprox', ''])
+lines.extend(['.. toctree::', ''])
+lines.extend(['   fun'])
+lines.extend(['   signal'])
+lines.extend(['   stats'])
+lines.extend(['   distributions'])
+lines.extend(['   polyapprox'])
 
 content = '\n'.join(lines)
 index_name = os.path.join('source', 'index.rst')
@@ -289,7 +286,8 @@ for header, dists in dist_sections:
         print("Created", filename)
 
 lines.extend(['', '*Utility classes*', ''])
-lines.extend(['.. autoclass:: Initial'])
+lines.extend(['.. autosummary::', ''])
+lines.extend(['   Initial'])
 
 content = '\n'.join(lines)
 rst = os.path.join('source', modname + '.rst')
