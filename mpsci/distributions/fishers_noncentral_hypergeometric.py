@@ -12,7 +12,23 @@ from mpmath import mp
 from . import hypergeometric as _hg
 
 
-__all__ = ['support_pmf', 'pmf_dict', 'pmf', 'cdf', 'sf', 'mode', 'mean']
+__all__ = ['support', 'support_pmf', 'pmf_dict', 'pmf',
+           'cdf', 'sf', 'mode', 'mean']
+
+
+def support(nc, ntotal, ngood, nsample):
+    """
+    Support for Fisher's noncentral hypergeometric distribution.
+
+    The support of this distribution is the same as that of the
+    hypergeometric distribution.
+
+    Returns
+    -------
+    sup : range
+        The range of integers in the support.
+    """
+    return _hg.support(ntotal, ngood, nsample)
 
 
 # This auxiliary version of support includes the parameter prec,
@@ -20,16 +36,16 @@ __all__ = ['support_pmf', 'pmf_dict', 'pmf', 'cdf', 'sf', 'mode', 'mean']
 @lru_cache()
 def _support_pmf(nc, ntotal, ngood, nsample, prec):
     with mp.extradps(5):
-        support = _hg.support(ntotal, ngood, nsample)
+        sup = _hg.support(ntotal, ngood, nsample)
         lpmf = [_hg.logpmf(k, ntotal, ngood, nsample)
-                for k in support]
+                for k in sup]
 
         # The PMF of Fisher's noncentral hypergeometric distribution is
         # proportional to a weighted version of the hypergeometric
         # distribution.  The weights are the powers of the noncentrality
         # parameter.  To maintain precision over a wide range of values, we
         # compute the log of the weighted hypergeometric PMF:
-        g = [lpmf[k - support[0]] + mp.log(nc) * k for k in support]
+        g = [lpmf[k - sup[0]] + mp.log(nc) * k for k in sup]
 
         # g contains the logs of values proportional to the noncentral
         # hypergeometric PMF.  That is, g = [log(c0), log(c1), log(c2), ...].
@@ -52,7 +68,7 @@ def _support_pmf(nc, ntotal, ngood, nsample, prec):
         # to create a PMF.
         egsum = mp.fsum(eg)
         values = [v/egsum for v in eg]
-        return support, values
+        return sup, values
 
 
 def support_pmf(nc, ntotal, ngood, nsample):
@@ -101,8 +117,8 @@ def support_pmf(nc, ntotal, ngood, nsample):
     """
     _hg._validate(ntotal, ngood, nsample)
     prec = mp.prec
-    support, values = _support_pmf(nc, ntotal, ngood, nsample, prec)
-    return support, values
+    sup, values = _support_pmf(nc, ntotal, ngood, nsample, prec)
+    return sup, values
 
 
 _c_k_formula = r"""
