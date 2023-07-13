@@ -4,6 +4,16 @@ from mpmath import mp
 from mpsci.distributions import hypergeometric
 
 
+@pytest.mark.parametrize(
+    'ntotal, ngood, nsample, expected',
+    [(20, 14, 5, range(0, 6)),
+     (15, 10, 12, range(7, 11))]
+)
+def test_support(ntotal, ngood, nsample, expected):
+    sup = hypergeometric.support(ntotal, ngood, nsample)
+    assert sup == expected
+
+
 def test_basic():
     with mp.workdps(50):
         ntotal = 20

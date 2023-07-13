@@ -78,6 +78,31 @@ def sf(k, ntotal, ngood, nsample):
     return sf
 
 
+def support(ntotal, ngood, nsample):
+    """
+    Support of the hypergeometric distribution.
+
+    Returns
+    -------
+    sup : range
+        The range of integers in the support.
+
+    Examples
+    --------
+    >>> from mpsci.distributions import hypergeometric
+
+    >>> list(hypergeometric.support(12, 3, 5))
+    [0, 1, 2, 3]
+
+    >>> list(hypergeometric.support(15, 10, 11))
+    [6, 7, 8, 9, 10]
+    """
+    _validate(ntotal, ngood, nsample)
+    nbad = ntotal - ngood
+    support = range(max(0, nsample - nbad), min(nsample, ngood) + 1)
+    return support
+
+
 def support_pmf(ntotal, ngood, nsample):
     """
     Support and PMF of the hypergeometric distribution.
@@ -104,13 +129,9 @@ def support_pmf(ntotal, ngood, nsample):
      5  0.1291280
 
     """
-    _validate(ntotal, ngood, nsample)
-    nbad = ntotal - ngood
-    p = []
-    support = range(max(0, nsample - nbad), min(nsample, ngood) + 1)
-    for k in support:
-        p.append(pmf(k, ntotal, ngood, nsample))
-    return support, p
+    sup = support(ntotal, ngood, nsample)
+    p = [pmf(k, ntotal, ngood, nsample) for k in sup]
+    return sup, p
 
 
 def mean(ntotal, ngood, nsample):

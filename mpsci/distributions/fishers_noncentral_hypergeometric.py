@@ -20,8 +20,7 @@ __all__ = ['support_pmf', 'pmf_dict', 'pmf', 'cdf', 'sf', 'mode', 'mean']
 @lru_cache()
 def _support_pmf(nc, ntotal, ngood, nsample, prec):
     with mp.extradps(5):
-        # XXX This is inefficient...
-        support, values = _hg.support_pmf(ntotal, ngood, nsample)
+        support = _hg.support(ntotal, ngood, nsample)
         lpmf = [_hg.logpmf(k, ntotal, ngood, nsample)
                 for k in support]
 
