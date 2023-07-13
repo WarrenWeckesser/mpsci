@@ -7,7 +7,7 @@ from mpmath import mp
 from ..fun import logbeta
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'support', 'mean', 'var']
+__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'support_pmf', 'mean', 'var']
 
 
 def _validate(ntotal, ngood, nsample):
@@ -78,9 +78,9 @@ def sf(k, ntotal, ngood, nsample):
     return sf
 
 
-def support(ntotal, ngood, nsample):
+def support_pmf(ntotal, ngood, nsample):
     """
-    Support of the hypergeometric distribution.
+    Support and PMF of the hypergeometric distribution.
 
     Returns
     -------
@@ -92,7 +92,7 @@ def support(ntotal, ngood, nsample):
 
     Examples
     --------
-    >>> sup, pvals = hypergeometric.support(20, 14, 5)
+    >>> sup, pvals = hypergeometric.support_pmf(20, 14, 5)
     >>> for k, p in zip(sup, pvals):
     ...     print("{:2} {:10.7f}".format(k, float(p)))
     ...

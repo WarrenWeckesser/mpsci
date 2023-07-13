@@ -12,16 +12,16 @@ from mpmath import mp
 from . import hypergeometric as _hg
 
 
-__all__ = ['support', 'pmf_dict', 'pmf', 'cdf', 'sf', 'mode', 'mean']
+__all__ = ['support_pmf', 'pmf_dict', 'pmf', 'cdf', 'sf', 'mode', 'mean']
 
 
 # This auxiliary version of support includes the parameter prec,
 # so the mpmath precision is part of the cache key.
 @lru_cache()
-def _support(nc, ntotal, ngood, nsample, prec):
+def _support_pmf(nc, ntotal, ngood, nsample, prec):
     with mp.extradps(5):
         # XXX This is inefficient...
-        support, values = _hg.support(ntotal, ngood, nsample)
+        support, values = _hg.support_pmf(ntotal, ngood, nsample)
         lpmf = [_hg.logpmf(k, ntotal, ngood, nsample)
                 for k in support]
 
@@ -56,9 +56,9 @@ def _support(nc, ntotal, ngood, nsample, prec):
         return support, values
 
 
-def support(nc, ntotal, ngood, nsample):
+def support_pmf(nc, ntotal, ngood, nsample):
     """
-    *Full* PMF for Fisher's noncentral hypergeometric distribution.
+    Support and PMF values for Fisher's noncentral hypergeometric distr.
 
     Requires 0 < nc < inf.
 
@@ -102,7 +102,7 @@ def support(nc, ntotal, ngood, nsample):
     """
     _hg._validate(ntotal, ngood, nsample)
     prec = mp.prec
-    support, values = _support(nc, ntotal, ngood, nsample, prec)
+    support, values = _support_pmf(nc, ntotal, ngood, nsample, prec)
     return support, values
 
 
@@ -132,7 +132,7 @@ _p_k_formula = r"""
 
 """
 
-support._docstring_re_subs = [
+support_pmf._docstring_re_subs = [
     (' inf[.]', r':math:`\\infty`.', 0, 0),
     (r'c_k.*\*\*k', _c_k_formula, 0, 0),
     ('k_min <= k <= k_max',
@@ -147,7 +147,7 @@ def pmf_dict(nc, ntotal, ngood, nsample):
     PMF as a dictionary.
     """
     _hg._validate(ntotal, ngood, nsample)
-    sup, values = support(nc, ntotal, ngood, nsample)
+    sup, values = support_pmf(nc, ntotal, ngood, nsample)
     return dict(zip(sup, values))
 
 
@@ -156,7 +156,7 @@ def pmf(k, nc, ntotal, ngood, nsample):
     PMF of Fisher's noncentral hypergeometric distribution.
     """
     _hg._validate(ntotal, ngood, nsample)
-    sup, p = support(nc, ntotal, ngood, nsample)
+    sup, p = support_pmf(nc, ntotal, ngood, nsample)
     if k in sup:
         return p[k - sup[0]]
     else:
@@ -168,7 +168,7 @@ def cdf(k, nc, ntotal, ngood, nsample):
     CDF of Fisher's noncentral hypergeometric distribution.
     """
     _hg._validate(ntotal, ngood, nsample)
-    sup, p = support(nc, ntotal, ngood, nsample)
+    sup, p = support_pmf(nc, ntotal, ngood, nsample)
     if k < sup[0]:
         return mp.zero
     elif k >= sup[-1]:
@@ -182,7 +182,7 @@ def sf(k, nc, ntotal, ngood, nsample):
     Survival function of Fisher's noncentral hypergeometric distribution.
     """
     _hg._validate(ntotal, ngood, nsample)
-    sup, p = support(nc, ntotal, ngood, nsample)
+    sup, p = support_pmf(nc, ntotal, ngood, nsample)
     if k < sup[0]:
         return mp.one
     elif k >= sup[-1]:
@@ -213,7 +213,7 @@ def mode(nc, ntotal, ngood, nsample):
     value of the PMF occurs at k=3 and k=4.  The value 4 is returned for the
     mode.
 
-    >>> fishers_noncentral_hypergeometric.support(1, 14, 7, 7)
+    >>> fishers_noncentral_hypergeometric.support_pmf(1, 14, 7, 7)
     (range(0, 8),
      [mpf('0.00029137529137529148'),
       mpf('0.014277389277389273'),
@@ -259,7 +259,7 @@ def mean(nc, ntotal, ngood, nsample):
     mpf('5.89685838859408792634258808')
     """
     _hg._validate(ntotal, ngood, nsample)
-    sup, p = support(nc, ntotal, ngood, nsample)
+    sup, p = support_pmf(nc, ntotal, ngood, nsample)
     n = len(p)
     with mp.extradps(5):
         return mp.fsum([sup[k]*p[k] for k in range(n)])

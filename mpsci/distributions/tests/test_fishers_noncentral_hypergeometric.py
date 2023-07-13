@@ -20,7 +20,7 @@ def test_basic():
             mp.mpq(100000, 433249),
             mp.mpq(15625, 433249),
         ]
-        sup, pmf = fnchg.support(nc, ntotal, ngood, nsample)
+        sup, pmf = fnchg.support_pmf(nc, ntotal, ngood, nsample)
         assert list(sup) == [2, 3, 4, 5, 6, 7, 8]
         for k in range(len(expected_pmf)):
             assert mp.almosteq(pmf[k], expected_pmf[k])

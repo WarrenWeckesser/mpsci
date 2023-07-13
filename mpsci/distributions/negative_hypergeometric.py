@@ -8,7 +8,7 @@ from ..fun import logbinomial
 from .hypergeometric import cdf as hg_cdf, sf as hg_sf
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var', 'support']
+__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var', 'support_pmf']
 
 
 def _validate(ntotal, ngood, untilnbad):
@@ -100,9 +100,9 @@ def var(ntotal, ngood, untilnbad):
     return v
 
 
-def support(ntotal, ngood, untilnbad):
+def support_pmf(ntotal, ngood, untilnbad):
     """
-    Support of the negative hypergeometric distribution.
+    Support and PMF of the negative hypergeometric distribution.
 
     Returns
     -------
