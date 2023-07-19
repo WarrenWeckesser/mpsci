@@ -25,6 +25,15 @@ def test_cdf():
 
 
 @mp.workdps(50)
+def test_cdf_limits():
+    df = 10
+    cdf = t.cdf(mp.ninf, df)
+    assert cdf == 0
+    cdf = t.cdf(mp.inf, df)
+    assert cdf == 1
+
+
+@mp.workdps(50)
 def test_sf():
     df = 10
     x = 5
@@ -33,6 +42,15 @@ def test_sf():
     #     1 - CDF[StudentTDistribution[10], 5]
     expected = mp.one/2 - 3245*mp.sqrt(mp.mpf(5)/7)/5488
     assert mp.almosteq(sf, expected)
+
+
+@mp.workdps(50)
+def test_sf_limits():
+    df = 10
+    sf = t.sf(mp.ninf, df)
+    assert sf == 1
+    sf = t.sf(mp.inf, df)
+    assert sf == 0
 
 
 @mp.workdps(50)

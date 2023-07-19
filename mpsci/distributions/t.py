@@ -4,7 +4,7 @@ Student's t distribution
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _find_bracket
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'entropy']
@@ -46,8 +46,12 @@ def cdf(x, df):
         raise ValueError('df must be greater than 0')
 
     with mp.extradps(5):
-        half = mp.one/2
         x = mp.mpf(x)
+        if x == mp.ninf:
+            return mp.zero
+        if x == mp.inf:
+            return mp.one
+        half = mp.one/2
         df = mp.mpf(df)
         h = (df + 1) / 2
         p1 = x * mp.gamma(h)
@@ -63,8 +67,12 @@ def sf(x, df):
         raise ValueError('df must be greater than 0')
 
     with mp.extradps(5):
-        half = mp.one/2
         x = mp.mpf(x)
+        if x == mp.ninf:
+            return mp.one
+        if x == mp.inf:
+            return mp.zero
+        half = mp.one/2
         df = mp.mpf(df)
         h = (df + 1) / 2
         p1 = x * mp.gamma(h)
@@ -82,6 +90,10 @@ def invcdf(p, df):
     For values far in the tails of the distribution, the solution might
     not be accurate.  Check the results, and increase the precision of
     the calculation if necessary.
+
+    For very small values of `df`, the function might spend a *long*
+    time trying to find a bracket for the numerical inversion of the
+    CDF.
     """
     if df <= 0:
         raise ValueError('df must be greater than 0')
@@ -98,22 +110,18 @@ def invcdf(p, df):
             p0 = p
         df = mp.mpf(df)
 
-        x0 = -mp.one
-        count = 0
-        while cdf(x0, df) > p0:
-            x0 = 2*x0
-            count += 1
-            if count > mp.prec / 2:
-                raise RuntimeError('failed to find a bracketing interval')
+        x0, x1 = _find_bracket(lambda x: cdf(x, df), p0, mp.ninf, mp.inf)
+        if x0 == x1:
+            return x0
 
         def _func(x):
             return cdf(x, df) - p0
 
-        x = mp.findroot(_func, (x0, x0/2), solver='anderson')
+        x = mp.findroot(_func, (x0, x1), solver='anderson')
         if p > 0.5:
             x = -x
 
-    return x
+        return x
 
 
 def invsf(p, df):
@@ -123,6 +131,10 @@ def invsf(p, df):
     For values far in the tails of the distribution, the solution might
     not be accurate.  Check the results, and increase the precision of
     the calculation if necessary.
+
+    For very small values of `df`, the function might spend a *long*
+    time trying to find a bracket for the numerical inversion of the
+    CDF.
     """
     p = _validate_p(p)
     if df <= 0:
