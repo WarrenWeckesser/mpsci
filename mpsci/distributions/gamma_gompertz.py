@@ -76,8 +76,7 @@ def cdf(x, c, beta, scale):
         if beta == 1:
             return -mp.expm1(-c*z)
         else:
-            ex = mp.exp(z)
-            p = -mp.powm1(beta / (beta - 1 + ex), c)
+            p = -mp.powm1(beta / (beta + mp.expm1(z)), c)
             return p
 
 
