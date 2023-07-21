@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
-from mpsci.distributions import loggamma
+from mpsci.distributions import loggamma, Initial
+from ._utils import check_mle
 
 
 def test_basic_cdf_sf():
@@ -79,3 +80,25 @@ def test_kurtosis():
         valstr = '1.1875257511965620472368652875718220772212082979314426565409'
         expected = mp.mpf(valstr)
         assert mp.almosteq(kurt, expected)
+
+
+@pytest.mark.parametrize(
+    'x, theta0',
+    [([0.5, 1, 1.5, 3], 1),
+     ([0.01, 0.008, 0.006, 0.009, 0.009, 0.005, 0.011, 0.010], 0.005)],
+)
+@mp.workdps(50)
+def test_mle(x, theta0):
+    p_hat = loggamma.mle(x, theta=Initial(theta0))
+    check_mle(loggamma.nll, x, p_hat)
+
+
+@pytest.mark.parametrize(
+    'x, fixed_theta',
+    [([0.5, 1, 1.5, 3], 3),
+     ([0.01, 0.008, 0.006, 0.009, 0.009, 0.005, 0.011, 0.010], 0.25)],
+)
+@mp.workdps(50)
+def test_mle_theta_fixed(x, fixed_theta):
+    p_hat = loggamma.mle(x, theta=fixed_theta)
+    check_mle(lambda x, k: loggamma.nll(x, k, fixed_theta), x, p_hat[:1])
