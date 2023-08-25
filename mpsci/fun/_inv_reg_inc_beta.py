@@ -118,7 +118,12 @@ def betaincinv(a, b, y, method='findroot', complement=False):
             raise RuntimeError('failed to find the inverse with bisection')
     else:
         try:
-            return mp.findroot(func, x0)
+            y = mp.findroot(func, x0)
         except Exception:
             raise RuntimeError('failed to find the inverse with '
                                'mpmath.mp.findroot')
+        if y < 0:
+            raise RuntimeError('mpmath.mp.findroot converged to an invalid '
+                               '(negative) root.  Try providing an initial '
+                               'guess, or use method="bisect"')
+        return y

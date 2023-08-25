@@ -110,18 +110,12 @@ def invcdf(p, a, b):
     with mp.extradps(5):
         a, b = _validate_a_b(a, b)
         p = _validate_p(p)
-        if p == 0:
-            return mp.zero
-        if p == 1:
-            return mp.one
 
         x0, x1 = _find_bracket(lambda x: cdf(x, a, b), p, 0, 1)
         if x0 == x1:
             return x0
 
-        x = mp.findroot(lambda x: cdf(x, a, b) - p, x0=(x0, x1),
-                        solver='secant')
-        return x
+        return _fun.betaincinv(a, b, p, method=('bisect', [x0, x1]))
 
 
 def invsf(p, a, b):
@@ -131,18 +125,13 @@ def invsf(p, a, b):
     with mp.extradps(5):
         a, b = _validate_a_b(a, b)
         p = _validate_p(p)
-        if p == 0:
-            return mp.one
-        if p == 1:
-            return mp.zero
 
         x0, x1 = _find_bracket(lambda x: sf(x, a, b), p, 0, 1)
         if x0 == x1:
             return x0
 
-        x = mp.findroot(lambda x: sf(x, a, b) - p, x0=(x0, x1),
-                        solver='secant')
-        return x
+        return _fun.betaincinv(a, b, p, complement=True,
+                               method=('bisect', [x0, x1]))
 
 
 def mean(a, b):
