@@ -50,7 +50,7 @@ cont_function_names = ['pdf', 'logpdf',
                        'mean', 'var', 'skewness', 'kurtosis', 'entropy',
                        'noncentral_moment',
                        'nll', 'mle', 'mom']
-disc_function_names = ['pmf', 'pmf_dict', 'logpmf', 'logpmf_dict',
+disc_function_names = ['pmf', 'logpmf',
                        'support', 'support_pmf',
                        'cdf', 'invcdf', 'sf', 'invsf',
                        'mode', 'median',
