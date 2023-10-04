@@ -13,6 +13,16 @@ def test_basic_pdf():
         assert mp.almosteq(pdf, expected)
 
 
+def test_basic_logpdf():
+    with mp.workdps(50):
+        logpdf = nct.logpdf(3, 7, 0.5)
+        # Wolfram Alpha:
+        #   ln[PDF[NoncentralStudentTDistribution[df, noncentrality], x]]
+        expected = mp.mpf('-3.3233459533253355060314798326799414479'
+                          '85315876425721246')
+        assert mp.almosteq(logpdf, expected)
+
+
 def test_basic_mean():
     with mp.workdps(50):
         m = nct.mean(7, 0.5)

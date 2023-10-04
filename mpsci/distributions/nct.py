@@ -12,7 +12,7 @@ from mpmath import mp
 from ._common import _validate_moment_n
 
 
-__all__ = ['pdf', 'mean', 'var', 'noncentral_moment']
+__all__ = ['pdf', 'logpdf', 'mean', 'var', 'noncentral_moment']
 
 
 def pdf(x, df, nc):
@@ -51,6 +51,40 @@ def pdf(x, df, nc):
             s = mp.nsum(_pdf_term, [0, mp.inf])
             p = c * s
         return p
+
+
+def logpdf(x, df, nc):
+    """
+    Logarithm of the PDF of the noncentral t distribution.
+    """
+    with mp.extradps(5):
+        x = mp.mpf(x)
+        df = mp.mpf(df)
+        nc = mp.mpf(nc)
+
+        if x == 0:
+            logp = (-nc**2/2
+                    - mp.log(mp.pi)/2
+                    - mp.log(df)/2
+                    + mp.loggamma((df + 1)/2)
+                    - mp.loggamma(df/2))
+        else:
+            logc = (df*mp.log(df)/2
+                    - nc**2/2
+                    - mp.loggamma(df/2)
+                    - mp.log(mp.pi)/2
+                    - (df + 1)/2 * mp.log(df + x**2))
+
+            def _pdf_term(i):
+                logterm = (mp.loggamma((df + i + 1)/2)
+                           + i*mp.log(x*nc)
+                           + i*mp.log(2/(df + x**2))/2
+                           - mp.loggamma(i + 1))
+                return mp.exp(logterm).real
+
+            s = mp.nsum(_pdf_term, [0, mp.inf])
+            logp = logc + mp.log(s)
+        return logp
 
 
 def mean(df, nc):
