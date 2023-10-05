@@ -3,6 +3,12 @@ from mpmath import mp
 from mpsci.distributions import negative_hypergeometric, hypergeometric
 
 
+def test_support():
+    ngood = 10
+    sup = negative_hypergeometric.support(20, ngood, 8)
+    assert sup == range(ngood + 1)
+
+
 @pytest.mark.parametrize(
     'k, ntotal, ngood, untilnbad',
     [(3, 20, 10, 5),

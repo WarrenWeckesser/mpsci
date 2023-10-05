@@ -100,6 +100,26 @@ def var(ntotal, ngood, untilnbad):
     return v
 
 
+def support(ntotal, ngood, untilnbad):
+    """
+    Support of the negative hypergeometric distribution.
+
+    Returns
+    -------
+    sup : range
+        The range of integers in the support.  (In Python 3, use list(sup) to
+        get the list of integers in the support.)
+    """
+    _validate(ntotal, ngood, untilnbad)
+
+    if untilnbad == 0:
+        m = 1
+    else:
+        m = ngood + 1
+    support = range(m)
+    return support
+
+
 def support_pmf(ntotal, ngood, untilnbad):
     """
     Support and PMF of the negative hypergeometric distribution.
