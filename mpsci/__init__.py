@@ -5,10 +5,12 @@ calculations.
 
 """
 
-__version__ = "0.0.1.dev84"
-
+import importlib.metadata
 from . import distributions
 from . import fun
 from . import polyapprox
 from . import signal
 from . import stats
+
+
+__version__ = importlib.metadata.version("mpsci")

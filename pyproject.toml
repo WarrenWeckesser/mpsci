@@ -1,0 +1,17 @@
+[project]
+name = "mpsci"
+version = "0.0.1.dev85"
+dependencies = [
+    "mpmath",
+]
+description = "Assorted statistical and signal processing functions implemented using mpmath."
+readme = "README.rst"
+requires-python = ">=3.8"
+license = {text = "BSD-2-Clause"}
+authors = [
+  {name = 'Warren Weckesser', email = 'warren.weckesser+mpsci@gmail.com'},
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
