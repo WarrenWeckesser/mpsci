@@ -3,7 +3,7 @@ import sys
 import os
 import subprocess
 
-from mpsci import fun, signal, stats, distributions, polyapprox
+from mpsci import fun, signal, stats, distributions
 
 
 # The function git_version() returns the git revision as a string.
@@ -92,7 +92,7 @@ Most of the code in ``mpsci`` was developed as a way to find the
 The package should be considered prototype-quality software.  There
 will probably be backwards-incompatible API changes as the code is expanded.
 
-The five subpackages of `mpsci` are:
+The four subpackages of `mpsci` are:
 """ % gitrev
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -131,7 +131,6 @@ lines.extend(['   fun'])
 lines.extend(['   signal'])
 lines.extend(['   stats'])
 lines.extend(['   distributions'])
-lines.extend(['   polyapprox'])
 
 content = '\n'.join(lines)
 index_name = os.path.join('source', 'index.rst')
@@ -139,9 +138,9 @@ with open(index_name, 'w') as f:
     f.write(content)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Create fun.rst, signal.rst and polyapprox.rst
+# Create fun.rst and signal.rst
 
-for module in [fun, signal, polyapprox]:
+for module in [fun, signal]:
     modname = module.__name__.split('.')[-1]
     names = [name for name in dir(module) if not name.startswith('_')]
 

@@ -8,7 +8,6 @@ calculations.
 import importlib.metadata
 from . import distributions
 from . import fun
-from . import polyapprox
 from . import signal
 from . import stats
 
