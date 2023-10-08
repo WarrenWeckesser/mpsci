@@ -25,6 +25,11 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 
+[project.urls]
+"Homepage" = "https://github.com/WarrenWeckesser/mpsci"
+"Bug Tracker" = "https://github.com/WarrenWeckesser/mpsci/issues"
+"Documentation" = "https://warrenweckesser.github.io/mpsci/index.html"
+
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
