@@ -4,9 +4,6 @@ from mpmath import mp
 from mpsci.distributions import kumaraswamy
 
 
-mp.dps = 40
-
-
 #
 # Expected values were computed with Wolfram Alpha, e.g.:
 #
@@ -20,6 +17,7 @@ mp.dps = 40
      (1/4, 6, 0.5, 1/(mp.mpf(16)*mp.sqrt(455))),
      (5/8, 6, 0.5, 3125/(mp.mpf(448)*mp.sqrt(559)))],
 )
+@mp.workdps(50)
 def test_pdf_logpdf(x, a, b, expected):
     p = kumaraswamy.pdf(x, a, b)
     assert mp.almosteq(p, expected, rel_eps=10**(-mp.dps + 12))
@@ -40,6 +38,7 @@ def test_pdf_logpdf(x, a, b, expected):
      (1/4, 6, 0.5, 1 - 3*mp.sqrt(455)/64),
      (5/8, 6, 0.5, 1 - 21*mp.sqrt(559)/512)],
 )
+@mp.workdps(50)
 def test_cdf_sf(x, a, b, expected):
     c = kumaraswamy.cdf(x, a, b)
     assert mp.almosteq(c, expected, rel_eps=10**(-mp.dps + 12))
@@ -47,6 +46,7 @@ def test_cdf_sf(x, a, b, expected):
     assert mp.almosteq(s, 1 - expected, rel_eps=10**(-mp.dps + 12))
 
 
+@mp.workdps(50)
 def test_cdf_invcdf_roundtrip():
     x = mp.mpf(0.75)
     p = kumaraswamy.cdf(x, 0.5, 7.5)
@@ -54,6 +54,7 @@ def test_cdf_invcdf_roundtrip():
     assert mp.almosteq(x, x2)
 
 
+@mp.workdps(50)
 def test_sf_invsf_roundtrip():
     x = mp.mpf(0.75)
     p = kumaraswamy.sf(x, 0.5, 7.5)
@@ -61,6 +62,7 @@ def test_sf_invsf_roundtrip():
     assert mp.almosteq(x, x2)
 
 
+@mp.workdps(50)
 def test_mean():
     m = kumaraswamy.mean(6, 0.5)
     # Expected value was computed with Wolfram Alpha:
@@ -69,6 +71,7 @@ def test_mean():
     assert mp.almosteq(m, expected, rel_eps=10**(-mp.dps + 12))
 
 
+@mp.workdps(50)
 def test_var():
     v = kumaraswamy.var(6, 0.5)
     # Expected value was computed with Wolfram Alpha:

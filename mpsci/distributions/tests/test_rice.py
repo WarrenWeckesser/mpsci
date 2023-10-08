@@ -60,6 +60,7 @@ def test_var():
                           (0.125, 25.0),
                           (10, 4),
                           (240, 725)])
+@mp.workdps(100)
 def test_mean_with_integral(nu, sigma):
     m = rice.mean(nu, sigma)
     q = mp.quad(lambda t: t*rice.pdf(t, nu, sigma), [0, mp.inf])
