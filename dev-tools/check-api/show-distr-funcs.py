@@ -55,10 +55,10 @@ def print_impl_table(title, dists, function_names):
     print(title)
     print('='*len(title))
     print()
-    function_names, subs = column_heading_subs(function_names)
+    function_names_limited, subs = column_heading_subs(function_names)
     funcname_col_width = max(len(dist.__name__.split('.')[-1])
                              for dist in dists)
-    col_heading_lines = make_column_heading_lines(function_names)
+    col_heading_lines = make_column_heading_lines(function_names_limited)
     for k in range(len(subs)):
         print(f'{k+1} = {subs[k]}')
     print()
