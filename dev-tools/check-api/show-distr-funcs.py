@@ -7,6 +7,15 @@ def is_discrete_dist(dist):
     return hasattr(dist, 'pmf') or hasattr(dist, 'pmf_dict')
 
 
+def split_mv(dists):
+    uni = []
+    multi = []
+    for dist in dists:
+        mvflag = getattr(dist, '_multivariate', False)
+        (multi if mvflag else uni).append(dist)
+    return uni, multi
+
+
 def get_distributions():
     names = [name for name in dir(dists)
              if not name.startswith('_') and name != 'Initial']
@@ -18,7 +27,20 @@ def get_distributions():
     discrete_dists = [t[1] for t in next(g)[1]]
     continuous_dists.sort(key=lambda t: t.__name__)
     discrete_dists.sort(key=lambda t: t.__name__)
-    return continuous_dists, discrete_dists
+    continuous_uni, continuous_multi = split_mv(continuous_dists)
+    discrete_uni, discrete_multi = split_mv(discrete_dists)
+    return continuous_uni, continuous_multi, discrete_uni, discrete_multi
+
+
+def column_heading_subs(names):
+    names = names.copy()
+    subs = []
+    for k in range(len(names)):
+        name = names[k]
+        if len(name) > 8:
+            subs.append(name)
+            names[k] = str(len(subs))
+    return names, subs
 
 
 def make_column_heading_lines(names):
@@ -28,10 +50,18 @@ def make_column_heading_lines(names):
     return lines
 
 
-def print_impl_table(dists, function_names):
+def print_impl_table(title, dists, function_names):
+    print()
+    print(title)
+    print('='*len(title))
+    print()
+    function_names, subs = column_heading_subs(function_names)
     funcname_col_width = max(len(dist.__name__.split('.')[-1])
                              for dist in dists)
     col_heading_lines = make_column_heading_lines(function_names)
+    for k in range(len(subs)):
+        print(f'{k+1} = {subs[k]}')
+    print()
     for line in col_heading_lines:
         print(f'{" ":{funcname_col_width}s} {line}')
     for dist in dists:
@@ -42,21 +72,41 @@ def print_impl_table(dists, function_names):
         print()
 
 
-cont_dists, disc_dists = get_distributions()
-cont_function_names = ['pdf', 'logpdf',
-                       'interval_prob',
-                       'cdf', 'logcdf', 'invcdf', 'sf', 'logsf', 'invsf',
-                       'mode', 'median',
-                       'mean', 'var', 'skewness', 'kurtosis', 'entropy',
-                       'noncentral_moment',
-                       'nll', 'mle', 'mom']
-disc_function_names = ['pmf', 'logpmf',
-                       'support', 'support_pmf',
-                       'cdf', 'invcdf', 'sf', 'invsf',
-                       'mode', 'median',
-                       'mean', 'var', 'cov', 'skewness', 'kurtosis', 'entropy',
-                       'nll', 'mle', 'mom']
+cont_uni, cont_multi, disc_uni, disc_multi = get_distributions()
+cont_uni_function_names = ['pdf', 'logpdf',
+                           'interval_prob',
+                           'cdf', 'logcdf', 'invcdf', 'sf', 'logsf', 'invsf',
+                           'mode', 'median',
+                           'mean', 'var', 'skewness', 'kurtosis', 'entropy',
+                           'noncentral_moment',
+                           'nll', 'mle', 'mom']
+cont_multi_function_names = ['pdf', 'logpdf',
+                             'cdf', 'logcdf', 'invcdf', 'sf', 'logsf', 'invsf',
+                             'mode', 'median',
+                             'mean', 'var', 'cov', 'entropy',
+                             'noncentral_moment',
+                             'nll', 'mle', 'mom']
+disc_uni_function_names = ['pmf', 'logpmf',
+                           'support', 'support_pmf',
+                           'cdf', 'invcdf', 'sf', 'invsf',
+                           'mode', 'median',
+                           'mean', 'var', 'skewness', 'kurtosis', 'entropy',
+                           'nll', 'mle', 'mom']
+disc_multi_function_names = ['pmf', 'logpmf',
+                             'support', 'support_pmf',
+                             'cdf', 'invcdf', 'sf', 'invsf',
+                             'mode', 'median',
+                             'mean', 'var', 'cov', 'entropy',
+                             'nll', 'mle', 'mom']
 
-print_impl_table(cont_dists, cont_function_names)
+print_impl_table('Continuous univarate distributions',
+                 cont_uni, cont_uni_function_names)
 print()
-print_impl_table(disc_dists, disc_function_names)
+print_impl_table('Continuous multivariate distributions',
+                 cont_multi, cont_multi_function_names)
+print()
+print_impl_table('Discrete univariate distributions',
+                 disc_uni, disc_uni_function_names)
+print()
+print_impl_table('Discrete multivariate distributions',
+                 disc_multi, disc_multi_function_names)
