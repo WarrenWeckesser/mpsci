@@ -10,6 +10,8 @@ from ..fun import multivariate_logbeta, xlogy
 
 __all__ = ['logpdf', 'pdf', 'mean', 'cov', 'entropy']
 
+_multivariate = True
+
 
 def _validate_alpha(alpha):
     for a in alpha:
