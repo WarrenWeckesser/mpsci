@@ -39,7 +39,6 @@ def digammainv(y):
     mpf('7.891230000000000000000000011')
     """
 
-    # XXX I'm not sure this extra dps is necessary.
     with mp.extradps(5):
         y = mp.mpf(y)
 
