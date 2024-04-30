@@ -1,4 +1,5 @@
 
+import pytest
 from mpmath import mp
 from mpsci.distributions import f
 
@@ -47,6 +48,35 @@ def test_cdf_negative_x():
 
 
 @mp.workdps(25)
+def test_invcdf_roundtrip():
+    dfn = 10
+    dfd = 14
+    p = 0.125
+    x = f.invcdf(p, dfn, dfd)
+    p2 = f.cdf(x, dfn, dfd)
+    assert mp.almosteq(p2, p)
+
+
+# Reference values were computed with Wolfram Alpha, e.g.
+#    InverseCDF[FRatioDistribution[10, 12], 1/8]
+@pytest.mark.parametrize(
+    'p, dfn, dfd, ref',
+    [('1/8', 10, 12,
+      '0.47719175880508967810502455907077596240147311395460'),
+     ('1/1073741824', 15, 23,
+      '0.024300528764277007428004614052754091461622381277383859'),
+     ('1048575/1048576', 4, 17,
+      '23.5604958111857286837080521348245260943091665172894')]
+)
+@mp.workdps(40)
+def test_invcdf_basic(p, dfn, dfd, ref):
+    p = mp.mpf(p)
+    ref = mp.mpf(ref)
+    x = f.invcdf(p, dfn, dfd)
+    assert mp.almosteq(x, ref)
+
+
+@mp.workdps(25)
 def test_sf():
     p = f.sf(1.5, 10, 12)
     # The expected result was computed with Wolfram Alpha:
@@ -59,6 +89,37 @@ def test_sf_negative_x():
     p = f.sf(-1.5, 10, 12)
     # x < 0, so p must be 1.
     assert p == 1
+
+
+@mp.workdps(25)
+def test_invsf_roundtrip():
+    dfn = 10
+    dfd = 14
+    p = 0.125
+    x = f.invsf(p, dfn, dfd)
+    p2 = f.sf(x, dfn, dfd)
+    assert mp.almosteq(p2, p)
+
+
+# Reference values were computed with Wolfram Alpha, e.g.
+#    InverseCDF[FRatioDistribution[10, 12], 1/8]
+# See test_invcdf_basic above.  The p argument is converted
+# to 1 - p so the same data from Wolfram can be used here.
+@pytest.mark.parametrize(
+    'p, dfn, dfd, ref',
+    [('7/8', 10, 12,
+      '0.47719175880508967810502455907077596240147311395460'),
+     ('1073741823/1073741824', 15, 23,
+      '0.024300528764277007428004614052754091461622381277383859'),
+     ('1/1048576', 4, 17,
+      '23.5604958111857286837080521348245260943091665172894')]
+)
+@mp.workdps(40)
+def test_invsf_basic(p, dfn, dfd, ref):
+    p = mp.mpf(p)
+    ref = mp.mpf(ref)
+    x = f.invsf(p, dfn, dfd)
+    assert mp.almosteq(x, ref)
 
 
 @mp.workdps(25)

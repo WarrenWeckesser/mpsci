@@ -5,11 +5,12 @@ F distribution
 """
 
 from mpmath import mp
-from ..fun import logbeta, xlogy, xlog1py
+from ._common import _validate_p
+from ..fun import logbeta, xlogy, xlog1py, betaincinv
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var',
-           'entropy']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'mean', 'var', 'entropy']
 
 
 def pdf(x, dfn, dfd):
@@ -74,6 +75,21 @@ def cdf(x, dfn, dfd):
                           regularized=True)
 
 
+def invcdf(p, dfn, dfd):
+    """
+    Inverse of the CDF of the F distriution.
+
+    `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
+    """
+    with mp.extradps(5):
+        p = _validate_p(p)
+        dfn = mp.mpf(dfn)
+        dfd = mp.mpf(dfd)
+        g = betaincinv(dfn/2, dfd/2, p, method='bisect')
+        # XXX Possible loss of precision in (1 - g):
+        return (dfd/dfn)*g/(1 - g)
+
+
 def sf(x, dfn, dfd):
     """
     Survival function of the F distribution.
@@ -89,6 +105,21 @@ def sf(x, dfn, dfd):
         dfnx = dfn * x
         return mp.betainc(dfn/2, dfd/2, x1=dfnx/(dfnx + dfd),
                           regularized=True)
+
+
+def invsf(p, dfn, dfd):
+    """
+    Inverse of the survival function of the F distriution.
+
+    `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
+    """
+    with mp.extradps(5):
+        p = _validate_p(p)
+        dfn = mp.mpf(dfn)
+        dfd = mp.mpf(dfd)
+        g = betaincinv(dfd/2, dfn/2, p, method='bisect')
+        # XXX Possible loss of precison in (1 - g):
+        return (dfd/dfn)*(1 - g)/g
 
 
 def mean(dfn, dfd):
