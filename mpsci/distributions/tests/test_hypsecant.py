@@ -37,6 +37,24 @@ def test_sf_basic():
     assert mp.almosteq(sf, expected)
 
 
+@mp.workdps(50)
+def test_invcdf_basic():
+    x = hypsecant.invcdf(1/16, loc=1, scale=3*(2/mp.pi))
+    # Reference value from Wolfram Alpha:
+    #     InverseCDF[SechDistribution[1, 3], 1/16]
+    ref = mp.mpf('-3.4266452065823773155746807670653531787193059074298')
+    assert mp.almosteq(x, ref)
+
+
+@mp.workdps(50)
+def test_invsf_basic():
+    x = hypsecant.invsf(15/16, loc=1, scale=3*(2/mp.pi))
+    # Reference value from Wolfram Alpha:
+    #     InverseCDF[SechDistribution[1, 3], 1/16]
+    ref = mp.mpf('-3.4266452065823773155746807670653531787193059074298')
+    assert mp.almosteq(x, ref)
+
+
 def test_mean():
     mean = hypsecant.mean(loc=5, scale=7)
     assert mean == 5
