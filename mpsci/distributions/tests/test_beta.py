@@ -1,8 +1,48 @@
-
+from itertools import product
 import pytest
 from mpmath import mp
 from mpsci.stats import mean, var
 from mpsci.distributions import beta
+
+
+@mp.workdps(25)
+def test_pdf_out_of_support():
+    x = beta.pdf(-1, 2, 3)
+    assert x == 0
+    x = beta.pdf(10, 4, 2)
+    assert x == 0
+
+
+@mp.workdps(25)
+def test_pdf_edge_cases():
+    x = beta.pdf(0, 0.25, 3)
+    assert x == mp.inf
+    x = beta.pdf(1, 5, 0.125)
+    assert x == mp.inf
+
+
+@mp.workdps(25)
+def test_logpdf_out_of_support():
+    x = beta.logpdf(-1, 2, 3)
+    assert x == mp.ninf
+    x = beta.logpdf(10, 4, 2)
+    assert x == mp.ninf
+
+
+@mp.workdps(25)
+def test_cdf_out_of_support():
+    x = beta.cdf(-3, 0.5, 2)
+    assert x == 0
+    x = beta.cdf(2.5, 1, 4)
+    assert x == 1
+
+
+@mp.workdps(25)
+def test_sf_out_of_support():
+    x = beta.sf(-3, 0.5, 2)
+    assert x == 1
+    x = beta.sf(2.5, 1, 4)
+    assert x == 0
 
 
 @mp.workdps(50)
@@ -128,6 +168,12 @@ def test_pdf_integer_ab_fourth(a, b):
     assert mp.almosteq(logp, mp.log(expected))
 
 
+@mp.workdps(25)
+def test_interval_prob_x_validation():
+    with pytest.raises(ValueError, match='x1 must not be greater than x2'):
+        beta.interval_prob(0.5, 0.25, 3.5, 8)
+
+
 def test_interval_prob_close_x1_x2():
     with mp.workdps(16):
         x1 = 0.8
@@ -142,6 +188,32 @@ def test_interval_prob_close_x1_x2():
                   "1836438318375817555752008625301e-17")
         expected = mp.mpf(valstr)
         assert mp.almosteq(p, expected)
+
+
+@mp.workdps(50)
+def test_entropy_with_integral():
+    a = 0.75
+    b = 2.75
+    entr = beta.entropy(a, b)
+
+    with mp.extradps(2*mp.dps):
+
+        def integrand(t):
+            return beta.pdf(t, a, b) * beta.logpdf(t, a, b)
+
+        intgrl = -mp.quad(integrand, [0, 1])
+
+    assert mp.almosteq(entr, intgrl)
+
+
+@mp.workdps(25)
+def test_mle_trivial_case():
+    x = [0.25, 0.5, 0.625, 0.875]
+    a = 1.5
+    b = 4.0
+    # Trivial case: both parameters fixed.
+    ahat, bhat = beta.mle(x, a=a, b=b)
+    assert (ahat, bhat) == (a, b)
 
 
 @mp.workdps(50)
@@ -160,6 +232,24 @@ def test_mle():
     # First order condition for the MLE.
     cb = eb + mp.psi(0, ahat + bhat) - mp.psi(0, ahat)
     assert mp.almosteq(cb, 0)
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[0.01, 0.05, 0.125, 0.375],
+     [0.43, 0.51, 0.625, 0.75, 0.875, 0.9925]]
+)
+def test_mle_minimizes_nll(x):
+    with mp.workdps(40):
+        a_hat, b_hat = beta.mle(x)
+        nll = beta.nll(x, a=a_hat, b=b_hat)
+        delta = 1e-9
+        n = 2
+        dirs = set(product(*([[-1, 0, 1]]*n))) - set([(0,)*n])
+        for d in dirs:
+            a = a_hat + d[0]*delta
+            b = b_hat + d[1]*delta
+            assert nll < beta.nll(x, a=a, b=b)
 
 
 @mp.workdps(50)
