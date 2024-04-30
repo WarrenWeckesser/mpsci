@@ -26,6 +26,44 @@ def test_pdf_logpdf(x, a, b, expected):
     assert mp.almosteq(logp, mp.log(expected), rel_eps=10**(-mp.dps + 12))
 
 
+@pytest.mark.parametrize('a, b', [(-1, 3), (2.5, -2)])
+def test_pdf_validation(a, b):
+    with pytest.raises(ValueError, match='must be greater than 0'):
+        kumaraswamy.pdf(0.75, a, b)
+
+
+@pytest.mark.parametrize('x', [-0.5, 1.75])
+def test_pdf_outside_support(x):
+    p = kumaraswamy.pdf(x, 8.5, 1.25)
+    assert p == 0
+
+
+@pytest.mark.parametrize('x', [-0.5, 1.75])
+def test_logpdf_outside_support(x):
+    p = kumaraswamy.logpdf(x, 8.5, 1.25)
+    assert p == mp.ninf
+
+
+@pytest.mark.parametrize('x, a, b', [(0, 0.75, 2.5), (1, 3.5, 0.25)])
+def test_pdf_special_cases(x, a, b):
+    p = kumaraswamy.pdf(x, a, b)
+    assert p == mp.inf
+
+
+@pytest.mark.parametrize('x', [-0.5, 1.75])
+def test_cdf_outside_support(x):
+    p = kumaraswamy.cdf(x, 8.5, 1.25)
+    expected = 0 if x < 0 else 1
+    assert p == expected
+
+
+@pytest.mark.parametrize('x', [-0.5, 1.75])
+def test_sf_outside_support(x):
+    p = kumaraswamy.sf(x, 8.5, 1.25)
+    expected = 1 if x < 0 else 0
+    assert p == expected
+
+
 #
 # Expected values were computed with Wolfram Alpha, e.g.:
 #
@@ -64,6 +102,28 @@ def test_sf_invsf_roundtrip():
     assert mp.almosteq(x, x2)
 
 
+def test_invcdf_edge_cases():
+    p = kumaraswamy.invcdf(0, 1.5, 2.5)
+    assert p == 0
+    p = kumaraswamy.invcdf(1, 1.5, 2.5)
+    assert p == 1
+
+
+def test_invsf_edge_cases():
+    p = kumaraswamy.invsf(0, 1.5, 2.5)
+    assert p == 1
+    p = kumaraswamy.invsf(1, 1.5, 2.5)
+    assert p == 0
+
+
+def test_median():
+    a = 1.5
+    b = 3.75
+    m = kumaraswamy.median(a, b)
+    p = kumaraswamy.cdf(m, a, b)
+    assert mp.almosteq(p, 0.5)
+
+
 @mp.workdps(50)
 def test_mean():
     m = kumaraswamy.mean(6, 0.5)
@@ -80,6 +140,32 @@ def test_var():
     #    Variance[KumaraswamyDistribution[6, 1/2]]
     expected = mp.mpf('0.0118546424864767865065319749025960710717792871')
     assert mp.almosteq(v, expected, rel_eps=10**(-mp.dps + 12))
+
+
+@pytest.mark.parametrize('order', [0, 1, 2, 3, 4])
+@mp.workdps(50)
+def test_noncentral_moment_with_integral(order):
+    a = 4.5
+    b = 1.75
+    m = kumaraswamy.noncentral_moment(order, a, b)
+    intgrl = mp.quad(lambda t: t**order*kumaraswamy.pdf(t, a, b), [0, 1])
+    assert mp.almosteq(m, intgrl)
+
+
+@mp.workdps(50)
+def test_skewness_with_integral():
+    a = 1.125
+    b = 8.5
+    sk = kumaraswamy.skewness(a, b)
+
+    # Skewness is E(((x - mu)/sigma)**3); compute the expected
+    # value with an integral.
+    mu = kumaraswamy.mean(a, b)
+    sigma = mp.sqrt(kumaraswamy.var(a, b))
+    intgrl = mp.quad(lambda t: kumaraswamy.pdf(t, a, b)*((t - mu)/sigma)**3,
+                     [0, 1])
+
+    assert mp.almosteq(sk, intgrl)
 
 
 @mp.workdps(50)

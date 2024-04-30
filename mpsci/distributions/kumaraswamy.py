@@ -68,7 +68,7 @@ def logpdf(x, a, b):
 
 def cdf(x, a, b):
     """
-    Cumulative distribution function of the beta distribution.
+    Cumulative distribution function of the Kumaraswamy distribution.
     """
     with mp.extradps(5):
         a, b = _validate_a_b(a, b)
@@ -82,7 +82,7 @@ def cdf(x, a, b):
 
 def sf(x, a, b):
     """
-    Survival function of the beta distribution.
+    Survival function of the Kumaraswamy distribution.
     """
     with mp.extradps(5):
         a, b = _validate_a_b(a, b)
@@ -96,7 +96,7 @@ def sf(x, a, b):
 
 def invcdf(p, a, b):
     """
-    Inverse of the CDF of the beta distribution.
+    Inverse of the CDF of the Kumaraswamy distribution.
     """
     with mp.extradps(5):
         a, b = _validate_a_b(a, b)
