@@ -99,7 +99,7 @@ disc_multi_function_names = ['pmf', 'logpmf',
                              'mean', 'var', 'cov', 'entropy',
                              'nll', 'mle', 'mom']
 
-print_impl_table('Continuous univarate distributions',
+print_impl_table('Continuous univariate distributions',
                  cont_uni, cont_uni_function_names)
 print()
 print_impl_table('Continuous multivariate distributions',
