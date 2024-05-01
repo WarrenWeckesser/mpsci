@@ -5,12 +5,12 @@ Generalized Pareto distribution
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_x_bounds
 from ..fun import pow1pm1
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'entropy']
+           'mean', 'var', 'entropy', 'nll']
 
 
 def _validate_params(xi, mu, sigma):
@@ -173,3 +173,23 @@ def entropy(xi, mu=0, sigma=1):
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
         return mp.log(sigma) + xi + 1
+
+
+def nll(x, xi, mu=0, sigma=1):
+    """
+    Negative log-likelihood function for the generalized Pareto distribution.
+    """
+    with mp.extradps(5):
+        xi, mu, sigma = _validate_params(xi, mu, sigma)
+        if xi >= 0:
+            high = mp.inf
+            strict_high = True
+            highname = None
+        else:
+            high = mu - sigma/xi
+            strict_high = False
+            highname = 'mu - sigma/xi'
+        x = _validate_x_bounds(x, low=mu, strict_low=False, lowname='mu',
+                               high=high, strict_high=strict_high,
+                               highname=highname)
+        return -mp.fsum([logpdf(t, xi, mu=mu, sigma=sigma) for t in x])

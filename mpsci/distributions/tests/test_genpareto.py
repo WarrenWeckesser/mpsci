@@ -42,3 +42,16 @@ def test_cdf_invcdf_sf_invsf_roundtrip(func, invfunc, x, xi, mu, sigma):
     p = func(x, xi, mu, sigma)
     x1 = invfunc(p, xi, mu, sigma)
     assert mp.almosteq(x1, x)
+
+
+@mp.workdps(50)
+def test_nll():
+    x = [0.5, 1.5, 2.0, 8.0]
+    xi = 3.0
+    mu = -1.0
+    sigma = 4.0
+    nll = genpareto.nll(x, xi, mu, sigma)
+    # XXX Not really a great test. This is the same implementation as
+    # in genpareto.nll().
+    s = -mp.fsum([genpareto.logpdf(t, xi, mu, sigma) for t in x])
+    assert mp.almosteq(nll, s)
