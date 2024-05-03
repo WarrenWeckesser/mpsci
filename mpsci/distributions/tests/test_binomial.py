@@ -32,3 +32,17 @@ def test_pmf_cdf_sf_basic(cdf_method):
                 assert sf == expected_sf
             else:
                 assert mp.almosteq(sf, expected_sf)
+
+
+@mp.workdps(25)
+def test_mean():
+    n = 5
+    p = mp.one/4
+    assert binomial.mean(n, p) == n*p
+
+
+@mp.workdps(25)
+def test_var():
+    n = 5
+    p = mp.one/4
+    assert binomial.var(n, p) == n*p*(1 - p)
