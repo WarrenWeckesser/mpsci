@@ -52,7 +52,7 @@ def cdf(k, n, p, method='incbeta'):
     or n, the incomplete beta function of mpmath might fail.
     """
     if method not in ['sumpmf', 'incbeta']:
-        raise ValueError('method must be "sum" or "incbeta"')
+        raise ValueError('method must be "sumpmf" or "incbeta"')
     if method == 'incbeta':
         with mp.extradps(5):
             n, p = _validate_np(n, p)
@@ -80,7 +80,7 @@ def sf(k, n, p, method='incbeta'):
     of k or n, the incomplete beta function of mpmath might fail.
     """
     if method not in ['sumpmf', 'incbeta']:
-        raise ValueError('method must be "sum" or "incbeta"')
+        raise ValueError('method must be "sumpmf" or "incbeta"')
     if method == 'incbeta':
         with mp.extradps(5):
             n, p = _validate_np(n, p)
