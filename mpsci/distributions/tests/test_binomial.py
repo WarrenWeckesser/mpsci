@@ -1,8 +1,10 @@
+import pytest
 from mpmath import mp
 from mpsci.distributions import binomial
 
 
-def test_pmf_cdf_sf_basic():
+@pytest.mark.parametrize('cdf_method', ['sumpmf', 'incbeta'])
+def test_pmf_cdf_sf_basic(cdf_method):
     with mp.workdps(25):
         p = mp.one/4
         q = mp.one - p
@@ -18,9 +20,15 @@ def test_pmf_cdf_sf_basic():
             # With p=1/4, the following calculations should be exact.
             pmf = binomial.pmf(k, n, p)
             assert pmf == expected_pmf[k]
-            cdf = binomial.cdf(k, n, p, method='sumpmf')
+            cdf = binomial.cdf(k, n, p, method=cdf_method)
             expected_cdf += pmf
-            assert cdf == expected_cdf
-            sf = binomial.sf(k, n, p, method='sumpmf')
+            if cdf_method == 'sumpmf':
+                assert cdf == expected_cdf
+            else:
+                assert mp.almosteq(cdf, expected_cdf)
+            sf = binomial.sf(k, n, p, method=cdf_method)
             expected_sf -= pmf
-            assert sf == expected_sf
+            if cdf_method == 'sumpmf':
+                assert sf == expected_sf
+            else:
+                assert mp.almosteq(sf, expected_sf)

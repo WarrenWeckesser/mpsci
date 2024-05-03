@@ -56,6 +56,8 @@ def cdf(k, n, p, method='incbeta'):
     if method == 'incbeta':
         with mp.extradps(5):
             n, p = _validate_np(n, p)
+            if k == n:
+                return mp.one
             # XXX For large values of k and/or n, betainc fails. The failure
             # occurs in one of the hypergeometric functions.
             return mp.betainc(n - k, k + 1, x1=0, x2=1 - p,
