@@ -74,6 +74,14 @@ def test_sf_invsf_roundtrip(x, k, theta):
 
 
 @mp.workdps(25)
+def test_variance():
+    k = 2.5
+    theta = 3
+    v = gamma.var(k=k, theta=theta)
+    assert v == k*theta**2
+
+
+@mp.workdps(25)
 def test_skewness():
     s = gamma.skewness(k=16, theta=3)
     assert s == 0.5
@@ -83,6 +91,22 @@ def test_skewness():
 def test_kurtosis():
     k = gamma.kurtosis(k=16, theta=3)
     assert k == 3/8
+
+
+@pytest.mark.parametrize('k', [0.25, 16])
+@mp.workdps(25)
+def test_entropy_with_integral(k):
+    theta = 4.0
+    entr = gamma.entropy(k, theta)
+
+    with mp.extradps(4*mp.dps):
+
+        def integrand(t):
+            return gamma.pdf(t, k, theta) * gamma.logpdf(t, k, theta)
+
+        intgrl = -mp.quad(integrand, [0, mp.inf])
+
+    assert mp.almosteq(entr, intgrl)
 
 
 @mp.workdps(80)
