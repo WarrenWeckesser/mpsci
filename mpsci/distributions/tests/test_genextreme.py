@@ -124,3 +124,61 @@ def test_noncentral_moment_trivial_cases(xi, mu, sigma):
     mom2 = genextreme.noncentral_moment(2, xi, mu, sigma)
     altmom2 = genextreme.var(xi, mu, sigma) + genextreme.mean(xi, mu, sigma)**2
     assert mp.almosteq(mom2, altmom2)
+
+
+@mp.workdps(50)
+def test_entropy_with_integral():
+    xi = 0.75
+    mu = 2.5
+    sigma = 8.0
+    entr = genextreme.entropy(xi, mu, sigma)
+
+    with mp.extradps(2*mp.dps):
+
+        def integrand(t):
+            return (genextreme.pdf(t, xi, mu, sigma) *
+                    genextreme.logpdf(t, xi, mu, sigma))
+
+        intgrl = -mp.quad(integrand, [mu - sigma/xi, mp.inf])
+
+    assert mp.almosteq(entr, intgrl)
+
+
+@mp.workdps(50)
+def test_skewness_with_integral():
+    xi = 0.125
+    mu = 2.5
+    sigma = 8.0
+    sk = genextreme.skewness(xi, mu, sigma)
+
+    m = genextreme.mean(xi, mu, sigma)
+    std = mp.sqrt(genextreme.var(xi, mu, sigma))
+
+    with mp.extradps(2*mp.dps):
+
+        def integrand(t):
+            return (((t - m)/std)**3 * genextreme.pdf(t, xi, mu, sigma))
+
+        intgrl = mp.quad(integrand, [mu - sigma/xi, mp.inf])
+
+    assert mp.almosteq(sk, intgrl)
+
+
+@mp.workdps(50)
+def test_kurtosis_with_integral():
+    xi = 0.125
+    mu = 2.5
+    sigma = 8.0
+    exc_kurt = genextreme.kurtosis(xi, mu, sigma)
+
+    m = genextreme.mean(xi, mu, sigma)
+    std = mp.sqrt(genextreme.var(xi, mu, sigma))
+
+    with mp.extradps(2*mp.dps):
+
+        def integrand(t):
+            return (((t - m)/std)**4 * genextreme.pdf(t, xi, mu, sigma))
+
+        intgrl = mp.quad(integrand, [mu - sigma/xi, mp.inf]) - 3
+
+    assert mp.almosteq(exc_kurt, intgrl)
