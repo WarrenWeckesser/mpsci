@@ -3,6 +3,11 @@ from mpmath import mp
 from mpsci.stats import yeojohnson_llf, yeojohnson_mle
 
 
+def test_empty_data():
+    with pytest.raises(ValueError, match='must have at least one element'):
+        yeojohnson_llf(2, [])
+
+
 @pytest.mark.parametrize('x, lam0',
                          [([1, 2, 3, 5, 8, 13], -0.1),
                           ([2003, 1950, 1997, 2000, 2009, 2009,
