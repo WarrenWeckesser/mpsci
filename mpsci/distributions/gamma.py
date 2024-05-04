@@ -14,6 +14,7 @@ from mpmath import mp
 from ._common import (_validate_p, _validate_moment_n, _validate_x_bounds,
                       _find_bracket)
 from ..fun import digammainv
+from .. import stats
 from . import normal
 
 
@@ -222,14 +223,10 @@ def mom(x):
 
     Returns the estimates of the shape k and the scale theta.
     """
-    n = len(x)
     with mp.extradps(5):
-        m1 = mp.fsum(x) / n
-        m2 = mp.fsum([mp.power(t, 2) for t in x]) / n
-        m1sq = m1**2
-        k = m1sq / (m2 - m1sq)
-        theta = (m2 - m1sq) / m1
-    return k, theta
+        m = stats.mean(x)
+        v = stats.var(x)
+        return m**2/v, v/m
 
 
 def mle(x, k=None, theta=None):
