@@ -1,6 +1,7 @@
 """
 Burr type XII probability distribution
 --------------------------------------
+
 """
 
 from mpmath import mp
@@ -23,12 +24,13 @@ def _validate_params(c, d, scale):
 
 def pdf(x, c, d, scale):
     """
-
-    Unlike scipy, a location parameter is not included.
+    Probability density function of the Burr type XII distribution.
     """
     with mp.extradps(5):
         c, d, scale = _validate_params(c, d, scale)
         x = mp.mpf(x)
+        if x <= 0:
+            return mp.zero
         z = x/scale
         return c*d*z**(c - 1)/scale / (1 + z**c)**(d+1)
 
@@ -40,6 +42,8 @@ def logpdf(x, c, d, scale):
     with mp.extradps(5):
         c, d, scale = _validate_params(c, d, scale)
         x = mp.mpf(x)
+        if x <= 0:
+            return mp.ninf
         return (mp.log(c) + mp.log(d) + (c - 1)*mp.log(x)
                 - c*mp.log(scale) - (d + 1)*mp.log1p((x / scale)**c))
 
@@ -47,12 +51,12 @@ def logpdf(x, c, d, scale):
 def cdf(x, c, d, scale):
     """
     Burr type XII distribution cumulative distribution function.
-
-    Unlike scipy, a location parameter is not included.
     """
     with mp.extradps(5):
         c, d, scale = _validate_params(c, d, scale)
         x = mp.mpf(x)
+        if x <= 0:
+            return mp.zero
         # TO DO: See if the use of logsf (as in scipy) is worthwhile.
         return 1 - sf(x, c, d, scale)
 
@@ -74,7 +78,7 @@ def sf(x, c, d, scale):
     with mp.extradps(5):
         c, d, scale = _validate_params(c, d, scale)
         x = mp.mpf(x)
-        if x < 0:
+        if x <= 0:
             return mp.one
         return (1 + (x/scale)**c)**(-d)
 
@@ -96,8 +100,8 @@ def logsf(x, c, d, scale):
     with mp.extradps(5):
         c, d, scale = _validate_params(c, d, scale)
         x = mp.mpf(x)
-        if x < 0:
-            return mp.ninf
+        if x <= 0:
+            return mp.zero
         return -d*mp.log1p((x/scale)**c)
 
 
