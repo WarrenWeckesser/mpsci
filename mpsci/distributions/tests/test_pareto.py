@@ -97,6 +97,24 @@ def test_var_loc0():
     assert mp.almosteq(m, expected)
 
 
+@mp.workdps(50)
+def test_entropy_with_integral():
+    b = 5
+    loc = -1
+    scale = 3.25
+    entr = pareto.entropy(b, loc=loc, scale=scale)
+
+    with mp.extradps(mp.dps):
+
+        def integrand(t):
+            return (pareto.logpdf(t, b, loc, scale) *
+                    pareto.pdf(t, b, loc, scale))
+
+        intgrl = -mp.quad(integrand, [loc + scale, mp.inf])
+
+    assert mp.almosteq(entr, intgrl)
+
+
 def test_mle_fixed_loc():
     x = [1.25, 1.5, 1.5, 7]
     b_hat, loc, scale_hat = pareto.mle(x, loc=0)

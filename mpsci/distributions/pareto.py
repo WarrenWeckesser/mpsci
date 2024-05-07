@@ -18,7 +18,7 @@ from ._common import _validate_p, _validate_x_bounds, Initial
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'nll', 'mle']
+           'mean', 'var', 'entropy', 'nll', 'mle']
 
 
 def _validate_params(b, loc, scale):
@@ -29,7 +29,7 @@ def _validate_params(b, loc, scale):
     return mp.mpf(b), mp.mpf(loc), mp.mpf(scale)
 
 
-def pdf(x, b, *, loc=0, scale=1):
+def pdf(x, b, loc=0, scale=1):
     """
     Probability density function for the Pareto distribution (type I).
 
@@ -44,7 +44,7 @@ def pdf(x, b, *, loc=0, scale=1):
         return b*z**(-b - 1)/scale
 
 
-def logpdf(x, b, *, loc=0, scale=1):
+def logpdf(x, b, loc=0, scale=1):
     """
     Logarithm of the PDF for the Pareto distribution (type I).
 
@@ -59,7 +59,7 @@ def logpdf(x, b, *, loc=0, scale=1):
         return mp.log(b) - (b + 1)*mp.log(x - loc) + b*mp.log(scale)
 
 
-def cdf(x, b, *, loc=0, scale=1):
+def cdf(x, b, loc=0, scale=1):
     """
     Cumulative distribution function for the Pareto distribution (type I).
 
@@ -74,7 +74,7 @@ def cdf(x, b, *, loc=0, scale=1):
         return -mp.powm1(z, -b)
 
 
-def invcdf(p, b, *, loc=0, scale=1):
+def invcdf(p, b, loc=0, scale=1):
     """
     Inverse of the CDF of the Pareto distribution (type I).
 
@@ -85,7 +85,7 @@ def invcdf(p, b, *, loc=0, scale=1):
         return loc + scale*inv_powm1(-p, -b)
 
 
-def sf(x, b, *, loc=0, scale=1):
+def sf(x, b, loc=0, scale=1):
     """
     Survival function for the Pareto distribution (type I).
 
@@ -100,7 +100,7 @@ def sf(x, b, *, loc=0, scale=1):
         return mp.power(z, -b)
 
 
-def invsf(p, b, *, loc=0, scale=1):
+def invsf(p, b, loc=0, scale=1):
     """
     Inverse of the survival function of the Pareto distribution (type I).
 
@@ -111,7 +111,7 @@ def invsf(p, b, *, loc=0, scale=1):
         return loc + scale*mp.power(p, -1/b)
 
 
-def mean(b, *, loc=0, scale=1):
+def mean(b, loc=0, scale=1):
     """
     Mean of the Pareto distribution (type I).
 
@@ -135,7 +135,16 @@ def var(b, *, loc=0, scale=1):
         return scale**2*b/(b - 1)**2/(b - 2)
 
 
-def nll(x, b, *, loc=0, scale=1):
+def entropy(b, loc=0, scale=1):
+    """
+    Differential entropy of the Pareto distribution (type I).
+    """
+    with mp.extradps(5):
+        b, loc, scale = _validate_params(b, loc, scale)
+        return 1 + 1/b + mp.log(scale/b)
+
+
+def nll(x, b, loc=0, scale=1):
     """
     Negative log-likelihood function for the Pareto distribution (type I).
 
