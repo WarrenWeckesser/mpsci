@@ -13,6 +13,14 @@ __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
            'support', 'mean', 'var', 'entropy']
 
 
+def _validate_params(dfn, dfd):
+    if dfn <= 0:
+        raise ValueError('dfn must be positive')
+    if dfd <= 0:
+        raise ValueError('dfd must be positive')
+    return mp.mpf(dfn), mp.mpf(dfd)
+
+
 def pdf(x, dfn, dfd):
     """
     Probability density function of the F distribution.
@@ -20,11 +28,10 @@ def pdf(x, dfn, dfd):
     `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
     """
     with mp.extradps(5):
+        dfn, dfd = _validate_params(dfn, dfd)
         x = mp.mpf(x)
         if x <= 0:
             return mp.zero
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
         r = dfn / dfd
         hdfn = dfn / 2
         hdfd = dfd / 2
@@ -43,11 +50,10 @@ def logpdf(x, dfn, dfd):
     """
 
     with mp.extradps(5):
+        dfn, dfd = _validate_params(dfn, dfd)
         x = mp.mpf(x)
         if x <= 0:
             return -mp.inf
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
         r = dfn / dfd
         hdfn = dfn / 2
         hdfd = dfd / 2
@@ -65,11 +71,10 @@ def cdf(x, dfn, dfd):
     `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
     """
     with mp.extradps(5):
+        dfn, dfd = _validate_params(dfn, dfd)
         x = mp.mpf(x)
         if x <= 0:
             return mp.zero
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
         dfnx = dfn * x
         return mp.betainc(dfn/2, dfd/2, x2=dfnx/(dfnx + dfd),
                           regularized=True)
@@ -82,9 +87,8 @@ def invcdf(p, dfn, dfd):
     `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
     """
     with mp.extradps(5):
+        dfn, dfd = _validate_params(dfn, dfd)
         p = _validate_p(p)
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
         g = betaincinv(dfn/2, dfd/2, p, method='bisect')
         # XXX Possible loss of precision in (1 - g):
         return (dfd/dfn)*g/(1 - g)
@@ -97,11 +101,10 @@ def sf(x, dfn, dfd):
     `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
     """
     with mp.extradps(5):
+        dfn, dfd = _validate_params(dfn, dfd)
         x = mp.mpf(x)
         if x <= 0:
             return mp.one
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
         dfnx = dfn * x
         return mp.betainc(dfn/2, dfd/2, x1=dfnx/(dfnx + dfd),
                           regularized=True)
@@ -114,9 +117,8 @@ def invsf(p, dfn, dfd):
     `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
     """
     with mp.extradps(5):
+        dfn, dfd = _validate_params(dfn, dfd)
         p = _validate_p(p)
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
         g = betaincinv(dfd/2, dfn/2, p, method='bisect')
         # XXX Possible loss of precison in (1 - g):
         return (dfd/dfn)*(1 - g)/g
@@ -127,8 +129,7 @@ def support(dfn, dfd):
     Support of the F distribution.
     """
     with mp.extradps(5):
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
+        _validate_params(dfn, dfd)
         return (mp.zero, mp.inf)
 
 
@@ -142,8 +143,8 @@ def mean(dfn, dfd):
     If `dfd` is less than or equal to 2, this function returns `inf`.
     """
     with mp.extradps(5):
+        dfn, dfd = _validate_params(dfn, dfd)
         if dfd > 2:
-            dfd = mp.mpf(dfd)
             return dfd/(dfd - 2)
         return mp.inf
 
@@ -158,9 +159,8 @@ def var(dfn, dfd):
     If `dfd` is less than or equal to 4, this function returns `inf`.
     """
     with mp.extradps(5):
+        dfn, dfd = _validate_params(dfn, dfd)
         if dfd > 4:
-            dfn = mp.mpf(dfn)
-            dfd = mp.mpf(dfd)
             return (2 * dfd**2 * (dfn + dfd - 2)
                     / (dfn * (dfd - 2)**2 * (dfd - 4)))
         return mp.inf
@@ -174,8 +174,7 @@ def entropy(dfn, dfd):
 
     """
     with mp.extradps(5):
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
+        dfn, dfd = _validate_params(dfn, dfd)
         dfn2 = dfn/2
         dfd2 = dfd/2
         dfmean = dfn2 + dfd2

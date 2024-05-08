@@ -5,6 +5,12 @@ from mpsci.distributions import f
 from ._expect import check_entropy_with_integral
 
 
+@pytest.mark.parametrize('dfn, dfd', [(-3, 10), (40, -9)])
+def test_pdf_param_validation(dfn, dfd):
+    with pytest.raises(ValueError, match='must be positive'):
+        f.pdf(1.5, dfn, dfd)
+
+
 @mp.workdps(25)
 def test_pdf():
     p = f.pdf(1.5, 10, 12)
