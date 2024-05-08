@@ -25,6 +25,11 @@ def wright_bessel(z, rho, beta):
     z and beta can be complex.
     rho must be real and greater than -1.
 
+    *Warning*: In the general case, this function uses `mpmath.mp.nsum`
+    to compute the approximate sum of the Wright-Bessel series.  This
+    might require setting the mpmath precision very high to ensure that
+    the result is accurate.
+
     See also:
 
     * https://appliedmath.brown.edu/sites/default/files/fractional/36%20TheWrightFunctions.pdf
