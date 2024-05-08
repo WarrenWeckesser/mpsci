@@ -16,7 +16,7 @@ from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'support']
 
 
 # This is a fuzzy threshold, so using a Python float is OK.
@@ -136,3 +136,8 @@ def invsf(p):
         else:
             x0 = _npdf0/p
         return mp.findroot(lambda x: sf(x) - p, x0=x0)
+
+
+def support():
+    with mp.extradps(5):
+        return (mp.ninf, mp.inf)

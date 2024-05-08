@@ -11,7 +11,8 @@ from . import normal
 from ._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'median',
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'support', 'mean', 'median',
            'var', 'skewness', 'kurtosis', 'entropy']
 
 
@@ -120,6 +121,15 @@ def invsf(p, a, b):
         a, b = _validate_params(a, b)
         p2 = -p * _norm_delta_cdf(a, b) + mp.ncdf(b)
         return normal.invcdf(p2)
+
+
+def support(a, b):
+    """
+    Support of the truncated standard normal distribution.
+    """
+    with mp.extradps(5):
+        a, b = _validate_params(a, b)
+        return (a, b)
 
 
 def mean(a, b):

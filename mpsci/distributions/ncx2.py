@@ -7,7 +7,7 @@ from mpmath import mp
 from ..fun import marcumq, cmarcumq
 
 
-__all__ = ['pdf', 'cdf', 'sf', 'mean', 'var']
+__all__ = ['pdf', 'cdf', 'sf', 'support', 'mean', 'var']
 
 
 def pdf(x, k, lam):
@@ -51,6 +51,16 @@ def sf(x, k, lam):
         lam = mp.mpf(lam)
         s = marcumq(k/2, mp.sqrt(lam), mp.sqrt(x))
     return s
+
+
+def support(k, lam):
+    """
+    Support of the noncentral chi-square distribution.
+    """
+    with mp.extradps(5):
+        k = mp.mpf(k)
+        lam = mp.mpf(lam)
+        return (mp.zero, mp.inf)
 
 
 def mean(k, lam):

@@ -12,7 +12,7 @@ wikipedia article:
 from mpmath import mp
 
 
-__all__ = ['pdf', 'logpdf', 'circmean', 'circvar', 'entropy']
+__all__ = ['pdf', 'logpdf', 'support',  'circmean', 'circvar', 'entropy']
 
 
 def pdf(x, kappa, mu=0):
@@ -65,6 +65,23 @@ def circvar(kappa, mu=0):
         mu = mp.mpf(mu)
         r = mp.besseli(1, kappa) / mp.besseli(0, kappa)
         return 1 - r
+
+
+def support(kappa, mu=0):
+    """
+    Support of the von Mises distribution.
+
+    The von Mises distribution is periodic, so the PDF is nonzero
+    at any x value.  However, the most useful definition of *support*
+    for this distribution is the fundamental period of the distribution.
+    So this function returns (-pi + mu, pi + mu).  Then, for example,
+    the integral of the PDF over the support results in the expected
+    value of 1.
+    """
+    with mp.extradps(5):
+        kappa = mp.mpf(kappa)
+        mu = mp.mpf(mu)
+        return (-mp.pi + mu, mp.pi + mu)
 
 
 def entropy(kappa, mu=0):

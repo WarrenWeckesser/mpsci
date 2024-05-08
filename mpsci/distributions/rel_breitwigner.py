@@ -32,7 +32,7 @@ from ._common import _validate_p, _validate_moment_n,  _find_bracket
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'mode', 'noncentral_moment']
+           'support', 'mean', 'var', 'mode', 'noncentral_moment']
 
 
 def _validate_rho_scale(rho, scale):
@@ -136,6 +136,15 @@ def invsf(p, rho, scale):
         x0, x1 = _find_bracket(lambda x: sf(x, rho, scale), p, 0, mp.inf)
         root = mp.findroot(lambda t: sf(t, rho, scale) - p, x0=(x0, x1))
         return root
+
+
+def support(rho, scale):
+    """
+    Support of the relativistic Breit-Wigner distribution.
+    """
+    with mp.extradps(5):
+        rho, scale = _validate_rho_scale(rho, scale)
+        return (mp.zero, mp.inf)
 
 
 def mean(rho, scale):

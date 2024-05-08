@@ -32,7 +32,7 @@ _docstring_re_subs = [
 ]
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'support', 'mean', 'mode', 'var']
 
 
 def _validate_nu(nu):
@@ -95,6 +95,15 @@ def sf(x, nu):
             return mp.one
         s = mp.gammainc(nu/2, a=0, b=1/(2*x), regularized=True)
     return s
+
+
+def support(nu):
+    """
+    Support of the inverse chi-square distribution.
+    """
+    with mp.extradps(5):
+        nu = _validate_nu(nu)
+        return (mp.zero, mp.inf)
 
 
 def mean(nu):

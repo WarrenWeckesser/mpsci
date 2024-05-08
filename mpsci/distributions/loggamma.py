@@ -21,7 +21,7 @@ from ._common import _validate_p, _validate_x_bounds, _find_bracket, Initial
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
-           'mean', 'var', 'skewness', 'kurtosis', 'nll', 'mle']
+           'support', 'mean', 'var', 'skewness', 'kurtosis', 'nll', 'mle']
 
 
 def _validate_k_theta(k, theta):
@@ -154,6 +154,18 @@ def interval_prob(x1, x2, k, theta):
         z1 = x1/theta
         z2 = x2/theta
         return mp.gammainc(k, mp.exp(z1), mp.exp(z2), regularized=True)
+
+
+def support(k, theta):
+    """
+    Support of the log-gamma distribution.
+
+    k is the shape parameter of the gamma distribution.
+    theta is the scale parameter of the log-gamma distribution.
+    """
+    with mp.extradps(5):
+        k, theta = _validate_k_theta(k, theta)
+        return (mp.ninf, mp.inf)
 
 
 def mean(k, theta):

@@ -7,7 +7,8 @@ from mpmath import mp
 from ._common import _validate_p, _find_bracket
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'entropy']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'support', 'entropy']
 
 
 def logpdf(x, df):
@@ -141,6 +142,18 @@ def invsf(p, df):
         raise ValueError('df must be greater than 0')
 
     return -invcdf(p, df)
+
+
+def support(df):
+    """
+    Support of Student's t distribution.
+    """
+    if df <= 0:
+        raise ValueError('df must be greater than 0')
+
+    with mp.extradps(5):
+        df = mp.mpf(df)
+        return (mp.ninf, mp.inf)
 
 
 def entropy(df):

@@ -11,6 +11,7 @@ from ..stats import mean as _mean
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'support',
            'mean', 'var', 'median', 'entropy', 'noncentral_moment',
            'mle', 'mom']
 
@@ -98,6 +99,15 @@ def invsf(p, a=0, b=1):
         a, b = _validate(a, b)
         x = b - p*(b - a)
         return x
+
+
+def support(a=0, b=1):
+    """
+    Support of the uniform distribution.
+    """
+    with mp.extradps(5):
+        a, b = _validate(a, b)
+        return (a, b)
 
 
 def mean(a=0, b=1):

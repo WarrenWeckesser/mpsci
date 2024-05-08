@@ -19,6 +19,7 @@ from . import normal
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
+           'support',
            'mean', 'var', 'skewness', 'kurtosis', 'noncentral_moment',
            'entropy',
            'mom', 'mle',
@@ -154,6 +155,15 @@ def interval_prob(x1, x2, k, theta):
         if x1 > x2:
             raise ValueError('x1 must not be greater than x2')
         return mp.gammainc(k, x1/theta, x2/theta, regularized=True)
+
+
+def support(k, theta):
+    """
+    Support of the gamma distribution.
+    """
+    with mp.extradps(5):
+        k, theta = _validate_k_theta(k, theta)
+        return (mp.zero, mp.inf)
 
 
 def mean(k, theta):

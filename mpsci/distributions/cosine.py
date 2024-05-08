@@ -10,7 +10,7 @@ from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'skewness', 'kurtosis']
+           'support', 'mean', 'var', 'skewness', 'kurtosis']
 
 
 # TO DO: Add location and scale parameters.
@@ -181,6 +181,14 @@ def invsf(p):
     Inverse of the survival function of the cosine distribution.
     """
     return -invcdf(p)
+
+
+def support():
+    """
+    Support for the cosine distribution.
+    """
+    with mp.extradps(5):
+        return (-mp.pi, mp.pi)
 
 
 def mean():

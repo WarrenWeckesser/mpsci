@@ -7,7 +7,7 @@ from mpmath import mp
 from ..fun import logbeta as _logbeta
 
 
-__all__ = ['pdf', 'cdf', 'mean', 'var']
+__all__ = ['pdf', 'cdf', 'support', 'mean', 'var']
 
 
 def _pdf_term(k, x, dfn, dfd, nc):
@@ -73,6 +73,17 @@ def cdf(x, dfn, dfd, nc):
         nc = mp.mpf(nc)
         p = mp.nsum(_cdfk, [0, mp.inf])
         return p
+
+
+def support(dfn, dfd, nc):
+    """
+    Support of the noncentral F distribution.
+    """
+    with mp.extradps(5):
+        nc = mp.mpf(nc)
+        dfn = mp.mpf(dfn)
+        dfd = mp.mpf(dfd)
+        return (mp.zero, mp.inf)
 
 
 def mean(dfn, dfd, nc):

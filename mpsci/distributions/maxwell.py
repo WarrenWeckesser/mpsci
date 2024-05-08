@@ -19,7 +19,7 @@ from ._common import _validate_p, _find_bracket
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'mode', 'var', 'entropy']
+           'support', 'mean', 'mode', 'var', 'entropy']
 
 
 def _validate_params(loc=0, scale=1):
@@ -135,6 +135,15 @@ def invsf(p, loc=0, scale=1):
             x = mp.findroot(lambda x: cdf(x, loc, scale) - p, x0=(x0 + x1)/2,
                             solver='newton')
         return x
+
+
+def support(loc=0, scale=1):
+    """
+    Support of the Maxwell distribution.
+    """
+    with mp.extradps(5):
+        loc, scale = _validate_params(loc, scale)
+        return (loc, mp.inf)
 
 
 def mean(loc=0, scale=1):

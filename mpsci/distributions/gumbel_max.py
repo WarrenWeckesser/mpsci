@@ -26,7 +26,8 @@ from mpsci.stats import mean as _mean
 from ._common import _seq_to_mp
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean', 'var',
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'support', 'mean', 'var',
            'nll', 'mle', 'mom']
 
 
@@ -119,6 +120,16 @@ def invsf(p, loc, scale):
         z = -mp.log(-mp.log1p(-p))
         x = scale*z + loc
         return x
+
+
+def support(loc, scale):
+    """
+    Mean of the Gumbel distribution.
+    """
+    if scale <= 0:
+        raise ValueError('scale must be positive.')
+
+    return (mp.ninf, mp.inf)
 
 
 def mean(loc, scale):

@@ -14,6 +14,7 @@ from ..stats import mean as _mean, var as _var
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
+           'support',
            'mean', 'var', 'skewness', 'kurtosis', 'nll', 'noncentral_moment',
            'entropy', 'mle', 'mom']
 
@@ -132,6 +133,15 @@ def invsf(p, a, b):
 
         return _fun.betaincinv(a, b, p, complement=True,
                                method=('bisect', [x0, x1]))
+
+
+def support(a, b):
+    """
+    Support of the beta distribution.
+    """
+    with mp.extradps(5):
+        a, b = _validate_a_b(a, b)
+        return (mp.zero, mp.one)
 
 
 def mean(a, b):

@@ -7,7 +7,8 @@ from mpmath import mp
 from ._common import _validate_p, _seq_to_mp
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mle', 'entropy']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'support', 'entropy', 'mle']
 
 
 def pdf(x, mu=0, sigma=1):
@@ -79,6 +80,16 @@ def invsf(p, mu=0, sigma=1):
         a = mp.erfinv(1 - 2*p)
         x = mp.sqrt(2)*sigma*a + mu
         return x
+
+
+def support(mu=0, sigma=1):
+    """
+    Support of the normal distribution.
+    """
+    with mp.extradps(5):
+        mu = mp.mpf(mu)
+        sigma = mp.mpf(sigma)
+        return (mp.ninf, mp.inf)
 
 
 def entropy(mu=0, sigma=1):

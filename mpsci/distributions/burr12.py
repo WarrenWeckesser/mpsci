@@ -105,6 +105,15 @@ def logsf(x, c, d, scale):
         return -d*mp.log1p((x/scale)**c)
 
 
+def support(c, d, scale):
+    """
+    Support of the Burr type XII distribution.
+    """
+    with mp.extradps(5):
+        c, d, scale = _validate_params(c, d, scale)
+        return (mp.zero, mp.inf)
+
+
 def mean(c, d, scale):
     """
     Mean of the Burr type XII distribution.

@@ -147,6 +147,22 @@ def invsf(p, xi, mu=0, sigma=1):
         return x
 
 
+def support(xi, mu=0, sigma=1):
+    """
+    Support of teh generalized extreme value distribution.
+    """
+    with mp.extradps(5):
+        xi, mu, sigma = _validate_params(xi, mu, sigma)
+        if xi != 0:
+            bound = mu - sigma/xi
+            if xi > 0:
+                return (bound, mp.inf)
+            else:
+                return (mp.ninf, bound)
+        # xi == 0
+        return (mp.ninf, mp.inf)
+
+
 def mean(xi, mu=0, sigma=1):
     """
     Mean of the generalized extreme value distribution.

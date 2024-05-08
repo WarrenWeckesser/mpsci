@@ -11,7 +11,7 @@ Note that c is a scale parameter.
 from mpmath import mp
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var', 'mode']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'support', 'mean', 'var', 'mode']
 
 
 def _validate_params(chi, c):
@@ -83,6 +83,15 @@ def sf(x, chi, c):
             return mp.zero
         z = x/c
         return _psi(chi*mp.sqrt(1 - z**2)) / _psi(chi)
+
+
+def support(chi, c):
+    """
+    Support of the ARGUS probability distribution.
+    """
+    with mp.extradps(5):
+        chi, c = _validate_params(chi, c)
+        return (mp.zero, c)
 
 
 def mean(chi, c):

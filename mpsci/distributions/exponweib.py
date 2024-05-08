@@ -6,7 +6,8 @@ Exponentiated Weibull probability distribution
 from mpmath import mp
 from ._common import _validate_p
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'support']
 
 
 def _validate_params(a, c, scale):
@@ -106,3 +107,12 @@ def invsf(p, a, c, scale=1):
         a, c, scale = _validate_params(a, c, scale)
         p = _validate_p(p)
         return scale*(-mp.log(-mp.expm1(mp.log1p(-p)/a)))**(1/c)
+
+
+def support(a, c, scale=1):
+    """
+    Support of the exponentiated Weibull distribution.
+    """
+    with mp.extradps(5):
+        a, c, scale = _validate_params(a, c, scale)
+        return (mp.zero, mp.inf)

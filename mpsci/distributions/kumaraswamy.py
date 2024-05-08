@@ -25,6 +25,7 @@ from ..fun._powm1 import inv_powm1
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'support',
            'mean', 'var', 'median', 'skewness', 'noncentral_moment', 'entropy',
            'nll', 'mle']
 
@@ -120,6 +121,14 @@ def invsf(p, a, b):
         if p == 1:
             return mp.zero
         return inv_powm1(-mp.power(p, 1/b), a)
+
+
+def support(a, b):
+    """
+    Support of the Kumaraswamy distribution.
+    """
+    with mp.extradps(5):
+        return (mp.zero, mp.one)
 
 
 def mean(a, b):

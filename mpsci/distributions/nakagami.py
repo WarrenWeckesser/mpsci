@@ -24,7 +24,7 @@ from ._common import _validate_x_bounds
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf',
-           'mean', 'var', 'entropy',
+           'support', 'mean', 'var', 'entropy',
            'nll', 'mle']
 
 
@@ -88,6 +88,15 @@ def sf(x, nu, loc=0, scale=1):
         x = mp.mpf(x)
         z = (x - loc)/scale
         return mp.gammainc(nu, nu*z**2, mp.inf, regularized=True)
+
+
+def support(nu, loc=0, scale=1):
+    """
+    Support of the Nakagami distribution.
+    """
+    with mp.extradps(5):
+        nu, loc, scale = _validate_params(nu, loc, scale)
+        return (loc, mp.inf)
 
 
 def mean(nu, loc=0, scale=1):

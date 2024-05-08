@@ -13,7 +13,7 @@ from mpsci.distributions import normal
 from ._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'support']
 
 
 def _validate_params(c, loc, scale):
@@ -91,3 +91,12 @@ def invsf(p, c, loc=0, scale=1):
         c, loc, scale = _validate_params(c, loc, scale)
         p = _validate_p(p)
         return loc - scale*normal.invcdf(mp.power(p, mp.one/c))
+
+
+def support(c, loc=0, scale=1):
+    """
+    Support of the power normal distribution.
+    """
+    with mp.extradps(5):
+        c, loc, scale = _validate_params(c, loc, scale)
+        return (mp.ninf, mp.inf)

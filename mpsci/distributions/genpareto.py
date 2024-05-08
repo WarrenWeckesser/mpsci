@@ -10,7 +10,7 @@ from ..fun import pow1pm1
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'entropy', 'nll']
+           'support', 'mean', 'var', 'entropy', 'nll']
 
 
 def _validate_params(xi, mu, sigma):
@@ -142,6 +142,19 @@ def invsf(p, xi, mu=0, sigma=1):
             return mu - sigma*mp.log(p)
         else:
             return mu + (sigma/xi)*mp.powm1(p, -xi)
+
+
+def support(xi, mu=0, sigma=1):
+    """
+    Support of the generarlized Pareto distribution.
+    """
+    with mp.extradps(5):
+        xi, mu, sigma = _validate_params(xi, mu, sigma)
+        if xi >= 0:
+            upper = mp.inf
+        else:
+            upper = mu - sigma/xi
+        return (mu, upper)
 
 
 def mean(xi, mu=0, sigma=1):

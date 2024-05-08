@@ -18,6 +18,7 @@ from ._common import _validate_p, _validate_moment_n
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'support',
            'mean', 'mode', 'var', 'skewness', 'kurtosis',
            'entropy', 'noncentral_moment']
 
@@ -128,11 +129,20 @@ def invsf(p, a, loc=0, scale=1):
         return x1
 
 
+def support(a, loc=0, scale=1):
+    """
+    Support of the inverse gamma distribution.
+    """
+    with mp.extradps(5):
+        a, loc, scale = _validate_params(a, loc, scale)
+        return (loc, mp.inf)
+
+
 def mean(a, loc=0, scale=1):
     """
     Mean of the inverse gamma distribution.
 
-    Returns `nan` is `a <= 1`.
+    Returns `nan` if `a <= 1`.
     """
     with mp.extradps(5):
         a, loc, scale = _validate_params(a, loc, scale)

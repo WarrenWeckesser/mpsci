@@ -20,8 +20,8 @@ from mpsci.stats import mean as _mean
 from ._common import _validate_p, _validate_x_bounds, Initial
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
-           'entropy', 'nll', 'mle']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'support', 'mean', 'var', 'entropy', 'nll', 'mle']
 
 
 def _validate_c_scale(c, scale):
@@ -132,6 +132,15 @@ def invsf(p, c, scale):
         elif p == 1:
             return mp.zero
         return scale*mp.log1p(-mp.log(p)/c)
+
+
+def support(c, scale):
+    """
+    Support of the Gompertz distribution.
+    """
+    with mp.extradps(5):
+        c, scale = _validate_c_scale(c, scale)
+        return (mp.zero, mp.inf)
 
 
 def mean(c, scale):

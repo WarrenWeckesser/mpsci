@@ -11,7 +11,8 @@ from mpsci.stats import mean as _mean
 from ._common import _seq_to_mp
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'support', 'mean', 'var',
            'mom', 'nll', 'mle']
 
 
@@ -92,6 +93,14 @@ def invsf(p, loc=0, scale=1):
         scale = mp.mpf(scale)
         x = loc + scale*(mp.log1p(-p) - mp.log(p))
     return x
+
+
+def support(loc=0, scale=1):
+    """
+    Support of the logistic distribution.
+    """
+    with mp.extradps(5):
+        return (mp.ninf, mp.inf)
 
 
 def mean(loc=0, scale=1):

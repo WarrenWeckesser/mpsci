@@ -17,7 +17,7 @@ from .. import stats
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'mean', 'var', 'entropy', 'nll', 'mle']
+           'support', 'mean', 'var', 'entropy', 'nll', 'mle']
 
 
 def _validate_loc_scale(loc, scale):
@@ -94,6 +94,15 @@ def invsf(p, loc=0, scale=1):
         loc, scale = _validate_loc_scale(loc, scale)
         p = _validate_p(p)
         return loc - scale*mp.log(mp.tan(mp.pi*p/2))
+
+
+def support(loc=0, scale=1):
+    """
+    Support of the hyperbolic secant distribution.
+    """
+    with mp.extradps(5):
+        loc, scale = _validate_loc_scale(loc, scale)
+        return (mp.ninf, mp.inf)
 
 
 def mean(loc=0, scale=1):

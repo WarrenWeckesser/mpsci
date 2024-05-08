@@ -39,6 +39,7 @@ from ._common import _validate_p, _validate_moment_n
 __all__ = ['pdf', 'logpdf',
            'cdf', 'logcdf', 'invcdf',
            'sf', 'logsf', 'invsf',
+           'support',
            'mean', 'median', 'mode', 'var', 'entropy',
            'noncentral_moment']
 
@@ -186,6 +187,15 @@ def invsf(p, m, loc=0, scale=1):
                 break
             x0 = x1
         return x1
+
+
+def support(m, loc=0, scale=1):
+    """
+    Support of the inverse Gaussian distribution.
+    """
+    with mp.extradps(5):
+        m, loc, scale = _validate_params(m, loc, scale)
+        return (loc, mp.inf)
 
 
 def mean(m, loc=0, scale=1):

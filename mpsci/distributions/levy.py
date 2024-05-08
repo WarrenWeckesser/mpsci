@@ -17,7 +17,8 @@ from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['logpdf', 'pdf', 'cdf', 'invcdf', 'sf', 'invsf']
+__all__ = ['logpdf', 'pdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'support']
 
 
 def _erfcinv(y):
@@ -112,3 +113,14 @@ def invsf(p, mu=0, sigma=1):
         mu = mp.mpf(mu)
         sigma = mp.mpf(sigma)
         return mu + sigma / (2*mp.erfinv(p)**2)
+
+
+def support(p, mu=0, sigma=1):
+    """
+    Support of the Lévy distribution.
+    """
+    with mp.extradps(5):
+        p = _validate_p(p)
+        mu = mp.mpf(mu)
+        sigma = mp.mpf(sigma)
+        return (mu, mp.inf)

@@ -18,7 +18,7 @@ from ._common import _validate_p, _validate_x_bounds, Initial
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'entropy', 'nll', 'mle']
+           'support', 'mean', 'var', 'entropy', 'nll', 'mle']
 
 
 def _validate_params(b, loc, scale):
@@ -109,6 +109,16 @@ def invsf(p, b, loc=0, scale=1):
         b, loc, scale = _validate_params(b, loc, scale)
         p = _validate_p(p)
         return loc + scale*mp.power(p, -1/b)
+
+
+def support(b, loc=0, scale=1):
+    """
+    Support of the Pareto distribution (type I).
+
+    """
+    with mp.extradps(5):
+        b, loc, scale = _validate_params(b, loc, scale)
+        return (loc + scale, mp.inf)
 
 
 def mean(b, loc=0, scale=1):

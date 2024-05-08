@@ -7,7 +7,8 @@ from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'support', 'mean', 'var']
 
 
 def _validate_ab(a, b):
@@ -115,6 +116,15 @@ def invsf(p, a, b):
             c = a/onemb
             t = c*mp.exp(c)*mp.power(p, -b/onemb)
             return mp.power(mp.lambertw(t)/c, 1/b)
+
+
+def support(a, b):
+    """
+    Support of the Benktander II distribution.
+    """
+    with mp.extradps(5):
+        a, b = _validate_ab(a, b)
+        return (mp.one, mp.inf)
 
 
 def mean(a, b):

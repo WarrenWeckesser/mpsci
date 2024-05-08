@@ -12,7 +12,8 @@ from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'support']
 
 
 def _validate_params(loc, scale):
@@ -101,3 +102,12 @@ def invsf(p, loc=0, scale=1):
         if p == 0:
             return mp.inf
         return loc - scale*mp.log(p/2/(1 - p/2))
+
+
+def support(loc=0, scale=1):
+    """
+    Support of the half-logistic distribution.
+    """
+    with mp.extradps(5):
+        loc, scale = _validate_params(loc, scale)
+        return (loc, mp.inf)

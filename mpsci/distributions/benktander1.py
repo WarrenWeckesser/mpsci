@@ -8,8 +8,8 @@ from ..stats import mean as _mean
 from ._common import _validate_p, _validate_x_bounds, Initial
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
-           'nll']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'support', 'mean', 'var', 'nll']
 
 
 def _validate_ab(a, b):
@@ -128,6 +128,15 @@ def invsf(p, a, b):
                                    - (a + 1 + b*z)*z - w),
                         (zlow, zhigh), method='anderson')
         return mp.exp(z)
+
+
+def support(a, b):
+    """
+    Support of the Benktander I distribution.
+    """
+    with mp.extradps(5):
+        a, b = _validate_ab(a, b)
+        return (mp.one, mp.inf)
 
 
 def mean(a, b):

@@ -18,6 +18,7 @@ from .. import fun as _fun
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'support',
            'mean', 'mode', 'var', 'skewness', 'noncentral_moment',
            'nll', 'mle']
 
@@ -142,6 +143,15 @@ def invsf(p, a, b, scale):
         x = mp.findroot(lambda x: sf(x, a, b, scale) - p, x0=(x0, x1),
                         solver='secant')
         return x
+
+
+def support(a, b, scale):
+    """
+    Support of the beta prime distribution.
+    """
+    with mp.extradps(5):
+        a, b, scale = _validate_params(a, b, scale)
+        return (mp.zero, mp.inf)
 
 
 def mean(a, b, scale):

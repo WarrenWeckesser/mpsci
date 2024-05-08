@@ -8,7 +8,7 @@ from ._common import _validate_moment_n
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'var',
-           'entropy', 'noncentral_moment']
+           'support', 'entropy', 'noncentral_moment']
 
 
 def _validate_k(k):
@@ -67,6 +67,15 @@ def sf(x, k):
             return mp.one
         s = mp.gammainc(k/2, a=x/2, b=mp.inf, regularized=True)
     return s
+
+
+def support(k):
+    """
+    Support for the chi-square distribution.
+    """
+    with mp.extradps(5):
+        k = _validate_k(k)
+        return (mp.zero, mp.inf)
 
 
 def mean(k):

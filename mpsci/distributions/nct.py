@@ -12,7 +12,7 @@ from mpmath import mp
 from ._common import _validate_moment_n
 
 
-__all__ = ['pdf', 'logpdf', 'mean', 'var', 'noncentral_moment']
+__all__ = ['pdf', 'logpdf', 'support', 'mean', 'var', 'noncentral_moment']
 
 
 def pdf(x, df, nc):
@@ -85,6 +85,14 @@ def logpdf(x, df, nc):
             s = mp.nsum(_pdf_term, [0, mp.inf])
             logp = logc + mp.log(s)
         return logp
+
+
+def support(df, nc):
+    """
+    Support of the noncentral t distribution.
+    """
+    with mp.extradps(5):
+        return (mp.ninf, mp.inf)
 
 
 def mean(df, nc):

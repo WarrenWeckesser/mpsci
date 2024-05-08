@@ -21,7 +21,8 @@ from ._common import _validate_p
 from ..fun import pow1pm1
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'mean']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+           'support', 'mean']
 
 
 def _validate_params(c, beta, scale):
@@ -120,6 +121,15 @@ def invsf(p, c, beta, scale):
         r = mp.powm1(p, -1/c)
         x = scale * mp.log1p(beta * r)
         return x
+
+
+def support(c, beta, scale):
+    """
+    Support of the Gamma/Gompertz distribution.
+    """
+    with mp.extradps(5):
+        c, beta, scale = _validate_params(c, beta, scale)
+        return (mp.zero, mp.inf)
 
 
 def mean(c, beta, scale):

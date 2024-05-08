@@ -12,6 +12,7 @@ from ._common import _validate_p, _validate_moment_n, _validate_x_bounds
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'support',
            'mean', 'var', 'skewness', 'kurtosis', 'entropy',
            'noncentral_moment',
            'nll', 'mle', 'mom']
@@ -100,6 +101,15 @@ def invsf(p, mu=0, sigma=1):
         p = _validate_p(p)
         mu, sigma = _validate_params(mu, sigma)
         return invcdf(1 - p, mu, sigma)
+
+
+def support(mu=0, sigma=1):
+    """
+    Support of the lognormal distribution.
+    """
+    with mp.extradps(5):
+        mu, sigma = _validate_params(mu, sigma)
+        return (mp.zero, mp.inf)
 
 
 def mean(mu=0, sigma=1):

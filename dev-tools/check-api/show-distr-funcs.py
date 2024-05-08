@@ -76,6 +76,7 @@ cont_uni, cont_multi, disc_uni, disc_multi = get_distributions()
 cont_uni_function_names = ['pdf', 'logpdf',
                            'interval_prob',
                            'cdf', 'logcdf', 'invcdf', 'sf', 'logsf', 'invsf',
+                           'support',
                            'mode', 'median',
                            'mean', 'var', 'skewness', 'kurtosis', 'entropy',
                            'noncentral_moment',

@@ -9,7 +9,8 @@ from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'support']
 
 
 def _validate_params(a, b, c, loc, scale):
@@ -112,3 +113,12 @@ def invsf(p, a, b, c, loc=0, scale=1):
         s = r/c - mp.log(p)/(a + b)
         x = s + mp.lambertw(-r*mp.exp(-s*c))/c
     return loc + scale*x
+
+
+def support(a, b, c, loc=0, scale=1):
+    """
+    Support of the generalized exponential distribution.
+    """
+    with mp.extradps(5):
+        a, b, c, loc, scale = _validate_params(a, b, c, loc, scale)
+        return (loc, mp.inf)

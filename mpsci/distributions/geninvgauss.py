@@ -43,7 +43,8 @@ def _validate_params(p, b, loc, scale):
     return mp.mpf(p), mp.mpf(b), mp.mpf(loc), mp.mpf(scale)
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mode', 'mean', 'var', 'entropy']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf',
+           'support', 'mode', 'mean', 'var', 'entropy']
 
 
 _latex_pdf = r"""
@@ -172,6 +173,15 @@ def sf(x, p, b, loc=0, scale=1):
             s = (mp.quad(lambda t: pdf(t, p, b, loc, scale), [x, m]) +
                  mp.quad(lambda t: pdf(t, p, b, loc, scale), [m, mp.inf]))
         return s
+
+
+def support(p, b, loc=0, scale=1):
+    """
+    Support of the generalized inverse Gaussian distribution.
+    """
+    with mp.extradps(5):
+        p, b, loc, scale = _validate_params(p, b, loc, scale)
+        return (loc, mp.inf)
 
 
 def mean(p, b, loc=0, scale=1):

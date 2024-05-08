@@ -22,7 +22,8 @@ from .normal import logpdf as normal_logpdf
 from ..fun import logsumexp
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var',
+           'support']
 
 
 def _validate_sigma(sigma):
@@ -83,6 +84,16 @@ def sf(x, mu, sigma):
         if x < 0:
             return mp.one
         return mp.ncdf(-x, -mu, sigma) + mp.ncdf(-x, mu, sigma)
+
+
+def support(mu, sigma):
+    """
+    Support of the folded normal distribution.
+    """
+    with mp.extradps(5):
+        mu = mp.mpf(mu)
+        sigma = _validate_sigma(sigma)
+        return (mp.zero, mp.inf)
 
 
 def mean(mu, sigma):

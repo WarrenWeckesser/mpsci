@@ -10,7 +10,7 @@ from ..fun import logbeta, xlogy, xlog1py, betaincinv
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var', 'entropy']
+           'support', 'mean', 'var', 'entropy']
 
 
 def pdf(x, dfn, dfd):
@@ -120,6 +120,16 @@ def invsf(p, dfn, dfd):
         g = betaincinv(dfd/2, dfn/2, p, method='bisect')
         # XXX Possible loss of precison in (1 - g):
         return (dfd/dfn)*(1 - g)/g
+
+
+def support(dfn, dfd):
+    """
+    Support of the F distribution.
+    """
+    with mp.extradps(5):
+        dfn = mp.mpf(dfn)
+        dfd = mp.mpf(dfd)
+        return (mp.zero, mp.inf)
 
 
 def mean(dfn, dfd):

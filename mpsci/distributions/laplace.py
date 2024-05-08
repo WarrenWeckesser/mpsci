@@ -12,7 +12,7 @@ from ._common import _seq_to_mp
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'mean', 'var', 'mle', 'mom']
+           'support', 'mean', 'var', 'mle', 'mom']
 
 
 def _validate_params(mu, b):
@@ -100,6 +100,15 @@ def invsf(p, mu=0, b=1):
         else:
             q = mu - b*mp.log(2*p)
         return q
+
+
+def support(mu=0, b=1):
+    """
+    Support of the Laplace distribution.
+    """
+    with mp.extradps(5):
+        mu, b = _validate_params(mu, b)
+        return (mp.ninf, mp.inf)
 
 
 def mean(mu=0, b=1):

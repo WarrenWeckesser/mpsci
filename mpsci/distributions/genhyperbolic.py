@@ -19,7 +19,7 @@ distribution is obtained by setting δ = 0.
 from mpmath import mp
 
 
-__all__ = ['logpdf', 'pdf', 'cdf', 'mean']
+__all__ = ['logpdf', 'pdf', 'cdf', 'support', 'mean', 'var']
 
 
 # To do: verify the valid ranges of the parameters.  E.g. can `a` be negative?
@@ -94,6 +94,15 @@ def sf(x, p, a, b, loc=0, scale=1):
         p, a, b, loc, scale = _validate_params(p, a, b, loc, scale)
         x = mp.mpf(x)
         return _integrate_pdf(x, mp.inf, p, a, b, loc, scale)
+
+
+def support(p, a, b, loc=0, scale=1):
+    """
+    Support of the generalized hyperbolic distribution.
+    """
+    with mp.extradps(5):
+        p, a, b, loc, scale = _validate_params(p, a, b, loc, scale)
+        return (mp.ninf, mp.inf)
 
 
 def mean(p, a, b, loc=0, scale=1):

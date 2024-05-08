@@ -19,7 +19,8 @@ from ..fun import marcumq, cmarcumq
 from ._common import _validate_moment_n
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var', 'noncentral_moment']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf',
+           'support', 'mean', 'var', 'noncentral_moment']
 
 
 def _validate_params(nu, sigma):
@@ -87,6 +88,15 @@ def sf(x, nu, sigma):
             return mp.one
         s = marcumq(1, nu/sigma, x/sigma)
         return s
+
+
+def support(nu, sigma):
+    """
+    Support of the Rice distribution.
+    """
+    with mp.extradps(5):
+        nu, sigma = _validate_params(nu, sigma)
+        return (mp.zero, mp.inf)
 
 
 def mean(nu, sigma):
