@@ -12,7 +12,7 @@ from ._expect import (
                           (0.5, 1, 0, 1),
                           (2, 3, 0, 5)])
 @mp.workdps(20)
-def test_entropy_against_integral2(p, b, loc, scale):
+def test_entropy_against_integral(p, b, loc, scale):
     check_entropy_with_integral(gig, (p, b, loc, scale))
 
 

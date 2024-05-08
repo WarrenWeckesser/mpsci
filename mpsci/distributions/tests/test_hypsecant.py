@@ -72,7 +72,7 @@ def test_var_with_integral():
 
 
 @mp.workdps(50)
-def test_entropy_with_integral2():
+def test_entropy_with_integral():
     loc = 5
     scale = 7
     check_entropy_with_integral(hypsecant, (loc, scale))

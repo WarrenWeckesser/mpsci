@@ -109,7 +109,7 @@ def test_entropy():
 
 @pytest.mark.parametrize('order', [0, 1, 2, 3, 4])
 @mp.workdps(50)
-def test_noncentral_moment_with_integral2(order):
+def test_noncentral_moment_with_integral(order):
     a = -3.0
     b = 5.0
     check_noncentral_moment_with_integral(order, uniform, (a, b))

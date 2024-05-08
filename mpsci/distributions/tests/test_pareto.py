@@ -99,7 +99,7 @@ def test_var_loc0():
 
 
 @mp.workdps(50)
-def test_entropy_with_integral2():
+def test_entropy_with_integral():
     check_entropy_with_integral(pareto, (5, -1, 3.25))
 
 
