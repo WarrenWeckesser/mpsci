@@ -3,7 +3,7 @@ mpsci
 
 ``mpsci`` is a Python module that defines an assortment of numerical
 formulas and algorithms.  The library `mpmath` is used for floating point
-calculations.
+calculations; `pytest` is required to run the unit tests.
 
 Much of the code in ``mpsci`` was developed as a way to find the
 "true" values to be used in SciPy unit tests.
