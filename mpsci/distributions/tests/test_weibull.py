@@ -1,8 +1,8 @@
 from itertools import product
 import pytest
 from mpmath import mp
-from mpsci.fun import xlogy
 from mpsci.distributions import weibull_max, weibull_min
+from ._expect import check_entropy_with_integral
 
 
 @pytest.mark.parametrize('dist, xsign', [(weibull_min, 1), (weibull_max, -1)])
@@ -70,26 +70,9 @@ def test_kurtosis(dist):
 
 
 @pytest.mark.parametrize('dist', [weibull_min, weibull_max])
+@mp.workdps(50)
 def test_entropy(dist):
-
-    def integrand(dist, x, k, loc, scale):
-        if x == loc:
-            p = dist.pdf(x, k, loc, scale)
-            return xlogy(p, p)
-        else:
-            return dist.pdf(x, k, loc, scale) * dist.logpdf(x, k, loc, scale)
-
-    with mp.workdps(50):
-        k = 1.25
-        loc = 1
-        scale = 3
-        entr = dist.entropy(k, loc, scale)
-        if dist == weibull_min:
-            support = [loc, mp.inf]
-        else:
-            support = [mp.ninf, loc]
-        h = -mp.quad(lambda t: integrand(dist, t, k, loc, scale), support)
-        assert mp.almosteq(entr, h)
+    check_entropy_with_integral(dist, (1.25, 1, 3))
 
 
 @pytest.mark.parametrize('dist, sgn', [(weibull_min, 1), (weibull_max, -1)])

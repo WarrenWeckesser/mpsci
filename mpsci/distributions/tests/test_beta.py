@@ -3,6 +3,7 @@ import pytest
 from mpmath import mp
 from mpsci.stats import mean, var
 from mpsci.distributions import beta
+from ._expect import check_entropy_with_integral
 
 
 @mp.workdps(25)
@@ -192,18 +193,7 @@ def test_interval_prob_close_x1_x2():
 
 @mp.workdps(50)
 def test_entropy_with_integral():
-    a = 0.75
-    b = 2.75
-    entr = beta.entropy(a, b)
-
-    with mp.extradps(2*mp.dps):
-
-        def integrand(t):
-            return beta.pdf(t, a, b) * beta.logpdf(t, a, b)
-
-        intgrl = -mp.quad(integrand, [0, 1])
-
-    assert mp.almosteq(entr, intgrl)
+    check_entropy_with_integral(beta, (0.75, 2.75))
 
 
 @mp.workdps(25)

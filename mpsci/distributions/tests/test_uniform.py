@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import uniform
+from ._expect import check_noncentral_moment_with_integral
 
 
 def test_validate_pdf():
@@ -108,12 +109,10 @@ def test_entropy():
 
 @pytest.mark.parametrize('order', [0, 1, 2, 3, 4])
 @mp.workdps(50)
-def test_noncentral_moment_with_integral(order):
+def test_noncentral_moment_with_integral2(order):
     a = -3.0
     b = 5.0
-    m = uniform.noncentral_moment(order, a, b)
-    intgrl = mp.quad(lambda t: t**order*uniform.pdf(t, a, b), [a, b])
-    assert mp.almosteq(m, intgrl)
+    check_noncentral_moment_with_integral(order, uniform, (a, b))
 
 
 @mp.workdps(25)

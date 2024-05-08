@@ -1,6 +1,11 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import genextreme
+from ._expect import (
+    check_entropy_with_integral,
+    check_skewness_with_integral,
+    check_kurtosis_with_integral,
+)
 
 
 @mp.workdps(50)
@@ -131,17 +136,7 @@ def test_entropy_with_integral():
     xi = 0.75
     mu = 2.5
     sigma = 8.0
-    entr = genextreme.entropy(xi, mu, sigma)
-
-    with mp.extradps(2*mp.dps):
-
-        def integrand(t):
-            return (genextreme.pdf(t, xi, mu, sigma) *
-                    genextreme.logpdf(t, xi, mu, sigma))
-
-        intgrl = -mp.quad(integrand, [mu - sigma/xi, mp.inf])
-
-    assert mp.almosteq(entr, intgrl)
+    check_entropy_with_integral(genextreme, (xi, mu, sigma))
 
 
 @mp.workdps(50)
@@ -149,19 +144,7 @@ def test_skewness_with_integral():
     xi = 0.125
     mu = 2.5
     sigma = 8.0
-    sk = genextreme.skewness(xi, mu, sigma)
-
-    m = genextreme.mean(xi, mu, sigma)
-    std = mp.sqrt(genextreme.var(xi, mu, sigma))
-
-    with mp.extradps(2*mp.dps):
-
-        def integrand(t):
-            return (((t - m)/std)**3 * genextreme.pdf(t, xi, mu, sigma))
-
-        intgrl = mp.quad(integrand, [mu - sigma/xi, mp.inf])
-
-    assert mp.almosteq(sk, intgrl)
+    check_skewness_with_integral(genextreme, (xi, mu, sigma))
 
 
 @mp.workdps(50)
@@ -169,16 +152,4 @@ def test_kurtosis_with_integral():
     xi = 0.125
     mu = 2.5
     sigma = 8.0
-    exc_kurt = genextreme.kurtosis(xi, mu, sigma)
-
-    m = genextreme.mean(xi, mu, sigma)
-    std = mp.sqrt(genextreme.var(xi, mu, sigma))
-
-    with mp.extradps(2*mp.dps):
-
-        def integrand(t):
-            return (((t - m)/std)**4 * genextreme.pdf(t, xi, mu, sigma))
-
-        intgrl = mp.quad(integrand, [mu - sigma/xi, mp.inf]) - 3
-
-    assert mp.almosteq(exc_kurt, intgrl)
+    check_kurtosis_with_integral(genextreme, (xi, mu, sigma))

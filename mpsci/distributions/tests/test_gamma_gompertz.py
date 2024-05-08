@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import gamma_gompertz
+from ._expect import noncentral_moment_with_integral
 
 
 def test_basic_pdf_logpdf_cdf():
@@ -88,7 +89,7 @@ def test_mean_beta_1():
                           (0.5, 1.0, 2.5),
                           (1.0, 3.5, 1.0),
                           (1.5, 0.25, 6.0)])
-def test_mean_with_integral(c, beta, scale):
+def test_mean_with_integral2(c, beta, scale):
     m = gamma_gompertz.mean(c, beta, scale)
-    q = mp.quad(lambda t: t*gamma_gompertz.pdf(t, c, beta, scale), [0, mp.inf])
+    q = noncentral_moment_with_integral(1, gamma_gompertz, (c, beta, scale))
     assert mp.almosteq(m, q)

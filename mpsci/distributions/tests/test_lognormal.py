@@ -2,6 +2,7 @@ import pytest
 from mpmath import mp
 from mpsci.distributions import lognormal
 from ._utils import call_and_check_mle
+from ._expect import check_entropy_with_integral
 
 
 def test_pdf():
@@ -140,17 +141,7 @@ def test_kurtosis():
 
 @mp.workdps(50)
 def test_entropy_with_integral():
-    mu = 2
-    sigma = 3
-    entr = lognormal.entropy(mu, sigma)
-    with mp.extradps(mp.dps // 2):
-
-        def integrand(t):
-            return lognormal.pdf(t, mu, sigma) * lognormal.logpdf(t, mu, sigma)
-
-        intgrl = mp.quad(integrand, [0, mp.inf])
-
-    assert mp.almosteq(entr, -intgrl)
+    check_entropy_with_integral(lognormal, (2, 3))
 
 
 def test_noncentral_moment():

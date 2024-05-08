@@ -3,9 +3,7 @@ from mpmath import mp
 from mpsci.distributions import slash
 
 
-mp.dps = 60
-
-
+@mp.workdps(60)
 def test_pdf_normalization():
     integral = mp.quad(slash.pdf, [-mp.inf, -3, 0, 3, mp.inf],
                        method='gauss-legendre')
@@ -13,6 +11,7 @@ def test_pdf_normalization():
 
 
 @pytest.mark.parametrize('x', [-3, 0, 13])
+@mp.workdps(60)
 def test_pdf_logpdf(x):
     # Consistency check: logpdf(x) ~= log(pdf(x))
     logp1 = slash.logpdf(x)
@@ -48,6 +47,7 @@ def test_cdf_small_x():
 
 
 @pytest.mark.parametrize('x', [-3, 0, 1, 25])
+@mp.workdps(50)
 def test_cdf_with_quad(x):
     cdf = slash.cdf(x)
     if x > 0:
@@ -59,6 +59,7 @@ def test_cdf_with_quad(x):
 
 
 @pytest.mark.parametrize('x', [-3, 0, 1, 25])
+@mp.workdps(50)
 def test_sf_with_quad(x):
     sf = slash.sf(x)
     if x < 0:
@@ -70,6 +71,7 @@ def test_sf_with_quad(x):
 
 
 @pytest.mark.parametrize('x', [-mp.inf, -3, 0, 1, 25, mp.inf])
+@mp.workdps(50)
 def test_cdf_invcdf_roundtrip(x):
     p = slash.cdf(x)
     x2 = slash.invcdf(p)
@@ -80,6 +82,7 @@ def test_cdf_invcdf_roundtrip(x):
 
 
 @pytest.mark.parametrize('x', [-mp.inf, -3, 0, 1, 25, mp.inf])
+@mp.workdps(50)
 def test_sf_invsf_roundtrip(x):
     p = slash.sf(x)
     x2 = slash.invsf(p)

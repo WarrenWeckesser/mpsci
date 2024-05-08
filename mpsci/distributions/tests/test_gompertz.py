@@ -2,6 +2,7 @@ import pytest
 from mpmath import mp
 from mpsci.distributions import gompertz
 from ._utils import call_and_check_mle, check_mle
+from ._expect import check_entropy_with_integral
 
 
 @mp.workdps(60)
@@ -88,12 +89,12 @@ def test_mean():
 def test_entropy_against_integral():
     c = mp.mpf(3.0)
     scale = mp.mpf(0.5)
-    h = gompertz.entropy(c, scale)
-    hi = -mp.quad(lambda t: (gompertz.pdf(t, c, scale) *
-                             gompertz.logpdf(t, c, scale)),
-                  [0, (gompertz.mean(c, scale)
-                       + 100*mp.sqrt(gompertz.var(c, scale)))])
-    assert mp.almosteq(h, hi)
+    # The calculation of the entropy with an integral over the
+    # domain [0, inf] takes an *extremely* long time.  Instead we
+    # use a large finite interval.
+    lower = mp.zero
+    upper = gompertz.mean(c, scale) + 100*mp.sqrt(gompertz.var(c, scale))
+    check_entropy_with_integral(gompertz, (c, scale), support=(lower, upper))
 
 
 @pytest.mark.parametrize(

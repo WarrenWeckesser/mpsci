@@ -2,6 +2,11 @@ from itertools import product
 import pytest
 from mpmath import mp
 from mpsci.distributions import kumaraswamy, Initial
+from ._expect import (
+    check_entropy_with_integral,
+    check_noncentral_moment_with_integral,
+    check_skewness_with_integral,
+)
 
 
 #
@@ -145,43 +150,18 @@ def test_var():
 @pytest.mark.parametrize('order', [0, 1, 2, 3, 4])
 @mp.workdps(50)
 def test_noncentral_moment_with_integral(order):
-    a = 4.5
-    b = 1.75
-    m = kumaraswamy.noncentral_moment(order, a, b)
-    intgrl = mp.quad(lambda t: t**order*kumaraswamy.pdf(t, a, b), [0, 1])
-    assert mp.almosteq(m, intgrl)
+    check_noncentral_moment_with_integral(order, kumaraswamy, (4.5, 1.75))
+
+
+@pytest.mark.parametrize('params', [(1.125, 8.5), (0.75, 2.75)])
+@mp.workdps(50)
+def test_skewness_with_integral(params):
+    check_skewness_with_integral(kumaraswamy, params)
 
 
 @mp.workdps(50)
-def test_skewness_with_integral():
-    a = 1.125
-    b = 8.5
-    sk = kumaraswamy.skewness(a, b)
-
-    # Skewness is E(((x - mu)/sigma)**3); compute the expected
-    # value with an integral.
-    mu = kumaraswamy.mean(a, b)
-    sigma = mp.sqrt(kumaraswamy.var(a, b))
-    intgrl = mp.quad(lambda t: kumaraswamy.pdf(t, a, b)*((t - mu)/sigma)**3,
-                     [0, 1])
-
-    assert mp.almosteq(sk, intgrl)
-
-
-@mp.workdps(50)
-def test_entropy_with_integral():
-    a = 0.75
-    b = 2.75
-    entr = kumaraswamy.entropy(a, b)
-
-    with mp.extradps(2*mp.dps):
-
-        def integrand(t):
-            return kumaraswamy.pdf(t, a, b) * kumaraswamy.logpdf(t, a, b)
-
-        intgrl = -mp.quad(integrand, [0, 1])
-
-    assert mp.almosteq(entr, intgrl)
+def test_entropy():
+    check_entropy_with_integral(kumaraswamy, (0.75, 2.75))
 
 
 @pytest.mark.parametrize(

@@ -2,6 +2,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import invgauss
+from ._expect import check_entropy_with_integral
 
 
 @mp.workdps(50)
@@ -76,16 +77,15 @@ def test_noncentral_moment(order, m, scale, ref):
 
 
 @pytest.mark.parametrize('m', ['1e-6', 3])
+@mp.workdps(50)
 def test_entropy_against_integral(m):
-
-    def integrand(x):
-        # This is a closure that captures m.
-        return invgauss.pdf(x, m) * invgauss.logpdf(x, m)
-
-    with mp.workdps(50):
-        m = mp.mpf(m)
-        entr = invgauss.entropy(m)
-        with mp.extradps(25):
-            mode = invgauss.mode(m)
-            val = -mp.quad(integrand, [0, mode, mp.inf])
-        assert mp.almosteq(entr, val)
+    m = mp.mpf(m)
+    mode = invgauss.mode(m)
+    sup = invgauss.support(m)
+    points = [sup[0], mode, sup[1]]
+    # XXX Leaky abstraction: I know the `support`` argument here will
+    # eventually be passed to mp.quad as the `points` parameter, and
+    # that parameter allows additional points to be included.  It then
+    # computes the integral in pieces, which helps in this particular
+    # case.
+    check_entropy_with_integral(invgauss, (m,), support=points)

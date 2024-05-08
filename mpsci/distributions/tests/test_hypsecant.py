@@ -2,6 +2,7 @@ import pytest
 from mpmath import mp
 from mpsci.distributions import hypsecant
 from ._utils import check_mle, call_and_check_mle
+from ._expect import check_entropy_with_integral
 
 
 @mp.workdps(50)
@@ -70,17 +71,11 @@ def test_var_with_integral():
     assert mp.almosteq(var, expected)
 
 
-@mp.workdps(100)
-def test_entropy_with_integral():
+@mp.workdps(50)
+def test_entropy_with_integral2():
     loc = 5
     scale = 7
-    entr = hypsecant.entropy(loc, scale)
-    intgrl = mp.quad(
-        lambda t: hypsecant.pdf(t, loc, scale)*hypsecant.logpdf(t, loc, scale),
-        [mp.ninf, mp.inf]
-    )
-    expected = -intgrl
-    assert mp.almosteq(entr, expected)
+    check_entropy_with_integral(hypsecant, (loc, scale))
 
 
 @pytest.mark.parametrize(

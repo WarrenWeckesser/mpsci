@@ -2,6 +2,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import f
+from ._expect import check_entropy_with_integral
 
 
 @mp.workdps(25)
@@ -152,17 +153,7 @@ def test_var_small_dfd():
     assert m == mp.inf
 
 
+@pytest.mark.parametrize('params', [(10, 12), (2, 5)])
 @mp.workdps(50)
-def test_entropy_with_integral():
-    dfn = 10
-    dfd = 12
-    entr = f.entropy(dfn, dfd)
-
-    with mp.extradps(2*mp.dps):
-
-        def integrand(t):
-            return f.pdf(t, dfn, dfd) * f.logpdf(t, dfn, dfd)
-
-        intgrl = -mp.quad(integrand, [0, mp.inf])
-
-    assert mp.almosteq(entr, intgrl)
+def test_entropy_with_integral(params):
+    check_entropy_with_integral(f, params)

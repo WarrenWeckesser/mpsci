@@ -1,6 +1,7 @@
 from mpmath import mp
 from mpsci.distributions import pareto
 from ._utils import check_mle
+from ._expect import check_entropy_with_integral
 
 
 @mp.workdps(40)
@@ -98,21 +99,8 @@ def test_var_loc0():
 
 
 @mp.workdps(50)
-def test_entropy_with_integral():
-    b = 5
-    loc = -1
-    scale = 3.25
-    entr = pareto.entropy(b, loc=loc, scale=scale)
-
-    with mp.extradps(mp.dps):
-
-        def integrand(t):
-            return (pareto.logpdf(t, b, loc, scale) *
-                    pareto.pdf(t, b, loc, scale))
-
-        intgrl = -mp.quad(integrand, [loc + scale, mp.inf])
-
-    assert mp.almosteq(entr, intgrl)
+def test_entropy_with_integral2():
+    check_entropy_with_integral(pareto, (5, -1, 3.25))
 
 
 def test_mle_fixed_loc():

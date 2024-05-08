@@ -3,6 +3,10 @@ import pytest
 from mpmath import mp
 from mpsci.distributions import gamma
 from ._utils import call_and_check_mle
+from ._expect import (
+    check_entropy_with_integral,
+    noncentral_moment_with_integral,
+)
 
 
 @mp.workdps(25)
@@ -97,16 +101,7 @@ def test_kurtosis():
 @mp.workdps(25)
 def test_entropy_with_integral(k):
     theta = 4.0
-    entr = gamma.entropy(k, theta)
-
-    with mp.extradps(4*mp.dps):
-
-        def integrand(t):
-            return gamma.pdf(t, k, theta) * gamma.logpdf(t, k, theta)
-
-        intgrl = -mp.quad(integrand, [0, mp.inf])
-
-    assert mp.almosteq(entr, intgrl)
+    check_entropy_with_integral(gamma, (k, theta), extradps=100)
 
 
 @mp.workdps(80)
@@ -164,13 +159,11 @@ def test_noncentral_moment():
     assert m1 == gamma.mean(k, theta)
 
     m2 = gamma.noncentral_moment(2, k, theta)
-    expected_m2 = mp.quad(lambda t: t**2*gamma.pdf(t, k, theta),
-                          [0, 1, mp.inf])
+    expected_m2 = noncentral_moment_with_integral(2, gamma, (k, theta))
     assert mp.almosteq(m2, expected_m2)
 
     m3 = gamma.noncentral_moment(3, k, theta)
-    expected_m3 = mp.quad(lambda t: t**3*gamma.pdf(t, k, theta),
-                          [0, 1, mp.inf])
+    expected_m3 = noncentral_moment_with_integral(3, gamma, (k, theta))
     assert mp.almosteq(m3, expected_m3)
 
 

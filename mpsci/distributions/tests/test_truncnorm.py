@@ -1,6 +1,10 @@
 
 from mpmath import mp
 from mpsci.distributions import truncnorm, normal
+from ._expect import (
+    noncentral_moment_with_integral,
+    check_entropy_with_integral,
+)
 
 
 def test_pdf():
@@ -38,13 +42,13 @@ def test_sf():
         assert mp.almosteq(p, diff_ratio, rel_eps=mp.mpf('1e-47'), abs_eps=0)
 
 
-def test_mean_with_quad():
+@mp.workdps(50)
+def test_mean_with_integral():
     a = 1
     b = 3
-    with mp.workdps(50):
-        mean = truncnorm.mean(a, b)
-        meanq = mp.quad(lambda x: x*truncnorm.pdf(x, a, b), [a, b])
-        assert mp.almosteq(mean, meanq)
+    mean = truncnorm.mean(a, b)
+    intgrl = noncentral_moment_with_integral(1, truncnorm, (a, b))
+    assert mp.almosteq(mean, intgrl)
 
 
 def test_var_with_quad():
@@ -97,12 +101,8 @@ def test_entropy_against_normal():
         assert mp.almosteq(e, (mp.log(2*mp.pi) + 1)/2)
 
 
-def test_entropy_with_quad():
+@mp.workdps(50)
+def test_entropy_against_integral():
     a = -0.5
     b = 2.5
-    with mp.workdps(50):
-        entr = truncnorm.entropy(a, b)
-        q = mp.quad(lambda t: (-truncnorm.pdf(t, a, b) *
-                               truncnorm.logpdf(t, a, b)),
-                    [a, b])
-        assert mp.almosteq(entr, q)
+    check_entropy_with_integral(truncnorm, (a, b))

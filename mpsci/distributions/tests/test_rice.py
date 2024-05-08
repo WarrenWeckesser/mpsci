@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import rice
+from ._expect import noncentral_moment_with_integral
 
 
 @mp.workdps(55)
@@ -60,10 +61,10 @@ def test_var():
                           (0.125, 25.0),
                           (10, 4),
                           (240, 725)])
-@mp.workdps(100)
+@mp.workdps(50)
 def test_mean_with_integral(nu, sigma):
     m = rice.mean(nu, sigma)
-    q = mp.quad(lambda t: t*rice.pdf(t, nu, sigma), [0, mp.inf])
+    q = noncentral_moment_with_integral(1, rice, (nu, sigma))
     assert mp.almosteq(m, q)
 
 
