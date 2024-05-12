@@ -78,6 +78,6 @@ def kurtosis_with_integral(dist, params):
 
 
 def check_kurtosis_with_integral(dist, params):
-    exc_kurt = dist.kurtosis(*params)
+    k = dist.kurtosis(*params)
     intgrl = kurtosis_with_integral(dist, params)
-    assert mp.almosteq(exc_kurt, intgrl)
+    assert mp.almosteq(k, intgrl), f"{k} not almost equal to {intgrl}"

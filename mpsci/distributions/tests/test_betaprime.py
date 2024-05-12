@@ -2,6 +2,7 @@ import pytest
 from mpmath import mp
 from mpsci.distributions import betaprime, Initial
 from ._utils import check_mle, call_and_check_mle
+from ._expect import check_kurtosis_with_integral
 
 
 # Expected values were computed with Wolfram Alpha, e.g.
@@ -106,6 +107,29 @@ def test_skewness(scale):
         # Skewness is independent of scale.
         expected = 13*mp.sqrt(mp.mpf('2/3'))
         assert mp.almosteq(s, expected)
+
+
+# Reference values were computed with Wolfram Alpha, e.g.
+#   ExcessKurtosis[BetaPrimeDistribution[2, 9/2]]
+@pytest.mark.parametrize('a, b, scale, ref',
+                         [(2, '9/2', 1, '1257/11'),
+                          ('1/4', 10, 1, '11811/259')])
+@mp.workdps(80)
+def test_kurtosis(a, b, scale, ref):
+    a = mp.mpf(a)
+    b = mp.mpf(b)
+    scale = mp.mpf(scale)
+    ref = mp.mpf(ref)
+    k = betaprime.kurtosis(a, b, scale=scale)
+    assert mp.almosteq(k, ref)
+
+
+@mp.workdps(50)
+def test_kurtosis_with_integral():
+    a = 5
+    b = 16
+    scale = 0.25
+    check_kurtosis_with_integral(betaprime, (a, b, scale))
 
 
 # Reference values were computed with Wolfram Alpha, e.g, the input

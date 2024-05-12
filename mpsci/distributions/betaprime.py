@@ -19,7 +19,7 @@ from .. import fun as _fun
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
            'support',
-           'mean', 'mode', 'var', 'skewness', 'noncentral_moment',
+           'mean', 'mode', 'var', 'skewness', 'kurtosis', 'noncentral_moment',
            'nll', 'mle']
 
 
@@ -198,6 +198,25 @@ def skewness(a, b, scale):
         t1 = 2 * (2*a + b - 1) / (b - 3)
         t2 = mp.sqrt((b - 2) / (a*(a + b - 1)))
         return t1 * t2
+
+
+def kurtosis(a, b, scale):
+    """
+    Excess kurtosis of the beta prime distribution.
+
+    If b <= 4, nan is returned.
+    """
+    with mp.extradps(5):
+        a, b, scale = _validate_params(a, b, scale)
+        if b <= 4:
+            return mp.nan
+        m1 = noncentral_moment(1, a, b, scale)
+        m2 = noncentral_moment(2, a, b, scale)
+        m3 = noncentral_moment(3, a, b, scale)
+        m4 = noncentral_moment(4, a, b, scale)
+        mu = mean(a, b, scale)
+        sigma4 = var(a, b, scale)**2
+        return (m4 - 4*mu*m3 + 6*mu**2*m2 - 4*mu**3*m1 + mu**4)/sigma4 - 3
 
 
 def noncentral_moment(n, a, b, scale):
