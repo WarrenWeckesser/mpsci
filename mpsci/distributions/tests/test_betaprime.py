@@ -2,8 +2,10 @@ import pytest
 from mpmath import mp
 from mpsci.distributions import betaprime, Initial
 from ._utils import check_mle, call_and_check_mle
-from ._expect import check_kurtosis_with_integral
-
+from ._expect import (
+    check_kurtosis_with_integral,
+    check_entropy_with_integral
+)
 
 # Expected values were computed with Wolfram Alpha, e.g.
 #     PDF[BetaPrimeDistribution[2, 7/2], 3] = 189/8192
@@ -148,6 +150,12 @@ def test_kurtosis_with_integral():
 def test_noncentral_moment(order, a, b, ref, scale):
     moment = betaprime.noncentral_moment(order, a, b, scale=scale)
     assert mp.almosteq(moment/scale**order, mp.mpf(ref))
+
+
+@pytest.mark.parametrize('a, b, scale', [(5, 8, 1), (10, 2, 0.5)])
+@mp.workdps(80)
+def test_entropy_with_integral(a, b, scale):
+    check_entropy_with_integral(betaprime, (a, b, scale))
 
 
 @pytest.mark.parametrize(

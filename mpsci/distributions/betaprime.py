@@ -234,6 +234,27 @@ def noncentral_moment(n, a, b, scale):
         return scale**n * mp.beta(a + n, b - n) / mp.beta(a, b)
 
 
+def entropy(a, b, scale):
+    """
+    Differential entropy of the beta prime distribution.
+    """
+    with mp.extradps(5):
+        a, b, scale = _validate_params(a, b, scale)
+        dfn = 2*a
+        dfd = 2*b
+        fscale = (a/b)*scale
+
+        # XXX Copied from f.py and adjusted to include the scale term.
+        dfn2 = dfn/2
+        dfd2 = dfd/2
+        dfmean = dfn2 + dfd2
+        return (mp.log(dfd/dfn)
+                + _fun.logbeta(dfn2, dfd2)
+                + (1 - dfn2)*mp.digamma(dfn2)
+                - (1 + dfd2)*mp.digamma(dfd2)
+                + dfmean*mp.digamma(dfmean)) + mp.log(fscale)
+
+
 def nll(x, a, b, scale):
     """
     Negative log-likelihood of the beta prime distribution.
