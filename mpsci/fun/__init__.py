@@ -6,6 +6,7 @@ This module contains an assortment of functions that arise
 in scientific computing.
 """
 
+from ._debye import debye
 from ._inv_reg_inc_beta import betaincinv
 from ._marcumq import marcumq, cmarcumq
 from ._digammainv import digammainv

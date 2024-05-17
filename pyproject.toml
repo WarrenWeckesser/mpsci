@@ -1,6 +1,6 @@
 [project]
 name = "mpsci"
-version = "0.0.1.dev92"
+version = "0.0.1.dev93"
 dependencies = [
     "mpmath",
 ]
