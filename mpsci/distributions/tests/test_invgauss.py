@@ -27,6 +27,15 @@ def test_cdf():
 
 
 @mp.workdps(50)
+def test_logcdf():
+    # Wolfram Alpha:
+    #      Log[CDF[InverseGaussianDistribution[3, 2], 5]]
+    logp = invgauss.logcdf(5, 3/2, loc=0, scale=2)
+    val = '-0.17760121652513143187750653744853368429614356113763348446'
+    assert mp.almosteq(logp, mp.mpf(val))
+
+
+@mp.workdps(50)
 def test_cdf_invcdf_roundtrip():
     x0 = 5
     p = invgauss.cdf(x0, 3/2, loc=1, scale=2)
@@ -41,6 +50,15 @@ def test_sf():
     p = invgauss.sf(5, 3/2, loc=0, scale=2)
     val = '0.162723751145732501293537228267683304189613920357924074'
     assert mp.almosteq(p, mp.mpf(val))
+
+
+@mp.workdps(50)
+def test_logsf():
+    # Wolfram Alpha:
+    #      Log[1 - CDF[InverseGaussianDistribution[3, 2], 5]]
+    logp = invgauss.logsf(5, 3/2, loc=0, scale=2)
+    val = '-1.81570129418375530247933888189859117695587777937097762'
+    assert mp.almosteq(logp, mp.mpf(val))
 
 
 @mp.workdps(50)
