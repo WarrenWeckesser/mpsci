@@ -1,85 +1,134 @@
 
 import pytest
 from mpmath import mp
-from mpsci.distributions import benktander1
+from mpsci.distributions import benktander1, Initial
 from ._utils import check_mle
 
 
+@pytest.mark.parametrize('a', [-1, 0])
+def test_validate_a_positive(a):
+    with pytest.raises(ValueError, match='must be positive'):
+        benktander1._validate_ab(a, 1)
+
+
+@pytest.mark.parametrize('b', [-1, 0])
+def test_validate_b_positive(b):
+    with pytest.raises(ValueError, match='must be positive'):
+        benktander1._validate_ab(5, b)
+
+
+def test_validate_ab_values():
+    with pytest.raises(ValueError, match='must not be greater than'):
+        benktander1._validate_ab(3, 10)
+
+
+@mp.workdps(25)
+def test_support():
+    # We haven't included a location parameter in the implementation,
+    # so the support is always [1, inf).
+    s = benktander1.support(2, 1)
+    assert s == (mp.one, mp.inf)
+
+
+@mp.workdps(25)
+def test_pdf_outside_support():
+    p = benktander1.pdf(0.5, 5, 11)
+    assert p == mp.zero
+
+
+@mp.workdps(25)
+def test_logpdf_outside_support():
+    p = benktander1.logpdf(0.5, 5, 11)
+    assert p == mp.ninf
+
+
+@mp.workdps(50)
 def test_pdf():
-    with mp.workdps(50):
-        x = mp.mpf('1.5')
-        p = benktander1.pdf(x, 2, 3)
-        # Expected value computed with Wolfram Alpha:
-        #    PDF[BenktanderGibratDistribution[2, 3], 3/2]
-        valstr = '1.090598817302604549131682068809802266147250025484891499295'
-        expected = mp.mpf(valstr)
-        assert mp.almosteq(p, expected)
+    x = mp.mpf('1.5')
+    p = benktander1.pdf(x, 2, 3)
+    # Expected value computed with Wolfram Alpha:
+    #    PDF[BenktanderGibratDistribution[2, 3], 3/2]
+    valstr = '1.090598817302604549131682068809802266147250025484891499295'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(p, expected)
 
 
+@mp.workdps(50)
 def test_logpdf():
-    with mp.workdps(50):
-        x = mp.mpf('1.5')
-        p = benktander1.logpdf(x, 2, 3)
-        # Expected value computed with Wolfram Alpha:
-        #    log(PDF[BenktanderGibratDistribution[2, 3], 3/2])
-        valstr = '0.086726919062697113736142804022160705324241157062981346304'
-        expected = mp.mpf(valstr)
-        assert mp.almosteq(p, expected)
+    x = mp.mpf('1.5')
+    p = benktander1.logpdf(x, 2, 3)
+    # Expected value computed with Wolfram Alpha:
+    #    log(PDF[BenktanderGibratDistribution[2, 3], 3/2])
+    valstr = '0.086726919062697113736142804022160705324241157062981346304'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(p, expected)
 
 
+@mp.workdps(25)
+def test_cdf_outside_support():
+    p = benktander1.cdf(0.5, 5, 11)
+    assert p == mp.zero
+
+
+@mp.workdps(50)
 def test_cdf_invcdf():
-    with mp.workdps(50):
-        x = mp.mpf('1.5')
-        p = benktander1.cdf(x, 2, 3)
-        # Expected value computed with Wolfram Alpha:
-        #    CDF[BenktanderGibratDistribution[2, 3], 3/2]
-        valstr = '0.59896999842391210365289674809988804989249935760023852777'
-        expected = mp.mpf(valstr)
-        assert mp.almosteq(p, expected)
-        x1 = benktander1.invcdf(expected, 2, 3)
-        assert mp.almosteq(x1, x)
+    x = mp.mpf('1.5')
+    p = benktander1.cdf(x, 2, 3)
+    # Expected value computed with Wolfram Alpha:
+    #    CDF[BenktanderGibratDistribution[2, 3], 3/2]
+    valstr = '0.59896999842391210365289674809988804989249935760023852777'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(p, expected)
+    x1 = benktander1.invcdf(expected, 2, 3)
+    assert mp.almosteq(x1, x)
 
 
+@mp.workdps(25)
+def test_sf_outside_support():
+    p = benktander1.sf(0.5, 5, 11)
+    assert p == mp.one
+
+
+@mp.workdps(50)
 def test_sf_invsf():
-    with mp.workdps(50):
-        x = mp.mpf('1.5')
-        p = benktander1.sf(x, 2, 3)
-        # Expected value computed with Wolfram Alpha:
-        #    SurvivalFunction[BenktanderGibratDistribution[2, 3], 3/2]
-        valstr = '0.40103000157608789634710325190011195010750064239976147223'
-        expected = mp.mpf(valstr)
-        assert mp.almosteq(p, expected)
-        x1 = benktander1.invsf(expected, 2, 3)
-        assert mp.almosteq(x1, x)
+    x = mp.mpf('1.5')
+    p = benktander1.sf(x, 2, 3)
+    # Expected value computed with Wolfram Alpha:
+    #    SurvivalFunction[BenktanderGibratDistribution[2, 3], 3/2]
+    valstr = '0.40103000157608789634710325190011195010750064239976147223'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(p, expected)
+    x1 = benktander1.invsf(expected, 2, 3)
+    assert mp.almosteq(x1, x)
 
 
 @pytest.mark.parametrize('p, expected', [(0, 1), (1, 'inf')])
+@mp.workdps(50)
 def test_invcdf_invsf_bounds(p, expected):
-    with mp.workdps(50):
-        x = benktander1.invcdf(p, 2, 3)
-        assert x == mp.mpf(expected)
-        x = benktander1.invsf(1 - p, 2, 3)
-        assert x == mp.mpf(expected)
+    x = benktander1.invcdf(p, 2, 3)
+    assert x == mp.mpf(expected)
+    x = benktander1.invsf(1 - p, 2, 3)
+    assert x == mp.mpf(expected)
 
 
+@mp.workdps(50)
 def test_mean():
-    with mp.workdps(50):
-        a = 2
-        b = 3
-        m = benktander1.mean(a, b)
-        assert mp.almosteq(m, mp.mpf('1.5'))
+    a = 2
+    b = 3
+    m = benktander1.mean(a, b)
+    assert mp.almosteq(m, mp.mpf('1.5'))
 
 
+@mp.workdps(50)
 def test_var():
-    with mp.workdps(50):
-        a = 2
-        b = 3
-        m = benktander1.var(a, b)
-        # Expected value computed with Wolfram Alpha:
-        #    Var[BenktanderGibratDistribution[2, 3]]
-        valstr = '0.129886916731278610514259475545032373691162070980680465530'
-        expected = mp.mpf(valstr)
-        assert mp.almosteq(m, expected)
+    a = 2
+    b = 3
+    m = benktander1.var(a, b)
+    # Expected value computed with Wolfram Alpha:
+    #    Var[BenktanderGibratDistribution[2, 3]]
+    valstr = '0.129886916731278610514259475545032373691162070980680465530'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(m, expected)
 
 
 @pytest.mark.parametrize(
@@ -96,4 +145,11 @@ def test_mle(x):
     # benktander1.mle() is not reliable--it typically fails--but for the
     # data sets in this test, it works.
     p = benktander1.mle(x)
+    check_mle(benktander1.nll, x, p)
+
+
+@mp.workdps(50)
+def test_mle_a_initial():
+    x = [1.23, 1.12, 1.06, 1.04, 1.59, 1.13, 1.05, 1.56, 1.16, 1.02]
+    p = benktander1.mle(x, a=Initial(5))
     check_mle(benktander1.nll, x, p)
