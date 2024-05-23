@@ -3,7 +3,7 @@ import sys
 import os
 import subprocess
 
-from mpsci import fun, signal, stats, distributions
+from mpsci import fun, stats, distributions
 
 
 # The function git_version() returns the git revision as a string.
@@ -128,7 +128,6 @@ lines.extend(['mpsci', '=====', ''])
 lines.extend([main_descr, ''])
 lines.extend(['.. toctree::', ''])
 lines.extend(['   fun'])
-lines.extend(['   signal'])
 lines.extend(['   stats'])
 lines.extend(['   distributions'])
 
@@ -138,40 +137,40 @@ with open(index_name, 'w') as f:
     f.write(content)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Create fun.rst and signal.rst
+# Create fun.rst
 
-for module in [fun, signal]:
-    modname = module.__name__.split('.')[-1]
-    names = [name for name in dir(module) if not name.startswith('_')]
+module = fun
+modname = module.__name__.split('.')[-1]
+names = [name for name in dir(module) if not name.startswith('_')]
 
-    lines = []
-    lines.extend(preamble_lines)
-    lines.extend(['.. _%s:' % modname, ''])
-    lines.extend(['.. currentmodule:: mpsci.%s' % modname, ''])
-    lines.extend(['.. automodule:: mpsci.%s' % modname, ''])
-    lines.extend(['.. autosummary::',
-                  ''])
-    for name in names:
-        lines.extend(['   ' + name])
+lines = []
+lines.extend(preamble_lines)
+lines.extend(['.. _%s:' % modname, ''])
+lines.extend(['.. currentmodule:: mpsci.%s' % modname, ''])
+lines.extend(['.. automodule:: mpsci.%s' % modname, ''])
+lines.extend(['.. autosummary::',
+                ''])
+for name in names:
+    lines.extend(['   ' + name])
 
-    content = '\n'.join(lines)
-    rst = os.path.join('source', modname + '.rst')
-    with open(rst, 'w') as f:
-        f.write(content)
+content = '\n'.join(lines)
+rst = os.path.join('source', modname + '.rst')
+with open(rst, 'w') as f:
+    f.write(content)
 
-    print("Created", rst)
+print("Created", rst)
 
-    pth = os.path.join('source', modname)
-    os.mkdir(pth)
-    for name in names:
-        filename = os.path.join(pth, name + '.rst')
-        with open(filename, 'w') as f:
-            f.write(preamble)
-            f.write('.. _' + '_'.join(['mpsci', modname, name]) + ':\n')
-            f.write('\n%s\n' % name)
-            f.write('-'*len(name) + '\n\n')
-            f.write('\n.. autofunction:: mpsci.%s.' % modname + name + '\n')
-        print("Created", filename)
+pth = os.path.join('source', modname)
+os.mkdir(pth)
+for name in names:
+    filename = os.path.join(pth, name + '.rst')
+    with open(filename, 'w') as f:
+        f.write(preamble)
+        f.write('.. _' + '_'.join(['mpsci', modname, name]) + ':\n')
+        f.write('\n%s\n' % name)
+        f.write('-'*len(name) + '\n\n')
+        f.write('\n.. autofunction:: mpsci.%s.' % modname + name + '\n')
+    print("Created", filename)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create stats.rst
