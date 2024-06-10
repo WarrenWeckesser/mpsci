@@ -157,7 +157,7 @@ def mean(loc=0, scale=1):
 
 def mode(loc=0, scale=1):
     """
-    Mean of the Maxwell distribution.
+    Mode of the Maxwell distribution.
     """
     with mp.extradps(5):
         loc, scale = _validate_params(loc, scale)

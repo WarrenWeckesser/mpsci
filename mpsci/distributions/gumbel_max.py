@@ -124,7 +124,7 @@ def invsf(p, loc, scale):
 
 def support(loc, scale):
     """
-    Mean of the Gumbel distribution.
+    Support of the Gumbel distribution.
     """
     if scale <= 0:
         raise ValueError('scale must be positive.')
