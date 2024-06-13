@@ -92,7 +92,7 @@ Most of the code in ``mpsci`` was developed as a way to find the
 The package should be considered prototype-quality software.  There
 will probably be backwards-incompatible API changes as the code is expanded.
 
-The four subpackages of `mpsci` are:
+The three subpackages of `mpsci` are:
 """ % gitrev
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
