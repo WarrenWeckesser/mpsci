@@ -51,7 +51,7 @@ def logpdf(x, chi, c):
         t1 = 3*mp.log(chi) - mp.log(2*mp.pi)/2 - mp.log(_psi(chi))
         t2 = -mp.log(c) + mp.log(z)
         t3 = mp.log1p(-z**2)/2
-        t4 = -chi**2/2*(1 - z**2)
+        t4 = -chi**2/2*(1 - z)*(1 + z)
         return t1 + t2 + t3 + t4
 
 
@@ -67,7 +67,7 @@ def cdf(x, chi, c):
         if x > c:
             return mp.one
         z = x/c
-        return mp.one - _psi(chi*mp.sqrt(1 - z**2)) / _psi(chi)
+        return mp.one - _psi(chi*mp.sqrt((1 - z)*(1 + z))) / _psi(chi)
 
 
 def sf(x, chi, c):
@@ -82,7 +82,7 @@ def sf(x, chi, c):
         if x > c:
             return mp.zero
         z = x/c
-        return _psi(chi*mp.sqrt(1 - z**2)) / _psi(chi)
+        return _psi(chi*mp.sqrt((1 - z)*(1 + z))) / _psi(chi)
 
 
 def support(chi, c):
