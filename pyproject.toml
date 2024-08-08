@@ -35,4 +35,10 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["mpsci"]
+packages = ["mpsci",
+            "mpsci.distributions",
+            "mpsci.fun",
+            "mpsci.stats",
+            "mpsci.distributions.tests",
+            "mpsci.fun.tests",
+            "mpsci.stats.tests"]
