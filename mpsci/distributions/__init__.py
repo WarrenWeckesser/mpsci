@@ -22,6 +22,6 @@ from . import (argus, benktander1, benktander2, beta, betabinomial, betaprime,
                maxwell, multivariate_hypergeometric, multivariate_t,
                nakagami, ncf, nct, ncx2, negative_binomial,
                negative_hypergeometric, normal, pareto, poisson, power_normal,
-               rel_breitwigner, rice, slash, studentt, truncnorm, uniform,
-               vonmises, weibull_max, weibull_min)
+               rel_breitwigner, rice, slash, studentt, truncnorm, tukeylambda,
+               uniform, vonmises, weibull_max, weibull_min)
 from ._common import Initial
