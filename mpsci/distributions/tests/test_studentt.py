@@ -1,12 +1,12 @@
 from mpmath import mp
-from mpsci.distributions import t
+from mpsci.distributions import studentt
 
 
 @mp.workdps(50)
 def test_pdf():
     df = 10
     x = 5
-    pdf = t.pdf(x, df)
+    pdf = studentt.pdf(x, df)
     # Expected value confirmed with Wolfram Alpha:
     #     PDF[StudentTDistribution[10], 5]
     expected = 9*mp.sqrt(mp.mpf(5)/7)/19208
@@ -17,7 +17,7 @@ def test_pdf():
 def test_cdf():
     df = 10
     x = 5
-    cdf = t.cdf(x, df)
+    cdf = studentt.cdf(x, df)
     # Expected value confirmed with Wolfram Alpha:
     #     CDF[StudentTDistribution[10], 5]
     expected = mp.one/2 + 3245*mp.sqrt(mp.mpf(5)/7)/5488
@@ -27,9 +27,9 @@ def test_cdf():
 @mp.workdps(50)
 def test_cdf_limits():
     df = 10
-    cdf = t.cdf(mp.ninf, df)
+    cdf = studentt.cdf(mp.ninf, df)
     assert cdf == 0
-    cdf = t.cdf(mp.inf, df)
+    cdf = studentt.cdf(mp.inf, df)
     assert cdf == 1
 
 
@@ -37,7 +37,7 @@ def test_cdf_limits():
 def test_sf():
     df = 10
     x = 5
-    sf = t.sf(x, df)
+    sf = studentt.sf(x, df)
     # Expected value confirmed with Wolfram Alpha:
     #     1 - CDF[StudentTDistribution[10], 5]
     expected = mp.one/2 - 3245*mp.sqrt(mp.mpf(5)/7)/5488
@@ -47,9 +47,9 @@ def test_sf():
 @mp.workdps(50)
 def test_sf_limits():
     df = 10
-    sf = t.sf(mp.ninf, df)
+    sf = studentt.sf(mp.ninf, df)
     assert sf == 1
-    sf = t.sf(mp.inf, df)
+    sf = studentt.sf(mp.inf, df)
     assert sf == 0
 
 
@@ -57,8 +57,8 @@ def test_sf_limits():
 def test_invcdf_cdf_roundtrip():
     df = 13
     p0 = mp.one/8
-    x = t.invcdf(p0, df)
-    p1 = t.cdf(x, df)
+    x = studentt.invcdf(p0, df)
+    p1 = studentt.cdf(x, df)
     assert mp.almosteq(p1, p0)
 
 
@@ -66,6 +66,6 @@ def test_invcdf_cdf_roundtrip():
 def test_invsf_sf_roundtrip():
     df = 13
     p0 = mp.one/8
-    x = t.invsf(p0, df)
-    p1 = t.sf(x, df)
+    x = studentt.invsf(p0, df)
+    p1 = studentt.sf(x, df)
     assert mp.almosteq(p1, p0)
