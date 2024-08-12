@@ -5,19 +5,11 @@ Cauchy Distribution
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_loc_scale
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
            'mean', 'var', 'entropy']
-
-
-def _validate_loc_scale(loc, scale):
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-    return loc, scale
 
 
 def pdf(x, loc=0, scale=1):

@@ -12,20 +12,13 @@ used here matches that of SciPy's `scipy.special.hypsecant`; it is
 """
 
 from mpmath import mp
-from ._common import _validate_p, _validate_x_bounds, Initial
+from ._common import (_validate_loc_scale, _validate_p, _validate_x_bounds,
+                      Initial)
 from .. import stats
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
            'support', 'mean', 'var', 'entropy', 'nll', 'mle']
-
-
-def _validate_loc_scale(loc, scale):
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-    return loc, scale
 
 
 def _validate_args(x, loc, scale):

@@ -15,6 +15,14 @@ class Initial:
     initial: mp.mpf
 
 
+def _validate_loc_scale(loc, scale):
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    if scale <= 0:
+        raise ValueError('scale must be positive.')
+    return loc, scale
+
+
 def _validate_p(p):
     if p < 0 or p > 1:
         raise ValueError('p must be in the interval [0, 1]')
