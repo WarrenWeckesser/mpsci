@@ -11,12 +11,33 @@ See https://en.wikipedia.org/wiki/Gauss%E2%80%93Kuzmin_distribution
 
 """
 
+import itertools
 from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'invcdf', 'sf', 'invsf',
+__all__ = ['support', 'pmf', 'logpmf', 'cdf', 'invcdf', 'sf', 'invsf',
            'mode', 'median', 'mean', 'var']
+
+
+def support():
+    """
+    Support of the Gauss-Kuzmin distribution.
+
+    The support is the integers 1, 2, 3, ..., so the support is returned
+    as an instance of `itertools.count(start=1)`.
+
+    Examples
+    --------
+    >>> from mpsci.distributions import gauss_kuzmin
+    >>> sup = gauss_kuzmin.support()
+    >>> next(sup)
+    1
+    >>> next(sup)
+    2
+
+    """
+    return itertools.count(start=1)
 
 
 def pmf(k):

@@ -5,6 +5,16 @@ from mpsci.distributions import betabinomial, Initial
 
 
 @mp.workdps(50)
+def test_support():
+    n = 5
+    a = 2.5
+    b = 3.0
+    sup = betabinomial.support(n, a, b)
+    pmfsum = [betabinomial.pmf(k, n, a, b) for k in sup]
+    assert mp.almosteq(sum(pmfsum), 1.0)
+
+
+@mp.workdps(50)
 def test_pmf():
     n = 10
     a = 2

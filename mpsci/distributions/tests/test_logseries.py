@@ -3,6 +3,14 @@ from mpmath import mp
 from mpsci.distributions import logseries
 
 
+def test_support():
+    sup = logseries.support(0.25)
+    assert next(sup) == 1
+    assert next(sup) == 2
+    assert next(sup) == 3
+    assert 1000 in sup
+
+
 @pytest.mark.parametrize('p, k', [(0.5, 3), (0.75, 1), (0.25, 13)])
 def test_pmf(p, k):
     with mp.workdps(40):

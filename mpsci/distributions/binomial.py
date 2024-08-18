@@ -9,7 +9,7 @@ from ._common import _validate_p
 from ..fun import logbinomial
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var']
+__all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var']
 
 
 def _validate_np(n, p):
@@ -17,6 +17,26 @@ def _validate_np(n, p):
     if n < 0:
         raise ValueError('n must be a nonnegative integer.')
     return n, p
+
+
+def support(n, p):
+    """
+    Support of the binomial distribution.
+
+    The support is the integers 0, 1, 2, ..., n; this is implemented
+    by returning `range(n + 1)`.  That is, the return value is the
+    `range` instance, not a sequence.
+
+    Examples
+    --------
+    >>> from mpsci.distributions import binomial
+    >>> sup = binomial.support(5, 0.25)
+    >>> [k for k in sup]
+    [0, 1, 2, 3, 4, 5]
+
+    """
+    n, p = _validate_np(n, p)
+    return range(n + 1)
 
 
 def pmf(k, n, p):

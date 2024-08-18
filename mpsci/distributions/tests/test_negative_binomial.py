@@ -4,6 +4,14 @@ from mpsci.distributions import negative_binomial
 from ._utils import call_and_check_mle
 
 
+def test_support():
+    sup = negative_binomial.support(3, 0.25)
+    assert next(sup) == 0
+    assert next(sup) == 1
+    assert next(sup) == 2
+    assert 1000 in sup
+
+
 # In the following, the Wolfram Alpha distribution NegativeBinomialDistribution
 # is used as an independent reference.  Wolfram uses a different convention for
 # the parameters of the distribution, which amounts to flipping the definition

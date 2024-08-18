@@ -9,13 +9,15 @@ the number of "failures" drawn is `r`.  `p` is the probability of drawing
 a "success".
 """
 
+import itertools
 from mpmath import mp
 from ..fun import logbinomial, xlogy, xlog1py
 from ..stats import mean as _mean
 from ._common import Initial
 
 
-__all__ = ['pmf', 'logpmf', 'sf', 'cdf', 'mean', 'var', 'nll', 'mle']
+__all__ = ['support', 'pmf', 'logpmf', 'sf', 'cdf', 'mean', 'var',
+           'nll', 'mle']
 
 
 def _validate_params(r, p, allow_noninteger_r=True):
@@ -28,6 +30,26 @@ def _validate_params(r, p, allow_noninteger_r=True):
         raise ValueError('p must be in the interval [0, 1]')
     p = mp.mpf(p)
     return r, p
+
+
+def support(r, p):
+    """
+    Support of the negative binomial distribution.
+
+    The support is the integers 0, 1, 2, 3, ..., so the support is returned
+    as an instance of `itertools.count(start=0)`.
+
+    Examples
+    --------
+    >>> from mpsci.distributions import negative_binomial
+    >>> sup = negative_binomial.support()
+    >>> next(sup)
+    0
+    >>> next(sup)
+    1
+
+    """
+    return itertools.count(start=0)
 
 
 def _validate_k(k):

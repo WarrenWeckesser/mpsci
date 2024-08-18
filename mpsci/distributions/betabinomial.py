@@ -11,7 +11,8 @@ from ..fun import logbinomial, logbeta
 from ._common import _validate_x_bounds, Initial
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var', 'skewness', 'kurtosis',
+__all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf',
+           'mean', 'var', 'skewness', 'kurtosis',
            'nll', 'mle']
 
 
@@ -25,6 +26,26 @@ def _validate_params(n, a, b):
     if b <= 0:
         raise ValueError('b must be positive')
     return n, mp.mpf(a), mp.mpf(b)
+
+
+def support(n, a, b):
+    """
+    Support of the beta-binomial distribution.
+
+    The support is the integers 0, 1, 2, ..., n; this is implemented
+    by returning `range(n + 1)`.  That is, the return value is the
+    `range` instance, not a sequence.
+
+    Examples
+    --------
+    >>> from mpsci.distributions import betabinomial
+    >>> sup = betabinomial.support(5, 2.5, 3)
+    >>> [k for k in sup]
+    [0, 1, 2, 3, 4, 5]
+
+    """
+    n, a, b = _validate_params(n, a, b)
+    return range(n + 1)
 
 
 def logpmf(k, n, a, b):

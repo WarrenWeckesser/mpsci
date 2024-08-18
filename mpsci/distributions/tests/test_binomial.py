@@ -3,6 +3,15 @@ from mpmath import mp
 from mpsci.distributions import binomial
 
 
+@mp.workdps(50)
+def test_support():
+    n = 5
+    p = 0.25
+    sup = binomial.support(n, p)
+    pmfsum = [binomial.pmf(k, n, p) for k in sup]
+    assert mp.almosteq(sum(pmfsum), 1.0)
+
+
 @pytest.mark.parametrize('cdf_method', ['sumpmf', 'incbeta'])
 def test_pmf_cdf_sf_basic(cdf_method):
     with mp.workdps(25):

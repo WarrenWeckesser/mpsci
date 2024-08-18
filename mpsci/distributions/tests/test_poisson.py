@@ -5,6 +5,14 @@ from mpmath import mp
 from mpsci.distributions import poisson
 
 
+def test_support():
+    sup = poisson.support(0.25)
+    assert next(sup) == 0
+    assert next(sup) == 1
+    assert next(sup) == 2
+    assert 1000 in sup
+
+
 @pytest.mark.parametrize('lam', [1, 1.5])
 def test_pmf(lam):
     with mp.workdps(40):

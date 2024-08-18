@@ -9,12 +9,33 @@ distribution [1]_.
        https://en.wikipedia.org/wiki/Logarithmic_distribution
 """
 
+import itertools
 from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var', 'mode',
+__all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var', 'mode',
            'skewness', 'kurtosis']
+
+
+def support(p):
+    """
+    Support of the log-series distribution.
+
+    The support is the integers 1, 2, 3, ..., so the support is returned
+    as an instance of `itertools.count(start=1)`.
+
+    Examples
+    --------
+    >>> from mpsci.distributions import logseries
+    >>> sup = logseries.support()
+    >>> next(sup)
+    1
+    >>> next(sup)
+    2
+
+    """
+    return itertools.count(start=1)
 
 
 def pmf(k, p):

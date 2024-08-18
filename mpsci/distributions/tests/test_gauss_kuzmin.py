@@ -3,6 +3,14 @@ from mpmath import mp
 from mpsci.distributions import gauss_kuzmin
 
 
+def test_support():
+    sup = gauss_kuzmin.support()
+    assert next(sup) == 1
+    assert next(sup) == 2
+    assert next(sup) == 3
+    assert 1000 in sup
+
+
 def test_pmf():
     with mp.workdps(40):
         one = mp.one

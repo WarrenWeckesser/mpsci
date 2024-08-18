@@ -4,11 +4,33 @@ Poisson distribution
 
 """
 
+import itertools
 from mpmath import mp
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var', 'skewness', 'kurtosis',
+__all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf',
+           'mean', 'var', 'skewness', 'kurtosis',
            'mle']
+
+
+def support(lam):
+    """
+    Support of the Poisson distribution.
+
+    The support is the integers 0, 1, 2, 3, ..., so the support is returned
+    as an instance of `itertools.count(start=0)`.
+
+    Examples
+    --------
+    >>> from mpsci.distributions import poisson
+    >>> sup = poisson.support()
+    >>> next(sup)
+    0
+    >>> next(sup)
+    1
+
+    """
+    return itertools.count(start=0)
 
 
 def pmf(k, lam):
