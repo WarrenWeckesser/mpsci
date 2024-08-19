@@ -15,11 +15,15 @@ __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'support', 'mean', 'var', 'mode']
 
 
 def _validate_params(chi, c):
-    if chi <= 0:
-        raise ValueError('chi must be positive')
+    if chi < 0:
+        raise ValueError('chi must be nonnegative')
     if c <= 0:
         raise ValueError('c must be positive')
     return mp.mpf(chi), mp.mpf(c)
+
+
+def _powm1(x, b):
+    return mp.expm1(b*mp.log(x))
 
 
 def _psi(chi):
@@ -48,11 +52,15 @@ def logpdf(x, chi, c):
         if x < 0 or x > c:
             return mp.ninf
         z = x/c
-        t1 = 3*mp.log(chi) - mp.log(2*mp.pi)/2 - mp.log(_psi(chi))
-        t2 = -mp.log(c) + mp.log(z)
-        t3 = mp.log1p(-z**2)/2
-        t4 = -chi**2/2*(1 - z)*(1 + z)
-        return t1 + t2 + t3 + t4
+        if chi == 0:
+            return (mp.log(3) + mp.log(z) + 0.5*(mp.log1p(-z) + mp.log1p(z))
+                    - mp.log(c))
+        else:
+            t1 = 3*mp.log(chi) - mp.log(2*mp.pi)/2 - mp.log(_psi(chi))
+            t2 = -mp.log(c) + mp.log(z)
+            t3 = mp.log1p(-z**2)/2
+            t4 = -chi**2/2*(1 - z)*(1 + z)
+            return t1 + t2 + t3 + t4
 
 
 def cdf(x, chi, c):
@@ -67,7 +75,11 @@ def cdf(x, chi, c):
         if x > c:
             return mp.one
         z = x/c
-        return mp.one - _psi(chi*mp.sqrt((1 - z)*(1 + z))) / _psi(chi)
+        if chi == 0:
+            # 1 - (1 - z**2)**1.5
+            return -_powm1((1 + z)*(1 - z), 1.5)
+        else:
+            return mp.one - _psi(chi*mp.sqrt((1 - z)*(1 + z))) / _psi(chi)
 
 
 def sf(x, chi, c):
@@ -82,7 +94,10 @@ def sf(x, chi, c):
         if x > c:
             return mp.zero
         z = x/c
-        return _psi(chi*mp.sqrt((1 - z)*(1 + z))) / _psi(chi)
+        if chi == 0:
+            return mp.power((1 + z)*(1 - z), 1.5)
+        else:
+            return _psi(chi*mp.sqrt((1 - z)*(1 + z))) / _psi(chi)
 
 
 def support(chi, c):
@@ -100,11 +115,14 @@ def mean(chi, c):
     """
     with mp.extradps(5):
         chi, c = _validate_params(chi, c)
-        chi2o4 = chi**2/4
-        p1 = c*mp.sqrt(mp.pi/8)
-        p2 = chi*mp.exp(-chi2o4)
-        p3 = mp.besseli(1, chi2o4)
-        return p1 * p2 * p3 / _psi(chi)
+        if chi == 0:
+            return c*3*mp.pi/16
+        else:
+            chi2o4 = chi**2/4
+            p1 = c*mp.sqrt(mp.pi/8)
+            p2 = chi*mp.exp(-chi2o4)
+            p3 = mp.besseli(1, chi2o4)
+            return p1 * p2 * p3 / _psi(chi)
 
 
 def var(chi, c):
@@ -114,8 +132,12 @@ def var(chi, c):
     with mp.extradps(5):
         chi, c = _validate_params(chi, c)
         mu = mean(chi, c)
-        t1 = c**2 * (mp.one - 3/chi**2 + chi*mp.npdf(chi)/_psi(chi))
-        return t1 - mu**2
+        if chi == 0:
+            # TO DO: Derive this value.
+            return c**2*(mp.mpf('2/5') - 9*mp.pi**2/256)
+        else:
+            t1 = c**2 * (mp.one - 3/chi**2 + chi*mp.npdf(chi)/_psi(chi))
+            return t1 - mu**2
 
 
 def mode(chi, c):
@@ -124,7 +146,10 @@ def mode(chi, c):
     """
     with mp.extradps(5):
         chi, c = _validate_params(chi, c)
-        chi2 = chi**2
-        p1 = c/mp.sqrt(2)/chi
-        p2 = mp.sqrt(chi2 - 2 + mp.sqrt(chi2**2 + 4))
-        return p1 * p2
+        if chi == 0:
+            return c/mp.sqrt(2)
+        else:
+            chi2 = chi**2
+            p1 = c/mp.sqrt(2)/chi
+            p2 = mp.sqrt(chi2 - 2 + mp.sqrt(chi2**2 + 4))
+            return p1 * p2
