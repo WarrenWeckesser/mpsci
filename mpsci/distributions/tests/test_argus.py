@@ -5,10 +5,15 @@ from mpsci.distributions import argus
 from ._expect import noncentral_moment_with_integral
 
 
-@pytest.mark.parametrize('chi, c', [(-1.5, 2), (1.0, -0.5)])
-def test_validate_chi_c(chi, c):
-    with pytest.raises(ValueError, match='must be positive'):
-        argus._validate_params(chi, c)
+@pytest.mark.parametrize('c', [-3.0, 0.0])
+def test_validate_c(c):
+    with pytest.raises(ValueError, match='c must be positive'):
+        argus._validate_params(4.5, c)
+
+
+def test_validate_chi():
+    with pytest.raises(ValueError, match='chi must be nonnegative'):
+        argus._validate_params(-1.5, 2)
 
 
 def test_support():
