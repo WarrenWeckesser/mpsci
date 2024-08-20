@@ -15,11 +15,11 @@ class Initial:
     initial: mp.mpf
 
 
-def _validate_loc_scale(loc, scale):
+def _validate_loc_scale(loc, scale, scale_name='scale'):
     loc = mp.mpf(loc)
     scale = mp.mpf(scale)
     if scale <= 0:
-        raise ValueError('scale must be positive.')
+        raise ValueError('f{scale_name} must be positive.')
     return loc, scale
 
 
