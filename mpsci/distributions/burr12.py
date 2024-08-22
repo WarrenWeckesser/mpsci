@@ -5,11 +5,12 @@ Burr type XII probability distribution
 """
 
 from mpmath import mp
-from mpsci.distributions._common import _validate_p
+from mpsci.distributions._common import _validate_p,  _validate_x_bounds
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'logsf',
-           'mean', 'var', 'median', 'mode']
+           'mean', 'var', 'median', 'mode',
+           'nll']
 
 
 def _validate_params(c, d, scale):
@@ -156,3 +157,15 @@ def mode(c, d, scale):
         if c <= 1:
             return mp.zero
         return scale*((c - 1)/(d*c + 1))**(1/c)
+
+
+def nll(x, c, d, scale):
+    """
+    Negative log-likelihood for the Burr type XII distribution.
+
+    `x` must be a sequence of numbers.
+    """
+    with mp.extradps(5):
+        c, d, scale = _validate_params(c, d, scale)
+        x = _validate_x_bounds(x, low=0, strict_low=True, high=mp.inf)
+        return -mp.fsum([logpdf(xi, c, d, scale) for xi in x])
