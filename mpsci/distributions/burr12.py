@@ -40,7 +40,7 @@ def pdf(x, c, d, scale):
 
 def logpdf(x, c, d, scale):
     """
-    Log of the PDF of the Burr type XII distribution.
+    Natural logarithm of the PDF of the Burr type XII distribution.
     """
     with mp.extradps(5):
         c, d, scale = _validate_params(c, d, scale)
@@ -53,7 +53,7 @@ def logpdf(x, c, d, scale):
 
 def cdf(x, c, d, scale):
     """
-    Burr type XII distribution cumulative distribution function.
+    Cumulative distribution function of the Burr type XII distribution.
     """
     with mp.extradps(5):
         c, d, scale = _validate_params(c, d, scale)
@@ -110,7 +110,7 @@ def invsf(p, c, d, scale):
 
 def logsf(x, c, d, scale):
     """
-    Natural log of the survival function of the Burr type XII distribution.
+    Natural logarithm of the survival function of the Burr type XII distribution.
     """
     with mp.extradps(5):
         c, d, scale = _validate_params(c, d, scale)
