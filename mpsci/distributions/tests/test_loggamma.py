@@ -102,3 +102,14 @@ def test_mle(x, theta0):
 def test_mle_theta_fixed(x, fixed_theta):
     p_hat = loggamma.mle(x, theta=fixed_theta)
     check_mle(lambda x, k: loggamma.nll(x, k, fixed_theta), x, p_hat[:1])
+
+
+@pytest.mark.parametrize(
+    'x, fixed_k',
+    [([0.5, 1, 1.5, 3], 1),
+     ([1, 2, 3, 4, 5, 8, 13], 11.0)],
+)
+@mp.workdps(50)
+def test_mle_k_fixed(x, fixed_k):
+    p_hat = loggamma.mle(x, k=fixed_k)
+    check_mle(lambda x, theta: loggamma.nll(x, fixed_k, theta), x, p_hat[1:])

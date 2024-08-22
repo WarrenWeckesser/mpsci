@@ -17,7 +17,8 @@ implementation of the log-gamma distribution.
 from mpmath import mp
 from ..fun import digammainv as _digammainv
 from ..stats import mean as _mean
-from ._common import _validate_p, _validate_x_bounds, _find_bracket, Initial
+from ._common import (_validate_p, _validate_x_bounds, _find_bracket, Initial,
+                      isfixed)
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
@@ -238,12 +239,24 @@ def _mle_shape_scale(x, k0=1, theta0=1):
                                     for x1, z1 in zip(x, z)])]
 
     x = _validate_x_bounds(x, low=mp.ninf, high=mp.inf)
-    k, scale = mp.findroot(scale_eq, [k0, theta0], args=(x,))
+    k, scale = mp.findroot(scale_eq, [k0, theta0])
     return k, scale
 
 
+def _mle_scale(x, k, theta0=1):
+
+    def scale_eq(scale):
+        z = [x1/scale for x1 in x]
+        n = len(x)
+        return -n*scale + mp.fsum([x1*(mp.exp(z1) - k)
+                                   for x1, z1 in zip(x, z)])
+
+    # x = _validate_x_bounds(x, low=mp.ninf, high=mp.inf)
+    scale = mp.findroot(scale_eq, theta0)
+    return scale
+
+
 # MLE to do:
-# * Handle fixed k.
 # * Better default initial guess for the parameters.
 
 def mle(x, k=None, theta=None):
@@ -252,11 +265,25 @@ def mle(x, k=None, theta=None):
 
     `x` must be a sequence of numbers.
     """
-    if k is not None and not isinstance(k, Initial):
-        raise ValueError('Fixed k is not implemented yet.')
     with mp.extradps(5):
         x = _validate_x_bounds(x, low=mp.ninf, high=mp.inf)
-        if theta is not None and not isinstance(theta, Initial):
+        theta_fixed = isfixed(theta)
+        k_fixed = isfixed(k)
+
+        if theta_fixed and k_fixed:
+            # Both k and theta fixed, nothing to do.
+            k, theta = _validate_k_theta(k, theta)
+            return k, theta
+
+        elif not k_fixed and not theta_fixed:
+            # Fit both k and theta.
+            k0 = k.initial if isinstance(k, Initial) else 1
+            theta0 = theta.initial if isinstance(theta, Initial) else 1
+            k0, theta0 = _validate_k_theta(k0, theta0)
+            k, theta = _mle_shape_scale(x, k0, theta0)
+            return k, theta
+
+        elif theta_fixed:
             # theta is fixed, so fit only the shape k.
             _, theta = _validate_k_theta(1, theta)
             xs = [t/theta for t in x]
@@ -264,9 +291,9 @@ def mle(x, k=None, theta=None):
             k = _digammainv(_mean(xs))
             return k, theta
 
-        # Fit both k and theta.
-        k0 = k.initial if isinstance(k, Initial) else 1
-        theta0 = theta.initial if isinstance(theta, Initial) else 1
-        k0, theta0 = _validate_k_theta(k0, theta0)
-        k, theta = _mle_shape_scale(x, k0, theta0)
-        return k, theta
+        else:
+            # k is fixed, theta is not.
+            theta0 = theta.initial if isinstance(theta, Initial) else 1
+            k, theta0 = _validate_k_theta(k, theta0)
+            theta = _mle_scale(x, k, theta0)
+            return k, theta

@@ -15,6 +15,10 @@ class Initial:
     initial: mp.mpf
 
 
+def isfixed(param):
+    return not (param is None or isinstance(param, Initial))
+
+
 def _validate_loc_scale(loc, scale, scale_name='scale'):
     loc = mp.mpf(loc)
     scale = mp.mpf(scale)
