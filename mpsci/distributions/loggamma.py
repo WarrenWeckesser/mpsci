@@ -238,7 +238,6 @@ def _mle_shape_scale(x, k0=1, theta0=1):
                 -n*scale + mp.fsum([x1*(mp.exp(z1) - k)
                                     for x1, z1 in zip(x, z)])]
 
-    x = _validate_x_bounds(x, low=mp.ninf, high=mp.inf)
     k, scale = mp.findroot(scale_eq, [k0, theta0])
     return k, scale
 
@@ -251,7 +250,6 @@ def _mle_scale(x, k, theta0=1):
         return -n*scale + mp.fsum([x1*(mp.exp(z1) - k)
                                    for x1, z1 in zip(x, z)])
 
-    # x = _validate_x_bounds(x, low=mp.ninf, high=mp.inf)
     scale = mp.findroot(scale_eq, theta0)
     return scale
 
