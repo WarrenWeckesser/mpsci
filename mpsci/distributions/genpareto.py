@@ -21,7 +21,7 @@ def _validate_params(xi, mu, sigma):
 
 def pdf(x, xi, mu=0, sigma=1):
     """
-    Generalized Pareto distribution probability density function.
+    Probability density function of the generalized Pareto distribution .
     """
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
@@ -59,7 +59,7 @@ def logpdf(x, xi, mu=0, sigma=1):
 
 def cdf(x, xi, mu=0, sigma=1):
     """
-    Generalized Pareto distribution cumulative density function.
+    Cumulative distribution function of the generalized Pareto distribution.
     """
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
@@ -103,7 +103,7 @@ def invcdf(p, xi, mu=0, sigma=1):
 
 def sf(x, xi, mu=0, sigma=1):
     """
-    Generalized Pareto distribution survival function.
+    Survival function of the generalized Pareto distribution.
     """
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
@@ -146,7 +146,7 @@ def invsf(p, xi, mu=0, sigma=1):
 
 def support(xi, mu=0, sigma=1):
     """
-    Support of the generarlized Pareto distribution.
+    Support of the generalized Pareto distribution.
     """
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
@@ -181,7 +181,7 @@ def var(xi, mu=0, sigma=1):
 
 def entropy(xi, mu=0, sigma=1):
     """
-    Entropy of the generalized Pareto distribution.
+    Differential entropy of the generalized Pareto distribution.
     """
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
