@@ -8,7 +8,9 @@ from mpmath import mp
 from mpsci.distributions._common import _validate_p,  _validate_x_bounds
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'logsf',
+__all__ = ['pdf', 'logpdf',
+           'cdf', 'invcdf', 'logcdf',
+           'sf', 'invsf', 'logsf',
            'mean', 'var', 'median', 'mode',
            'nll']
 
@@ -70,6 +72,18 @@ def invcdf(p, c, d, scale):
         c, d, scale = _validate_params(c, d, scale)
         p = _validate_p(p)
         return scale * mp.powm1(1 - p, -1/d)**(1/c)
+
+
+def logcdf(x, c, d, scale):
+    """
+    Natural logarithm of the CDF of the Burr type XII distribution.
+    """
+    with mp.extradps(5):
+        c, d, scale = _validate_params(c, d, scale)
+        x = mp.mpf(x)
+        if x <= 0:
+            return mp.ninf
+        return mp.log1p(-sf(x, c, d, scale))
 
 
 def sf(x, c, d, scale):

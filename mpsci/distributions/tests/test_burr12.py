@@ -1,4 +1,5 @@
 
+import pytest
 from mpmath import mp
 from mpsci.distributions import burr12
 
@@ -38,14 +39,14 @@ def test_cdf_outside_supprt():
     assert burr12.cdf(-1, 2, 3, 4) == 0
 
 
+@pytest.mark.parametrize(
+    'x, c, d, scale, ref',
+    [(3, 1, 2, 4, '33/49'),
+     (3, 2, 1, 6, '1/5')])
 @mp.workdps(25)
-def test_cdf_basic():
-    c = 1
-    d = 2
-    scale = 4
-    x = 3
+def test_cdf_basic(x, c, d, scale, ref):
     cdf = burr12.cdf(x, c, d, scale)
-    assert mp.almosteq(cdf, mp.mpf('33/49'))
+    assert mp.almosteq(cdf, mp.mpf(ref))
 
 
 @mp.workdps(25)
@@ -56,6 +57,17 @@ def test_invcdf_basic():
     p = mp.mpf('33/49')
     x = burr12.invcdf(p, c, d, scale)
     assert mp.almosteq(x, 3)
+
+
+@mp.workdps(25)
+def test_logcdf_basic():
+    x = 3
+    c = 2
+    d = 1
+    scale = 6
+    logp = burr12.logcdf(x, c, d, scale)
+    ref = mp.log(mp.mpf('0.2'))
+    assert mp.almosteq(logp, ref)
 
 
 @mp.workdps(25)
