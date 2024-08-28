@@ -18,7 +18,7 @@ from mpmath import mp
 from ._common import _validate_p, _validate_moment_n
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
+__all__ = ['pdf', 'logpdf', 'cdf', 'logcdf', 'invcdf', 'sf', 'logsf', 'invsf',
            'mean', 'var', 'skewness', 'kurtosis', 'entropy',
            'noncentral_moment']
 
@@ -86,22 +86,28 @@ def cdf(x, xi, mu=0, sigma=1):
     Cumulative distribution function of the generalized extreme value distribution.
     """
     with mp.extradps(5):
+        return mp.exp(logcdf(x, xi, mu, sigma))
+
+
+def logcdf(x, xi, mu=0, sigma=1):
+    """
+    Natural logarithm of the CDF of the generalized extreme value distribution.
+    """
+    with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
 
         if xi != 0:
             bound = mu - sigma/xi
             if xi > 0 and x <= bound:
-                return mp.zero
+                return mp.ninf
             if xi < 0 and x >= bound:
-                return mp.one
+                return mp.zero
 
-        # Formula from wikipedia, which has a sign convention for xi that
-        # is the opposite of scipy's shape parameter.
         if xi != 0:
             t = mp.power(1 + ((x - mu)/sigma)*xi, -1/xi)
         else:
             t = mp.exp(-(x - mu)/sigma)
-        return mp.exp(-t)
+        return -t
 
 
 def invcdf(p, xi, mu=0, sigma=1):
@@ -123,22 +129,20 @@ def sf(x, xi, mu=0, sigma=1):
     Survival function of the generalized extreme value distribution.
     """
     with mp.extradps(5):
-        xi, mu, sigma = _validate_params(xi, mu, sigma)
+        return -mp.expm1(logcdf(x, xi, mu, sigma))
 
-        if xi != 0:
-            bound = mu - sigma/xi
-            if xi > 0 and x <= bound:
-                return mp.one
-            if xi < 0 and x >= bound:
-                return mp.zero
 
-        # Formula from wikipedia, which has a sign convention for xi that
-        # is the opposite of scipy's shape parameter.
-        if xi != 0:
-            t = mp.power(1 + ((x - mu)/sigma)*xi, -1/xi)
-        else:
-            t = mp.exp(-(x - mu)/sigma)
-        return -mp.expm1(-t)
+def logsf(x, xi, mu=0, sigma=1):
+    """
+    Natural log of the survival function of the gen. extreme value distribution.
+    """
+    med = invcdf(0.5, xi, mu, sigma)
+    if x > med:
+        return mp.log(sf(x, xi, mu, sigma))
+    else:
+        # The .real attribute is used because of
+        # https://github.com/mpmath/mpmath/issues/853
+        return mp.log1p(-cdf(x, xi, mu, sigma)).real
 
 
 def invsf(p, xi, mu=0, sigma=1):

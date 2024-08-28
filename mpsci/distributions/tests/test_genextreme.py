@@ -34,10 +34,66 @@ def test_basic_cdf():
 
 
 @mp.workdps(50)
+def test_cdf_from_wolfram_alpha():
+    # The reference value was computed with Wolfram Alpha:
+    #    CDF[MaxStableDistribution[0, 1, 3/2], 1]
+    ref = mp.mpf('0.5810703045626315358283025571396011491804386988291087')
+    p = genextreme.cdf(1, 1.5, 0, 1)
+    assert mp.almosteq(p, ref)
+
+
+@pytest.mark.parametrize('xi, x', [(1, -3), (2, -0.75)])
+def test_logcdf_below_support(xi, x):
+    logp = genextreme.logcdf(x, xi, 0, 1)
+    assert logp == mp.ninf
+
+
+@pytest.mark.parametrize('xi, x', [(-1, 1.25), (-2, 0.75)])
+def test_logcdf_above_support(xi, x):
+    logp = genextreme.logcdf(x, xi, 0, 1)
+    assert logp == 0
+
+
+@mp.workdps(50)
+def test_logcdf_from_wolfram_alpha():
+    with mp.workdps(100):
+        # From Wolfram Alpha:
+        #   CDF[MaxStableDistribution[0, 1, 1/2], 10000000000000000000000000]
+        cdf_ref = ('0.999999999999999999999999999999999999999999999999960000'
+                   '000000000000000000015999999999999999999999996')
+        logcdf_ref = mp.log(mp.mpf(cdf_ref))
+    logp = genextreme.logcdf(1e25, 0.5, 0, 1)
+    assert mp.almosteq(logp, logcdf_ref)
+
+
+@mp.workdps(50)
 def test_basic_sf():
     # The expected value was computed "by hand".
     expected = 1 - mp.exp(mp.mpf('-0.5'))
     assert mp.almosteq(genextreme.sf(6, 2, 3, 2), expected)
+
+
+@mp.workdps(50)
+def test_sf_from_wolfram_alpha():
+    # The reference value was computed with Wolfram Alpha:
+    #    SurvivalFunction[MaxStableDistribution[0, 1, 3/2],
+    #                     10000000000000000000000000]
+    ref = mp.mpf('3.999999999999999999999998400000000000000000000000'
+                 '399999999999999999999999936e-50')
+    p = genextreme.sf(1e25, 0.5, 0, 1)
+    assert mp.almosteq(p, ref)
+
+
+@pytest.mark.parametrize('xi, x', [(1, -3), (2, -0.75)])
+def test_logsf_below_support(xi, x):
+    logp = genextreme.logsf(x, xi, 0, 1)
+    assert logp == 0
+
+
+@pytest.mark.parametrize('xi, x', [(-1, 1.25), (-2, 0.75)])
+def test_logsf_above_support(xi, x):
+    logp = genextreme.logsf(x, xi, 0, 1)
+    assert logp == mp.ninf
 
 
 @pytest.mark.parametrize('x, xi, mu, sigma',
