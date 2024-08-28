@@ -158,6 +158,13 @@ def invsf(p, xi, mu=0, sigma=1):
 def support(xi, mu=0, sigma=1):
     """
     Support of the generalized extreme value distribution.
+
+    The support depends on the parameters as follows:
+
+    * xi < 0:  (-inf, mu - sigma/xi]
+    * xi == 0: (-inf, inf)
+    * xi > 0:  [mu - sigma/xi, inf)
+
     """
     with mp.extradps(5):
         xi, mu, sigma = _validate_params(xi, mu, sigma)
