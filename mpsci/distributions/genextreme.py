@@ -2,8 +2,16 @@
 Generalized extreme value distribution
 --------------------------------------
 
-Note that the parameter xi used here has the opposite sign
-of the corresponding shape parameter in `scipy.stats.genextreme`.
+The parametrization used here is the same as that of the
+wikipedia article "Generalized extreme value distribution"
+(https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution).
+
+`xi` is a shape parameter, `mu` is a location parameter, and `sigma`
+is a scale parameter.
+
+Note that the parameter `xi` used here has the opposite sign
+of the corresponding shape parameter `c` in `scipy.stats.genextreme`.
+
 """
 
 from mpmath import mp
