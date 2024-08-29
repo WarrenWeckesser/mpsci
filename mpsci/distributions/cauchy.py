@@ -8,8 +8,17 @@ from mpmath import mp
 from ._common import _validate_p, _validate_loc_scale
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+__all__ = ['support', 'pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
            'mean', 'var', 'entropy']
+
+
+def support(loc=0, scale=1):
+    """
+    Support of the Cauchy distribution.
+    """
+    with mp.extradps(5):
+        loc, scale = _validate_loc_scale(loc, scale)
+        return (mp.ninf, mp.inf)
 
 
 def pdf(x, loc=0, scale=1):
