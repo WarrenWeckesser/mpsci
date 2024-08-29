@@ -10,9 +10,8 @@ from mpsci.distributions._common import (_validate_p,  _validate_x_bounds,
                                          Initial, isfixed)
 
 
-__all__ = ['pdf', 'logpdf',
-           'cdf', 'invcdf', 'logcdf',
-           'sf', 'invsf', 'logsf',
+__all__ = ['support', 'pdf', 'logpdf',
+           'cdf', 'invcdf', 'logcdf', 'sf', 'invsf', 'logsf',
            'mean', 'var', 'median', 'mode',
            'nll']
 
