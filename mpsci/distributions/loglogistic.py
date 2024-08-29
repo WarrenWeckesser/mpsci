@@ -16,8 +16,8 @@ from mpmath import mp
 from ._common import _validate_p, _validate_moment_n
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'mean', 'var',
-           'noncentral_moment']
+__all__ = ['support', 'pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'mean', 'var', 'noncentral_moment']
 
 
 def _validate_params(beta, scale):
@@ -26,6 +26,15 @@ def _validate_params(beta, scale):
     if scale <= 0:
         raise ValueError('scale must be greater than 0')
     return mp.mpf(beta), mp.mpf(scale)
+
+
+def support(beta, scale):
+    """
+    Support of the log-logistic distribution.
+    """
+    with mp.extradps(5):
+        beta, scale = _validate_params(beta, scale)
+        return (mp.zero, mp.inf)
 
 
 def pdf(x, beta, scale):
