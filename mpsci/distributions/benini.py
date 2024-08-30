@@ -15,8 +15,10 @@ from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['support', 'pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'mean', 'var']
+__all__ = ['support', 'pdf', 'logpdf',
+           'cdf', 'logcdf', 'invcdf',
+           'sf', 'logsf', 'invsf',
+           'median', 'mean', 'var']
 
 
 def _validate_positive(param, name):
@@ -44,6 +46,7 @@ def logpdf(x, alpha, beta, scale):
     Natural logarithm of the PDF of the Benini distribution.
     """
     alpha, beta, scale = _validate_params(alpha, beta, scale)
+    x = mp.mpf(x)
     if x == scale:
         return mp.log(alpha) - mp.log(scale)
     if x < scale:
@@ -67,10 +70,27 @@ def cdf(x, alpha, beta, scale):
     Cumulative distribution function of the Benini distribution.
     """
     alpha, beta, scale = _validate_params(alpha, beta, scale)
+    x = mp.mpf(x)
     if x <= scale:
         return mp.zero
     logz = mp.log(x/scale)
     return -mp.expm1(-logz*(alpha + beta*logz))
+
+
+@mp.extradps(5)
+def logcdf(x, alpha, beta, scale):
+    """
+    Natural logarithm of the CDF of the Benini distribution.
+    """
+    alpha, beta, scale = _validate_params(alpha, beta, scale)
+    x = mp.mpf(x)
+    if x <= scale:
+        return mp.ninf
+    m = median(alpha, beta, scale)
+    if x < m:
+        return mp.log(cdf(x, alpha, beta, scale))
+    else:
+        return mp.log1p(-sf(x, alpha, beta, scale))
 
 
 @mp.extradps(5)
@@ -91,10 +111,28 @@ def sf(x, alpha, beta, scale):
     Cumulative distribution function of the Benini distribution.
     """
     alpha, beta, scale = _validate_params(alpha, beta, scale)
+    x = mp.mpf(x)
     if x <= scale:
         return mp.one
     logz = mp.log(x/scale)
     return mp.exp(-logz*(alpha + beta*logz))
+
+
+@mp.extradps(5)
+def logsf(x, alpha, beta, scale):
+    """
+    Natural logarithm of the survival function of the Benini distribution.
+    """
+    alpha, beta, scale = _validate_params(alpha, beta, scale)
+    x = mp.mpf(x)
+    if x <= scale:
+        return mp.zero
+    m = median(alpha, beta, scale)
+    if x < m:
+        return mp.log1p(-cdf(x, alpha, beta, scale))
+    else:
+        logz = mp.log(x/scale)
+        return -logz*(alpha + beta*logz)
 
 
 @mp.extradps(5)
@@ -107,6 +145,11 @@ def invsf(p, alpha, beta, scale):
     r = -4*beta/alpha**2 * mp.log(p)
     t = -r/(1 + mp.sqrt(1 + r))
     return scale*mp.exp(-alpha/(2*beta)*t)
+
+
+@mp.extradps(5)
+def median(alpha, beta, scale):
+    return invcdf(0.5, alpha, beta, scale)
 
 
 @mp.extradps(5)
