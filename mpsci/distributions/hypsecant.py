@@ -137,7 +137,7 @@ def nll(x, loc, scale):
         return -mp.fsum([logpdf(t, loc, scale) for t in x])
 
 
-def mle(x, loc=None, scale=None):
+def mle(x, *, loc=None, scale=None):
     """
     Maximum likelihood estimate for the hyperbolic secant distribution.
 

@@ -257,7 +257,7 @@ def _mle_scale(x, k, theta0=1):
 # MLE to do:
 # * Better default initial guess for the parameters.
 
-def mle(x, k=None, theta=None):
+def mle(x, *, k=None, theta=None):
     """
     Maximum likelihood estimation for the log-gamma distribution.
 

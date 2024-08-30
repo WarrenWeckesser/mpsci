@@ -303,7 +303,7 @@ def _find_c_bracket_scale_fixed(x, scale):
 
 
 @mp.extradps(5)
-def mle(x, c=None, d=None, scale=None):
+def mle(x, *, c=None, d=None, scale=None):
     """
     Maximum likelihood estimate for the Burr type XII distribution.
 

@@ -177,7 +177,7 @@ def nll(x, a, b):
         return -mp.fsum([logpdf(t, a, b) for t in x])
 
 
-def mle(x, a=None, b=None):
+def mle(x, *, a=None, b=None):
     """
     Maximum likelihood estimation for the Benktander I distribution.
     """

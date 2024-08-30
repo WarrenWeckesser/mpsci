@@ -239,7 +239,7 @@ def mom(x):
         return m**2/v, v/m
 
 
-def mle(x, k=None, theta=None):
+def mle(x, *, k=None, theta=None):
     """
     Gamma distribution maximum likelihood parameter estimation.
 

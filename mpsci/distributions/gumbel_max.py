@@ -226,7 +226,7 @@ def _mle_scale_with_fixed_loc(scale, x, loc):
     return stats.mean(ez) + 1
 
 
-def mle(x, loc=None, scale=None):
+def mle(x, *, loc=None, scale=None):
     """
     Maximum likelihood estimates for the Gumbel distribution.
 

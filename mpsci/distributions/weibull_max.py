@@ -273,7 +273,7 @@ def nll(x, k, loc, scale):
         return -mp.fsum([logpdf(t, k, loc, scale) for t in x])
 
 
-def mle(x, k=None, loc=None, scale=None):
+def mle(x, *, k=None, loc=None, scale=None):
     """
     Maximum likelihood estimate of the Weibull(max) distribution parameters.
 

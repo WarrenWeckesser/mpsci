@@ -224,7 +224,7 @@ def _beta_mle_func(a, b, n, s):
     return s - n * (-psiab + mp.digamma(a))
 
 
-def mle(x, a=None, b=None):
+def mle(x, *, a=None, b=None):
     """
     Maximum likelihood estimation for the beta distribution.
     """

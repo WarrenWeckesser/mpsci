@@ -202,7 +202,7 @@ def nll(x, c, scale):
         return -mp.fsum([logpdf(xi, c, scale) for xi in x])
 
 
-def mle(x, c=None, scale=None):
+def mle(x, *, c=None, scale=None):
     """
     Maximum likelihood estimate for the Gompertz distribution.
 

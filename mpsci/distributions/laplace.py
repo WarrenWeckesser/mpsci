@@ -129,7 +129,7 @@ def var(mu=0, b=1):
         return 2*b**2
 
 
-def mle(x, mu=None, b=None):
+def mle(x, *, mu=None, b=None):
     """
     Laplace distribution maximum likelihood parameter estimation.
 

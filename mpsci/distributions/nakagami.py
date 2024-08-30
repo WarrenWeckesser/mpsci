@@ -184,7 +184,7 @@ def _estimate_nu(R):
         return 1/(1.5*R)
 
 
-def mle(x, nu=None, loc=None, scale=None):
+def mle(x, *, nu=None, loc=None, scale=None):
     """
     Maximum likelihood parameter estimation for the Nakagami distribution.
 

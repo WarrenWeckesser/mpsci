@@ -193,7 +193,7 @@ def nll(x, r, p):
         return -mp.fsum([logpmf(xi, r, p) for xi in x])
 
 
-def mle(x, r=None, p=None, allow_noninteger_r=True):
+def mle(x, *, r=None, p=None, allow_noninteger_r=True):
     """
     Maximum likelihood estimation for the negative binomial distribution.
 
