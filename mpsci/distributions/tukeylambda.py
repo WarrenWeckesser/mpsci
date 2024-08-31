@@ -32,7 +32,7 @@ def pdf(x, lam, loc=0, scale=1):
     z = (x - loc)/scale
     if lam > 0:
         lamrecip = 1/lam
-        if z < -lamrecip or z > lamrecip:
+        if z <= -lamrecip or z >= lamrecip:
             return mp.zero
     c = cdf(z, lam)
     p = 1/(mp.power(c, lam - 1) + mp.exp((lam - 1)*mp.log1p(-c)))
