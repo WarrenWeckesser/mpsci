@@ -198,6 +198,39 @@ def mle(x, *, n=None, a=None, b=None):
     The function works best when a good initial guess is provided for the
     parameters to be fit. Use :class:`mpsci.distributions.Initial` to specify
     an initial guess for the parameter.
+
+    Examples
+    --------
+    >>> from mpmath import mp
+    >>> mp.dps = 25
+    >>> from mpsci.distributions import betabinomial, Initial
+
+    ``x`` is our sample, which we assume is drawn from a beta binomial
+    distribution with ``n=8``.
+
+    >>> x = [3, 4, 5, 6, 0, 0, 0, 0, 3, 1, 0, 0,
+    ...      2, 3, 1, 8, 4, 3, 0, 5, 5, 0, 4, 3]
+    ...
+
+    Fit both ``a` and ``b``.  Use ``a=Initial(0.5)`` and ``b=Initial(1.5)``
+    to provide initial guesses to the numerical optimizer.
+
+    >>> n1, a1, b1 = betabinomial.mle(x, n=8, a=Initial(0.5), b=Initial(1.5))
+    >>> a1
+    >>> mpf('0.6183654180946715501688528635')
+    >>> b1
+    >>> mpf('1.418640359545716670987007935')
+
+    If we know ``a`` must be 1, we can pass in the parameter ``a=1`` to
+    fix the value of ``a``.
+
+    >>> n2, a2, b2 = betabinomial.mle(x, n=8, a=1, b=Initial(1.5))
+
+    >>> a2
+    >>> mpf('1.0')
+    >>> b2
+    >>> mpf('2.143528853730739316264441767')
+
     """
     if n is None:
         raise ValueError('a value of n must be given.')
