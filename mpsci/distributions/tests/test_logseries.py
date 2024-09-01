@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import logseries
+from ._utils import call_and_check_mle
 
 
 def test_support():
@@ -53,3 +54,18 @@ def test_kurtosis():
     # From WolframAlpha: Kurtosis[LogSeriesDistribution[4/10]] - 3
     ref = mp.mpf('13.6455565131823427023041223124429449608551024593506')
     assert mp.almosteq(kurt, ref)
+
+
+@pytest.mark.parametrize(
+    'x',                                                   # mean
+    [[1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1],        # 1.2
+     [1, 1, 3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1],     # 1.25
+     [1, 1, 2, 3, 4, 3, 4, 3, 2, 1, 4, 1, 4, 2, 4],        # 2.6
+     [1, 4, 5, 1, 9, 3, 6, 1, 1, 1, 3, 1],                 # 3.0
+     [1, 2, 4, 8, 16],                                     # 6.2
+     [14, 1, 22, 29, 1, 55, 32, 1, 1, 16, 1, 13],          # 15.5
+     [9, 1, 38, 322, 88, 1, 419, 11755, 1, 253, 103, 15],  # 1083.75
+     ]
+)
+def test_mle(x):
+    call_and_check_mle(logseries.mle, logseries.nll, x)
