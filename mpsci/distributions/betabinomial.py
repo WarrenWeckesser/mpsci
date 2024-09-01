@@ -8,7 +8,7 @@ See https://en.wikipedia.org/wiki/Beta-binomial_distribution
 
 from mpmath import mp
 from ..fun import logbinomial, logbeta
-from ._common import _validate_x_bounds, Initial
+from ._common import _validate_x_bounds, Initial, _validate_counts
 
 
 __all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf',
@@ -169,7 +169,7 @@ def kurtosis(n, a, b):
         return kurt - 3
 
 
-def nll(x, n, a, b):
+def nll(x, n, a, b, *, counts=None):
     """
     Negative log-likelihood of the beta-binomial distribution.
 
@@ -182,10 +182,12 @@ def nll(x, n, a, b):
                                strict_low=False, strict_high=False)
         if not all([mp.isint(t) for t in x]):
             raise ValueError('all values in x must be integers')
-        return -mp.fsum([logpmf(t, n, a, b) for t in x])
+        counts = _validate_counts(x, counts, expand_none=True)
+        return -mp.fsum([count*logpmf(t, n, a, b)
+                         for t, count in zip(x, counts)])
 
 
-def mle(x, *, n=None, a=None, b=None):
+def mle(x, *, counts=None, n=None, a=None, b=None):
     """
     Maximum likelihood estimation for the beta-binomial distribution.
 
@@ -194,6 +196,10 @@ def mle(x, *, n=None, a=None, b=None):
 
     Returns (n, a, b), where each value is the maximum likelihood
     estimate of the parameter if it was not given in the function call.
+
+    If `counts` is given, it must be a sequence of nonnegative integers
+    with the same length as `x`.  It gives the number of occurrences in
+    the sample of the corresponding value in `x`.
 
     The function works best when a good initial guess is provided for the
     parameters to be fit. Use :class:`mpsci.distributions.Initial` to specify
@@ -231,6 +237,23 @@ def mle(x, *, n=None, a=None, b=None):
     >>> b2
     >>> mpf('2.143528853730739316264441767')
 
+    The following example is from the wikipedia article "Beta-binomial
+    distribution" (https://en.wikipedia.org/wiki/Beta-binomial_distribution),
+    where the data is described as:
+
+        The following data gives the number of male children among the
+        first 12 children of family size 13 in 6115 families taken from
+        hospital records in 19th century Saxony (Sokal and Rohlf, p. 59
+        from Lindsey). The 13th child is ignored to blunt the effect of
+        families non-randomly stopping when a desired gender is reached.
+
+    >>> values = list(range(13))
+    >>> counts = [3, 24, 104, 286, 670, 1033, 1343, 1112, 829, 478, 181, 45, 7]
+    >>> n, a, b = betabinomial.mle(values, counts=counts,
+    ...                            n=12, a=Initial(34), b=Initial(32))
+    ...
+    >>> float(a), float(b)
+    (34.10285761580158, 31.578234155042065)
     """
     if n is None:
         raise ValueError('a value of n must be given.')
@@ -241,6 +264,8 @@ def mle(x, *, n=None, a=None, b=None):
                                strict_low=False, strict_high=False)
         if not all([mp.isint(t) for t in x]):
             raise ValueError('all values in x must be integers')
+
+        counts = _validate_counts(x, counts, expand_none=True)
 
         # XXX Figure out better default initial guesses for a and b.
         if a is None:
@@ -269,8 +294,10 @@ def mle(x, *, n=None, a=None, b=None):
                 s1 = psiab - psinab
                 sa = s1 - psia
                 sb = s1 - psib
-                eqa = mp.fsum([mp.digamma(t + a) + sa for t in x])
-                eqb = mp.fsum([mp.digamma(n - t + b) + sb for t in x])
+                eqa = mp.fsum([count*(mp.digamma(t + a) + sa)
+                               for t, count in zip(x, counts)])
+                eqb = mp.fsum([count*(mp.digamma(n - t + b) + sb)
+                               for t, count in zip(x, counts)])
                 return [eqa, eqb]
 
             est = mp.findroot(first_order_eqns,
@@ -282,7 +309,8 @@ def mle(x, *, n=None, a=None, b=None):
 
             def first_order_eqn(a):
                 s = -mp.digamma(a) + mp.digamma(a + b) - mp.digamma(n + a + b)
-                return mp.fsum([mp.digamma(t + a) + s for t in x])
+                return mp.fsum([count*(mp.digamma(t + a) + s)
+                                for t, count in zip(x, counts)])
 
             est = mp.findroot(first_order_eqn, x0=mp.mpf(a.initial))
             return n, est, b
@@ -292,7 +320,8 @@ def mle(x, *, n=None, a=None, b=None):
 
             def first_order_eqn(b):
                 s = -mp.digamma(b) + mp.digamma(a + b) - mp.digamma(n + a + b)
-                return mp.fsum([mp.digamma(n - t + b) + s for t in x])
+                return mp.fsum([count*(mp.digamma(n - t + b) + s)
+                                for t, count in zip(x, counts)])
 
             est = mp.findroot(first_order_eqn, x0=mp.mpf(b.initial))
             return n, a, est

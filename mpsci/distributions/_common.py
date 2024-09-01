@@ -171,3 +171,17 @@ def _find_bracket(func, p, a, b, nbisect=None):
             x1 = mid
 
     return x0, x1
+
+
+def _validate_counts(x, counts, expand_none=True):
+    n = len(x)
+    if counts is None:
+        if expand_none:
+            counts = [1]*n
+        return counts
+    if len(counts) != n:
+        raise ValueError('len(counts) must equal len(x); '
+                         f'got {len(counts)=} and {len(x)=}')
+    if any([t != int(t) or t < 0 for t in counts]):
+        raise ValueError('counts must contain only nonnegative integers')
+    return counts

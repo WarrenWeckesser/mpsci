@@ -6,6 +6,8 @@ Poisson distribution
 
 import itertools
 from mpmath import mp
+from ._common import _validate_counts
+from ..stats import mean as _fmean
 
 
 __all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf',
@@ -105,7 +107,8 @@ def kurtosis(lam):
     return 1/mp.mpf(lam)
 
 
-def mle(x):
+@mp.extradps(5)
+def mle(x, *, counts=None):
     """
     Maximum likelihood estimate for the Poisson distribution.
 
@@ -114,5 +117,5 @@ def mle(x):
 
     Returns lambda, the estimated parameter of the Poisson distribution.
     """
-    with mp.extradps(5):
-        return mp.fsum(x) / len(x)
+    counts = _validate_counts(x, counts, expand_none=False)
+    return _fmean(x, weights=counts)

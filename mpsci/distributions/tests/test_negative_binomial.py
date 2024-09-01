@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import negative_binomial
+from mpsci.stats import unique_counts
 from ._utils import call_and_check_mle
 
 
@@ -70,6 +71,19 @@ def test_var():
     assert mp.almosteq(var, mp.mpf('100/49'))
 
 
+@pytest.mark.parametrize(
+    'x, r, p',
+    [([1, 1, 2, 4, 8, 15, 16, 24], 1.5, 0.25),
+     ([1, 1, 1, 5, 5, 2, 3, 3, 5, 8, 13, 15], 3.0, 0.125)],
+)
+@mp.workdps(50)
+def test_nll_counts(x, r, p):
+    nll1 = negative_binomial.nll(x, r=r, p=p)
+    xvalues, xcounts = unique_counts(x)
+    nll2 = negative_binomial.nll(xvalues, counts=xcounts, r=r, p=p)
+    assert mp.almosteq(nll1, nll2)
+
+
 @mp.workdps(25)
 @pytest.mark.parametrize('x', [[0, 1, 2, 3, 5, 8, 13],
                                [0]*155 + [1]*39 + [2]*6 + [3]*1])
@@ -77,23 +91,31 @@ def test_mle_basic(x):
     call_and_check_mle(negative_binomial.mle, negative_binomial.nll, x)
 
 
+@pytest.mark.parametrize('use_counts', [False, True])
 @mp.workdps(25)
-def test_mle_fixed_r():
+def test_mle_fixed_r(use_counts):
     # Note: I haven't tried to verify this, but the numerical result
     # suggests that with r fixed to be 5, the MLE for p is 5/6.
     x = [21, 29, 19, 10, 33, 28, 16, 21, 17, 22, 31, 53]
+    counts = None
+    if use_counts:
+        x, counts = unique_counts(x)
     call_and_check_mle(
-        lambda x: negative_binomial.mle(x, r=5)[1:],
-        lambda x, p: negative_binomial.nll(x, r=5, p=p),
+        lambda x: negative_binomial.mle(x, r=5, counts=counts)[1:],
+        lambda x, p: negative_binomial.nll(x, r=5, p=p, counts=counts),
         x
     )
 
 
+@pytest.mark.parametrize('use_counts', [False, True])
 @mp.workdps(25)
-def test_mle_fixed_p():
+def test_mle_fixed_p(use_counts):
     x = [21, 29, 19, 10, 33, 28, 16, 21, 17, 22, 31, 53]
+    counts = None
+    if use_counts:
+        x, counts = unique_counts(x)
     call_and_check_mle(
-        lambda x: negative_binomial.mle(x, p=0.75)[:1],
-        lambda x, r: negative_binomial.nll(x, r=r, p=0.75),
+        lambda x: negative_binomial.mle(x, p=0.75, counts=counts)[:1],
+        lambda x, r: negative_binomial.nll(x, r=r, p=0.75, counts=counts),
         x
     )

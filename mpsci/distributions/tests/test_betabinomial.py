@@ -2,6 +2,7 @@ from itertools import product
 import pytest
 from mpmath import mp
 from mpsci.distributions import betabinomial, Initial
+from mpsci.stats import unique_counts
 
 
 @mp.workdps(50)
@@ -90,15 +91,33 @@ def test_kurtosis():
     assert mp.almosteq(exckurt, -mp.mpf(29)/42)
 
 
+@pytest.mark.parametrize(
+    'x, n',
+    [([1, 1, 2, 4, 8, 15, 16, 16], 20),
+     ([1, 1, 5, 5, 5, 2, 3, 3, 5, 8, 13, 21], 21)],
+)
+@mp.workdps(50)
+def test_nll_counts(x, n):
+    nll1 = betabinomial.nll(x, n=n, a=1.5, b=3.0)
+    xvalues, xcounts = unique_counts(x)
+    nll2 = betabinomial.nll(xvalues, counts=xcounts, n=n, a=1.5, b=3.0)
+    assert mp.almosteq(nll1, nll2)
+
+
+@pytest.mark.parametrize('use_counts', [False, True])
 @mp.workdps(80)
-def test_mle_special_case():
+def test_mle_special_case(use_counts):
     # Experiments show that for a dataset of the form
     #   [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, ...]
     # (i.e. the kth integer occurs k+1 times), and with n equal to the last
     # integer included in the dataset, the MLE is a=2, b=1. (TODO: Prove this!)
     x = [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4]
+    counts = None
+    if use_counts:
+        x, counts = unique_counts(x)
+
     n = 4
-    nhat, ahat, bhat = betabinomial.mle(x, n=n, a=Initial(2))
+    nhat, ahat, bhat = betabinomial.mle(x, n=n, a=Initial(2), counts=counts)
     assert nhat == n
     assert mp.almosteq(ahat, 2)
     assert mp.almosteq(bhat, 1)
@@ -109,19 +128,23 @@ def test_mle_special_case():
     [([2, 4, 8, 16], 20),
      ([1, 1, 2, 3, 5, 8, 13, 21], 21)],
 )
+@pytest.mark.parametrize('use_counts', [False, True])
 @mp.workdps(50)
-def test_mle_a_and_b(x, n):
+def test_mle_a_and_b(x, n, use_counts):
     # This is a crude test of the mle() function.
-    nhat, ahat, bhat = betabinomial.mle(x, n=n)
+    counts = None
+    if use_counts:
+        x, counts = unique_counts(x)
+    nhat, ahat, bhat = betabinomial.mle(x, n=n, counts=counts)
     assert nhat == n
-    nll = betabinomial.nll(x, n=n, a=ahat, b=bhat)
+    nll = betabinomial.nll(x, n=n, a=ahat, b=bhat, counts=counts)
     delta = 1e-9
     nd = 2
     dirs = set(product(*([[-1, 0, 1]]*nd))) - set([(0,)*nd])
     for d in dirs:
         a = ahat + d[0]*delta
         b = bhat + d[1]*delta
-        assert nll < betabinomial.nll(x, n=n, a=a, b=b)
+        assert nll < betabinomial.nll(x, n=n, a=a, b=b, counts=counts)
 
 
 @pytest.mark.parametrize(
@@ -129,17 +152,21 @@ def test_mle_a_and_b(x, n):
     [([2, 4, 8, 16], 20, 2.5),
      ([1, 1, 2, 3, 5, 8, 13, 21], 21, 1.25),],
 )
+@pytest.mark.parametrize('use_counts', [False, True])
 @mp.workdps(50)
-def test_mle_b_fixed(x, n, b):
+def test_mle_b_fixed(x, n, b, use_counts):
     # This is a crude test of the mle() function.
-    nhat, ahat, bhat = betabinomial.mle(x, n=n, b=b)
+    counts = None
+    if use_counts:
+        x, counts = unique_counts(x)
+    nhat, ahat, bhat = betabinomial.mle(x, n=n, b=b, counts=counts)
     assert nhat == n
     assert bhat == b
-    nll = betabinomial.nll(x, n=n, a=ahat, b=b)
+    nll = betabinomial.nll(x, n=n, a=ahat, b=b, counts=counts)
     delta = 1e-9
     for delta in [-1e-9, 1e-9]:
         a = ahat + delta
-        assert nll < betabinomial.nll(x, n=n, a=a, b=b)
+        assert nll < betabinomial.nll(x, n=n, a=a, b=b, counts=counts)
 
 
 @pytest.mark.parametrize(
@@ -147,17 +174,21 @@ def test_mle_b_fixed(x, n, b):
     [([2, 4, 8, 16], 20, 1.25),
      ([1, 1, 2, 3, 5, 8, 13, 21], 21, 0.6),],
 )
+@pytest.mark.parametrize('use_counts', [False, True])
 @mp.workdps(50)
-def test_mle_a_fixed(x, n, a):
+def test_mle_a_fixed(x, n, a, use_counts):
     # This is a crude test of the mle() function.
-    nhat, ahat, bhat = betabinomial.mle(x, n=n, a=a)
+    counts = None
+    if use_counts:
+        x, counts = unique_counts(x)
+    nhat, ahat, bhat = betabinomial.mle(x, counts=counts, n=n, a=a)
     assert nhat == n
     assert ahat == a
-    nll = betabinomial.nll(x, n=n, a=a, b=bhat)
+    nll = betabinomial.nll(x, n=n, a=a, b=bhat, counts=counts)
     delta = 1e-9
     for delta in [-1e-9, 1e-9]:
         b = bhat + delta
-        assert nll < betabinomial.nll(x, n=n, a=a, b=b)
+        assert nll < betabinomial.nll(x, n=n, a=a, b=b, counts=counts)
 
 
 @mp.workdps(50)
@@ -170,3 +201,10 @@ def test_mle_a_and_b_fixed():
     assert nhat == n
     assert ahat == a
     assert bhat == b
+
+    xvalues, xcounts = unique_counts(x)
+    nhat2, ahat2, bhat2 = betabinomial.mle(xvalues, counts=xcounts,
+                                           n=n, a=a, b=b)
+    assert nhat2 == n
+    assert ahat2 == a
+    assert bhat2 == b

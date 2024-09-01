@@ -2,6 +2,7 @@
 import statistics
 import pytest
 from mpmath import mp
+from mpsci.stats import unique_counts
 from mpsci.distributions import poisson
 
 
@@ -70,3 +71,12 @@ def test_mle():
         # For the values in sample, statistics.mean(sample) will give the
         # exact result.
         assert mp.almosteq(lam, statistics.mean(sample))
+
+
+@pytest.mark.parametrize('x', [(1, 2, 1, 3, 5), (0, 4, 2, 2, 2, 9, 1, 2, 2)])
+@mp.workdps(40)
+def test_mle_counts(x):
+    lam1 = poisson.mle(x)
+    xvalues, xcounts = unique_counts(x)
+    lam2 = poisson.mle(xvalues, counts=xcounts)
+    assert mp.almosteq(lam1, lam2)

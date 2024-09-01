@@ -13,13 +13,21 @@ hmean
     Harmonic mean
 pmean
     Power (or generalized) mean
+
+Other utility functions
+-----------------------
+unique_counts
+    Return the unique values in a sequence and the number of
+    occurrences of each unique value.
 """
 
+from itertools import groupby
 from mpmath import mp
 from ..fun import xlogy as _xlogy
 
 
-__all__ = ['mean', 'var', 'std', 'variation', 'gmean', 'hmean', 'pmean']
+__all__ = ['mean', 'var', 'std', 'variation', 'gmean', 'hmean', 'pmean',
+           'unique_counts']
 
 
 # XXX Add special handling for inf and nan in these functions?
@@ -213,3 +221,26 @@ def pmean(x, p):
     with mp.extraprec(16):
         p = mp.mpf(p)
         return mp.power(mean([mp.mpf(t)**p for t in x]), 1/p)
+
+
+def unique_counts(x):
+    """
+    Unique values and their counts in the sequence `x`.
+
+    Returns two tuples, The first is the sorted sequence of unique
+    values in `x`, and the second is a sequence of integers (same
+    length as the first) that gives the number of occurrences of the
+    corresponding value.
+
+    Examples
+    --------
+    >>> from mpsci.stats import unique_counts
+    >>> x = [3, 4, 7, 8, 0, 0, 0, 7, 3, 2, 0, 0, 2, 7]
+    >>> values, counts = unique_counts(x)
+    >>> values
+    (0, 2, 3, 4, 7, 8)
+    >>> counts
+    (5, 2, 2, 1, 3, 1)
+    """
+    xv, xc = zip(*[(k, len(list(g))) for k, g in groupby(sorted(x))])
+    return xv, xc

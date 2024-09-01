@@ -13,7 +13,7 @@ import itertools
 from mpmath import mp
 from ..fun import logbinomial, xlogy, xlog1py
 from ..stats import mean as _mean
-from ._common import Initial
+from ._common import Initial, _validate_counts
 
 
 __all__ = ['support', 'pmf', 'logpmf', 'sf', 'cdf', 'mean', 'var',
@@ -174,7 +174,7 @@ def var(r, p):
         return p*r / (1 - p)**2
 
 
-def nll(x, r, p):
+def nll(x, r, p, *, counts=None):
     """
     Negative log-likelihood of sample for the negative binomial distribution.
 
@@ -186,14 +186,20 @@ def nll(x, r, p):
         Number of failures until the experiment is stopped.
     p : float
         Probability of success.
+    counts : sequence of integers, optional
+        If given, this sequence must be the same length as `x`.
+        It gives the number of occurrences in the sample of the corresponding
+        value in `x`.
     """
     with mp.extradps(5):
         r, p = _validate_params(r, p)
         x = _validate_x(x)
-        return -mp.fsum([logpmf(xi, r, p) for xi in x])
+        counts = _validate_counts(x, counts, expand_none=True)
+        return -mp.fsum([count*logpmf(xi, r, p)
+                         for xi, count in zip(x, counts)])
 
 
-def mle(x, *, r=None, p=None, allow_noninteger_r=True):
+def mle(x, *, counts=None, r=None, p=None, allow_noninteger_r=True):
     """
     Maximum likelihood estimation for the negative binomial distribution.
 
@@ -201,6 +207,7 @@ def mle(x, *, r=None, p=None, allow_noninteger_r=True):
     """
     with mp.extradps(5):
         x = _validate_x(x)
+        counts = _validate_counts(x, counts, expand_none=False)
         r_fixed = not (r is None or isinstance(r, Initial))
         p_fixed = not (p is None or isinstance(p, Initial))
         if r_fixed:
@@ -212,16 +219,16 @@ def mle(x, *, r=None, p=None, allow_noninteger_r=True):
                 # XXX p=Initial(...) is ignored.  Should Initial be disallowed
                 # for p?
                 r, _ = _validate_params(r, 0.5, allow_noninteger_r)
-                m = _mean(x)
+                m = _mean(x, weights=counts)
                 phat = m/(r + m)
                 return r, phat
         # r is not fixed.
         if not p_fixed:
-            m = _mean(x)
+            m = _mean(x, weights=counts)
 
             def mle_r_eqn(r):
                 p1 = m/(r + m)
-                return (_mean([mp.digamma(xi + r) for xi in x])
+                return (_mean([mp.digamma(xi + r) for xi in x], weights=counts)
                         - mp.digamma(r) + mp.log1p(-p1))
 
             r0 = 1 if r is None else r.initial
@@ -234,8 +241,8 @@ def mle(x, *, r=None, p=None, allow_noninteger_r=True):
             rhat1 = mp.ceil(rhat)
             phat0 = m/(rhat0 + m)
             phat1 = m/(rhat1 + m)
-            nll0 = nll(x, rhat0, phat0)
-            nll1 = nll(x, rhat1, phat1)
+            nll0 = nll(x, r=rhat0, p=phat0, counts=counts)
+            nll1 = nll(x, r=rhat1, p=phat1, counts=counts)
             if nll0 <= nll1:
                 return rhat0, phat0
             else:
@@ -243,10 +250,10 @@ def mle(x, *, r=None, p=None, allow_noninteger_r=True):
         else:
             # r is free, p is fixed.
             _, p = _validate_params(1, p)
-            m = _mean(x)
+            m = _mean(x, weights=counts)
 
             def mle_r_eqn(r):
-                return (_mean([mp.digamma(xi + r) for xi in x])
+                return (_mean([mp.digamma(xi + r) for xi in x], weights=counts)
                         - mp.digamma(r) + mp.log1p(-p))
 
             r0 = 1 if r is None else r.initial
@@ -256,8 +263,8 @@ def mle(x, *, r=None, p=None, allow_noninteger_r=True):
             # Integer r is required.
             rhat0 = mp.floor(rhat)
             rhat1 = mp.ceil(rhat)
-            nll0 = nll(x, rhat0, p)
-            nll1 = nll(x, rhat1, p)
+            nll0 = nll(x, r=rhat0, p=p, counts=counts)
+            nll1 = nll(x, r=rhat1, p=p, counts=counts)
             if nll0 <= nll1:
                 return rhat0, p
             else:
