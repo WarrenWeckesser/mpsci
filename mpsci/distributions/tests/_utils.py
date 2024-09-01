@@ -24,7 +24,7 @@ def check_mle(nll, x, p_hat, delta=None):
     for d in dirs:
         p = [param + s*delta for param, s in zip(p_hat, d)]
         nll1 = nll(x, *p)
-        assert nll0 < nll1, f'{nll0 = }  {nll1 =}'
+        assert nll0 < nll1, f'{nll0 = }  {nll1 = }'
 
 
 def call_and_check_mle(mle, nll, x, delta=None):
@@ -36,4 +36,6 @@ def call_and_check_mle(mle, nll, x, delta=None):
     of `mle(x)` as if passed in as `*mle(x)`.
     """
     p_hat = mle(x)
+    if not isinstance(p_hat, tuple):
+        p_hat = (p_hat,)
     check_mle(nll, x, p_hat, delta=delta)

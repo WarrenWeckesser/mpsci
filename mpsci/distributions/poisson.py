@@ -6,13 +6,19 @@ Poisson distribution
 
 import itertools
 from mpmath import mp
-from ._common import _validate_counts
+from ._common import _validate_x_bounds, _validate_counts
 from ..stats import mean as _fmean
 
 
 __all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf',
            'mean', 'var', 'skewness', 'kurtosis',
-           'mle']
+           'nll', 'mle']
+
+
+def _validate_lam(lam):
+    if lam <= 0:
+        raise ValueError('lam must be greater than 0')
+    return mp.mpf(lam)
 
 
 def support(lam):
@@ -32,79 +38,104 @@ def support(lam):
     1
 
     """
+    lam = _validate_lam(lam)
     return itertools.count(start=0)
 
 
+@mp.extradps(5)
 def pmf(k, lam):
     """
     Probability mass function of the Poisson distribution.
     """
+    lam = _validate_lam(lam)
     if k < 0:
         return mp.zero
-    with mp.extradps(5):
-        lam = mp.mpf(lam)
-        return mp.power(lam, k) * mp.exp(-lam) / mp.factorial(k)
+    return mp.power(lam, k) * mp.exp(-lam) / mp.factorial(k)
 
 
+@mp.extradps(5)
 def logpmf(k, lam):
     """
     Natural log of the probability mass function of the binomial distribution.
     """
+    lam = _validate_lam(lam)
     if k < 0:
         return mp.ninf
-    with mp.extradps(5):
-        lam = mp.mpf(lam)
-        return k*mp.log(lam) - lam - mp.loggamma(k + 1)
+    return k*mp.log(lam) - lam - mp.loggamma(k + 1)
 
 
+@mp.extradps(5)
 def cdf(k, lam):
     """
     CDF of the Poisson distribution.
     """
+    lam = _validate_lam(lam)
     if k < 0:
-        return mp.zero
-    with mp.extradps(5):
-        lam = mp.mpf(lam)
-        return mp.gammainc(k + 1, lam, regularized=True)
+        return mp.ninf
+    return mp.gammainc(k + 1, lam, regularized=True)
 
 
+@mp.extradps(5)
 def sf(k, lam):
     """
     Survival function of the Poisson distribution.
     """
+    lam = _validate_lam(lam)
     if k < 0:
         return mp.one
-    with mp.extradps(5):
-        lam = mp.mpf(lam)
-        return mp.gammainc(k + 1, 0, lam, regularized=True)
+    return mp.gammainc(k + 1, 0, lam, regularized=True)
 
 
+@mp.extradps(5)
 def mean(lam):
     """
     Mean of the Poisson distribution.
     """
-    return mp.mpf(lam)
+    lam = _validate_lam(lam)
+    return lam
 
 
+@mp.extradps(5)
 def var(lam):
     """
     Variance of the Poisson distribution.
     """
-    return mp.mpf(lam)
+    lam = _validate_lam(lam)
+    return lam
 
 
+@mp.extradps(5)
 def skewness(lam):
     """
     Skewness of the Poisson distribution.
     """
-    return 1/mp.sqrt(mp.mpf(lam))
+    lam = _validate_lam(lam)
+    return 1/mp.sqrt(lam)
 
 
+@mp.extradps(5)
 def kurtosis(lam):
     """
     Excess kurtosis of the Poisson distribution.
     """
-    return 1/mp.mpf(lam)
+    lam = _validate_lam(lam)
+    return 1/lam
+
+
+@mp.extradps(5)
+def nll(x, lam, *, counts=None):
+    """
+    Negative log-likelihood of the Poisson distribution.
+
+    `x` must be a sequence of nonnegative integers.
+    """
+    lam = _validate_lam(lam)
+    x = _validate_x_bounds(x, low=0, high=None, strict_low=False)
+    if not all([mp.isint(t) and t >= 0 for t in x]):
+        raise ValueError('all values in x must be nonnegative integers')
+    counts = _validate_counts(x, counts, expand_none=True)
+    return -mp.fsum([count*logpmf(t, lam)
+                     for t, count in zip(x, counts)])
 
 
 @mp.extradps(5)
