@@ -196,11 +196,11 @@ def mle(x, *, counts=None):
                             method='newton').real
             return p
         else:
-            # pnumer must satsify func(pnumer) < e.
+            # pnumer must satisfy _mle_func(pnumer) < e.
             pnumer = 0.826
             slope = pnumer/(mp.e - 1)
             low = slope*(m - 1)
-            # pmax must satisfy func(pmax) > e.
+            # pmax must satisfy _mle_func(pmax) > e.
             pmax = 0.8264
             high = min(2*(m - 1), pmax)
             p = mp.findroot(lambda t: _mle_func(t) - m, [low, high],
