@@ -400,6 +400,21 @@ def odds_ratio(table, kind='conditional', alternative='two-sided'):
            Methods, Techniques, and Applications, CRC Press LLC, Boca
            Raton, Florida.
 
+    Examples
+    --------
+    >>> from mpsci.stats import odds_ratio
+    >>> from mpmath import mp
+    >>> mp.dps = 25
+
+    >>> table = [[25, 28], [124, 19]]
+    >>> result = odds_ratio(table, kind='conditional', alternative='two-sided')
+    >>> result.odds_ratio
+    >>> mpf('0.1386439288429951782006148315')
+    >>> result.odds_ratio_ci(0.95)
+    ConfidenceInterval(low=mpf('0.06223766231159558258257537936'),
+    high=mpf('0.3002430126764577947401324812'))
+    >>> float(result.pvalue)
+    7.14599142505505e-08
     """
     if kind not in ['conditional', 'sample']:
         raise ValueError("kind must be 'conditional' or 'sample'.")
