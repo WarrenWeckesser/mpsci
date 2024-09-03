@@ -131,7 +131,7 @@ def _conditional_oddsratio(table):
     Conditional MLE of the odds ratio for the 2x2 contingency table.
     """
     x, total, ngood, nsample = _hypergeom_params_from_table(table)
-    sup, pmf = hypergeometric.support(total, ngood, nsample)
+    sup, pmf = hypergeometric.support_pmf(total, ngood, nsample)
     sup = list(sup)
 
     # Check if x is at one of the extremes of the support.  If so, we know
