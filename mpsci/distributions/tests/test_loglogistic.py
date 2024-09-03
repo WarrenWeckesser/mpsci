@@ -1,6 +1,22 @@
-
+import pytest
 from mpmath import mp
 from mpsci.distributions import loglogistic
+from ._expect import check_noncentral_moment_with_integral
+
+
+def test_bad_params():
+    with pytest.raises(ValueError, match='beta must be greater than 0'):
+        loglogistic.pdf(1, -2, 3)
+    with pytest.raises(ValueError, match='scale must be greater than 0'):
+        loglogistic.pdf(1, 2, -3)
+
+
+def test_pdf_logpdf_out_of_support():
+    beta = 3
+    scale = 8
+    x = -1
+    assert loglogistic.pdf(x, beta, scale) == 0
+    assert loglogistic.logpdf(x, beta, scale) == mp.ninf
 
 
 @mp.workdps(50)
@@ -51,6 +67,14 @@ def test_sf():
     assert mp.almosteq(sf, expected_sf)
 
 
+def test_cdf_sf_out_of_support():
+    beta = 2
+    scale = 8
+    x = -1
+    assert loglogistic.cdf(x, beta, scale) == 0
+    assert loglogistic.sf(x, beta, scale) == 1
+
+
 @mp.workdps(50)
 def test_invcdf():
     p = mp.mpf(0.75)
@@ -95,3 +119,9 @@ def test_var():
     #   Variance[LogLogisticDistribution[3, 1/4]]
     expected_var = (mp.sqrt(3) - mp.pi/3)*mp.pi/36
     assert mp.almosteq(var, expected_var)
+
+
+@pytest.mark.parametrize('order', [0, 1, 2, 3, 4])
+@mp.workdps(50)
+def test_noncentral_moment_with_integral(order):
+    check_noncentral_moment_with_integral(order, loglogistic, (4.5, 1.75))
