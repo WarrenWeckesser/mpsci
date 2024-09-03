@@ -3,9 +3,7 @@ from mpmath import mp
 from mpsci.distributions import folded_normal
 
 
-mp.dps = 80
-
-
+@mp.workdps(80)
 def test_pdf():
     mu = 1
     sigma = 3
@@ -15,6 +13,7 @@ def test_pdf():
     assert mp.almosteq(p, expected)
 
 
+@mp.workdps(80)
 def test_logpdf():
     mu = 1
     sigma = 3
@@ -25,6 +24,7 @@ def test_logpdf():
     assert mp.almosteq(logp, expected)
 
 
+@mp.workdps(80)
 def test_cdf():
     mu = 1
     sigma = 3
@@ -34,6 +34,7 @@ def test_cdf():
     assert mp.almosteq(cdf, expected)
 
 
+@mp.workdps(80)
 def test_sf():
     mu = 1
     sigma = 3
