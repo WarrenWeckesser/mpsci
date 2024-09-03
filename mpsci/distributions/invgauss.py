@@ -9,9 +9,9 @@ of ``mu`` in other parametrizations.  `loc` and `scale` are the standard
 location and scale parameters.
 
 A slightly different parametrization is more commonly used (e.g.
-the Wikipedia article "Inversed Gaussian distribion" [1]_,
+the Wikipedia article "Inverse Gaussian distribion" [1]_,
 NumPy's `numpy.random.Generator.wald`, Wolfram Alpha's
-`InverseGaussianDistribution).  (The parameters `μ` and `λ` of
+`InverseGaussianDistribution`).  (The parameters `μ` and `λ` of
 the Wikipedia article and Wolfram are the same as the ``mean``
 and ``scale`` parameters of NumPy's ``wald`` distribution,
 respectively.)
