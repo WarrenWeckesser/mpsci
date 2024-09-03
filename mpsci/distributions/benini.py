@@ -2,6 +2,22 @@
 Benini Distribution
 -------------------
 
+The Benini distribution has the probability density function
+
+    f(x, alpha, beta, scale) = exp(theta(x, alpha, beta, scale) * (alpha/x + 2*beta*log(x/scale))/x)
+
+and cumulative distribution function
+
+    F(x, alpha, beta, scale) = 1 - exp(theta(x, alpha, beta, scale)
+
+where
+
+    theta(x, alpha, beta, scale) = -alpha*log(x/scale) - beta*log(x/scale)**2
+
+alpha and beta are shape parameters.
+
+The support is x > scale.
+
 See
 
 * Kleiber, Christian; Kotz, Samuel (2003). "Chapter 7.1: Benini Distribution",
@@ -11,9 +27,45 @@ See
   https://en.wikipedia.org/wiki/Benini_distribution
 
 """
+import re
 from mpmath import mp
 from ._common import _validate_p
 
+
+# module docstring substitution
+_f_expression = r"""
+.. math::
+        f(x, \\alpha, \\beta, \\sigma) =
+            e^{\\theta(x, \\alpha, \\beta, \\sigma)}
+            \\left(
+                \\frac{\\alpha}{x} +
+                \\frac{2\\beta\\log\\left(\\frac{x}{\\sigma}\\right)}{x}
+            \\right)
+"""
+
+_F_expression = r"""
+.. math::
+        F(x, \\alpha, \\beta, \\sigma) =
+          1 - e^{\\theta(x, \\alpha, \\beta, \\sigma)}
+"""
+
+_theta_expression = r"""
+.. math::
+        \\theta(x, \\alpha, \\beta, \\sigma) =
+          -\\alpha \\log\\left(\\frac{x}{\\sigma}\\right)
+            - \\beta \\log\\left(\\frac{x}{\\sigma}\\right)^2
+"""
+
+_docstring_re_subs = [
+    (r'    f\(x,.*$', _f_expression, 0, re.MULTILINE),
+    (r'    F\(x,.*$', _F_expression, 0, re.MULTILINE),
+    (r'    theta\(x,.*$', _theta_expression, 0, re.MULTILINE),
+    (r'alpha and beta are shape parameters.',
+     (r':math:`\\alpha` and :math:`\\beta` are shape parameters; '
+      r':math:`\\sigma` is a scale parameter.'), 0, 0),
+    (r'The support is x > scale.',
+     r'The support is :math:`x > \\sigma`.', 0, 0),
+]
 
 __all__ = ['support', 'pdf', 'logpdf',
            'cdf', 'logcdf', 'invcdf',
