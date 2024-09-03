@@ -1,6 +1,11 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import cauchy
+from ._expect import check_entropy_with_integral
+
+
+def test_support():
+    assert cauchy.support() == (mp.ninf, mp.inf)
 
 
 @mp.workdps(50)
@@ -76,3 +81,15 @@ def test_sf_invsf_roundtrip(x):
     p = cauchy.sf(x)
     x1 = cauchy.invsf(p)
     assert mp.almosteq(x1, x)
+
+
+def test_mean_var():
+    mean = cauchy.mean()
+    assert mp.isnan(mean)
+    var = cauchy.var()
+    assert mp.isnan(var)
+
+
+@mp.workdps(50)
+def test_entropy():
+    check_entropy_with_integral(cauchy, ())
