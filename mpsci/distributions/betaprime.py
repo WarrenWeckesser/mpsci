@@ -2,14 +2,31 @@
 Beta prime probability distribution
 -----------------------------------
 
+The beta prime distribution is a continuous univariate distribution with
+support x > 0.
+
+The probability density function is
+
+    f(x, a, b, scale) = ((x/scale)**(a - 1)*(1 + x/scale)**(-a-b))/B(a, b)
+
+and the cumulative distribution function is
+
+    F(x, a, b, scale) = I(a, b; (x/scale)/(1+(x/scale)))
+
+where B(a, b) is the beta function and I(a, b; z) is the regularized
+incomplete beta function.
+
+Parameters a and b are shape parameters.
+
 See https://en.wikipedia.org/wiki/Beta_prime_distribution
 
 The functions defined here include a scale parameter, so according to the
 Wikipedia article, this is actually a generalization of the beta prime
 distribution known as the *compound gamma distribution*.  If you want
 the "standard" beta prime distribution as described in the article, set
-`scale` to 1.
+the scale to 1.
 """
+import re
 from mpmath import mp
 from ._common import (_validate_p, _validate_moment_n, _find_bracket,
                       _validate_x_bounds, Initial)
@@ -22,6 +39,30 @@ __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
            'mean', 'mode', 'var', 'skewness', 'kurtosis', 'noncentral_moment',
            'nll', 'mle']
 
+
+_f_expression = r"""
+.. math::
+    f(x, a, b, \\sigma) = \\frac{x^{a - 1}(1 + x)^{-a-b}}{B(a,b)}
+"""
+
+_F_expression = r"""
+.. math::
+    F(x, a, b, \\sigma) = I_{
+        \\frac{x/\\sigma}
+              {1+x/\\sigma}
+    }(a, b)
+"""
+
+_docstring_re_subs = [
+    (r'support x > 0', r'support :math:`x > 0`', 0, 0),
+    (r'    f\(x,.*$', _f_expression, 0, re.MULTILINE),
+    (r'    F\(x,.*$', _F_expression, 0, re.MULTILINE),
+    (r'where B\(a, b\)', r'where :math:`B(a, b)`', 0, 0),
+    (r'I\(a, b; z\)', r':math:`I_{z}(a, b)`', 0, 0),
+    (r'Parameters a and b are shape parameters.',
+     (r'Parameters :math:`a` and :math:`b` are shape parameters; '
+      r':math:`\\sigma` is a scale parameter.'), 0, 0)
+]
 
 def _validate_params(a, b, scale):
     if a <= 0 or b <= 0:
