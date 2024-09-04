@@ -163,10 +163,10 @@ def nll_grad(x, nu, loc, scale):
         dldloc = -(2*nu - 1)*sum_inv + 2*nu*mp.fsum(xloc)/scale**2
         sum_sq = mp.fsum([t**2 for t in xloc])
         dldscale = (2*nu/scale)*(-n + sum_sq/scale**2)
-        return dldnu, dldloc, dldscale
+        return -dldnu, -dldloc, -dldscale
 
 
-def _mle_nu_func(nu, scale, R):
+def _mle_nu_func(nu, R):
     # This function is used in mle() to solve log(nu) - digamma(nu) = R.
     nu = mp.mpf(nu)
     return mp.log(nu) - mp.digamma(nu) - R
@@ -226,6 +226,6 @@ def mle(x, *, nu=None, loc=None, scale=None):
             R = (stats.mean([(t/scale0)**2 for t in x]) -
                  stats.mean([2*mp.log(t/scale0) for t in x]) - 1)
         nu0 = _estimate_nu(R)
-        nu0 = mp.findroot(lambda nu: _mle_nu_func(nu, scale0, R), nu0)
+        nu0 = mp.findroot(lambda nu: _mle_nu_func(nu, R), nu0)
 
     return nu0, loc0, scale0

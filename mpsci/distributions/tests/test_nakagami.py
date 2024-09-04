@@ -3,6 +3,23 @@ from itertools import product
 import pytest
 from mpmath import mp
 from mpsci.distributions import nakagami
+from ._expect import check_entropy_with_integral
+
+
+def test_bad_params():
+    with pytest.raises(ValueError, match='nu must be positive'):
+        nakagami.pdf(1, nu=-2)
+    with pytest.raises(ValueError, match='scale must be positive'):
+        nakagami.pdf(1, nu=2, loc=0, scale=-1.5)
+
+
+def test_pdf_logpdf_out_of_support():
+    nu = 2
+    loc = 1
+    scale = 2.5
+    x = -1
+    assert nakagami.pdf(x, nu=nu, loc=loc, scale=scale) == 0
+    assert nakagami.logpdf(x, nu=nu, loc=loc, scale=scale) == mp.ninf
 
 
 # Reference values are computed with Wolfram Alpha.
@@ -45,6 +62,15 @@ def test_logpdf(x, nu, scale, ref):
     ref = mp.mpf(ref)
     p = nakagami.logpdf(x, nu, loc=0, scale=scale)
     assert mp.almosteq(p, ref)
+
+
+def test_cdf_sf_out_of_support():
+    nu = 2
+    loc = 1
+    scale = 2.5
+    x = -1
+    assert nakagami.cdf(x, nu, loc, scale) == 0
+    assert nakagami.sf(x, nu, loc, scale) == 1
 
 
 # Reference values are computed with Wolfram Alpha.
@@ -129,6 +155,24 @@ def test_var(nu, scale, ref):
     assert mp.almosteq(v, ref)
 
 
+@mp.workdps(50)
+def test_nll_grad():
+    nu = 2
+    loc = 1
+    scale = 4
+    x = [2.25, 4.0, 5.5, 6.0, 6.25]
+    grad = nakagami.nll_grad(x, nu, loc, scale)
+    with mp.extradps(5):
+        dnu = mp.diff(lambda t: nakagami.nll(x, t, loc, scale), nu)
+    assert mp.almosteq(grad[0], dnu)
+    with mp.extradps(5):
+        dloc = mp.diff(lambda t: nakagami.nll(x, nu, t, scale), loc)
+    assert mp.almosteq(grad[1], dloc)
+    with mp.extradps(5):
+        dscale = mp.diff(lambda t: nakagami.nll(x, nu, loc, t), scale)
+    assert mp.almosteq(grad[2], dscale)
+
+
 @pytest.mark.parametrize(
     'x',
     [[2, 4, 8, 16],
@@ -146,3 +190,27 @@ def test_mle(x):
         nu = nu_hat + d[0]*delta
         scale = scale_hat + d[1]*delta
         assert nll < nakagami.nll(x, nu=nu, loc=0, scale=scale)
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[2, 4, 8, 16],
+     [5.375, 4.625, 4.250, 5.125, 5.000, 5.125, 4.250, 4.500, 5.125, 5.500]]
+)
+@mp.workdps(40)
+def test_mle_scale_fixed(x):
+    # This is a crude test of nakagami.mle().
+    loc = 0.125
+    scale = 5
+    nu_hat, _, _ = nakagami.mle(x, loc=loc, scale=scale)
+    nll = nakagami.nll(x, nu=nu_hat, loc=loc, scale=scale)
+    delta = mp.sqrt(mp.eps)
+    assert nll < nakagami.nll(x, nu=nu_hat + delta, loc=loc, scale=scale)
+    assert nll < nakagami.nll(x, nu=nu_hat - delta, loc=loc, scale=scale)
+
+
+@mp.workdps(50)
+def test_entropy():
+    nu = 3
+    scale = 8
+    check_entropy_with_integral(nakagami, (nu, scale))
