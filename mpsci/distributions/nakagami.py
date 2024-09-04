@@ -20,10 +20,10 @@ infinity as x approaches 0.
 
 from mpmath import mp
 from mpsci import stats
-from ._common import _validate_x_bounds
+from ._common import _validate_x_bounds, _validate_p,  _find_bracket
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf',
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
            'support', 'mean', 'var', 'entropy',
            'nll', 'mle']
 
@@ -36,134 +36,166 @@ def _validate_params(nu, loc=0, scale=1):
     return mp.mpf(nu), mp.mpf(loc), mp.mpf(scale)
 
 
+@mp.extradps(5)
 def pdf(x, nu, loc=0, scale=1):
     """
     Probability density function for the Nakagami distribution.
     """
-    with mp.extradps(5):
-        nu, loc, scale = _validate_params(nu, loc, scale)
-        if x <= loc:
-            return mp.zero
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return (2*nu**nu * z**(2*nu - 1) * mp.exp(-nu*z**2)
-                / mp.gamma(nu) / scale)
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    if x <= loc:
+        return mp.zero
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return (2*nu**nu * z**(2*nu - 1) * mp.exp(-nu*z**2)
+            / mp.gamma(nu) / scale)
 
 
+@mp.extradps(5)
 def logpdf(x, nu, loc=0, scale=1):
     """
     Natural logarithm of the PDF of the Nakagami distribution.
     """
-    with mp.extradps(5):
-        nu, loc, scale = _validate_params(nu, loc, scale)
-        if x <= loc:
-            return mp.ninf
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return (mp.log(2) + nu*mp.log(nu) - mp.loggamma(nu)
-                + (2*nu-1)*mp.log(z) - nu*z**2 - mp.log(scale))
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    if x <= loc:
+        return mp.ninf
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return (mp.log(2) + nu*mp.log(nu) - mp.loggamma(nu)
+            + (2*nu-1)*mp.log(z) - nu*z**2 - mp.log(scale))
 
 
+@mp.extradps(5)
 def cdf(x, nu, loc=0, scale=1):
     """
     Cumulative distribution function for the Nakagami distribution.
     """
-    with mp.extradps(5):
-        nu, loc, scale = _validate_params(nu, loc, scale)
-        if x <= loc:
-            return mp.zero
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return mp.gammainc(nu, 0, nu*z**2, regularized=True)
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    if x <= loc:
+        return mp.zero
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return mp.gammainc(nu, 0, nu*z**2, regularized=True)
 
 
+@mp.extradps(5)
+def invcdf(p, nu, loc=0, scale=1):
+    """
+    Inverse of the CDF of the Nakagmi distribution.
+
+    The implementation uses a numerical root finder, so it may be slow, and
+    it may fail to converge for some inputs.
+    """
+    p = _validate_p(p)
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    with mp.extradps(mp.dps):
+        x0, x1 = _find_bracket(lambda x: cdf(x, nu, loc, scale), p, 0, mp.inf)
+        root = mp.findroot(lambda t: cdf(t, nu, loc, scale) - p, x0=(x0, x1))
+    return root
+
+
+@mp.extradps(5)
 def sf(x, nu, loc=0, scale=1):
     """
     Survival function for the Nakagami distribution.
     """
-    with mp.extradps(5):
-        nu, loc, scale = _validate_params(nu, loc, scale)
-        if x <= loc:
-            return mp.one
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return mp.gammainc(nu, nu*z**2, mp.inf, regularized=True)
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    if x <= loc:
+        return mp.one
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return mp.gammainc(nu, nu*z**2, mp.inf, regularized=True)
 
 
+@mp.extradps(5)
+def invsf(p, nu, loc=0, scale=1):
+    """
+    Inverse of the survival function of the Nakagmi distribution.
+
+    The implementation uses a numerical root finder, so it may be slow, and
+    it may fail to converge for some inputs.
+    """
+    p = _validate_p(p)
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    with mp.extradps(mp.dps):
+        x0, x1 = _find_bracket(lambda x: sf(x, nu, loc, scale), p, 0, mp.inf)
+        root = mp.findroot(lambda t: sf(t, nu, loc, scale) - p, x0=(x0, x1))
+    return root
+
+
+@mp.extradps(5)
 def support(nu, loc=0, scale=1):
     """
     Support of the Nakagami distribution.
     """
-    with mp.extradps(5):
-        nu, loc, scale = _validate_params(nu, loc, scale)
-        return (loc, mp.inf)
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    return (loc, mp.inf)
 
 
+@mp.extradps(5)
 def mean(nu, loc=0, scale=1):
     """
     Mean of the Nakagami distribution.
     """
-    with mp.extradps(5):
-        nu, loc, scale = _validate_params(nu, loc, scale)
-        gratio = mp.gammaprod([nu + 0.5], [nu])
-        mean0 = gratio / mp.sqrt(nu)
-        return loc + scale*mean0
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    gratio = mp.gammaprod([nu + 0.5], [nu])
+    mean0 = gratio / mp.sqrt(nu)
+    return loc + scale*mean0
 
 
+@mp.extradps(5)
 def var(nu, loc=0, scale=1):
     """
     Variance of the Nakagami distribution.
     """
-    with mp.extradps(5):
-        nu, loc, scale = _validate_params(nu, loc, scale)
-        gratio = mp.gammaprod([nu + 0.5], [nu])
-        var0 = 1 - gratio**2/nu
-        return scale**2 * var0
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    gratio = mp.gammaprod([nu + 0.5], [nu])
+    var0 = 1 - gratio**2/nu
+    return scale**2 * var0
 
 
+@mp.extradps(5)
 def entropy(nu, loc=0, scale=1):
     """
     Differential entropy of the Nakagami distribution.
     """
-    with mp.extradps(5):
-        nu, loc, scale = _validate_params(nu, loc, scale)
-        return ((mp.one/2 - nu)*mp.digamma(nu) - mp.log(nu)/2
-                + nu + mp.loggamma(nu) - mp.log(2) + mp.log(scale))
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    return ((mp.one/2 - nu)*mp.digamma(nu) - mp.log(nu)/2
+            + nu + mp.loggamma(nu) - mp.log(2) + mp.log(scale))
 
 
+@mp.extradps(5)
 def nll(x, nu, loc, scale):
     """
     Negative log-likelihood function for the Nakagami distribution.
     """
     n = len(x)
-    with mp.extradps(5):
-        nu, loc, scale = _validate_params(nu, loc, scale)
-        x = _validate_x_bounds(x, low=loc, strict_low=True, lowname='loc')
-        z = [(t - loc)/scale for t in x]
-        logsum = mp.fsum([mp.log(t) for t in z])
-        sqsum = mp.fsum([t**2 for t in z])
-        ll = n*(mp.log(2) + nu*mp.log(nu) - mp.loggamma(nu)
-                - mp.log(scale)) + (2*nu - 1)*logsum - nu*sqsum
-        return -ll
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    x = _validate_x_bounds(x, low=loc, strict_low=True, lowname='loc')
+    z = [(t - loc)/scale for t in x]
+    logsum = mp.fsum([mp.log(t) for t in z])
+    sqsum = mp.fsum([t**2 for t in z])
+    ll = n*(mp.log(2) + nu*mp.log(nu) - mp.loggamma(nu)
+            - mp.log(scale)) + (2*nu - 1)*logsum - nu*sqsum
+    return -ll
 
 
+@mp.extradps(5)
 def nll_grad(x, nu, loc, scale):
     """
     Gradient of the negative log-likelihood for the Nakagami distribution.
     """
     n = len(x)
-    with mp.extradps(5):
-        nu, loc, scale = _validate_params(nu, loc, scale)
-        x = _validate_x_bounds(x, low=loc, strict_low=True, lowname='loc')
-        xloc = [(t - loc) for t in x]
-        dldnu = (n*(1 + mp.log(nu) - mp.digamma(nu))
-                 + 2*mp.fsum([mp.log(t/scale) for t in xloc])
-                 - mp.fsum([t**2 for t in xloc])/scale**2)
-        sum_inv = mp.fsum([1/t for t in xloc])
-        dldloc = -(2*nu - 1)*sum_inv + 2*nu*mp.fsum(xloc)/scale**2
-        sum_sq = mp.fsum([t**2 for t in xloc])
-        dldscale = (2*nu/scale)*(-n + sum_sq/scale**2)
-        return -dldnu, -dldloc, -dldscale
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    x = _validate_x_bounds(x, low=loc, strict_low=True, lowname='loc')
+    xloc = [(t - loc) for t in x]
+    dldnu = (n*(1 + mp.log(nu) - mp.digamma(nu))
+             + 2*mp.fsum([mp.log(t/scale) for t in xloc])
+             - mp.fsum([t**2 for t in xloc])/scale**2)
+    sum_inv = mp.fsum([1/t for t in xloc])
+    dldloc = -(2*nu - 1)*sum_inv + 2*nu*mp.fsum(xloc)/scale**2
+    sum_sq = mp.fsum([t**2 for t in xloc])
+    dldscale = (2*nu/scale)*(-n + sum_sq/scale**2)
+    return -dldnu, -dldloc, -dldscale
 
 
 def _mle_nu_func(nu, R):
@@ -184,6 +216,7 @@ def _estimate_nu(R):
         return 1/(1.5*R)
 
 
+@mp.extradps(5)
 def mle(x, *, nu=None, loc=None, scale=None):
     """
     Maximum likelihood parameter estimation for the Nakagami distribution.

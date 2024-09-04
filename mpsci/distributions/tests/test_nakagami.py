@@ -94,6 +94,28 @@ def test_cdf(x, nu, scale, ref):
     assert mp.almosteq(p, ref)
 
 
+@pytest.mark.parametrize('x', [1, 4, 16])
+@mp.workdps(50)
+def test_cdf_invcdf_roundtrip(x):
+    nu = 1.5
+    loc = 0.0
+    scale = 5.0
+    p = nakagami.cdf(x, nu, loc, scale)
+    x1 = nakagami.invcdf(p, nu, loc, scale)
+    assert mp.almosteq(x1, x)
+
+
+@pytest.mark.parametrize('x', [1, 4, 16])
+@mp.workdps(50)
+def test_sf_invsf_roundtrip(x):
+    nu = 1.5
+    loc = 0.0
+    scale = 5.0
+    p = nakagami.sf(x, nu, loc, scale)
+    x1 = nakagami.invsf(p, nu, loc, scale)
+    assert mp.almosteq(x1, x)
+
+
 # Reference values are computed with Wolfram Alpha.
 # Given x, nu and scale (loc=0), the SF is
 #     1 - CDF[NakagamiDistribution[nu, scale**2], x]
