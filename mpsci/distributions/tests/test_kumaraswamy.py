@@ -170,17 +170,17 @@ def test_entropy():
      [0.43, 0.51, 0.625, 0.75, 0.875, 0.9925]]
 )
 @pytest.mark.parametrize('a', [None, Initial(1.0625)])
+@mp.workdps(40)
 def test_mle(x, a):
-    with mp.workdps(40):
-        a_hat, b_hat = kumaraswamy.mle(x, a=a)
-        nll = kumaraswamy.nll(x, a=a_hat, b=b_hat)
-        delta = 1e-9
-        n = 2
-        dirs = set(product(*([[-1, 0, 1]]*n))) - set([(0,)*n])
-        for d in dirs:
-            a = a_hat + d[0]*delta
-            b = b_hat + d[1]*delta
-            assert nll < kumaraswamy.nll(x, a=a, b=b)
+    a_hat, b_hat = kumaraswamy.mle(x, a=a)
+    nll = kumaraswamy.nll(x, a=a_hat, b=b_hat)
+    delta = 1e-9
+    n = 2
+    dirs = set(product(*([[-1, 0, 1]]*n))) - set([(0,)*n])
+    for d in dirs:
+        a = a_hat + d[0]*delta
+        b = b_hat + d[1]*delta
+        assert nll < kumaraswamy.nll(x, a=a, b=b)
 
 
 @pytest.mark.parametrize(
@@ -188,15 +188,15 @@ def test_mle(x, a):
     [[0.01, 0.05, 0.125, 0.375],
      [0.43, 0.51, 0.625, 0.75, 0.875, 0.9925]]
 )
+@mp.workdps(40)
 def test_mle_fixed_a(x):
-    with mp.workdps(40):
-        a = 1.25
-        a_hat, b_hat = kumaraswamy.mle(x, a=a)
-        assert a_hat == a
-        nll = kumaraswamy.nll(x, a=a, b=b_hat)
-        delta = 1e-9
-        assert nll < kumaraswamy.nll(x, a=a, b=b_hat + delta)
-        assert nll < kumaraswamy.nll(x, a=a, b=b_hat - delta)
+    a = 1.25
+    a_hat, b_hat = kumaraswamy.mle(x, a=a)
+    assert a_hat == a
+    nll = kumaraswamy.nll(x, a=a, b=b_hat)
+    delta = 1e-9
+    assert nll < kumaraswamy.nll(x, a=a, b=b_hat + delta)
+    assert nll < kumaraswamy.nll(x, a=a, b=b_hat - delta)
 
 
 @pytest.mark.parametrize(
@@ -205,15 +205,15 @@ def test_mle_fixed_a(x):
      [0.43, 0.51, 0.625, 0.75, 0.875, 0.9925]]
 )
 @pytest.mark.parametrize('a', [None, Initial(1.0625)])
+@mp.workdps(40)
 def test_mle_fixed_b(x, a):
-    with mp.workdps(40):
-        b = 3
-        a_hat, b_hat = kumaraswamy.mle(x, a=a, b=b)
-        assert b_hat == b
-        nll = kumaraswamy.nll(x, a=a_hat, b=b)
-        delta = 1e-9
-        assert nll < kumaraswamy.nll(x, a=a_hat + delta, b=b)
-        assert nll < kumaraswamy.nll(x, a=a_hat - delta, b=b)
+    b = 3
+    a_hat, b_hat = kumaraswamy.mle(x, a=a, b=b)
+    assert b_hat == b
+    nll = kumaraswamy.nll(x, a=a_hat, b=b)
+    delta = 1e-9
+    assert nll < kumaraswamy.nll(x, a=a_hat + delta, b=b)
+    assert nll < kumaraswamy.nll(x, a=a_hat - delta, b=b)
 
 
 def test_mle_fixed_a_and_b():

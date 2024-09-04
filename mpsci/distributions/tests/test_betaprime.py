@@ -12,14 +12,14 @@ from ._expect import (
 
 
 @pytest.mark.parametrize('scale', [1, 3])
+@mp.workdps(80)
 def test_pdf(scale):
-    with mp.workdps(80):
-        x = 3.0
-        a = 2
-        b = 3.5
-        p = betaprime.pdf(x*scale, a, b, scale=scale)*scale
-        expected = mp.mpf('189/8192')
-        assert mp.almosteq(p, expected)
+    x = 3.0
+    a = 2
+    b = 3.5
+    p = betaprime.pdf(x*scale, a, b, scale=scale)*scale
+    expected = mp.mpf('189/8192')
+    assert mp.almosteq(p, expected)
 
 
 @pytest.mark.parametrize(
@@ -33,17 +33,17 @@ def test_pdf(scale):
       '3856311738452896343983734668')]
 )
 @pytest.mark.parametrize('scale', [1, 3])
+@mp.workdps(80)
 def test_cdf_invcdf(x, a, b, p, scale):
-    with mp.workdps(80):
-        x = mp.mpf(x)
-        a = mp.mpf(a)
-        b = mp.mpf(b)
-        p = mp.mpf(p)
-        scale = mp.mpf(scale)
-        p_computed = betaprime.cdf(x*scale, a, b, scale=scale)
-        assert mp.almosteq(p_computed, p)
-        x_computed = betaprime.invcdf(p, a, b, scale=scale)/scale
-        assert mp.almosteq(x_computed, x, rel_eps=mp.mpf('1e-77'))
+    x = mp.mpf(x)
+    a = mp.mpf(a)
+    b = mp.mpf(b)
+    p = mp.mpf(p)
+    scale = mp.mpf(scale)
+    p_computed = betaprime.cdf(x*scale, a, b, scale=scale)
+    assert mp.almosteq(p_computed, p)
+    x_computed = betaprime.invcdf(p, a, b, scale=scale)/scale
+    assert mp.almosteq(x_computed, x, rel_eps=mp.mpf('1e-77'))
 
 
 @pytest.mark.parametrize(
@@ -57,58 +57,58 @@ def test_cdf_invcdf(x, a, b, p, scale):
       '61436882615471036560162653318007898')]
 )
 @pytest.mark.parametrize('scale', [1, 3])
+@mp.workdps(80)
 def test_sf(x, a, b, p, scale):
-    with mp.workdps(80):
-        x = mp.mpf(x)
-        a = mp.mpf(a)
-        b = mp.mpf(b)
-        p = mp.mpf(p)
-        scale = mp.mpf(scale)
-        p_computed = betaprime.sf(x*scale, a, b, scale=scale)
-        assert mp.almosteq(p_computed, p)
-        x_computed = betaprime.invsf(p, a, b, scale=scale)/scale
-        assert mp.almosteq(x_computed, x)
+    x = mp.mpf(x)
+    a = mp.mpf(a)
+    b = mp.mpf(b)
+    p = mp.mpf(p)
+    scale = mp.mpf(scale)
+    p_computed = betaprime.sf(x*scale, a, b, scale=scale)
+    assert mp.almosteq(p_computed, p)
+    x_computed = betaprime.invsf(p, a, b, scale=scale)/scale
+    assert mp.almosteq(x_computed, x)
 
 
 @pytest.mark.parametrize('scale', [1, 3])
+@mp.workdps(80)
 def test_mode(scale):
-    with mp.workdps(80):
-        a = 2
-        b = 3.5
-        m = betaprime.mode(a, b, scale=scale)/scale
-        expected = mp.mpf('2/9')
-        assert mp.almosteq(m, expected)
+    a = 2
+    b = 3.5
+    m = betaprime.mode(a, b, scale=scale)/scale
+    expected = mp.mpf('2/9')
+    assert mp.almosteq(m, expected)
 
 
 @pytest.mark.parametrize('scale', [1, 3])
+@mp.workdps(80)
 def test_mean(scale):
-    with mp.workdps(80):
-        a = 2
-        b = 3.5
-        m = betaprime.mean(a, b, scale=scale)/scale
-        expected = mp.mpf('0.8')
-        assert mp.almosteq(m, expected)
+    a = 2
+    b = 3.5
+    m = betaprime.mean(a, b, scale=scale)/scale
+    expected = mp.mpf('0.8')
+    assert mp.almosteq(m, expected)
 
 
 @pytest.mark.parametrize('scale', [1, 3])
+@mp.workdps(80)
 def test_var(scale):
-    with mp.workdps(80):
-        a = 2
-        b = 3.5
-        v = betaprime.var(a, b, scale=scale)/scale**2
-        expected = mp.mpf('0.96')
-        assert mp.almosteq(v, expected)
+    a = 2
+    b = 3.5
+    v = betaprime.var(a, b, scale=scale)/scale**2
+    expected = mp.mpf('0.96')
+    assert mp.almosteq(v, expected)
 
 
 @pytest.mark.parametrize('scale', [1, 3])
+@mp.workdps(80)
 def test_skewness(scale):
-    with mp.workdps(80):
-        a = 2
-        b = 3.5
-        s = betaprime.skewness(a, b, scale=scale)
-        # Skewness is independent of scale.
-        expected = 13*mp.sqrt(mp.mpf('2/3'))
-        assert mp.almosteq(s, expected)
+    a = 2
+    b = 3.5
+    s = betaprime.skewness(a, b, scale=scale)
+    # Skewness is independent of scale.
+    expected = 13*mp.sqrt(mp.mpf('2/3'))
+    assert mp.almosteq(s, expected)
 
 
 # Reference values were computed with Wolfram Alpha, e.g.
@@ -147,6 +147,7 @@ def test_kurtosis_with_integral():
      (6, 2, 7, 7)]
 )
 @pytest.mark.parametrize('scale', [1, 3])
+@mp.workdps(80)
 def test_noncentral_moment(order, a, b, ref, scale):
     moment = betaprime.noncentral_moment(order, a, b, scale=scale)
     assert mp.almosteq(moment/scale**order, mp.mpf(ref))
