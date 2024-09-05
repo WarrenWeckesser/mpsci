@@ -11,13 +11,13 @@ from ._expect import (
 
 @mp.workdps(25)
 def test_pdf_outside_support():
-    p = gamma.pdf(-10, k=0.5, theta=1)
+    p = gamma.pdf(-10, k=0.5, scale=1)
     assert p == 0
 
 
 @mp.workdps(25)
 def test_logpdf_outside_support():
-    logp = gamma.logpdf(-10, k=0.5, theta=1)
+    logp = gamma.logpdf(-10, k=0.5, scale=1)
     assert logp == mp.ninf
 
 
@@ -29,79 +29,79 @@ _cdf123str = ("0.04462491923494766609919453743282711006251725357136112381217"
 
 @mp.workdps(80)
 def test_cdf():
-    c = gamma.cdf(1, k=2, theta=3)
+    c = gamma.cdf(1, k=2, scale=3)
     expected = mp.mpf(_cdf123str)
     assert mp.almosteq(c, expected)
 
 
 @mp.workdps(25)
 def test_cdf_outside_support():
-    c = gamma.cdf(-10, k=0.5, theta=1)
+    c = gamma.cdf(-10, k=0.5, scale=1)
     assert c == 0
 
 
 @mp.workdps(80)
 def test_sf():
-    s = gamma.sf(1, k=2, theta=3)
+    s = gamma.sf(1, k=2, scale=3)
     expected = 1 - mp.mpf(_cdf123str)
     assert mp.almosteq(s, expected)
 
 
 @mp.workdps(25)
 def test_sf_outside_support():
-    c = gamma.sf(-10, k=0.5, theta=1)
+    c = gamma.sf(-10, k=0.5, scale=1)
     assert c == 1
 
 
-@pytest.mark.parametrize('x, k, theta', [(0.01, 2, 3),
+@pytest.mark.parametrize('x, k, scale', [(0.01, 2, 3),
                                          (1, 2, 3),
                                          (0.5, 1, 1),
                                          (10.0, 5, 1),
                                          (10.0, 0.015625, 1)])
 @mp.workdps(50)
-def test_cdf_invcdf_roundtrip(x, k, theta):
-    p = gamma.cdf(x, k, theta)
-    x1 = gamma.invcdf(p, k, theta)
+def test_cdf_invcdf_roundtrip(x, k, scale):
+    p = gamma.cdf(x, k, scale)
+    x1 = gamma.invcdf(p, k, scale)
     assert mp.almosteq(x1, x)
 
 
-@pytest.mark.parametrize('x, k, theta', [(0.01, 2, 3),
+@pytest.mark.parametrize('x, k, scale', [(0.01, 2, 3),
                                          (1, 2, 3),
                                          (0.5, 1, 1),
                                          (10.0, 5, 1),
                                          (10.0, 0.015625, 1)])
 @mp.workdps(50)
-def test_sf_invsf_roundtrip(x, k, theta):
-    p = gamma.sf(x, k, theta)
-    x1 = gamma.invsf(p, k, theta)
+def test_sf_invsf_roundtrip(x, k, scale):
+    p = gamma.sf(x, k, scale)
+    x1 = gamma.invsf(p, k, scale)
     assert mp.almosteq(x1, x)
 
 
 @mp.workdps(25)
 def test_variance():
     k = 2.5
-    theta = 3
-    v = gamma.var(k=k, theta=theta)
-    assert v == k*theta**2
+    scale = 3
+    v = gamma.var(k=k, scale=scale)
+    assert v == k*scale**2
 
 
 @mp.workdps(25)
 def test_skewness():
-    s = gamma.skewness(k=16, theta=3)
+    s = gamma.skewness(k=16, scale=3)
     assert s == 0.5
 
 
 @mp.workdps(25)
 def test_kurtosis():
-    k = gamma.kurtosis(k=16, theta=3)
+    k = gamma.kurtosis(k=16, scale=3)
     assert k == 3/8
 
 
 @pytest.mark.parametrize('k', [0.25, 16])
 @mp.workdps(25)
 def test_entropy_with_integral(k):
-    theta = 4.0
-    check_entropy_with_integral(gamma, (k, theta), extradps=100)
+    scale = 4.0
+    check_entropy_with_integral(gamma, (k, scale), extradps=100)
 
 
 @mp.workdps(80)
@@ -150,29 +150,29 @@ def test_interval_prob_close_cdf_values():
 @mp.workdps(80)
 def test_noncentral_moment():
     k = 2.5
-    theta = 3.5
+    scale = 3.5
 
-    m0 = gamma.noncentral_moment(0, k, theta)
+    m0 = gamma.noncentral_moment(0, k, scale)
     assert m0 == 1
 
-    m1 = gamma.noncentral_moment(1, k, theta)
-    assert m1 == gamma.mean(k, theta)
+    m1 = gamma.noncentral_moment(1, k, scale)
+    assert m1 == gamma.mean(k, scale)
 
-    m2 = gamma.noncentral_moment(2, k, theta)
-    expected_m2 = noncentral_moment_with_integral(2, gamma, (k, theta))
+    m2 = gamma.noncentral_moment(2, k, scale)
+    expected_m2 = noncentral_moment_with_integral(2, gamma, (k, scale))
     assert mp.almosteq(m2, expected_m2)
 
-    m3 = gamma.noncentral_moment(3, k, theta)
-    expected_m3 = noncentral_moment_with_integral(3, gamma, (k, theta))
+    m3 = gamma.noncentral_moment(3, k, scale)
+    expected_m3 = noncentral_moment_with_integral(3, gamma, (k, scale))
     assert mp.almosteq(m3, expected_m3)
 
 
 @mp.workdps(25)
 def test_mom():
     x = [1, 2, 3, 4]
-    k, theta = gamma.mom(x)
+    k, scale = gamma.mom(x)
     assert k == mp.mpf(5)
-    assert theta == mp.mpf('0.5')
+    assert scale == mp.mpf('0.5')
 
 
 @pytest.mark.parametrize(
