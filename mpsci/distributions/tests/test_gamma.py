@@ -187,6 +187,32 @@ def test_mle(x):
     call_and_check_mle(gamma.mle, gamma.nll, x)
 
 
+@pytest.mark.parametrize(
+    'x',
+    [[2, 4, 8, 16],
+     [63.0, 29.5, 53.0, 32.5, 22.0, 38.5, 24.5, 28.5, 23.5, 45.0, 64.5,
+      13.0, 21.5, 40.0, 48.0, 22.0, 15.0, 47.5, 48.0, 26.5, 33.0, 21.0,
+      28.0, 23.5, 16.0, 39.5, 38.5, 43.5, 23.0, 22.5, 33.5, 92.0, 44.5]]
+)
+@mp.workdps(50)
+def test_mle_fixed_scale(x):
+    call_and_check_mle(lambda x: gamma.mle(x, scale=2)[0],
+                       lambda x, k: gamma.nll(x, k, scale=2), x)
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[2, 4, 8, 16],
+     [63.0, 29.5, 53.0, 32.5, 22.0, 38.5, 24.5, 28.5, 23.5, 45.0, 64.5,
+      13.0, 21.5, 40.0, 48.0, 22.0, 15.0, 47.5, 48.0, 26.5, 33.0, 21.0,
+      28.0, 23.5, 16.0, 39.5, 38.5, 43.5, 23.0, 22.5, 33.5, 92.0, 44.5]]
+)
+@mp.workdps(50)
+def test_mle_fixed_k(x):
+    call_and_check_mle(lambda x: gamma.mle(x, k=5)[1],
+                       lambda x, scale: gamma.nll(x, k=5, scale=scale), x)
+
+
 def test_nll_bad_x():
     with pytest.raises(ValueError, match='All values in x'):
         gamma.nll([1, 3, -1.5, 2], 2, 3)
