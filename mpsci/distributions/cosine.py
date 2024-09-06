@@ -26,7 +26,7 @@ def pdf(x):
 
     on the interval (-pi, pi) and zero elsewhere.
     """
-    with mp.extradps(5):
+    with mp.extradps((mp.dps + 1)//2):
         x = mp.mpf(x)
         if x <= -mp.pi or x >= mp.pi:
             return mp.zero
@@ -56,7 +56,7 @@ def logpdf(x):
 
     on the interval (-pi, pi) and zero elsewhere.
     """
-    with mp.extradps(5):
+    with mp.extradps((mp.dps + 1)//2):
         if x <= -mp.pi or x >= mp.pi:
             return -mp.inf
         return mp.log1p(mp.cos(x)) - mp.log(2*mp.pi)
