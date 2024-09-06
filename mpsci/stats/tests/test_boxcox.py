@@ -50,7 +50,7 @@ def test_boxcox1p_lmbda0():
     assert mp.almosteq(y, mp.log1p(x))
 
 
-@pytest.mark.parametrize('lmbda', [2.5, -0.5])
+@pytest.mark.parametrize('lmbda', [0, 2.5, -0.5])
 @mp.workdps(40)
 def test_boxcox_inv_boxcox_roundtrip(lmbda):
     x = mp.mpf('0.125')
@@ -60,7 +60,7 @@ def test_boxcox_inv_boxcox_roundtrip(lmbda):
     assert mp.almosteq(x2, x)
 
 
-@pytest.mark.parametrize('lmbda', [2.5, -0.5])
+@pytest.mark.parametrize('lmbda', [0, 2.5, -0.5])
 @mp.workdps(40)
 def test_boxcox1p_inv_boxcox1p_roundtrip(lmbda):
     x = mp.mpf('0.125')
