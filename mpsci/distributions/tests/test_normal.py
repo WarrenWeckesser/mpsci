@@ -2,6 +2,14 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import normal
+from ._utils import call_and_check_mle
+
+
+def test_support():
+    mu = 13.0
+    scale = 5.0
+    sup = normal.support(mu, scale)
+    assert sup == (mp.ninf, mp.inf)
 
 
 # Expected values were computed with Wolfram Alpha.
@@ -50,3 +58,13 @@ def test_entropy():
         sigma = 1/mp.sqrt(2*mp.pi)
         entr = normal.entropy(mu, sigma)
         assert mp.almosteq(entr, 0.5)
+
+
+@pytest.mark.parametrize(
+    'x',
+    [[2, 4, 8, 16],
+     [-99, -75, -37.5, -30.5, -30.0, -21.0, -6.0, 2.5]]
+)
+@mp.workdps(50)
+def test_mle(x):
+    call_and_check_mle(normal.mle, normal.nll, x)
