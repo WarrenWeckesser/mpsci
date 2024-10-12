@@ -11,7 +11,7 @@ def test_odds_ratio_with_scipy():
     table = [[10, 11], [37, 8]]
     result = odds_ratio(table)
     # Reference value computed with scipy.stats.contingency.odds_ratio.
-    assert round(result.odds_ratio, 4) == 0.2024
+    assert mp.almosteq(round(result.odds_ratio, 4), 0.2024)
 
 
 @mp.workdps(40)
