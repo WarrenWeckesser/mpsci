@@ -1,4 +1,4 @@
-
+import math
 from mpmath import mp
 from mpsci.stats import odds_ratio
 
@@ -11,7 +11,7 @@ def test_odds_ratio_with_scipy():
     table = [[10, 11], [37, 8]]
     result = odds_ratio(table)
     # Reference value computed with scipy.stats.contingency.odds_ratio.
-    assert mp.almosteq(round(result.odds_ratio, 4), 0.2024)
+    assert math.isclose(float(round(result.odds_ratio, 4)), 0.2024, rel_tol=5e-5)
 
 
 @mp.workdps(40)
