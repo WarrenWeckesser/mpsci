@@ -176,11 +176,26 @@ def test_mle(x, c0, d0, scale0):
     check_mle(burr12.nll, x, p_hat)
 
 
-def test_mle_c_fixed():
-    x = [1, 1, 2, 3, 5, 8, 13, 21]
-    c = 1.5
-    d0 = 1.125
-    scale0 = 4.5
+@pytest.mark.parametrize(
+    'x, c, d0, scale0',
+    [([1, 1, 2, 3, 5, 8, 13, 21],
+      1.5, 1.125, 4.5),
+     ([5.00, 2.25, 2.75, 0.25, 3.50, 1.00, 6.00, 3.75,
+       4.75, 2.75, 12.0, 5.50, 7.00, 3.50, 2.75, 1.50],
+      2, 5, 10),
+     ([5.25, 0.625, 1.25, 0.625, 0.375, 25.0, 24.125, 0.125,
+       0.25, 0.375, 3.375, 600.125, 2.125, 5.125, 2.25, 44.375,
+       0.25, 0.5, 0.75, 1.125, 4.875, 20.125, 0.875, 0.125],
+      0.75, 1.0, 2.0),
+     ([18.2500, 16.5625, 19.6250, 18.3125, 17.8125,
+       16.5000, 18.0000, 19.1875, 18.9375, 14.8750,
+       16.2500, 19.1875, 17.2500, 17.7500, 19.2500,
+       18.6250, 20.2500, 17.4375, 14.8750, 18.0000,
+       14.8125, 15.2500, 20.0625, 18.0000, 16.1250],
+      16, 5, 20)]
+)
+@mp.workdps(50)
+def test_mle_c_fixed(x, c, d0, scale0):
     p_hat = burr12.mle(x, c=c, d=Initial(d0), scale=Initial(scale0))
     check_mle(lambda x, d, scale: burr12.nll(x, c, d, scale), x, p_hat[1:])
 
@@ -193,6 +208,7 @@ def test_mle_c_fixed():
        4.46739790e-82, 9.63256794e-61, 3.11272713e-94, 4.01509576e-66],
       0.03125, 200)]
 )
+@mp.workdps(50)
 def test_mle_c_and_d_fixed(x, c, d):
     p_hat = burr12.mle(x, c=c, d=d)
     check_mle(lambda x, scale: burr12.nll(x, c, d, scale), x, p_hat[2:])
@@ -205,6 +221,7 @@ def test_mle_c_and_d_fixed(x, c, d):
        0.056, 0.251, 0.074, 0.011, 0.126, 0.578, 0.263, 0.555, 0.260],
       20, 5)]
 )
+@mp.workdps(50)
 def test_mle_d_and_scale_fixed(x, d, scale):
     p_hat = burr12.mle(x, d=d, scale=scale)
     check_mle(lambda x, c: burr12.nll(x, c, d, scale), x, p_hat[:1])
@@ -217,6 +234,7 @@ def test_mle_d_and_scale_fixed(x, d, scale):
        1.108, 0.134, 0.005, 2.136, 0.075, 0.253], 5),
      ([2.200, 9.368, 6.731, 4.264, 4.629, 4.355, 5.841, 2.551, 3.809], 0.125)]
 )
+@mp.workdps(50)
 def test_mle_scale_fixed(x, scale):
     p_hat = burr12.mle(x, scale=scale)
     check_mle(lambda x, c, d: burr12.nll(x, c, d, scale), x, p_hat[:2])
@@ -229,6 +247,7 @@ def test_mle_scale_fixed(x, scale):
      ([12.5, 18.75, 6.25, 125.0, 37.5],
       0.125, 6.2, 6.5)]
 )
+@mp.workdps(50)
 def test_mle_d_fixed(x, d, c0, scale0):
     p_hat = burr12.mle(x, c=Initial(c0), d=d, scale=Initial(scale0))
     check_mle(lambda x, c, scale: burr12.nll(x, c, d, scale), x,

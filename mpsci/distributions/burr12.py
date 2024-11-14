@@ -210,12 +210,20 @@ def _mle_c_d_scale(x, c0=1, d0=1, scale0=1):
 
 
 def _mle_d_scale(x, c, d0=1, scale0=1):
+    # Equations with fixed c.
+    n = len(x)
 
-    def _first_order_eqs(d, scale):
-        return _nll_grad(x, c, d, scale)[1:]
+    def _eq_scale(scale):
+        z = [t/scale for t in x]
+        zc = [t**c for t in z]
+        s1 = n/mp.fsum([mp.log1p(t) for t in zc])
+        s2 = mp.fsum([t/(1 + t) for t in zc])/n
+        return 1 - (s1 + 1)*s2
 
-    d, scale = mp.findroot(_first_order_eqs, [d0, scale0])
-    return d, scale
+    scale = mp.findroot(_eq_scale, [scale0])
+    zc = [(t/scale)**c for t in x]
+    s1 = mp.fsum([mp.log1p(t) for t in zc])
+    return n/s1, scale
 
 
 def _mle_c_scale(x, d, c0=1, scale0=1):
