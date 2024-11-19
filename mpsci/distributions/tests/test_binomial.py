@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import binomial
+from mpsci.stats import mean
 
 
 @mp.workdps(50)
@@ -55,3 +56,31 @@ def test_var():
     n = 5
     p = mp.one/4
     assert binomial.var(n, p) == n*p*(1 - p)
+
+
+@pytest.mark.parametrize(
+    'xvals, xcounts',
+    [([0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 4], None),
+     ([10, 11, 12, 13, 15, 16], [4, 7, 7, 11, 2, 1]),
+     ([4, 5, 6, 7, 8, 9, 10, 11, 12, 13], [1, 2, 8, 5, 3, 7, 1, 3, 1, 1])]
+)
+@mp.workdps(50)
+def test_mle_basic(xvals, xcounts):
+    nhat, phat = binomial.mle(xvals, counts=xcounts)
+    m = mean(xvals, weights=xcounts)
+    assert mp.almosteq(phat, m/nhat)
+    nllhat = binomial.nll(xvals, nhat, phat, counts=xcounts)
+    mx = max(xvals)
+    for n1 in range(mx, int(nhat) + 5):
+        if n1 != nhat:
+            _, p1 = binomial.mle(xvals, n=n1, counts=xcounts)
+            nll1 = binomial.nll(xvals, n1, p1, counts=xcounts)
+            assert nll1 > nllhat
+
+
+@mp.workdps(50)
+def test_mle_n_fixed():
+    x = [0, 0, 1, 1, 1, 1, 2, 4]
+    nhat, phat = binomial.mle(x, n=5)
+    assert nhat == 5
+    assert mp.almosteq(phat, mean(x)/nhat)
