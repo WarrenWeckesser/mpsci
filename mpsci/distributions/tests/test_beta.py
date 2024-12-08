@@ -2,7 +2,7 @@ from itertools import product
 import pytest
 from mpmath import mp
 from mpsci.stats import mean, var
-from mpsci.distributions import beta
+from mpsci.distributions import beta, Initial
 from ._expect import check_entropy_with_integral
 
 
@@ -206,10 +206,14 @@ def test_mle_trivial_case():
     assert (ahat, bhat) == (a, b)
 
 
+@pytest.mark.parametrize('init_a', [False, True])
+@pytest.mark.parametrize('init_b', [False, True])
 @mp.workdps(50)
-def test_mle():
+def test_mle(init_a, init_b):
     x = [0.25, 0.5, 0.625, 0.875]
-    ahat, bhat = beta.mle(x)
+    a = Initial(2.5) if init_a else None
+    b = Initial(2.0) if init_b else None
+    ahat, bhat = beta.mle(x, a=a, b=b)
 
     N = len(x)
 
@@ -242,11 +246,13 @@ def test_mle_minimizes_nll(x):
             assert nll < beta.nll(x, a=a, b=b)
 
 
+@pytest.mark.parametrize('init_a', [False, True])
 @mp.workdps(50)
-def test_mle_b_fixed():
+def test_mle_b_fixed(init_a):
     b = mp.mpf('1.25')
     x = [0.25, 0.5, 0.625, 0.875]
-    ahat, bhat = beta.mle(x, b=b)
+    a = Initial(1.75) if init_a else None
+    ahat, bhat = beta.mle(x, a=a, b=b)
     assert bhat == b  # because b was fixed.
 
     N = len(x)
@@ -256,11 +262,13 @@ def test_mle_b_fixed():
     assert mp.almosteq(ca, 0)
 
 
+@pytest.mark.parametrize('init_b', [False, True])
 @mp.workdps(50)
-def test_mle_a_fixed():
+def test_mle_a_fixed(init_b):
     a = mp.mpf('2.75')
     x = [0.25, 0.5, 0.625, 0.875]
-    ahat, bhat = beta.mle(x, a=a)
+    b = Initial(2.0) if init_b else None
+    ahat, bhat = beta.mle(x, a=a, b=b)
     assert ahat == a  # because a was fixed.
 
     N = len(x)

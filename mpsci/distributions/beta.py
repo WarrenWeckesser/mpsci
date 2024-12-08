@@ -8,7 +8,7 @@ This is the "standard" beta distribution, with shape parameters
 
 from mpmath import mp
 from ._common import (_validate_p, _validate_moment_n, _validate_x_bounds,
-                      _find_bracket)
+                      _find_bracket, isfixed)
 from .. import fun as _fun
 from ..stats import mean as _mean, var as _var
 
@@ -231,35 +231,59 @@ def mle(x, *, a=None, b=None):
     x = _validate_x_bounds(x, low=0, high=1, strict_low=True, strict_high=True)
     n = len(x)
     xbar = _mean(x)
+    a_is_fixed = isfixed(a)
+    if a_is_fixed:
+        if a <= 0:
+            raise ValueError('a must be greater than 0')
+        else:
+            a = mp.mpf(a)
+    b_is_fixed = isfixed(b)
+    if b_is_fixed:
+        if b <= 0:
+            raise ValueError('b must be greater than 0')
+        else:
+            b = mp.mpf(b)
 
-    if a is None and b is None:
+    if not a_is_fixed and not b_is_fixed:
         # Fit both parameters
         s1 = mp.fsum(mp.log(t) for t in x)
         s2 = mp.fsum(mp.log1p(-t) for t in x)
         fac = xbar * (mp.one - xbar) / _var(x) - 1
-        a0 = xbar * fac
-        b0 = (mp.one - xbar) * fac
+        if a is None:
+            a0 = xbar * fac
+        else:
+            # a must be an instance of Initial.
+            a0 = a.initial
+        if b is None:
+            b0 = (mp.one - xbar) * fac
+        else:
+            # b must be an instance of Initial.
+            b0 = b.initial
         a1, b1 = mp.findroot([lambda a, b: _beta_mle_func(a, b, n, s1),
                               lambda a, b: _beta_mle_func(b, a, n, s2)],
                              [a0, b0])
         return a1, b1
 
-    if a is not None and b is not None:
+    if a_is_fixed and b_is_fixed:
         return a, b
 
     swap = False
-    if b is None:
+    if a_is_fixed:
         swap = True
-        b = a
+        b, a = a, b
         x = [mp.one - t for t in x]
         xbar = mp.one - xbar
 
     # Fit the a parameter, with b given.
     s1 = mp.fsum(mp.log(t) for t in x)
-    p0 = b * xbar / (mp.one - xbar)
+    if a is None:
+        p0 = b * xbar / (mp.one - xbar)
+    else:
+        # a must be an instance of Initial.
+        p0 = a.initial
     p1 = mp.findroot(lambda a: _beta_mle_func(a, b, n, s1), p0)
     if swap:
-        return a, p1
+        return b, p1
     else:
         return p1, b
 
