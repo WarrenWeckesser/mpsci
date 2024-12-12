@@ -190,6 +190,18 @@ def mle(x, *, counts=None, n=None, p=None):
     When the parameter `n` is not fixed, the robustness of the numerical
     solution depends on the input data `x`.  For some `x`, the solver is
     likely to fail.
+
+    Examples
+    --------
+    >>> from mpmath import mp
+    >>> from mpsci.distributions import binomial
+
+    >>> mp.dps = 50
+    >>> x = [7, 9, 10, 10, 11, 12, 12, 13, 13, 14, 15, 15]
+    >>> n, p = binomial.mle(x, n=16)
+    >>> p
+    mpf('0.734375')
+
     """
     with mp.extradps(5):
         all_int = all([int(xi) == xi for xi in x])
