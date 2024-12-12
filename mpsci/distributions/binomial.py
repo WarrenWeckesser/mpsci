@@ -47,7 +47,9 @@ def support(n, p):
     --------
     >>> from mpsci.distributions import binomial
     >>> sup = binomial.support(5, 0.25)
-    >>> [k for k in sup]
+    >>> sup
+    range(0, 6)
+    >>> list(sup)
     [0, 1, 2, 3, 4, 5]
 
     """
