@@ -29,7 +29,7 @@ See
 """
 import re
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_x_bounds
 
 
 # module docstring substitution
@@ -70,7 +70,8 @@ _docstring_re_subs = [
 __all__ = ['support', 'pdf', 'logpdf',
            'cdf', 'logcdf', 'invcdf',
            'sf', 'logsf', 'invsf',
-           'median', 'mean', 'var']
+           'median', 'mean', 'var',
+           'nll']
 
 
 def _validate_positive(param, name):
@@ -240,3 +241,16 @@ def var(alpha, beta, scale):
     s = mp.sqrt(2*beta)
     g = scale*mp.sqrt(1 + 2*h_neg1((alpha - 2)/s)/s)
     return (g - mu)*(g + mu)
+
+
+@mp.extradps(5)
+def nll(x, alpha, beta, scale):
+    """
+    Negative log-likelihood for the Benini distribution.
+
+    `x` must be a sequence of numbers, each greater than `scale`.
+    """
+    with mp.extradps(5):
+        alpha, beta, scale = _validate_params(alpha, beta, scale)
+        x = _validate_x_bounds(x, low=scale, high=mp.inf)
+        return -mp.fsum([logpdf(xi, alpha, beta, scale) for xi in x])

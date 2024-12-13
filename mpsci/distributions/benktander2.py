@@ -4,11 +4,11 @@ Benktander II Distribution
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_x_bounds
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'mean', 'var']
+           'support', 'mean', 'var', 'nll']
 
 
 def _validate_ab(a, b):
@@ -148,3 +148,16 @@ def var(a, b):
         a, b = _validate_ab(a, b)
         r = a/b
         return (-b + 2*a*mp.exp(r)*mp.expint(1 - 1/b, r))/(a**2*b)
+
+
+def nll(x, a, b):
+    """
+    Negative log-likelihood function for the Benktander II distribution.
+
+    `x` must be a sequence of numbers with values greater than or equal
+    to 1.
+    """
+    with mp.extradps(5):
+        x = _validate_x_bounds(x, low=1)
+        a, b = _validate_ab(a, b)
+        return -mp.fsum([logpdf(t, a, b) for t in x])
