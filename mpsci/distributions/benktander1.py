@@ -9,7 +9,7 @@ from ._common import _validate_p, _validate_x_bounds, Initial
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'mean', 'var', 'nll']
+           'support', 'mean', 'var', 'nll', 'mle']
 
 
 def _validate_ab(a, b):
