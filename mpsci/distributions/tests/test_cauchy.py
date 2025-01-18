@@ -35,6 +35,21 @@ def test_cdf_sf():
     assert mp.almosteq(sf, ref)
 
 
+@mp.workdps(50)
+def test_cdf_sf_loc_scale():
+    x = -5
+    loc = 2
+    scale = 3
+    # From Wolfram Alpha:
+    #     CDF[CauchyDistribution[2, 3], -5]
+    refstr = '0.12888105840915660127641741062809075240185901518718912203506216'
+    ref = mp.mpf(refstr)
+    cdf = cauchy.cdf(x, loc=loc, scale=scale)
+    assert mp.almosteq(cdf, ref)
+    sf = cauchy.sf(2*loc - x, loc=loc, scale=scale)
+    assert mp.almosteq(sf, ref)
+
+
 # First reference value from Wolfram Alpha:
 # InverseCDF[CauchyDistribution[0, 1], 4503617641769005/9007199254740992]
 @pytest.mark.parametrize(

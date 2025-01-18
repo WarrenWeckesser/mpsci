@@ -45,7 +45,7 @@ def cdf(x, loc=0, scale=1):
         x = mp.mpf(x)
         loc, scale = _validate_loc_scale(loc, scale)
         z = (x - loc)/scale
-        return -mp.atan2(-scale, loc - z)/mp.pi
+        return mp.atan2(1, -z)/mp.pi
 
 
 def invcdf(p, loc=0, scale=1):
@@ -62,7 +62,7 @@ def sf(x, loc=0, scale=1):
         x = mp.mpf(x)
         loc, scale = _validate_loc_scale(loc, scale)
         z = (x - loc)/scale
-        return -mp.atan2(-scale, z - loc)/mp.pi
+        return mp.atan2(1, z)/mp.pi
 
 
 def invsf(p, loc=0, scale=1):
