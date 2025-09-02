@@ -1,3 +1,4 @@
+import pytest
 from mpmath import mp
 from mpsci.stats import mean, var, std, variation, gmean, hmean, pmean
 
@@ -73,10 +74,18 @@ def test_hmean():
 @mp.workdps(50)
 def test_pmean():
     with mp.extraprec(16):
-        assert mp.almosteq(pmean([3, 4, 5], 3), 72**mp.mpf('1/3'))
-        assert mp.almosteq(pmean([2, 2, 1], -2), mp.sqrt(2))
-        assert pmean([4, 2, 5, 3], mp.inf) == 5
-        assert pmean([4, 2, 5, 3], -mp.inf) == 2
+        assert mp.almosteq(pmean([3, 4, 5], p=3), 72**mp.mpf('1/3'))
+        assert mp.almosteq(pmean([2, 2, 1], p=-2), mp.sqrt(2))
+        assert pmean([4, 2, 5, 3], p=mp.inf) == 5
+        assert pmean([4, 2, 5, 3], p=-mp.inf) == 2
+
+
+@mp.workdps(50)
+@pytest.mark.parametrize('p', [-2.5, -1, 0, 0.5, 1, 1.75])
+def test_pmean_trivial_weights(p):
+    x = [3, 4, 10, 1, 1, 25]
+    assert mp.almosteq(pmean(x, p=p),
+                       pmean(x, p=p, weights=[5]*len(x)))
 
 
 @mp.workdps(50)

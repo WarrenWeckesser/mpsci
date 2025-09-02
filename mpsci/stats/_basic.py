@@ -105,7 +105,7 @@ def variation(x, ddof=1):
         return s / m
 
 
-def gmean(x, weights=None):
+def gmean(x, *, weights=None):
     """
     Geometric mean of the values in the sequence x.
 
@@ -131,7 +131,7 @@ def gmean(x, weights=None):
             return mp.exp(wlogxsum / wsum)
 
 
-def hmean(x):
+def hmean(x, *, weights=None):
     """
     Harmonic mean of the values in the sequence x.
 
@@ -154,6 +154,9 @@ def hmean(x):
 
     >>> hmean([1, 3, 3])
     mpf('1.8')
+
+    >>> hmean([1, 3, 3], weights=[5, 1, 2])
+    mpf('1.333333333333333333333333333')
 
     >>> hmean([10, 3, -2])
     mpf('-45.0')
@@ -188,7 +191,7 @@ def hmean(x):
         return mp.zero
     mixed_signs = npos > 0 and nneg > 0
     with mp.extraprec(16):
-        m = mean([1/mp.mpf(t) for t in x])
+        m = mean([1/mp.mpf(t) for t in x], weights=weights)
         if m == 0:
             if mixed_signs:
                 return mp.nan
@@ -200,17 +203,17 @@ def hmean(x):
             return 1 / m
 
 
-def pmean(x, p):
+def pmean(x, *, p, weights=None):
     """
     Power (or generalized) mean of the values in the sequence x.
     """
     # Special cases
     if p == 0:
-        return gmean(x)
+        return gmean(x, weights=weights)
     elif p == 1:
-        return mean(x)
+        return mean(x, weights=weights)
     elif p == -1:
-        return hmean(x)
+        return hmean(x, weights=weights)
     elif mp.isinf(p):
         with mp.extraprec(16):
             if p > 0:
@@ -220,7 +223,7 @@ def pmean(x, p):
 
     with mp.extraprec(16):
         p = mp.mpf(p)
-        return mp.power(mean([mp.mpf(t)**p for t in x]), 1/p)
+        return mp.power(mean([mp.mpf(t)**p for t in x], weights=weights), 1/p)
 
 
 def unique_counts(x):
