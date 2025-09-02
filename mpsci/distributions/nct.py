@@ -8,11 +8,15 @@ noncentrality `nc`) are implemented.
 """
 
 from functools import lru_cache
+import mpmath
 from mpmath import mp
 from ._common import _validate_moment_n
 
 
 __all__ = ['pdf', 'logpdf', 'support', 'mean', 'var', 'noncentral_moment']
+
+
+_mpmath_major_minor = tuple(int(v) for v in mpmath.__version__.split('.')[:2])
 
 
 def pdf(x, df, nc):
@@ -156,7 +160,11 @@ def noncentral_moment(n, df, nc):
         if df <= n:
             return mp.nan
         c = _poly_coeffs(n)
+        if _mpmath_major_minor < (1, 4):
+            pval = mp.polyval(c[::-1], nc)
+        else:
+            pval = mp.polyval(c, nc, asc=True)
         return (mp.exp((n/2)*mp.log(df/2)
                        + mp.loggamma((df - n)/2)
                        - mp.loggamma(df/2))
-                * mp.polyval(c[::-1], nc))
+                * pval)
