@@ -302,11 +302,11 @@ def mle(x, *, k=None, loc=None, scale=None):
             # Solve for k and scale.
             # TO DO: Is there a better guess for k than 1?
             k_hat = mp.findroot(lambda k: _mle_k_eqn1(k, x), 1.0)
-            scale_hat = pmean(x, k_hat)
+            scale_hat = pmean(x, p=k_hat)
         elif k is not None and scale is None:
             # Solve for scale.
             k_hat = mp.mpf(k)
-            scale_hat = pmean(x, k_hat)
+            scale_hat = pmean(x, p=k_hat)
         elif k is None and scale is not None:
             # Solve for k only.
             scale_hat = mp.mpf(scale)
