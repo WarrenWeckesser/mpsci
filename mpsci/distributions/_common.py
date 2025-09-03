@@ -33,6 +33,15 @@ def _validate_p(p):
     return mp.mpf(p)
 
 
+def _validate_k(k):
+    """
+    Verify that the value of k is integral, and return int(k).
+    """
+    if k != int(k):
+        raise ValueError('k must be an integer')
+    return int(k)
+
+
 def _validate_moment_n(n):
     try:
         n = operator.index(n)
