@@ -141,3 +141,12 @@ def var(lam, n):
             return (mp.mpf(n)**2 - 1)/12
         nlam = n*lam
         return mp.exp(-lam)/mp.expm1(-lam)**2 - n**2 * mp.exp(-nlam)/mp.expm1(-nlam)**2
+
+
+def entropy(lam, n):
+    """
+    Entropy of the truncated discrete exponential distribution.
+    """
+    with mp.extradps(5):
+        lam, n = _validate_params(lam, n)
+        return -logpmf(0, lam, n) + lam * mean(lam, n)

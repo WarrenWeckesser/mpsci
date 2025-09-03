@@ -34,3 +34,13 @@ def test_var(lam, n):
     computed_v = mp.fsum([(k - m)**2*trunc_discrete_exp.pmf(k, lam, n)
                           for k in trunc_discrete_exp.support(lam, n)])
     assert mp.almosteq(v, computed_v)
+
+
+@pytest.mark.parametrize('lam, n', [(0.25, 63), (0.001, 3000), (0, 5)])
+@mp.workdps(50)
+def test_entropy(lam, n):
+    h = trunc_discrete_exp.entropy(lam, n)
+    pmf = [trunc_discrete_exp.pmf(k, lam, n)
+           for k in trunc_discrete_exp.support(lam, n)]
+    computed_h = -mp.fsum([mp.log(p)*p for p in pmf])
+    assert mp.almosteq(h, computed_h)
