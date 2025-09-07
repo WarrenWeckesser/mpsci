@@ -17,7 +17,7 @@ The distribution is uniform if `lam` == 0.
 
 from mpmath import mp
 from ..fun import logbinomial, logbeta
-from ._common import _validate_x_bounds, Initial, _validate_counts, _validate_k
+from ._common import _validate_x_bounds, Initial, _validate_counts, _validate_int
 
 
 __all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf',
@@ -59,7 +59,7 @@ def logpmf(k, lam, n):
     """
     Logarithm of PMF of the truncated discrete exponential distribution.
     """
-    k = _validate_k(k)
+    k = _validate_int(k)
     with mp.extradps(5):
         lam, n = _validate_params(lam, n)
         if k < 0:
@@ -75,7 +75,7 @@ def pmf(k, lam, n):
     """
     Probability mass function of the truncated discrete exponential distribution.
     """
-    k = _validate_k(k)
+    k = _validate_int(k)
     with mp.extradps(5):
         lam, n = _validate_params(lam, n)
         if k < 0:
@@ -91,7 +91,7 @@ def cdf(k, lam, n):
     """
     Cumulative distribution function of the truncated discrete exponential distribution.
     """
-    k = _validate_k(k)
+    k = _validate_int(k)
     with mp.extradps(5):
         lam, n = _validate_params(lam, n)
         if k < 0:
@@ -107,7 +107,7 @@ def sf(k, lam, n):
     """
     Survival function of the truncated discrete exponential distribution.
     """
-    k = _validate_k(k)
+    k = _validate_int(k)
     with mp.extradps(5):
         lam, n = _validate_params(lam, n)
         if k < 0:

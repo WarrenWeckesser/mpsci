@@ -33,7 +33,7 @@ def _validate_p(p):
     return mp.mpf(p)
 
 
-def _validate_k(k):
+def _validate_int(k):
     """
     Verify that the value of k is integral, and return int(k).
     """

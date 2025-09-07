@@ -13,7 +13,7 @@ import itertools
 from mpmath import mp
 from ..fun import logbinomial, xlogy, xlog1py
 from ..stats import mean as _mean
-from ._common import Initial, _validate_counts
+from ._common import Initial, _validate_counts, _validate_int
 
 
 __all__ = ['support', 'pmf', 'logpmf', 'sf', 'cdf', 'mean', 'var',
@@ -52,13 +52,6 @@ def support(r, p):
     return itertools.count(start=0)
 
 
-def _validate_k(k):
-    k = mp.mpf(k)
-    if k != int(k):
-        raise ValueError('k must be an integer')
-    return k
-
-
 def _validate_x(x):
     y = []
     for xi in x:
@@ -84,7 +77,7 @@ def logpmf(k, r, p):
     """
     with mp.extradps(5):
         r, p = _validate_params(r, p)
-        k = _validate_k(k)
+        k = _validate_int(k)
         if k < 0:
             return mp.ninf
         return logbinomial(k + r - 1, k) + xlog1py(r, -p) + xlogy(k, p)
@@ -117,7 +110,7 @@ def sf(k, r, p):
     """
     with mp.extradps(5):
         r, p = _validate_params(r, p)
-        k = _validate_k(k)
+        k = _validate_int(k)
         if k < 0:
             return mp.one
         return mp.betainc(k + 1, r, 0, p, regularized=True)
@@ -136,7 +129,7 @@ def cdf(k, r, p):
     """
     with mp.extradps(5):
         r, p = _validate_params(r, p)
-        k = _validate_k(k)
+        k = _validate_int(k)
         if k < 0:
             return mp.zero
         return mp.betainc(k + 1, r, p, 1, regularized=True)
