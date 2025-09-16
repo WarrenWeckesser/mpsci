@@ -1,5 +1,6 @@
 from mpmath import mp
 from mpsci.distributions import chi2
+import pytest
 
 
 @mp.workdps(50)
@@ -54,6 +55,18 @@ def test_basic_cdf():
     assert mp.almosteq(chi2.cdf(50, 25/2), expected)
 
 
+@pytest.mark.parametrize('p, k', [('0.125', '27'),
+                                  ('0.975', '13.5'),
+                                  ('0.5', '8.75'),
+                                  ('1e-12', '98')])
+@mp.workdps(50)
+def test_invcdf_cdf_roundtrip(p, k):
+    p = mp.mpf(p)
+    k = mp.mpf(k)
+    x = chi2.invcdf(p, k)
+    assert mp.almosteq(chi2.cdf(x, k), p)
+
+
 @mp.workdps(50)
 def test_basic_sf():
     # Precomputed results using Wolfram
@@ -66,6 +79,18 @@ def test_basic_sf():
     valstr = '2.05191156690801156080276186311030115881812988312938e-6'
     expected = mp.mpf(valstr)
     assert mp.almosteq(chi2.sf(50, 25/2), expected)
+
+
+@pytest.mark.parametrize('p, k', [('0.125', '27'),
+                                  ('0.975', '13.5'),
+                                  ('0.5', '8.75'),
+                                  ('1e-12', '98')])
+@mp.workdps(50)
+def test_invsf_sf_roundtrip(p, k):
+    p = mp.mpf(p)
+    k = mp.mpf(k)
+    x = chi2.invsf(p, k)
+    assert mp.almosteq(chi2.sf(x, k), p)
 
 
 @mp.workdps(50)

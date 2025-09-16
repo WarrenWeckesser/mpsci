@@ -112,6 +112,20 @@ def _median(x):
     return med
 
 
+def _validate_counts(x, counts, expand_none=True):
+    n = len(x)
+    if counts is None:
+        if expand_none:
+            counts = [1]*n
+        return counts
+    if len(counts) != n:
+        raise ValueError('len(counts) must equal len(x); '
+                         f'got {len(counts)=} and {len(x)=}')
+    if any([t != int(t) or t < 0 for t in counts]):
+        raise ValueError('counts must contain only nonnegative integers')
+    return counts
+
+
 def _find_bracket(func, p, a, b, nbisect=None):
     """
     Find an interval for solving func(x) = p.
@@ -181,16 +195,104 @@ def _find_bracket(func, p, a, b, nbisect=None):
 
     return x0, x1
 
+def _find_bracket_by_expansion_neginf_inf(func, p, dir):
+    """
+    Find an interval [x_low, x_high] that contains the solution to func(x) = p.
 
-def _validate_counts(x, counts, expand_none=True):
-    n = len(x)
-    if counts is None:
-        if expand_none:
-            counts = [1]*n
-        return counts
-    if len(counts) != n:
-        raise ValueError('len(counts) must equal len(x); '
-                         f'got {len(counts)=} and {len(x)=}')
-    if any([t != int(t) or t < 0 for t in counts]):
-        raise ValueError('counts must contain only nonnegative integers')
-    return counts
+    func must be strictly monotonic on the interval (-inf, inf).
+
+    dir = 1:  func is increasing
+    dir = -1: func is decreasing
+    """
+    # The initial guess for x_low and x_high is 0.  If 0 doesn't provide
+    # a bound, the magnitude of the next guess is zero_step.  From then
+    # on, the guess is multiplied by 1.5 until a bound is found.
+    zero_step = mp.one
+    if dir not in [-1, 1]:
+        raise ValueError('dir must be -1 or 1.')
+    if dir == 1:
+        not_high_enough = lambda x: func(x) < p
+        not_low_enough = lambda x: func(x) > p
+    else:
+        not_high_enough = lambda x: func(x) > p
+        not_low_enough = lambda x: func(x) < p
+
+    x_high = mp.zero
+    if not_high_enough(x_high):
+        x_high = zero_step
+        while not_high_enough(x_high):
+            x_high *= 1.5
+
+    x_low = mp.zero
+    if not_low_enough(x_low):
+        x_low = -zero_step
+        while not_low_enough(x_low):
+            x_low *= 1.5
+
+    return (x_low, x_high)
+
+
+def _find_bracket_by_expansion_0_inf(func, p, dir):
+    """
+    Find an interval [x_low, x_high] that contains the solution to func(x) = p.
+
+    func must be strictly monotonic on the interval [0, inf).
+
+    dir = 1:  func is increasing
+    dir = -1: func is decreasing
+    """
+    if dir not in [-1, 1]:
+        raise ValueError('dir must be -1 or 1.')
+    if dir == 1:
+        not_high_enough = lambda x: func(x) < p
+        not_low_enough = lambda x: func(x) > p
+    else:
+        not_high_enough = lambda x: func(x) > p
+        not_low_enough = lambda x: func(x) < p
+    x_high = mp.one
+    while not_high_enough(x_high):
+        x_high *= 1.5
+    # XXX/FIXME: The following assumes there is an x in (0, 1]
+    # where not_low_enough(x) will be false.
+    x_low = mp.one
+    while x_low > 0 and not_low_enough(x_low):
+        x_low *= 0.5
+    return (x_low, x_high)
+
+
+def _generic_inv(func, p, dir, solver='bisect', **kwargs):
+    """
+    Invert a strictly monotonic function whose domain is (0, inf).
+
+    That is, solve func(x) = p for x, assuming 0 < x < inf, and
+    func is strictly monotonic.
+
+    dir = 1:  func is increasing
+    dir = -1: func is decreasing
+
+    Additional keyword arguments are passed on to `mp.findroot()`.
+
+    If not given in `kwargs`, this function overrides the default
+    `maxsteps` of `mp.findroot` and uses (in effect) 4*mp.prec.
+
+    Experimental!
+    This function has only been used with functions that are positive, with
+    range in [0, 1] (distribution CDF and SF functions).  It might work fine
+    with a broader class of functions, but that is untested.
+    Also, it has been developed mostly with `solver='bisect'`.
+    The other bisection-based solvers should also work OK.
+    The other classes of solvers (i.e. not bisection-based, such as 'secant'
+    and 'halley') have not been tested, and might have convergence issues.
+    """
+    # XXX 2*mp.prec is probably overkill...
+    with mp.workprec(2*mp.prec):
+        maxsteps = kwargs.pop('maxsteps', 2*mp.prec)
+        # Find a bracket for the root.
+        k_low, k_high = _find_bracket_by_expansion_0_inf(func, p, dir=dir)
+        if solver in ['bisect', 'anderson', 'illinois', 'pegasus']:
+            k0 = (k_low, k_high)
+        else:
+            k0 = (k_low + k_high)/2
+        root = mp.findroot(lambda k: func(k) - p,
+                           x0=k0, solver=solver, maxsteps=maxsteps, **kwargs)
+    return root

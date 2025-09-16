@@ -4,7 +4,7 @@ Chi-square distribution
 """
 
 from mpmath import mp
-from ._common import _validate_moment_n
+from ._common import _validate_moment_n, _generic_inv
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'var',
@@ -56,6 +56,38 @@ def cdf(x, k):
     return c
 
 
+def invcdf(p, k, solver='bisect', **kwargs):
+    """
+    Inverse of the CDF for the chi-square distribution.
+
+    Also known as the quantile function.
+
+    Additional keyword arguments are passed on to `mp.findroot()`.
+
+    If not given in `kwargs`, this function overrides the default
+    `maxsteps` of `mp.findroot` and uses (in effect) 4*mp.prec.
+
+    Experimental!
+    """
+    return _generic_inv(lambda x: cdf(x, k), p,
+                        dir=1, solver=solver, **kwargs)
+
+
+def invcdf_k(x, p, solver='bisect', **kwargs):
+    """
+    Inverse with respect to k of the CDF chi2.cdf(x, k).
+
+    Additional keyword arguments are passed on to `mp.findroot()`.
+
+    If not given in `kwargs`, this function overrides the default
+    `maxsteps` of `mp.findroot` and uses (in effect) 4*mp.prec.
+
+    Experimental!
+    """
+    return _generic_inv(lambda k: cdf(x, k), p,
+                        dir=-1, solver=solver, **kwargs)
+
+
 def sf(x, k):
     """
     Survival function for the chi-square distribution.
@@ -67,6 +99,38 @@ def sf(x, k):
             return mp.one
         s = mp.gammainc(k/2, a=x/2, b=mp.inf, regularized=True)
     return s
+
+
+def invsf(p, k, solver='bisect', **kwargs):
+    """
+    Inverse of the survival function for the chi-square distribution.
+
+    Also known as the complemented quantile function.
+
+    Additional keyword arguments are passed on to `mp.findroot()`.
+
+    If not given in `kwargs`, this function overrides the default
+    `maxsteps` of `mp.findroot` and uses (in effect) 4*mp.prec.
+
+    Experimental!
+    """
+    return _generic_inv(lambda x: sf(x, k), p,
+                        dir=-1, solver=solver, **kwargs)
+
+
+def invsf_k(x, p, solver='bisect', **kwargs):
+    """
+    Inverse with respect to k of chi2.sf(x, k).
+
+    Additional keyword arguments are passed on to `mp.findroot()`.
+
+    If not given in `kwargs`, this function overrides the default
+    `maxsteps` of `mp.findroot` and uses (in effect) 4*mp.prec.
+
+    Experimental!
+    """
+    return _generic_inv(lambda k: sf(x, k), p,
+                        dir=1, solver=solver, **kwargs)
 
 
 def support(k):
