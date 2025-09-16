@@ -7,7 +7,9 @@ from mpmath import mp
 from ._common import _validate_moment_n, _generic_inv
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'var',
+__all__ = ['pdf', 'logpdf',
+           'cdf', 'invcdf', 'invcdf_k', 'sf', 'invsf', 'invsf_k',
+           'mean', 'mode', 'var',
            'support', 'entropy', 'noncentral_moment']
 
 
