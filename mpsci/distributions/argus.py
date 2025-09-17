@@ -10,9 +10,11 @@ here.
 """
 
 from mpmath import mp
+from ._common import _validate_p, _find_bracket
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'support', 'mean', 'var', 'mode']
+__all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'support',
+           'mean', 'var', 'mode']
 
 
 def _validate_params(chi, scale):
@@ -83,6 +85,34 @@ def cdf(x, chi, scale):
             return mp.one - _psi(chi*mp.sqrt((1 - z)*(1 + z))) / _psi(chi)
 
 
+def invcdf(p, chi, scale, solver='bisect', **kwargs):
+    """
+    Inverse of the CDF for the ARGUS distribution.
+
+    Also known as the quantile function.
+
+    Additional keyword arguments are passed on to `mp.findroot()`.
+
+    If not given in `kwargs`, this function overrides the default
+    `maxsteps` of `mp.findroot` and uses (in effect) 4*mp.prec.
+
+    Experimental!
+    """
+    with mp.extradps(5):
+        chi, scale = _validate_params(chi, scale)
+        p = _validate_p(p)
+        x0, x1 = _find_bracket(lambda x: cdf(x, chi, scale), p, 0, scale)
+        if solver in ['bisect', 'anderson', 'illinois', 'pegasus']:
+            init = [x0, x1]
+        else:
+            init = (x0 + x1)/2
+        with mp.workprec(2*mp.prec):
+            maxsteps = kwargs.pop('maxsteps', 2*mp.prec)
+            root = mp.findroot(lambda x: cdf(x, chi, scale) - p,
+                               x0=init, solver=solver, maxsteps=maxsteps, **kwargs)
+        return root
+
+
 def sf(x, chi, scale):
     """
     Survival function of the ARGUS probability distribution.
@@ -99,6 +129,34 @@ def sf(x, chi, scale):
             return mp.power((1 + z)*(1 - z), 1.5)
         else:
             return _psi(chi*mp.sqrt((1 - z)*(1 + z))) / _psi(chi)
+
+
+def invsf(p, chi, scale, solver='bisect', **kwargs):
+    """
+    Inverse of the survival function for the ARGUS distribution.
+
+    Also known as the complemented quantile function.
+
+    Additional keyword arguments are passed on to `mp.findroot()`.
+
+    If not given in `kwargs`, this function overrides the default
+    `maxsteps` of `mp.findroot` and uses (in effect) 4*mp.prec.
+
+    Experimental!
+    """
+    with mp.extradps(5):
+        chi, scale = _validate_params(chi, scale)
+        p = _validate_p(p)
+        x0, x1 = _find_bracket(lambda x: sf(x, chi, scale), p, 0, scale)
+        if solver in ['bisect', 'anderson', 'illinois', 'pegasus']:
+            init = [x0, x1]
+        else:
+            init = (x0 + x1)/2
+        with mp.workprec(2*mp.prec):
+            maxsteps = kwargs.pop('maxsteps', 2*mp.prec)
+            root = mp.findroot(lambda x: sf(x, chi, scale) - p,
+                               x0=init, solver=solver, maxsteps=maxsteps, **kwargs)
+        return root
 
 
 def support(chi, scale):

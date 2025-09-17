@@ -76,6 +76,32 @@ def test_pdf_integrates_to_sf(x, chi, scale):
     assert mp.almosteq(p, q), f'{p=} is not close to {q=}'
 
 
+@pytest.mark.parametrize('p, chi, scale', [('0.125', '3.5', '1.0'),
+                                           ('0.975', '13.5', '0.25'),
+                                           ('0.5', '8.75', '10.0'),
+                                           ('1e-12', '0.5', '1.5')])
+@mp.workdps(50)
+def test_invcdf_cdf_roundtrip(p, chi, scale):
+    p = mp.mpf(p)
+    chi = mp.mpf(chi)
+    scale = mp.mpf(scale)
+    x = argus.invcdf(p, chi, scale)
+    assert mp.almosteq(argus.cdf(x, chi, scale), p)
+
+
+@pytest.mark.parametrize('p, chi, scale', [('0.125', '3.5', '1.0'),
+                                           ('0.975', '13.5', '0.25'),
+                                           ('0.5', '8.75', '10.0'),
+                                           ('1e-12', '0.5', '1.5')])
+@mp.workdps(50)
+def test_invsf_sf_roundtrip(p, chi, scale):
+    p = mp.mpf(p)
+    chi = mp.mpf(chi)
+    scale = mp.mpf(scale)
+    x = argus.invsf(p, chi, scale)
+    assert mp.almosteq(argus.sf(x, chi, scale), p)
+
+
 @pytest.mark.parametrize('chi, scale',
                          [(0.5, 3.0),
                           (0.125, 25.0),
