@@ -11,7 +11,7 @@ from mpsci.stats import mean as _mean
 from ._common import _seq_to_mp
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'interval_prob',
            'support', 'mean', 'var', 'mle', 'mom']
 
 
@@ -69,6 +69,38 @@ def sf(x, mu=0, b=1):
         else:
             c = mp.exp(-z)/2
         return c
+
+
+def interval_prob(x1, x2, mu=0, b=1):
+    """
+    Compute the probability of x in [x1, x2] for the Laplace distribution.
+
+    Mathematically, this is the same as
+
+        laplace.cdf(x2, mu, b) - laplace.cdf(x1, mu, b)
+
+    but when the two CDF values are nearly equal, this function will give
+    a more accurate result.
+
+    x1 must be less than or equal to x2.
+    """
+    with mp.extradps(5):
+        mu, b = _validate_params(mu, b)
+        x1 = mp.mpf(x1)
+        x2 = mp.mpf(x2)
+        if x1 > x2:
+            raise ValueError('x1 must not be greater than x2')
+        if x1 == x2:
+            return mp.zero
+        z1 = (x1 - mu)/b
+        z2 = (x2 - mu)/b
+        delta = z2 - z1
+        if z2 <= 0:
+            return -mp.exp(z2)*mp.expm1(-delta)/2
+        elif z1 >= 0:
+            return -mp.exp(-z1)*mp.expm1(-delta)/2
+        else:
+            return -(mp.expm1(-z2) + mp.expm1(z1))/2
 
 
 def invcdf(p, mu=0, b=1):
