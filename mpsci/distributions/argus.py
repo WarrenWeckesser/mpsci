@@ -2,7 +2,7 @@
 ARGUS distribution
 ------------------
 
-The parameters, chi and c, follow the conventions used in the
+The parameters, chi and scale, follow the conventions used in the
 wikipedia article https://en.wikipedia.org/wiki/ARGUS_distribution.
 
 Note that the parameter c in the wikipedia article is called ``scale``
