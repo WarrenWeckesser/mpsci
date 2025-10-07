@@ -11,10 +11,11 @@ def digammainv(y):
     The `digamma function` [1]_ [2]_ is the logarithmic derivative of the
     gamma function.
 
-    For real y, digammainv(y) returns the positive x such that digamma(x) = y.
+    For real ``y``, ``digammainv(y)`` returns the positive ``x`` such that
+    ``digamma(x) = y``.
 
-    The digamma function is also known as psi_0; `mpmath.digamma(x)` is the
-    same as `mpmath.psi(0, x)`.
+    The digamma function is also known as psi_0; ``mpmath.digamma(x)`` is the
+    same as ``mpmath.psi(0, x)``.
 
     References
     ----------

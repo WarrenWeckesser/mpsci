@@ -30,10 +30,10 @@ def xlog1py(x, y):
     """
     x*log(1+y)
 
-    If x is 0 and y is not nan, 0 is returned.
+    If ``x`` is 0 and ``y`` is not ``nan``, 0 is returned.
 
-    This function is mathematically equivalent to `mpsci.fun.xlogy(1 + y)`.
-    It avoids the loss of precision that can result if y is very small.
+    This function is mathematically equivalent to ``mpsci.fun.xlogy(1 + y)``.
+    It avoids the loss of precision that can result if ``y`` is very small.
 
     *See also:* :func:`xlogy`
     """

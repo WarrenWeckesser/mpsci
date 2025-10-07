@@ -31,29 +31,29 @@ def betaincinv(a, b, y, method='findroot', complement=False):
     """
     Inverse of the regularized incomplete beta function.
 
-    If `complement` is True, the inverse of the complement of the
+    If ``complement`` is True, the inverse of the complement of the
     regularized incomplete beta function is computed.
 
     The function name and first three parameters match those of
-    `scipy.special.betaincinv`.  With `complement=True`, the function
-    computes the equivalent of `scipy.special.betainccinv`.
+    ``scipy.special.betaincinv``.  With ``complement=True``, the function
+    computes the equivalent of ``scipy.special.betainccinv``.
 
-    The `method` parameter has several options:
+    The ``method`` parameter has several options:
 
-    * `"findroot"`:
-        Use `mpmath.mp.findroot`, with initial guess 0.5.
-    * `("findroot", x0)`:
-        Use `mpmath.mp.findroot`, with initial guess `x0`.
-    * `"bisect"`:
+    * ``"findroot"``:
+        Use ``mpmath.mp.findroot``, with initial guess 0.5.
+    * ``("findroot", x0)``:
+        Use ``mpmath.mp.findroot``, with initial guess ``x0``.
+    * ``"bisect"``:
         Use a bisection method, starting with the root bracket
         [0, 1].
-    * `("bisect", [xa, xb])`:
+    * ``("bisect", [xa, xb])``:
         Use a bisection method; start the bisection with the
-        bracket `[xa, xb]`.  `xa` and `xb` must be chosen so that
-        the inverse is in the interval `[xa, xb]`.
+        bracket ``[xa, xb]``.  ``xa`` and ``xb`` must be chosen so that
+        the inverse is in the interval ``[xa, xb]``.
 
     The numerical method that is used to find the root (either
-    `mpmath.mp.findroot` or the bisection method) might fail for some
+    ``mpmath.mp.findroot`` or the bisection method) might fail for some
     inputs. If that happens, try changing the method, or try changing
     the initial guess or initial bracket.
 

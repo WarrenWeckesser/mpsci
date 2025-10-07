@@ -6,13 +6,13 @@ def debye(x, *, n, method='quad'):
     """
     Compute the Debye function D_n(x).
 
-    If `method == 'quad'`,  `mp.quad` is used to evaluate the integral form
-    of the function, so it might be necessary to set mp.dps to a value
-    much larger than the desired output precision.  For example, mp.dps=150
+    If ``method == 'quad'``,  ``mp.quad`` is used to evaluate the integral form
+    of the function, so it might be necessary to set ``mp.dps`` to a value
+    much larger than the desired output precision.  For example, ``mp.dps = 150``
     is required to get an accurate double precision result from
-    mp_debye1(1e100, 1).
+    ``mp_debye1(1e100, 1)``.
 
-    If `method == 'nsum'`, `mp.nsum` is used to evalute the series form
+    If ``method == 'nsum'``, ``mp.nsum`` is used to evalute the series form
     of the function.
     """
     try:
