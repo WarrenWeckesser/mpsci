@@ -38,6 +38,13 @@ def test_cdf(k, lam):
     assert abs(c - expected) < 1e-40
 
 
+def test_cdf_sf_neg_k():
+    p = poisson.cdf(-1, 1.5)
+    assert p == 0
+    p = poisson.sf(-1, 1.5)
+    assert p == 1
+
+
 @pytest.mark.parametrize('k', [0, 1, 5, 20])
 @pytest.mark.parametrize('lam', [1, 1.5])
 @mp.workdps(40)

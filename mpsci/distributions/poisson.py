@@ -71,7 +71,7 @@ def cdf(k, lam):
     """
     lam = _validate_lam(lam)
     if k < 0:
-        return mp.ninf
+        return mp.zero
     return mp.gammainc(k + 1, lam, regularized=True)
 
 
