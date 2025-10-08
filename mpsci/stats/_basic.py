@@ -82,7 +82,7 @@ def variation(x, ddof=1):
 
         std(x, ddof) / mean(x)
 
-    Note that, unlike `var` and `std`, the default value of `ddof` is 1.
+    Note that, unlike ``var`` and ``std``, the default value of ``ddof`` is 1.
     This is the more typical value used when computing the variation.
 
     (The implementation is simply std(x, ddof) / mean(x); no special

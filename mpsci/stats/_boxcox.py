@@ -55,7 +55,7 @@ def boxcox1p(x, lmbda):
                       { ----------------    if lmbda != 0
                       {      lmbda
 
-    This function is mathematically equivalent to `boxcox(1+x, lmbda)`.
+    This function is mathematically equivalent to ``boxcox(1+x, lmbda)``.
     It avoids the loss of precision that can occur if x is very small.
 
     *See also:* :func:`boxcox`, :func:`inv_boxcox1p`
@@ -84,7 +84,7 @@ boxcox1p._docstring_re_subs = [
 
 def inv_boxcox(y, lmbda):
     """
-    Inverse with respect to x of boxcox(x, lmbda).
+    Inverse with respect to x of ``boxcox(x, lmbda)``.
 
     *See also:* :func:`boxcox`
     """
@@ -98,7 +98,7 @@ def inv_boxcox(y, lmbda):
 
 def inv_boxcox1p(y, lmbda):
     """
-    Inverse with respect to x of boxcox1p(x, lmbda).
+    Inverse with respect to x of ``boxcox1p(x, lmbda)``.
 
     *See also:* :func:`boxcox1p`
     """

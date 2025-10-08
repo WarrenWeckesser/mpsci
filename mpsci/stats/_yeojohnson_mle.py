@@ -63,14 +63,14 @@ yeojohnson_llf._docstring_re_subs = [
 def yeojohnson_mle(x, lam0=1):
     """Compute the maximum likelihood estimate of the Yeo-Johnson parameter.
 
-    `x` must be a sequence of numbers.
+    ``x`` must be a sequence of numbers.
 
-    `lam0` is the initial guess for the optimal parameter.  The default
-    value, `lam0=1`, is generally not a good initial guess, and the may
+    ``lam0`` is the initial guess for the optimal parameter.  The default
+    value, ``lam0=1``, is generally not a good initial guess, and the may
     have to be changed for the method to find the optimal parameters. The
     algorithm uses numerical differentiation and numerical root-finding,
     and it might fail to converge in some cases.  If that happens, try
-    changing `lam0`.  Even changing only the sign of `lam0` can make a
+    changing ``lam0``.  Even changing only the sign of ``lam0`` can make a
     difference.
     """
     lam = mp.findroot(lambda t: mp.diff(lambda s: yeojohnson_llf(s, x), t),

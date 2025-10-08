@@ -35,16 +35,17 @@ def fisher_exact(table, alternative='two-sided'):
     Compute Fisher's exact test on the 2x2 table.
 
     This function uses python integers to compute the probability exactly.
-    (Unlike most of the other functions in the `mpsci` library, this function
-    does not use `mpmath`.)
+    (Unlike most of the other functions in the ``mpsci`` library, this function
+    does not use ``mpmath``.)
 
     Returns the sample odds ratio and the p-value.  Generally the return
-    values will be instances of `fractions.Fraction`, but the odds ratio
-    will be `math.nan` if both `a*d` and `b*c` are zero, and it will be
-    `math.inf` if `b*c` is 0 and `a*d` is not zero, where `a = table[0][0]`,
-    `b = table[0][1]`, `c = table[1][0]` and `d = table[1][1]`.
+    values will be instances of ``fractions.Fraction``, but the odds ratio
+    will be ``math.nan`` if both ``a*d`` and ``b*c`` are zero, and it will
+    be ``math.inf`` if ``b*c`` is 0 and ``a*d`` is not zero, where
+    ``a = table[0][0]``, ``b = table[0][1]``, ``c = table[1][0]`` and
+    ``d = table[1][1]``.
 
-    *Warning:* The values in `table` should not be large!  The calculation
+    *Warning:* The values in ``table`` should not be large!  The calculation
     can take a very long time and use a lot of memory if the values are large.
     (The precise definition of "large" will depend on the computer's speed
     and available memory.)
