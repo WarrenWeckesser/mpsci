@@ -11,6 +11,8 @@ def chisquare(observed, expected, sum_rel_tol=None):
 
     Test whether the observed frequency distribution differs from the
     expected frequency distribution.
+
+    Returns the chi-square statistic and the p-value.
     """
     if sum_rel_tol is None:
         sum_rel_tol = 10*mp.eps
@@ -40,6 +42,7 @@ def gtest(observed, expected, sum_rel_tol=None):
 
     .. math::  G = 2\sum_{i=0}^{n-1} O_{i} \log(O_{i}/E_{i})
 
+    Returns the G statistic and the p-value.
     """
     if sum_rel_tol is None:
         sum_rel_tol = 10*mp.eps
