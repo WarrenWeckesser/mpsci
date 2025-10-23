@@ -46,7 +46,7 @@ def _validate_moment_n(n):
     try:
         n = operator.index(n)
     except TypeError:
-        raise TypeError('n must be an integer')
+        raise TypeError('n must be an integer') from None
     if n < 0:
         raise ValueError('n must be nonnegative')
     return n
@@ -183,7 +183,7 @@ def _find_bracket(func, p, a, b, nbisect=None):
 
     if nbisect is None:
         nbisect = 8
-    for k in range(nbisect):
+    for _k in range(nbisect):
         mid = (x0 + x1)/2
         pmid = func(mid)
         if pmid == p:
@@ -195,22 +195,23 @@ def _find_bracket(func, p, a, b, nbisect=None):
 
     return x0, x1
 
-def _find_bracket_by_expansion_neginf_inf(func, p, dir):
+
+def _find_bracket_by_expansion_neginf_inf(func, p, direction):
     """
     Find an interval [x_low, x_high] that contains the solution to func(x) = p.
 
     func must be strictly monotonic on the interval (-inf, inf).
 
-    dir = 1:  func is increasing
-    dir = -1: func is decreasing
+    direction = 1:  func is increasing
+    direction = -1: func is decreasing
     """
     # The initial guess for x_low and x_high is 0.  If 0 doesn't provide
     # a bound, the magnitude of the next guess is zero_step.  From then
     # on, the guess is multiplied by 1.5 until a bound is found.
     zero_step = mp.one
-    if dir not in [-1, 1]:
-        raise ValueError('dir must be -1 or 1.')
-    if dir == 1:
+    if direction not in [-1, 1]:
+        raise ValueError('direction must be -1 or 1.')
+    if direction == 1:
         not_high_enough = lambda x: func(x) < p
         not_low_enough = lambda x: func(x) > p
     else:
@@ -232,18 +233,18 @@ def _find_bracket_by_expansion_neginf_inf(func, p, dir):
     return (x_low, x_high)
 
 
-def _find_bracket_by_expansion_0_inf(func, p, dir):
+def _find_bracket_by_expansion_0_inf(func, p, direction):
     """
     Find an interval [x_low, x_high] that contains the solution to func(x) = p.
 
     func must be strictly monotonic on the interval [0, inf).
 
-    dir = 1:  func is increasing
-    dir = -1: func is decreasing
+    direction = 1:  func is increasing
+    direction = -1: func is decreasing
     """
-    if dir not in [-1, 1]:
-        raise ValueError('dir must be -1 or 1.')
-    if dir == 1:
+    if direction not in [-1, 1]:
+        raise ValueError('direction must be -1 or 1.')
+    if direction == 1:
         not_high_enough = lambda x: func(x) < p
         not_low_enough = lambda x: func(x) > p
     else:
@@ -260,15 +261,15 @@ def _find_bracket_by_expansion_0_inf(func, p, dir):
     return (x_low, x_high)
 
 
-def _generic_inv(func, p, dir, solver='bisect', **kwargs):
+def _generic_inv(func, p, direction, solver='bisect', **kwargs):
     """
     Invert a strictly monotonic function whose domain is (0, inf).
 
     That is, solve func(x) = p for x, assuming 0 < x < inf, and
     func is strictly monotonic.
 
-    dir = 1:  func is increasing
-    dir = -1: func is decreasing
+    direction = 1:  func is increasing
+    direction = -1: func is decreasing
 
     Additional keyword arguments are passed on to `mp.findroot()`.
 
@@ -284,15 +285,15 @@ def _generic_inv(func, p, dir, solver='bisect', **kwargs):
     The other classes of solvers (i.e. not bisection-based, such as 'secant'
     and 'halley') have not been tested, and might have convergence issues.
     """
-    # XXX 2*mp.prec is probably overkill...
+    # Note: 2*mp.prec is probably overkill...
     with mp.workprec(2*mp.prec):
         maxsteps = kwargs.pop('maxsteps', 2*mp.prec)
         # Find a bracket for the root.
-        k_low, k_high = _find_bracket_by_expansion_0_inf(func, p, dir=dir)
+        k_low, k_high = _find_bracket_by_expansion_0_inf(func, p,
+                                                         direction=direction)
         if solver in ['bisect', 'anderson', 'illinois', 'pegasus']:
             k0 = (k_low, k_high)
         else:
             k0 = (k_low + k_high)/2
-        root = mp.findroot(lambda k: func(k) - p,
+        return mp.findroot(lambda k: func(k) - p,
                            x0=k0, solver=solver, maxsteps=maxsteps, **kwargs)
-    return root

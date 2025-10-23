@@ -72,7 +72,7 @@ def invcdf(p, k, solver='bisect', **kwargs):
     Experimental!
     """
     return _generic_inv(lambda x: cdf(x, k), p,
-                        dir=1, solver=solver, **kwargs)
+                        direction=1, solver=solver, **kwargs)
 
 
 def invcdf_k(x, p, solver='bisect', **kwargs):
@@ -87,7 +87,7 @@ def invcdf_k(x, p, solver='bisect', **kwargs):
     Experimental!
     """
     return _generic_inv(lambda k: cdf(x, k), p,
-                        dir=-1, solver=solver, **kwargs)
+                        direction=-1, solver=solver, **kwargs)
 
 
 def sf(x, k):
@@ -117,7 +117,7 @@ def invsf(p, k, solver='bisect', **kwargs):
     Experimental!
     """
     return _generic_inv(lambda x: sf(x, k), p,
-                        dir=-1, solver=solver, **kwargs)
+                        direction=-1, solver=solver, **kwargs)
 
 
 def invsf_k(x, p, solver='bisect', **kwargs):
@@ -132,7 +132,7 @@ def invsf_k(x, p, solver='bisect', **kwargs):
     Experimental!
     """
     return _generic_inv(lambda k: sf(x, k), p,
-                        dir=1, solver=solver, **kwargs)
+                        direction=1, solver=solver, **kwargs)
 
 
 def support(k):
