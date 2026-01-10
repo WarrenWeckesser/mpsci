@@ -1,6 +1,6 @@
 import pytest
 from mpmath import mp
-from mpsci.stats import mean, var, std, variation, gmean, hmean, pmean
+from mpsci.stats import mean, var, std, variation, gmean, hmean, pmean, lehmer_mean
 
 
 # XXX In some of these tests, equality is asserted even though the
@@ -86,6 +86,44 @@ def test_pmean_trivial_weights(p):
     x = [3, 4, 10, 1, 1, 25]
     assert mp.almosteq(pmean(x, p=p),
                        pmean(x, p=p, weights=[5]*len(x)))
+
+
+@mp.workdps(50)
+def test_lehmer_mean_p1():
+    x = [8, 12, 24, 8]
+    m = lehmer_mean(x, p=1)
+    # p=1 gives the arithmetic mean.
+    assert m == 13
+
+
+@mp.workdps(50)
+def test_lehmer_mean_p1_weights():
+    x = [8, 12, 24, 8]
+    w = [1,  2,  0, 1]
+    m = lehmer_mean(x, p=1, weights=w)
+    assert m == 10
+
+
+@mp.workdps(50)
+@pytest.mark.parametrize('p', [-1, 0, 2, 3])
+def test_lehmer_mean(p):
+    p = mp.mpf(p)
+    x = [1.0, 1.0, 2.0, 3.0, 5.0, 8.0]
+    m = lehmer_mean(x, p=p)
+    expected = mp.fsum([t**p for t in x]) / mp.fsum([t**(p - 1) for t in x])
+    assert mp.almosteq(m, expected)
+
+
+@mp.workdps(50)
+@pytest.mark.parametrize('p', [-1, 0, 2, 3])
+def test_lehmer_mean_weights(p):
+    p = mp.mpf(p)
+    x = [1.0, 1.0, 2.0, 3.0, 5.0, 8.0]
+    weights = [0.5, 1.5, 2.0, 2.0, 1.0, 0.5]
+    m = lehmer_mean(x, p=p, weights=weights)
+    expected = (mp.fsum([mp.mpf(w) * mp.mpf(t)**p for t, w in zip(x, weights)]) /
+                mp.fsum([mp.mpf(w) * mp.mpf(t)**(p - 1) for t, w in zip(x, weights)]))
+    assert mp.almosteq(m, expected)
 
 
 @mp.workdps(50)

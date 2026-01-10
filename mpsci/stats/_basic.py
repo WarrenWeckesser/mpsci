@@ -13,6 +13,8 @@ hmean
     Harmonic mean
 pmean
     Power (or generalized) mean
+lehmer_mean
+    Lehmer mean
 
 Other utility functions
 -----------------------
@@ -26,7 +28,8 @@ from mpmath import mp
 from ..fun import xlogy as _xlogy
 
 
-__all__ = ['mean', 'var', 'std', 'variation', 'gmean', 'hmean', 'pmean',
+__all__ = ['mean', 'var', 'std', 'variation',
+           'gmean', 'hmean', 'pmean', 'lehmer_mean',
            'unique_counts']
 
 
@@ -224,6 +227,27 @@ def pmean(x, *, p, weights=None):
     with mp.extraprec(16):
         p = mp.mpf(p)
         return mp.power(mean([mp.mpf(t)**p for t in x], weights=weights), 1/p)
+
+
+def lehmer_mean(x, *, p, weights=None):
+    if any(t <= 0 for t in x):
+        raise ValueError('All values in x must be positive.')
+    if p == 0:
+        return hmean(x, weights=weights)
+    if p == 0.5:
+        return gmean(x, weights=weights)
+    if p == 1:
+        return mean(x, weights=weights)
+    p = mp.mpf(p)
+    if mp.isinf(p):
+        x = [mp.mpf(t) for t in x]
+        if p < 0:
+            return min(x)
+        else:
+            return max(x)
+    # x = [mp.mpf(t) for t in x]
+    return (mean([t**p for t in x], weights=weights) /
+            mean([t**(p - 1) for t in x], weights=weights))
 
 
 def unique_counts(x):
