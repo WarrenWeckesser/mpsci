@@ -1,3 +1,4 @@
+import re
 import operator
 from mpmath import mp
 
@@ -5,6 +6,8 @@ from mpmath import mp
 def debye(x, *, n, method='quad'):
     """
     Compute the Debye function D_n(x).
+
+        D_n(x) = (n/x**2) * integral_0^x t^n/(exp(t) - 1) dt
 
     If ``method == 'quad'``,  ``mp.quad`` is used to evaluate the integral form
     of the function, so it might be necessary to set ``mp.dps`` to a value
@@ -48,3 +51,10 @@ def debye(x, *, n, method='quad'):
         return mp.bernoulli(twok)/(twok + n)/mp.factorial(twok)*x**twok
 
     return 1 - n*x/(2*(n + 1)) + n*mp.nsum(term, [1, mp.inf])
+
+
+debye._docstring_re_subs = [
+    (r'D_n\(x\).*dt',
+     r':math:`D_n(x) = \\frac{n}{x^n} \\int_{0}^{x}\\frac{t^n}{e^t - 1} dt`',
+     0, 0)
+]
