@@ -17,3 +17,4 @@ from ._logsumexp import logsumexp
 from ._legendre import roots_legendre
 from ._powm1 import inv_powm1, pow1pm1, inv_pow1pm1
 from ._wright_bessel import wright_bessel
+from ._faddeevaw import faddeevaw
