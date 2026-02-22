@@ -230,6 +230,53 @@ def pmean(x, *, p, weights=None):
 
 
 def lehmer_mean(x, *, p, weights=None):
+    """
+    Lehmer mean of the values in the sequence x.
+
+    See https://en.wikipedia.org/wiki/Lehmer_mean.
+
+    Examples
+    --------
+    >>> from mpmath import mp
+    >>> from mpsci.stats import lehmer_mean, mean, gmean, hmean
+    >>> mp.dps = 25
+
+    >>> x = [1, 2, 3, 5, 8, 13]
+
+    >>> lehmer_mean(x, p=0.75)
+    mpf('4.534147351330640591727134775')
+
+    >>> w = [1, 1, 1, 0.5, 0.25, 0]
+    >>> lehmer_mean(x, p=0.75, weights=w)
+    mpf('2.536635522609439060684962057')
+
+    p = 1 corresponds to the arithmetic mean.
+
+    >>> lehmer_mean(x, p=1)
+    mpf('5.333333333333333333333333333')
+    >>> mean(x)
+    mpf('5.333333333333333333333333333')
+
+    p = 0 corresponds to the harmonic mean.
+
+    >>> lehmer_mean(x, p=2)
+    mpf('2.684255807284198451390880413')
+    >>> hmean(x)
+    mpf('2.684255807284198451390880413')
+
+    p = 0.5 corresponds to the geometric mean.
+
+    >>> lehmer_mean(x, p=0.5)
+    mpf('3.822602143583034060943900482')
+    >>> gmean(x)
+    mpf('3.822602143583034060943900482')
+
+    The Lehmer mean with p = -inf and p = inf are the minimum and maximum of
+    the sequence, respectively.
+
+    >>> lehmer_mean(x, p=mp.ninf), lehmer_mean(x, p=mp.inf)
+    (mpf('1.0'), mpf('13.0'))
+    """
     if any(t <= 0 for t in x):
         raise ValueError('All values in x must be positive.')
     if p == 0:
