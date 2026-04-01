@@ -51,4 +51,4 @@ def inv_yeojohnson(x, lmbda):
                 return -mp.expm1(-x)
             else:
                 lmb2 = 2 - lmbda
-                return -pow1pm1(-lmb2*x, lmb2)
+                return -inv_pow1pm1(-lmb2*x, lmb2)

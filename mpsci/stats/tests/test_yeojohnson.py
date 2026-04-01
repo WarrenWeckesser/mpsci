@@ -18,7 +18,8 @@ def test_yeojohnson_equality(x, lmb, expected):
 
 @pytest.mark.parametrize('x, lmb, expected_str',
                          [(3, 0, 'mp.log(4)'),
-                          (-3, 2, '-mp.log(4)')])
+                          (-3, 2, '-mp.log(4)'),
+                          (-24, 1.5, '-8.0')])
 @mp.workdps(60)
 def test_yeojohnson_cases(x, lmb, expected_str):
     expected = eval(expected_str)
