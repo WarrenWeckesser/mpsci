@@ -88,8 +88,6 @@ def pearsonr_ci(r, n, alpha, alternative='two-sided'):
 
     Examples
     --------
-    Imports:
-
     >>> from mpmath import mp
     >>> mp.dps = 20
     >>> from mpsci.stats import pearsonr, pearsonr_ci
