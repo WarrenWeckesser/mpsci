@@ -1,0 +1,7 @@
+To run the test with coverages, in the root directory of the git repository:
+
+    pytest --cov=. --cov-report=html
+
+Then open htmlcov/index.html in a browser.
+
+The file .coveragerc is configured to not report coverage of the test files.
