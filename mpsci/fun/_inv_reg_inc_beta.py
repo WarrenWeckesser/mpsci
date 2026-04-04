@@ -122,8 +122,8 @@ def betaincinv(a, b, y, method='findroot', complement=False):
         except Exception:
             raise RuntimeError('failed to find the inverse with '
                                'mpmath.mp.findroot')
-        if y < 0:
+        if isinstance(y, mp.mpc) or y < 0:
             raise RuntimeError('mpmath.mp.findroot converged to an invalid '
-                               '(negative) root.  Try providing an initial '
-                               'guess, or use method="bisect"')
+                               '(negative or complex) root.  Try providing an '
+                               'initial guess, or use method="bisect"')
         return y
