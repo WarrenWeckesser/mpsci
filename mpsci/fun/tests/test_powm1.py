@@ -12,6 +12,16 @@ def test_inv_powm1(y):
     assert mp.almosteq(x, mp.power(t + 1, 1/y))
 
 
+def test_inv_powm1_bad_y():
+    with pytest.raises(ValueError, match='y must not be 0'):
+        inv_powm1(0.5, 0.0)
+
+
+def test_inv_powm1_bad_t():
+    with pytest.raises(ValueError, match='t must be greater than -1'):
+        inv_powm1(-2.5, 1.5)
+
+
 @pytest.mark.parametrize('y', [2.5, -0.5])
 @mp.workdps(40)
 def test_powm1_inv_powm1_roundtrip(y):
@@ -48,3 +58,13 @@ def test_inv_pow1pm1(y):
     y = mp.mpf(y)
     x = inv_pow1pm1(t, y)
     assert mp.almosteq(x, mp.power(t + 1, 1/y,) - 1)
+
+
+def test_inv_pow1pm1_bad_y():
+    with pytest.raises(ValueError, match='y must not be 0'):
+        inv_pow1pm1(0.5, 0.0)
+
+
+def test_inv_pow1pm1_bad_t():
+    with pytest.raises(ValueError, match='t must be greater than -1'):
+        inv_pow1pm1(-2.5, 1.5)
