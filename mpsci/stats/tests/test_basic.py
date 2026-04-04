@@ -66,9 +66,39 @@ def test_gmean_0_weight():
 
 
 @mp.workdps(50)
-def test_hmean():
-    with mp.extraprec(16):
-        assert mp.almosteq(hmean([1, 2, 16]), mp.mpf('48/25'))
+@pytest.mark.parametrize(
+    'x, refstr',
+    [([1, 2, 16], '48/25'),
+     ([1.0, 2.0, mp.inf, 4.0, 4.0], '2.5')]
+)
+def test_hmean(x, refstr):
+    ref = mp.mpf(refstr)
+    assert mp.almosteq(hmean(x), ref)
+
+
+def test_hmean_with_zero():
+    x = [1.5, 3.5, -2.5, 0.0, 18.0, 123.45]
+    m = hmean(x)
+    assert m == 0.0
+
+
+@mp.workdps(50)
+def test_hmean_balanced_mixed_signs():
+    x = [0.5, 2.0, 2.0, -0.5, -1.0, -2.0, 1.0, -2.0]
+    m = hmean(x)
+    assert mp.isnan(m)
+
+
+def test_hmean_all_pos_inf():
+    x = [mp.inf, mp.inf, mp.inf]
+    m = hmean(x)
+    assert m == mp.inf
+
+
+def test_hmean_neg_pos_inf():
+    x = [mp.ninf, mp.ninf, mp.ninf]
+    m = hmean(x)
+    assert m == mp.ninf
 
 
 @mp.workdps(50)
