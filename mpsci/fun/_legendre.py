@@ -16,7 +16,23 @@ def roots_legendre(n):
     """
     Compute the roots of the Legendre polynomial, and quadrature weights.
 
+    These values are used for Gauss-Legendre quadratue:
+        https://en.wikipedia.org/wiki/Gauss%E2%80%93Legendre_quadrature
+
     Warning: not tested beyond n=21.
+
+    Parameters
+    ----------
+    n : integer
+        Number of sample points to be used in the Gauss-Legendre quadrature.
+        Must be greater than 0.
+
+    Returns
+    -------
+    roots : list
+        The roots of the corresponding Legendre polynomial
+    weights : list
+        The quadrature weights
 
     Examples
     --------
