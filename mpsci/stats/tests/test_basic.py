@@ -127,6 +127,31 @@ def test_lehmer_mean_weights(p):
 
 
 @mp.workdps(50)
+@pytest.mark.parametrize('with_weights', [False, True])
+def test_lehmer_mean_p_half(with_weights):
+    p = 0.5
+    x = [1.0, 1.0, 2.0, 3.0, 5.0, 8.0]
+    weights = [0.5, 1.5, 2.0, 2.0, 1.0, 0.5] if with_weights else None
+    m = lehmer_mean(x, p=p, weights=weights)
+    expected = gmean(x, weights=weights)
+    assert mp.almosteq(m, expected)
+
+
+@pytest.mark.parametrize('p', [mp.inf, mp.ninf])
+def test_lehmer_mean_p_inf(p):
+    x = [1.0, 1.0, 2.0, 3.0, 5.0, 8.0]
+    m = lehmer_mean(x, p=p)
+    expected = min(x) if p < 0 else max(x)
+    assert m == expected
+
+
+def test_lehmer_mean_bad_x():
+    x = [1.0, -3.5, 2.0, 8.25, 10.0]
+    with pytest.raises(ValueError, match='All values in x must be positive'):
+        lehmer_mean(x, p=1.5)
+
+
+@mp.workdps(50)
 def test_variation0():
     x = [1, 1, 4]
     v = variation(x, ddof=0)
