@@ -30,3 +30,35 @@ def test_betaincinv(method):
                   '1974420720104950942011959551123950357791985719557798519778'
                   '9959446569479')
     assert mp.almosteq(x, xref)
+
+
+@mp.workdps(110)
+def test_betaincinv_findroot_with_initial():
+    a = mp.mpf(0.5)
+    b = mp.mpf(3)
+    y = mp.mpf(2.0**-6)
+    initial = mp.mpf('0.000069451')
+    x = betaincinv(a, b, y, method=('findroot', initial))
+    # Reference value computed with Wolfram Alpha:
+    #     InverseBetaRegularized(2^-6, 1/2, 3)
+    xref = mp.mpf('0.0000694508753936932716886294902550100334958516845382949'
+                  '466052876251357383369396307642834032290316484218510094710'
+                  '490268894038624')
+    assert mp.almosteq(x, xref)
+
+
+def test_betaincinv_nan_return():
+    assert mp.isnan(betaincinv(0.5, 1.5, 2.5))
+    assert mp.isnan(betaincinv(0.5, 1.5, -0.125))
+
+
+def test_betaincinv_domain_limits():
+    assert betaincinv(0.5, 1.5, 0) == 0
+    assert betaincinv(0.5, 1.5, 0, complement=True) == 1
+    assert betaincinv(0.5, 1.5, 1) == 1
+    assert betaincinv(0.5, 1.5, 1, complement=True) == 0
+
+
+def test_betaincinv_bad_method():
+    with pytest.raises(ValueError, match='invalid method'):
+        betaincinv(0.5, 1.5, 0.25, method='plate of shrimp')
