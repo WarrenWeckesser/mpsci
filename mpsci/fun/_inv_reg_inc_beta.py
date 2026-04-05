@@ -11,9 +11,7 @@ def mp_bisect(func, x0, x1):
     if y1 == 0:
         return x1
     if (y0 > 0 and y1 > 0) or (y0 < 0 and y1 < 0):
-        print(f'{y0 = }')
-        print(f'{y1 = }')
-        raise ValueError('func(x0) and func(x1) have the same sign')
+        raise ValueError(f'func(x0) = {y0} and func(x1) = {y1} have the same sign')
     while True:
         xmid = (x0 + x1)/2
         ymid = func(xmid)
