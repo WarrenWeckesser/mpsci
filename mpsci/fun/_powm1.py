@@ -1,4 +1,3 @@
-import re
 from mpmath import mp
 from ._xlogy import xlog1py
 

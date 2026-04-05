@@ -50,11 +50,10 @@ def mean(x, weights=None):
     with mp.extraprec(16):
         if weights is None:
             return mp.fsum(x) / len(x)
-        else:
-            if mp.fsum(weights) == 0:
-                raise ZeroDivisionError('sum(weights) must be nonzero.')
-            return (mp.fsum(t*w for t, w in zip(x, weights)) /
-                    mp.fsum(weights))
+        if mp.fsum(weights) == 0:
+            raise ZeroDivisionError('sum(weights) must be nonzero.')
+        return (mp.fsum(t*w for t, w in zip(x, weights)) /
+                mp.fsum(weights))
 
 
 def var(x, ddof=0):
@@ -124,14 +123,13 @@ def gmean(x, *, weights=None):
             if 0 in x:
                 return mp.zero
             return mp.exp(mean([mp.log(t) for t in x]))
-        else:
-            # Weighted geometric mean
-            wsum = mp.fsum(weights)
-            if wsum == 0:
-                raise ValueError('sum of weights must not be 0.')
-            wlogxsum = mp.fsum([_xlogy(wi, xi)
-                                for (xi, wi) in zip(x, weights)])
-            return mp.exp(wlogxsum / wsum)
+        # Weighted geometric mean
+        wsum = mp.fsum(weights)
+        if wsum == 0:
+            raise ValueError('sum of weights must not be 0.')
+        wlogxsum = mp.fsum([_xlogy(wi, xi)
+                            for (xi, wi) in zip(x, weights)])
+        return mp.exp(wlogxsum / wsum)
 
 
 def hmean(x, *, weights=None):
@@ -198,12 +196,10 @@ def hmean(x, *, weights=None):
         if m == 0:
             if mixed_signs:
                 return mp.nan
-            elif npos > 0:
+            if npos > 0:
                 return mp.inf
-            else:
-                return -mp.inf
-        else:
-            return 1 / m
+            return -mp.inf
+        return 1 / m
 
 
 def pmean(x, *, p, weights=None):
@@ -213,16 +209,15 @@ def pmean(x, *, p, weights=None):
     # Special cases
     if p == 0:
         return gmean(x, weights=weights)
-    elif p == 1:
+    if p == 1:
         return mean(x, weights=weights)
-    elif p == -1:
+    if p == -1:
         return hmean(x, weights=weights)
-    elif mp.isinf(p):
+    if mp.isinf(p):
         with mp.extraprec(16):
             if p > 0:
                 return max(mp.mpf(t) for t in x)
-            else:
-                return min(mp.mpf(t) for t in x)
+            return min(mp.mpf(t) for t in x)
 
     with mp.extraprec(16):
         p = mp.mpf(p)
@@ -290,8 +285,7 @@ def lehmer_mean(x, *, p, weights=None):
         x = [mp.mpf(t) for t in x]
         if p < 0:
             return min(x)
-        else:
-            return max(x)
+        return max(x)
     # x = [mp.mpf(t) for t in x]
     return (mean([t**p for t in x], weights=weights) /
             mean([t**(p - 1) for t in x], weights=weights))

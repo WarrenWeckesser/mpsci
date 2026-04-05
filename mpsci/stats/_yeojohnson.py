@@ -20,14 +20,12 @@ def yeojohnson(x, lmbda):
         if x >= 0:
             if lmbda == 0:
                 return mp.log1p(x)
-            else:
-                return pow1pm1(x, lmbda) / lmbda
-        else:
-            if lmbda == 2:
-                return -mp.log1p(-x)
-            else:
-                lmb2 = 2 - lmbda
-                return -pow1pm1(-x, lmb2) / lmb2
+            return pow1pm1(x, lmbda) / lmbda
+        # x < 0:
+        if lmbda == 2:
+            return -mp.log1p(-x)
+        lmb2 = 2 - lmbda
+        return -pow1pm1(-x, lmb2) / lmb2
 
 
 def inv_yeojohnson(x, lmbda):
@@ -44,11 +42,9 @@ def inv_yeojohnson(x, lmbda):
         if x >= 0:
             if lmbda == 0:
                 return mp.expm1(x)
-            else:
-                return inv_pow1pm1(lmbda*x, lmbda)
-        else:
-            if lmbda == 2:
-                return -mp.expm1(-x)
-            else:
-                lmb2 = 2 - lmbda
-                return -inv_pow1pm1(-lmb2*x, lmb2)
+            return inv_pow1pm1(lmbda*x, lmbda)
+        # x < 0:
+        if lmbda == 2:
+            return -mp.expm1(-x)
+        lmb2 = 2 - lmbda
+        return -inv_pow1pm1(-lmb2*x, lmb2)

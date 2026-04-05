@@ -17,8 +17,7 @@ def xlogy(x, y):
         return mp.nan
     if x == 0:
         return mp.zero
-    else:
-        return x * mp.log(y)
+    return x * mp.log(y)
 
 
 xlogy._docstring_re_subs = [
@@ -41,8 +40,7 @@ def xlog1py(x, y):
         return mp.nan
     if x == 0:
         return mp.zero
-    else:
-        return x * mp.log1p(y)
+    return x * mp.log1p(y)
 
 
 xlog1py._docstring_re_subs = [

@@ -63,11 +63,11 @@ def roots_legendre(n):
         raise ValueError('n must be a positive integer.')
     if n == 1:
         return [mp.zero], [mp.mpf(2)]
-    elif n == 2:
+    if n == 2:
         x = 1/mp.sqrt(3)
         w = mp.one
         return [-x, x], [w, w]
-    elif n == 3:
+    if n == 3:
         x = mp.sqrt('0.6')
         wx = mp.mpf('5/9')
         w0 = mp.mpf('8/9')

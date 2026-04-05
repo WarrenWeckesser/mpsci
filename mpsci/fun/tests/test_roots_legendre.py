@@ -8,7 +8,7 @@ from mpsci.fun import roots_legendre
 def test_roots_legendre(n):
     # Note: This doesn't test the weights.  The function
     # test_gauss_legendre_quadrature below tests both roots and weights.
-    roots, weights = roots_legendre(n)
+    roots, _weights = roots_legendre(n)
     for root in roots:
         assert mp.almosteq(mp.legendre(n, root), 0, rel_eps=0, abs_eps=2*mp.eps)
 

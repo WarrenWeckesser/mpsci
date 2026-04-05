@@ -25,7 +25,7 @@ def test_sample_length_2():
 def test_pearsonr_ci():
     x = [0, 1, 3, 6, 10, 15, 21, 28, 36, 45]
     y = [0.0, 0.5625, 2.0625, 5.25, 11.25, 21.5625, 38.0625, 63.0,  99.0, 149.0625]
-    r, p = pearsonr(x, y)
+    r, _p = pearsonr(x, y)
     rlo, rhi = pearsonr_ci(r, len(x), alpha=0.05)
     # Reference values were checked with several independent sources.  They
     # were not high precision, so we check only about 8 significant digits.

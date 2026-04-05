@@ -1,4 +1,3 @@
-import re
 import operator
 from mpmath import mp
 

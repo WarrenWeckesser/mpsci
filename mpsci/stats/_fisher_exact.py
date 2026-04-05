@@ -18,8 +18,7 @@ def _comb(n, k):
             ktok *= t
             n -= 1
         return ntok // ktok
-    else:
-        return 0
+    return 0
 
 
 def _num_combs(a, row0sum, col0sum, n):
@@ -125,7 +124,7 @@ def fisher_exact(table, alternative='two-sided'):
     elif alternative == "less":
         start, stop = a_min, a
     else:
-        raise ValueError("invalid alternative %r" % (alternative,))
+        raise ValueError(f"invalid alternative: {alternative}")
 
     count = 0
     for m00 in range(start, stop + 1):
