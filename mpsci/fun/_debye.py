@@ -9,6 +9,8 @@ def debye(x, *, n, method='quad'):
 
         D_n(x) = (n/x**2) * integral_0^x t^n/(exp(t) - 1) dt
 
+    `n` must be an integer greater than 0.
+
     If ``method == 'quad'``,  ``mp.quad`` is used to evaluate the integral form
     of the function, so it might be necessary to set ``mp.dps`` to a value
     much larger than the desired output precision.  For example, ``mp.dps = 150``
@@ -37,7 +39,7 @@ def debye(x, *, n, method='quad'):
 
         def integrand(t):
             if t == 0:
-                if n == 0:
+                if n == 1:
                     return mp.one
                 return mp.zero
             return t**n / mp.expm1(t)
