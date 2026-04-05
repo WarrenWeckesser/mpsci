@@ -18,3 +18,18 @@ def test_debye_basic(x, n):
     dquad = debye(x, n=n, method='quad')
     dnsum = debye(x, n=n, method='nsum')
     assert mp.almosteq(dquad, dnsum)
+
+
+def test_debye_bad_n():
+    with pytest.raises(ValueError, match='n must be an integer greater than 0'):
+        debye(1.25, n=0)
+
+
+def test_debye_noninteger_n():
+    with pytest.raises(ValueError, match='n must be an integer'):
+        debye(1.25, n=2.25)
+
+
+def test_debye_bad_method():
+    with pytest.raises(ValueError, match="method must be 'quad' or 'nsum'"):
+        debye(1.25, n=3, method='plate of shrimp')
