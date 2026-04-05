@@ -1,6 +1,49 @@
-
 from mpmath import mp
 from mpsci.distributions import laplace
+
+
+@mp.workdps(90)
+def test_pdf():
+    x = -100
+    p = laplace.pdf(x)
+    # Wolfram Alpha:
+    #     PDF[LaplaceDistribution[0, 1],  -100]
+    refstr = ('1.86003798801041798147984790193155916867944614618839098356030'
+              '6938331645237947907859078559389321140748e-44')
+    assert mp.almosteq(p, mp.mpf(refstr))
+
+
+@mp.workdps(90)
+def test_logpdf():
+    x = 39
+    logp = laplace.logpdf(x)
+    # Wolfram Alpha:
+    #     Log[PDF[LaplaceDistribution[0, 1], 39]]
+    refstr = ('-39.69314718055994530941723212145817656807550013436025525412'
+              '0680009493393621969694715605863326996418688')
+    assert mp.almosteq(logp, mp.mpf(refstr))
+
+
+@mp.workdps(90)
+def test_cdf():
+    x = 125
+    p = laplace.cdf(x)
+    # Wolfram Alpha:
+    #     CDF[LaplaceDistribution[0, 1], 125]
+    refstr = ('0.9999999999999999999999999999999999999999999999999999997416'
+              '78968358106950987364069632122106786209953')
+    assert mp.almosteq(p, mp.mpf(refstr))
+
+
+@mp.workdps(90)
+def test_sf():
+    x = 125
+    p = laplace.sf(x)
+    # Wolfram Alpha:
+    #     SurvivalFunction[LaplaceDistribution[0, 1], 125]
+    refstr = ('2.5832103164189304901263593036787789321379004724067154776014'
+              '31651177057083104023220463576736247307508e-55')
+    assert mp.almosteq(p, mp.mpf(refstr))
 
 
 @mp.workdps(40)
