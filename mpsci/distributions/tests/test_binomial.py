@@ -45,6 +45,34 @@ def test_pmf_cdf_sf_basic(cdf_method):
 
 
 @mp.workdps(25)
+@pytest.mark.parametrize('n, p', [(1, 0.49),
+                                  (1, 0.5),
+                                  (1, 0.51),
+                                  (10, 0.25),
+                                  (11, 0.25),
+                                  (23, 1e-8),
+                                  (88, 0.5),
+                                  (89, 0.5),
+                                  (222, 0.113),
+                                  (1023, 0.975),
+                                  (1024, 0.975),
+                                  (48982338, 0.13)])
+def test_mode(n, p):
+    m = binomial.mode(n, p)
+    pm = binomial.pmf(m, n, p)
+    assert binomial.pmf(m - 1, n, p) < pm
+    assert binomial.pmf(m + 1, n, p) <= pm
+
+
+@pytest.mark.parametrize(
+    'n, p, mode',
+    [(0, 0, 0), (0, 0.12, 0), (0, 1, 0), (8, 0, 0), (8, 1, 8)]
+)
+def test_mode_edge_cases(n, p, mode):
+    assert binomial.mode(n, p) == mode
+
+
+@mp.workdps(25)
 def test_mean():
     n = 5
     p = mp.one/4

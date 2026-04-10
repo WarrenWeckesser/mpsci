@@ -143,6 +143,22 @@ def mean(n, p):
 
 
 @mp.extradps(5)
+def mode(n, p):
+    """
+    Mode of the binomial distribution.
+
+    When there are two values where the maximum PMF is attained (which occurs
+    when (n + 1)*p is an integer), the lower coordinate is returned.
+    """
+    n, p = _validate_np(n, p)
+    if n == 0 or p == 0:
+        return 0
+    if p == 1:
+        return int(n)
+    return int(mp.ceil((n + 1) * p) - 1)
+
+
+@mp.extradps(5)
 def var(n, p):
     """
     Variance of the binomial distribution.
