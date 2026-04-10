@@ -99,13 +99,12 @@ def cdf(k, n, p, method='incbeta'):
         # XXX For large values of k and/or n, betainc fails. The failure
         # occurs in one of the hypergeometric functions.
         return mp.betainc(n - k, k + 1, x1=0, x2=1 - p,
-                            regularized=True)
-    else:
-        # method is "sumpmf"
-        n, p = _validate_np(n, p)
-        c = mp.fsum([mp.exp(logpmf(t, n, p))
-                        for t in range(k + 1)])
-        return c
+                          regularized=True)
+    # method is "sumpmf"
+    n, p = _validate_np(n, p)
+    c = mp.fsum([mp.exp(logpmf(t, n, p))
+                 for t in range(k + 1)])
+    return c
 
 
 @mp.extradps(5)
@@ -126,13 +125,12 @@ def sf(k, n, p, method='incbeta'):
         # XXX For large values of k and/or n, betainc fails. The failure
         # occurs in one of the hypergeometric functions.
         return mp.betainc(n - k, k + 1, x1=1-p, x2=1,
-                            regularized=True)
-    else:
-        # method is "sumpmf"
-        n, p = _validate_np(n, p)
-        c = mp.fsum([mp.exp(logpmf(t, n, p))
-                        for t in range(k + 1, n + 1)])
-        return c
+                          regularized=True)
+    # method is "sumpmf"
+    n, p = _validate_np(n, p)
+    c = mp.fsum([mp.exp(logpmf(t, n, p))
+                 for t in range(k + 1, n + 1)])
+    return c
 
 
 @mp.extradps(5)
@@ -163,12 +161,12 @@ def nll(x, n, p, *, counts=None):
     """
     n, p = _validate_np(n, p)
     x = _validate_x_bounds(x, low=0, high=n,
-                            strict_low=False, strict_high=False)
+                           strict_low=False, strict_high=False)
     if not all([mp.isint(t) for t in x]):
         raise ValueError('all values in x must be integers')
     counts = _validate_counts(x, counts, expand_none=True)
     return -mp.fsum([count*logpmf(t, n, p)
-                        for t, count in zip(x, counts)])
+                     for t, count in zip(x, counts)])
 
 
 def _p_threshold(k):
@@ -208,7 +206,7 @@ def mle(x, *, counts=None, n=None, p=None):
     if not all_int:
         raise ValueError('all values in x must be integers')
     x = _validate_x_bounds(x, low=0, high=mp.inf,
-                            strict_low=False)
+                           strict_low=False)
     xmax = max(x)
     counts = _validate_counts(x, counts, expand_none=False)
     n_fixed = isfixed(n)
@@ -216,7 +214,7 @@ def mle(x, *, counts=None, n=None, p=None):
     if n_fixed:
         if xmax > n:
             raise ValueError(f'The fixed value of n ({n}) must not be '
-                                f'less than the maximum value in x ({xmax})')
+                             f'less than the maximum value in x ({xmax})')
         if p_fixed:
             # Other than validation, there is nothing to do.
             n, p = _validate_np(n, p)
@@ -232,7 +230,7 @@ def mle(x, *, counts=None, n=None, p=None):
     if not p_fixed:
         if n is not None and n.initial < xmax:
             raise ValueError(f"Initial guess for n ({n.initial}) must not "
-                                f"be less than max(x) ({xmax}))")
+                             f"be less than max(x) ({xmax}))")
         m = _mean(x, weights=counts)
 
         def mle_n_eqn(n):
@@ -245,13 +243,11 @@ def mle(x, *, counts=None, n=None, p=None):
             v = _wvar(x, weights=counts)
             if (m - v) > 0:
                 n0 = m**2/(m - v)
-                if n0 < xmax:
-                    n0 = xmax
+                n0 = max(n0, xmax)
             else:
                 n0 = xmax
         else:
             n0 = n.initial
-        # print(f"{n0 = }")
         nhat = mp.findroot(mle_n_eqn, n0)
         if nhat < xmax:
             nhat = xmax
@@ -268,8 +264,7 @@ def mle(x, *, counts=None, n=None, p=None):
         nll1 = nll(x, n=nhat1, p=phat1, counts=counts)
         if nll0 <= nll1:
             return nhat0, phat0
-        else:
-            return nhat1, phat1
+        return nhat1, phat1
     else:
         # n is free, p is fixed.
         _, p = _validate_np(1, p)
@@ -303,5 +298,4 @@ def mle(x, *, counts=None, n=None, p=None):
         nll1 = nll(x, n=nhat1, p=p, counts=counts)
         if nll0 <= nll1:
             return nhat0, p
-        else:
-            return nhat1, p
+        return nhat1, p
