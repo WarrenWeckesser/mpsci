@@ -21,7 +21,7 @@ from ._common import _validate_x_bounds, Initial, _validate_counts, _validate_in
 
 
 __all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf',
-           'mean', 'var', 'skewness', 'kurtosis',
+           'mean', 'mode', 'var', 'skewness', 'kurtosis',
            'nll', 'mle']
 
 
@@ -129,6 +129,16 @@ def mean(lam, n):
             return (n - mp.one)/2
         nlam = n*lam
         return -mp.exp(-lam)/mp.expm1(-lam) + n*mp.exp(-nlam)/mp.expm1(-nlam)
+
+
+def mode(lam, n):
+    """
+    Mode of the truncated discrete exponential distribution.
+
+    The PMF of this distribution is decreasing (or constant if `lam` is 0),
+    so the mode is always 0.
+    """
+    return 0
 
 
 def var(lam, n):

@@ -27,6 +27,11 @@ def test_mean(lam, n):
 
 
 @pytest.mark.parametrize('lam, n', [(0.25, 63), (0.001, 100), (0, 5)])
+def test_mode(lam, n):
+    assert trunc_discrete_exp.mode(lam, n) == 0
+
+
+@pytest.mark.parametrize('lam, n', [(0.25, 63), (0.001, 100), (0, 5)])
 @mp.workdps(50)
 def test_var(lam, n):
     v = trunc_discrete_exp.var(lam, n)
