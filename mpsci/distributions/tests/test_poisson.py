@@ -59,6 +59,15 @@ def test_sf(k, lam):
 
 
 @mp.workdps(25)
+@pytest.mark.parametrize('lam', [3e-75, 4e-24, 1, 2.5, 6, 8, 300.4, 5.6e10, 2.0**55])
+def test_mode(lam):
+    m = poisson.mode(lam)
+    pm = poisson.pmf(m, lam)
+    assert poisson.pmf(m - 1, lam) < pm
+    assert poisson.pmf(m + 1, lam) <= pm
+
+
+@mp.workdps(25)
 def test_skewness():
     lam = 16
     sk = poisson.skewness(lam)

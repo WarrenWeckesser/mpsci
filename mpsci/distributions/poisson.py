@@ -11,7 +11,7 @@ from ..stats import mean as _fmean
 
 
 __all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf',
-           'mean', 'var', 'skewness', 'kurtosis',
+           'mean', 'mode', 'var', 'skewness', 'kurtosis',
            'nll', 'mle']
 
 
@@ -93,6 +93,30 @@ def mean(lam):
     """
     lam = _validate_lam(lam)
     return lam
+
+
+@mp.extradps(5)
+def mode(lam):
+    """
+    Mode of the Poisson distribution.
+
+    If the mode occurs at two values, the smaller is returned.
+
+    Examples
+    --------
+    >>> from mpsci.distributions import poisson
+    >>> poisson.mode(17.25)
+    17
+    >>> poisson.mode(88.0)
+    87
+    >>> [(k, poisson.pmf(k, 88.0)) for k in range(86, 90)]
+    [(86, mpf('0.04200432869308768')),
+     (87, mpf('0.042487137068870297')),
+     (88, mpf('0.042487137068870297')),
+     (89, mpf('0.042009753506298721'))]
+    """
+    lam = _validate_lam(lam)
+    return int(mp.ceil(lam)) - 1
 
 
 @mp.extradps(5)
