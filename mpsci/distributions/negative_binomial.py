@@ -16,7 +16,7 @@ from ..stats import mean as _mean
 from ._common import Initial, _validate_counts, _validate_int
 
 
-__all__ = ['support', 'pmf', 'logpmf', 'sf', 'cdf', 'mean', 'var',
+__all__ = ['support', 'pmf', 'logpmf', 'sf', 'cdf', 'mean', 'mode', 'var',
            'nll', 'mle']
 
 
@@ -150,6 +150,17 @@ def mean(r, p):
     """
     r, p = _validate_params(r, p)
     return p*r / (1 - p)
+
+
+@mp.extradps(5)
+def mode(r, p):
+    """
+    Mode of the negative binomial distribution.
+    """
+    r, p = _validate_params(r, p)
+    if r <= 1:
+        return 0
+    return int(mp.ceil((r - 1) * p / (1 - p))) - 1
 
 
 @mp.extradps(5)

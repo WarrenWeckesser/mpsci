@@ -64,6 +64,18 @@ def test_mean():
 
 
 @mp.workdps(40)
+@pytest.mark.parametrize(
+    'r, p',
+    [(35, 0.875), (20, 0.12), (2, 1/16), (2, 15/16), (3.5, 11/16)]
+)
+def test_mode(r, p):
+    m = negative_binomial.mode(r, p)
+    pm = negative_binomial.pmf(m, r, p)
+    assert negative_binomial.pmf(m - 1, r, p) < pm
+    assert pm >= negative_binomial.pmf(m + 1, r, p)
+
+
+@mp.workdps(40)
 def test_var():
     r = 12.5
     p = 0.125
