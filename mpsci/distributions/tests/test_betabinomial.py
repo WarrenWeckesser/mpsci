@@ -61,6 +61,49 @@ def test_mean():
     assert m == 4.0
 
 
+def _mode_brute_force(n, a, b):
+    pmf = [betabinomial.pmf(k, n, a, b) for k in range(n + 1)]
+    # argmax(pmf):
+    return max(range(len(pmf)), key=pmf.__getitem__)   
+
+
+@pytest.mark.parametrize(
+    'n, a, b',
+    [(23, 1, 1), (16, 1, 1.75), (40, 0.5, 1), (21, 0.5, 0.7), (20, 0.6, 0.6),
+     (1, 0.1, 0.9),
+     (0, 0.5, 0.2), (0, 0.5, 1), (0, 0.5, 2), (0, 1, 0.2), (0, 1, 1), (0, 1, 2.4),
+     (0, 2.4, 0.2), (0, 2.5, 1), (0, 2.6, 1.3)]
+)
+def test_mode_zero(n, a, b):
+    # Cases where we know the mode must be 0.
+    m = betabinomial.mode(n, a, b)
+    assert m == 0
+
+
+@pytest.mark.parametrize(
+    'n, a, b',
+    [(23, 0.7, 0.25), (24, 0.7, 0.25), (16, 1.1, 1), (1, 0.95, 0.12)]
+)
+def test_mode_n(n, a, b):
+    # Cases where we know the mode must be n.
+    m = betabinomial.mode(n, a, b)
+    assert m == n
+
+
+@pytest.mark.parametrize(
+    'n, a, b',
+    [(18, 2, 2), (19, 2, 2), (4, 1.2, 1.1), (5, 18.25, 2), (1, 1.1, 1.5)]
+)
+def test_mode_a_b_gt_1(n, a, b):
+    m = betabinomial.mode(n, a, b)
+    ref = _mode_brute_force(n, a, b)
+    assert m == ref
+    if a != b:
+        m2 = betabinomial.mode(n, b, a)
+        ref2 = _mode_brute_force(n, b, a)
+        assert m2 == ref2
+
+
 @mp.workdps(50)
 def test_var():
     n = 10

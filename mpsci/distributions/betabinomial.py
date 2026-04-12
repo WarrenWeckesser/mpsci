@@ -131,6 +131,34 @@ def mean(n, a, b):
 
 
 @mp.extradps(5)
+def mode(n, a, b):
+    """
+    Mode of the beta-binomial distribution.
+
+    Returns the integer k at which pmf(k, a, b) has the largest value.
+    If the maximum value occurs more than once, the smallest k is returned.
+    """
+    n, a, b = _validate_params(n, a, b)
+    if a < 1:
+        if b < 1:
+            # The PMF is U-shaped, so the end points are local maxima.
+            # Return the end point which has the larger PMF.
+            if a <= b:
+                return 0
+            return n
+        return 0
+    if a == 1:
+        if b < 1:
+            return n
+        return 0
+    # a > 1
+    if b <= 1:
+        return n
+    # a > 1 and b > 1.
+    return int(mp.ceil((n + 1) * (a - 1) / (a + b - 2))) - 1
+
+
+@mp.extradps(5)
 def var(n, a, b):
     """
     Variance of the beta-binomial distribution.
