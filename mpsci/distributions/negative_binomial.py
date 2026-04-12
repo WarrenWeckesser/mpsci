@@ -64,6 +64,7 @@ def _validate_x(x):
     return y
 
 
+@mp.extradps(5)
 def logpmf(k, r, p):
     """
     Log of the probability mass function of the negative binomial distribution.
@@ -75,14 +76,14 @@ def logpmf(k, r, p):
     p : float
         Probability of success.
     """
-    with mp.extradps(5):
-        r, p = _validate_params(r, p)
-        k = _validate_int(k)
-        if k < 0:
-            return mp.ninf
-        return logbinomial(k + r - 1, k) + xlog1py(r, -p) + xlogy(k, p)
+    r, p = _validate_params(r, p)
+    k = _validate_int(k)
+    if k < 0:
+        return mp.ninf
+    return logbinomial(k + r - 1, k) + xlog1py(r, -p) + xlogy(k, p)
 
 
+@mp.extradps(5)
 def pmf(k, r, p):
     """
     Probability mass function of the negative binomial distribution.
@@ -97,6 +98,7 @@ def pmf(k, r, p):
     return mp.exp(logpmf(k, r, p))
 
 
+@mp.extradps(5)
 def sf(k, r, p):
     """
     Survival function of the negative binomial distribution.
@@ -108,14 +110,14 @@ def sf(k, r, p):
     p : float
         Probability of success.
     """
-    with mp.extradps(5):
-        r, p = _validate_params(r, p)
-        k = _validate_int(k)
-        if k < 0:
-            return mp.one
-        return mp.betainc(k + 1, r, 0, p, regularized=True)
+    r, p = _validate_params(r, p)
+    k = _validate_int(k)
+    if k < 0:
+        return mp.one
+    return mp.betainc(k + 1, r, 0, p, regularized=True)
 
 
+@mp.extradps(5)
 def cdf(k, r, p):
     """
     Cumulative distribution function of the negative binomial distribution.
@@ -127,14 +129,14 @@ def cdf(k, r, p):
     p : float
         Probability of success.
     """
-    with mp.extradps(5):
-        r, p = _validate_params(r, p)
-        k = _validate_int(k)
-        if k < 0:
-            return mp.zero
-        return mp.betainc(k + 1, r, p, 1, regularized=True)
+    r, p = _validate_params(r, p)
+    k = _validate_int(k)
+    if k < 0:
+        return mp.zero
+    return mp.betainc(k + 1, r, p, 1, regularized=True)
 
 
+@mp.extradps(5)
 def mean(r, p):
     """
     Mean of the negative binomial distribution.
@@ -146,11 +148,11 @@ def mean(r, p):
     p : float
         Probability of success.
     """
-    with mp.extradps(5):
-        r, p = _validate_params(r, p)
-        return p*r / (1 - p)
+    r, p = _validate_params(r, p)
+    return p*r / (1 - p)
 
 
+@mp.extradps(5)
 def var(r, p):
     """
     Variance of the negative binomial distribution.
@@ -162,11 +164,11 @@ def var(r, p):
     p : float
         Probability of success.
     """
-    with mp.extradps(5):
-        r, p = _validate_params(r, p)
-        return p*r / (1 - p)**2
+    r, p = _validate_params(r, p)
+    return p*r / (1 - p)**2
 
 
+@mp.extradps(5)
 def nll(x, r, p, *, counts=None):
     """
     Negative log-likelihood of sample for the negative binomial distribution.
@@ -184,81 +186,80 @@ def nll(x, r, p, *, counts=None):
         It gives the number of occurrences in the sample of the corresponding
         value in `x`.
     """
-    with mp.extradps(5):
-        r, p = _validate_params(r, p)
-        x = _validate_x(x)
-        counts = _validate_counts(x, counts, expand_none=True)
-        return -mp.fsum([count*logpmf(xi, r, p)
-                         for xi, count in zip(x, counts)])
+    r, p = _validate_params(r, p)
+    x = _validate_x(x)
+    counts = _validate_counts(x, counts, expand_none=True)
+    return -mp.fsum([count*logpmf(xi, r, p)
+                     for xi, count in zip(x, counts)])
 
 
+@mp.extradps(5)
 def mle(x, *, counts=None, r=None, p=None, allow_noninteger_r=True):
     """
     Maximum likelihood estimation for the negative binomial distribution.
 
     x  must be a sequence of nonnegative integers.
     """
-    with mp.extradps(5):
-        x = _validate_x(x)
-        counts = _validate_counts(x, counts, expand_none=False)
-        r_fixed = not (r is None or isinstance(r, Initial))
-        p_fixed = not (p is None or isinstance(p, Initial))
-        if r_fixed:
-            if p_fixed:
-                # Other than validation, there is nothing to do.
-                r, p = _validate_params(r, p, allow_noninteger_r)
-                return r, p
-            else:
-                # XXX p=Initial(...) is ignored.  Should Initial be disallowed
-                # for p?
-                r, _ = _validate_params(r, 0.5, allow_noninteger_r)
-                m = _mean(x, weights=counts)
-                phat = m/(r + m)
-                return r, phat
-        # r is not fixed.
-        if not p_fixed:
-            m = _mean(x, weights=counts)
-
-            def mle_r_eqn(r):
-                p1 = m/(r + m)
-                return (_mean([mp.digamma(xi + r) for xi in x], weights=counts)
-                        - mp.digamma(r) + mp.log1p(-p1))
-
-            r0 = 1 if r is None else r.initial
-            rhat = mp.findroot(mle_r_eqn, r0)
-            phat = m/(rhat + m)
-            if allow_noninteger_r or rhat == int(rhat):
-                return rhat, phat
-            # Integer r is required.
-            rhat0 = mp.floor(rhat)
-            rhat1 = mp.ceil(rhat)
-            phat0 = m/(rhat0 + m)
-            phat1 = m/(rhat1 + m)
-            nll0 = nll(x, r=rhat0, p=phat0, counts=counts)
-            nll1 = nll(x, r=rhat1, p=phat1, counts=counts)
-            if nll0 <= nll1:
-                return rhat0, phat0
-            else:
-                return rhat1, phat1
+    x = _validate_x(x)
+    counts = _validate_counts(x, counts, expand_none=False)
+    r_fixed = not (r is None or isinstance(r, Initial))
+    p_fixed = not (p is None or isinstance(p, Initial))
+    if r_fixed:
+        if p_fixed:
+            # Other than validation, there is nothing to do.
+            r, p = _validate_params(r, p, allow_noninteger_r)
+            return r, p
         else:
-            # r is free, p is fixed.
-            _, p = _validate_params(1, p)
+            # XXX p=Initial(...) is ignored.  Should Initial be disallowed
+            # for p?
+            r, _ = _validate_params(r, 0.5, allow_noninteger_r)
             m = _mean(x, weights=counts)
+            phat = m/(r + m)
+            return r, phat
+    # r is not fixed.
+    if not p_fixed:
+        m = _mean(x, weights=counts)
 
-            def mle_r_eqn(r):
-                return (_mean([mp.digamma(xi + r) for xi in x], weights=counts)
-                        - mp.digamma(r) + mp.log1p(-p))
+        def mle_r_eqn(r):
+            p1 = m/(r + m)
+            return (_mean([mp.digamma(xi + r) for xi in x], weights=counts)
+                    - mp.digamma(r) + mp.log1p(-p1))
 
-            r0 = 1 if r is None else r.initial
-            rhat = mp.findroot(mle_r_eqn, r0)
-            if allow_noninteger_r or rhat == int(rhat):
-                return rhat, p
-            # Integer r is required.
-            rhat0 = mp.floor(rhat)
-            rhat1 = mp.ceil(rhat)
-            nll0 = nll(x, r=rhat0, p=p, counts=counts)
-            nll1 = nll(x, r=rhat1, p=p, counts=counts)
-            if nll0 <= nll1:
-                return rhat0, p
-            else:
-                return rhat1, p
+        r0 = 1 if r is None else r.initial
+        rhat = mp.findroot(mle_r_eqn, r0)
+        phat = m/(rhat + m)
+        if allow_noninteger_r or rhat == int(rhat):
+            return rhat, phat
+        # Integer r is required.
+        rhat0 = mp.floor(rhat)
+        rhat1 = mp.ceil(rhat)
+        phat0 = m/(rhat0 + m)
+        phat1 = m/(rhat1 + m)
+        nll0 = nll(x, r=rhat0, p=phat0, counts=counts)
+        nll1 = nll(x, r=rhat1, p=phat1, counts=counts)
+        if nll0 <= nll1:
+            return rhat0, phat0
+        else:
+            return rhat1, phat1
+    else:
+        # r is free, p is fixed.
+        _, p = _validate_params(1, p)
+        m = _mean(x, weights=counts)
+
+        def mle_r_eqn(r):
+            return (_mean([mp.digamma(xi + r) for xi in x], weights=counts)
+                    - mp.digamma(r) + mp.log1p(-p))
+
+        r0 = 1 if r is None else r.initial
+        rhat = mp.findroot(mle_r_eqn, r0)
+        if allow_noninteger_r or rhat == int(rhat):
+            return rhat, p
+        # Integer r is required.
+        rhat0 = mp.floor(rhat)
+        rhat1 = mp.ceil(rhat)
+        nll0 = nll(x, r=rhat0, p=p, counts=counts)
+        nll1 = nll(x, r=rhat1, p=p, counts=counts)
+        if nll0 <= nll1:
+            return rhat0, p
+        else:
+            return rhat1, p
