@@ -20,6 +20,7 @@ def _validate(ntotal, ngood, untilnbad):
         raise ValueError('untilnbad must not be greater than ntotal - ngood')
 
 
+@mp.extradps(5)
 def pmf(k, ntotal, ngood, untilnbad):
     """
     Probability mass function of the negative hypergeometric distribution.
@@ -29,13 +30,13 @@ def pmf(k, ntotal, ngood, untilnbad):
     if k < 0 or k > ngood:
         return mp.zero
 
-    with mp.extradps(5):
-        b1 = mp.binomial(k + untilnbad - 1, k)
-        b2 = mp.binomial(ntotal - untilnbad - k, ngood - k)
-        b3 = mp.binomial(ntotal, ngood)
-        return b1 * (b2 / b3)
+    b1 = mp.binomial(k + untilnbad - 1, k)
+    b2 = mp.binomial(ntotal - untilnbad - k, ngood - k)
+    b3 = mp.binomial(ntotal, ngood)
+    return b1 * (b2 / b3)
 
 
+@mp.extradps(5)
 def logpmf(k, ntotal, ngood, untilnbad):
     """
     Logarithm of the prob. mass function of the negative hypergeometric distr.
@@ -45,11 +46,10 @@ def logpmf(k, ntotal, ngood, untilnbad):
     if k < 0 or k > ngood:
         return mp.ninf
 
-    with mp.extradps(5):
-        t1 = logbinomial(k + untilnbad - 1, k)
-        t2 = logbinomial(ntotal - untilnbad - k, ngood - k)
-        t3 = logbinomial(ntotal, ngood)
-        return mp.fsum([t1, t2, -t3])
+    t1 = logbinomial(k + untilnbad - 1, k)
+    t2 = logbinomial(ntotal - untilnbad - k, ngood - k)
+    t3 = logbinomial(ntotal, ngood)
+    return mp.fsum([t1, t2, -t3])
 
 
 def cdf(k, ntotal, ngood, untilnbad):
@@ -78,6 +78,7 @@ def sf(k, ntotal, ngood, untilnbad):
     return hg_cdf(untilnbad - 1, ntotal, ntotal - ngood, k + untilnbad)
 
 
+@mp.extradps(5)
 def mean(ntotal, ngood, untilnbad):
     """
     Mean of the negative hypergeometric distribution.
@@ -87,6 +88,7 @@ def mean(ntotal, ngood, untilnbad):
     return mp.mpf(untilnbad) * ngood / (ntotal - ngood + 1)
 
 
+@mp.extradps(5)
 def var(ntotal, ngood, untilnbad):
     """
     Variance of the negative hypergeometric distribution.
