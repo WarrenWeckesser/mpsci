@@ -22,6 +22,7 @@ def _validate(ntotal, ngood, nsample):
                          f'ntotal ({ntotal})')
 
 
+@mp.extradps(5)
 def pmf(k, ntotal, ngood, nsample):
     """
     Probability mass function of the hypergeometric distribution.
@@ -35,6 +36,7 @@ def pmf(k, ntotal, ngood, nsample):
     return pmf
 
 
+@mp.extradps(5)
 def logpmf(k, ntotal, ngood, nsample):
     """
     Logarithm of the PMF of the hypergeometric distribution.
@@ -44,18 +46,18 @@ def logpmf(k, ntotal, ngood, nsample):
     """
     _validate(ntotal, ngood, nsample)
     nbad = ntotal - ngood
-    with mp.extradps(5):
-        # numerator terms
-        terms = [mp.log(ntotal + 1),
-                 logbeta(ntotal - nsample + 1, nsample + 1)]
-        # denominator terms
-        terms.extend([-mp.log(ngood + 1),
-                      -mp.log(nbad + 1),
-                      -logbeta(k + 1, ngood - k + 1),
-                      -logbeta(nsample - k + 1, nbad - nsample + k + 1)])
-        return mp.fsum(terms)
+    # numerator terms
+    terms = [mp.log(ntotal + 1),
+             logbeta(ntotal - nsample + 1, nsample + 1)]
+    # denominator terms
+    terms.extend([-mp.log(ngood + 1),
+                  -mp.log(nbad + 1),
+                  -logbeta(k + 1, ngood - k + 1),
+                  -logbeta(nsample - k + 1, nbad - nsample + k + 1)])
+    return mp.fsum(terms)
 
 
+@mp.extradps(5)
 def cdf(k, ntotal, ngood, nsample):
     """
     Cumulative distribution function of the hypergeometric distribution.
@@ -64,6 +66,7 @@ def cdf(k, ntotal, ngood, nsample):
     return 1 - sf(k, ntotal, ngood, nsample)
 
 
+@mp.extradps(5)
 def sf(k, ntotal, ngood, nsample):
     """
     Survival function of the hypergeometric distribution.
@@ -134,24 +137,24 @@ def support_pmf(ntotal, ngood, nsample):
     return sup, p
 
 
+@mp.extradps(5)
 def mean(ntotal, ngood, nsample):
     """
     Mean of the hypergeometric distribution.
     """
-    with mp.extradps(5):
-        _validate(ntotal, ngood, nsample)
-        return nsample * mp.mpf(ngood) / ntotal
+    _validate(ntotal, ngood, nsample)
+    return nsample * mp.mpf(ngood) / ntotal
 
 
+@mp.extradps(5)
 def var(ntotal, ngood, nsample):
     """
     Variance of the hypergeometric distribution.
     """
-    with mp.extradps(5):
-        _validate(ntotal, ngood, nsample)
-        ntotal = mp.mpf(ntotal)
-        ngood = mp.mpf(ngood)
-        nsample = mp.mpf(nsample)
-        nbad = ntotal - ngood
-        return (nsample * (ngood/ntotal) * (nbad/ntotal)
-                * ((ntotal - nsample)/(ntotal - 1)))
+    _validate(ntotal, ngood, nsample)
+    ntotal = mp.mpf(ntotal)
+    ngood = mp.mpf(ngood)
+    nsample = mp.mpf(nsample)
+    nbad = ntotal - ngood
+    return (nsample * (ngood/ntotal) * (nbad/ntotal)
+            * ((ntotal - nsample)/(ntotal - 1)))
