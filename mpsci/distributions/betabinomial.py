@@ -139,22 +139,10 @@ def mode(n, a, b):
     If the maximum value occurs more than once, the smallest k is returned.
     """
     n, a, b = _validate_params(n, a, b)
-    if a < 1:
-        if b < 1:
-            # The PMF is U-shaped, so the end points are local maxima.
-            # Return the end point which has the larger PMF.
-            if a <= b:
-                return 0
-            return n
+    if a <= 1 and b >= a:
         return 0
-    if a == 1:
-        if b < 1:
-            return n
-        return 0
-    # a > 1
-    if b <= 1:
+    if b <= 1 and a > b:
         return n
-    # a > 1 and b > 1.
     return int(mp.ceil((n + 1) * (a - 1) / (a + b - 2))) - 1
 
 
