@@ -7,7 +7,7 @@ from mpmath import mp
 from ..fun import logbeta
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'support_pmf', 'mean', 'var']
+__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'support_pmf', 'mean', 'mode', 'var']
 
 
 def _validate(ntotal, ngood, nsample):
@@ -144,6 +144,19 @@ def mean(ntotal, ngood, nsample):
     """
     _validate(ntotal, ngood, nsample)
     return nsample * mp.mpf(ngood) / ntotal
+
+
+@mp.extradps(5)
+def mode(ntotal, ngood, nsample):
+    """
+    Mode of the hypergeometric distribution.
+
+    If the PMF achieves its maximum at more than one input `k`,
+    the smaller `k` is returned.
+    """
+    _validate(ntotal, ngood, nsample)
+    r = (mp.mpf(nsample) + 1) * (mp.mpf(ngood) + 1) / (mp.mpf(ntotal) + 2)
+    return int(mp.ceil(r)) - 1
 
 
 @mp.extradps(5)

@@ -63,3 +63,18 @@ def test_var(ntotal, ngood, nsample, var):
     # The reference value was computed "by hand" from the formula.
     v = hypergeometric.var(ntotal, ngood, nsample)
     assert mp.almosteq(v, var)
+
+
+def _mode_brute_force(ntotal, ngood, nsample):
+    sup, pmf = hypergeometric.support_pmf(ntotal, ngood, nsample)
+    return sup[0] + max(range(len(pmf)), key=pmf.__getitem__)
+
+
+@mp.workdps(25)
+@pytest.mark.parametrize('ntotal, ngood, nsample',
+                         [(10, 3, 5), (21, 10, 4), (100, 15, 25), (10, 8, 4),
+                          (50, 45, 12), (21, 6, 0), (100, 0, 10), (2, 2, 1)])
+def test_mode(ntotal, ngood, nsample):
+    m = hypergeometric.mode(ntotal, ngood, nsample)
+    ref = _mode_brute_force(ntotal, ngood, nsample)
+    assert m == ref
