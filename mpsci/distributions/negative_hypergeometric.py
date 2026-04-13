@@ -1,6 +1,11 @@
 """
 Negative hypergeometric distribution
 ------------------------------------
+
+The parameterization used here is the same as that of the Wikipedia article
+https://en.wikipedia.org/wiki/Negative_hypergeometric_distribution: `ntotal = N`,
+`ngood = K`, and `untilnbad = r`.
+
 """
 
 from mpmath import mp
