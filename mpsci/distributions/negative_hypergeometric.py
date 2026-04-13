@@ -13,7 +13,8 @@ from ..fun import logbinomial
 from .hypergeometric import cdf as hg_cdf, sf as hg_sf
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'mode', 'var', 'support_pmf']
+__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'mode', 'var',
+           'support', 'support_pmf']
 
 
 def _validate(ntotal, ngood, untilnbad):
@@ -147,8 +148,7 @@ def support(ntotal, ngood, untilnbad):
         m = 1
     else:
         m = ngood + 1
-    support = range(m)
-    return support
+    return range(m)
 
 
 def support_pmf(ntotal, ngood, untilnbad):
@@ -171,7 +171,7 @@ def support_pmf(ntotal, ngood, untilnbad):
     else:
         m = ngood + 1
     p = []
-    support = range(m)
-    for k in support:
+    sup = range(m)
+    for k in sup:
         p.append(pmf(k, ntotal, ngood, untilnbad))
-    return support, p
+    return sup, p
