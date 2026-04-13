@@ -13,7 +13,7 @@ from ..fun import logbinomial
 from .hypergeometric import cdf as hg_cdf, sf as hg_sf
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var', 'support_pmf']
+__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'mean', 'mode', 'var', 'support_pmf']
 
 
 def _validate(ntotal, ngood, untilnbad):
@@ -91,6 +91,30 @@ def mean(ntotal, ngood, untilnbad):
     _validate(ntotal, ngood, untilnbad)
 
     return mp.mpf(untilnbad) * ngood / (ntotal - ngood + 1)
+
+
+@mp.extradps(5)
+def mode(ntotal, ngood, untilnbad):
+    """
+    Mode of the negative hypergeometric distribution.
+    """
+    _validate(ntotal, ngood, untilnbad)
+
+    if untilnbad == 0 or ngood == 0:
+        # In this case, the support is just the one point [0].
+        return 0
+
+    ngood = mp.mpf(ngood)
+    untilnbad = mp.mpf(untilnbad)
+
+    if ntotal > untilnbad * (ngood + 1):
+        # The PMF is decreasing.
+        return 0
+    t = ngood + untilnbad - 1
+    if t > (ntotal - t) * ngood:
+        # The PMF is increasing.
+        return ngood
+    return int(mp.ceil((untilnbad * (ngood + 1) - ntotal) / (ntotal - ngood - 1)))
 
 
 @mp.extradps(5)

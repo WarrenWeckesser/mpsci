@@ -142,6 +142,25 @@ def test_mean(ntotal, ngood, untilnbad):
 
 
 @pytest.mark.parametrize('ntotal, ngood, untilnbad',
+                         [(21, 11, 10), (21, 11, 7), (32, 24, 4), (200, 125, 17),
+                          (33, 24, 4), (199, 125, 15), (45, 30, 1),
+                          (50, 24, 3), (50, 24, 2), (50, 24, 1), (2000, 1750, 10)])
+@mp.workdps(50)
+def test_mode(ntotal, ngood, untilnbad):
+    m = negative_hypergeometric.mode(ntotal, ngood, untilnbad)
+    pm = negative_hypergeometric.pmf(m, ntotal, ngood, untilnbad)
+    pmp = negative_hypergeometric.pmf(m + 1, ntotal, ngood, untilnbad)
+    assert pm > negative_hypergeometric.pmf(m - 1, ntotal, ngood, untilnbad)
+    assert pm > pmp or mp.almosteq(pm, pmp)
+
+
+@pytest.mark.parametrize('ntotal, ngood, untilnbad', [(10, 0, 3), (25, 5, 0)])
+def test_mode_zero(ntotal, ngood, untilnbad):
+    m = negative_hypergeometric.mode(ntotal, ngood, untilnbad)
+    assert m == 0
+
+
+@pytest.mark.parametrize('ntotal, ngood, untilnbad',
                          [(33, 24, 4), (199, 125, 15)])
 @mp.workdps(50)
 def test_var(ntotal, ngood, untilnbad):
