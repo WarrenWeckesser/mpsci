@@ -70,7 +70,7 @@ _docstring_re_subs = [
 __all__ = ['support', 'pdf', 'logpdf',
            'cdf', 'logcdf', 'invcdf',
            'sf', 'logsf', 'invsf',
-           'median', 'mean', 'var',
+           'median', 'mode', 'mean', 'var',
            'nll']
 
 
@@ -203,6 +203,20 @@ def invsf(p, alpha, beta, scale):
 @mp.extradps(5)
 def median(alpha, beta, scale):
     return invcdf(0.5, alpha, beta, scale)
+
+
+@mp.extradps(5)
+def mode(alpha, beta, scale):
+    """
+    Mode of the Benini distribution.
+
+    If beta <= alpha * (alpha + 1) / 2, then the PDF is decreasing on x >= scale,
+    and the mode occurs at x = scale.
+    """
+    alpha, beta, scale = _validate_params(alpha, beta, scale)
+    if beta <= alpha * (alpha + 1) / 2:
+        return scale
+    return scale * mp.exp((-2*alpha + mp.sqrt(8*beta + 1) - 1)/(4*beta))
 
 
 @mp.extradps(5)

@@ -4,6 +4,27 @@ from mpsci.distributions import benini
 from ._expect import noncentral_moment_with_integral
 
 
+@pytest.mark.parametrize('b', [1, 6])
+def test_mode_endpoint(b):
+    a = 3
+    scale = 2.5
+    m = benini.mode(a, b, scale)
+    assert m == scale
+
+
+@mp.workdps(50)
+def test_mode_interior():
+    # A crude test of the mode.
+    a = 10
+    b = 60  # b > a*(a + 1)/2
+    scale = 1
+    m = benini.mode(a, b, scale)
+    pm = benini.pdf(m, a, b, scale)
+    delta = mp.sqrt(mp.eps)
+    assert benini.pdf(m - delta, a, b, scale) < pm
+    assert benini.pdf(m + delta, a, b, scale) < pm
+
+
 @pytest.mark.parametrize('alpha, beta, scale',
                          [(0.125, 25, 1),
                           (0.125, 25, 3),
