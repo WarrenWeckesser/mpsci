@@ -144,6 +144,23 @@ def test_mean_small_dfd():
     assert m == mp.inf
 
 
+@pytest.mark.parametrize('dfn, dfd', [(1, 3), (1.5, 10), (2, 9)])
+def test_mode_dfn_le_2(dfn, dfd):
+    m = f.mode(dfn, dfd)
+    assert m == 0
+
+
+@pytest.mark.parametrize('dfn, dfd', [(2.125, 1), (12, 8), (13, 13), (32, 31)])
+@mp.workdps(50)
+def test_mode(dfn, dfd):
+    # A crude test of the mode.
+    m = f.mode(dfn, dfd)
+    pm = f.pdf(m, dfn, dfd)
+    delta = mp.sqrt(mp.eps)
+    assert f.pdf(m - delta, dfn, dfd) < pm
+    assert f.pdf(m + delta, dfn, dfd) < pm
+
+
 @mp.workdps(25)
 def test_var():
     v = f.var(10, 12)

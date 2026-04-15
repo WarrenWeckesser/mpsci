@@ -10,7 +10,7 @@ from ..fun import logbeta, xlogy, xlog1py, betaincinv
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'support', 'mean', 'var', 'entropy']
+           'support', 'mean', 'mode', 'var', 'entropy']
 
 
 def _validate_params(dfn, dfd):
@@ -146,6 +146,21 @@ def mean(dfn, dfd):
     if dfd > 2:
         return dfd/(dfd - 2)
     return mp.inf
+
+
+@mp.extradps(5)
+def mode(dfn, dfd):
+    """
+    Mode of the F distribution.
+
+    `dfn` and `dfd` are the numerator and denominator degrees of freedom, resp.
+
+    If `dfn` <= 2, the mode is 0.
+    """
+    dfn, dfd = _validate_params(dfn, dfd)
+    if dfn <= 2:
+        return mp.zero
+    return (dfn - 2) / dfn * (dfd / (dfd + 2))
 
 
 @mp.extradps(5)
