@@ -24,60 +24,61 @@ def _validate_params(mu, sigma):
     return mp.mpf(mu), mp.mpf(sigma)
 
 
+@mp.extradps(5)
 def pdf(x, mu=0, sigma=1):
     """
     Log-normal distribution probability density function.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.zero
-        lnx = mp.log(x)
-        return mp.npdf(lnx, mu, sigma) / x
+    mu, sigma = _validate_params(mu, sigma)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.zero
+    lnx = mp.log(x)
+    return mp.npdf(lnx, mu, sigma) / x
 
 
+@mp.extradps(5)
 def logpdf(x, mu=0, sigma=1):
     """
     Natural logarithm of the PDF of the log-normal distribution.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        x = mp.mpf(x)
-        if x <= 0:
-            return -mp.inf
-        lnx = mp.log(x)
-        t = -(lnx - mu)**2 / (2*sigma**2)
-        return (-mp.log(x) - mp.log(sigma)
-                - 0.5*mp.log(2*mp.pi) + t)
+    mu, sigma = _validate_params(mu, sigma)
+    x = mp.mpf(x)
+    if x <= 0:
+        return -mp.inf
+    lnx = mp.log(x)
+    t = -(lnx - mu)**2 / (2*sigma**2)
+    return (-mp.log(x) - mp.log(sigma)
+            - 0.5*mp.log(2*mp.pi) + t)
 
 
+@mp.extradps(5)
 def cdf(x, mu=0, sigma=1):
     """
     Log-normal distribution cumulative distribution function.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.zero
-        lnx = mp.log(x)
-        return mp.ncdf(lnx, mu, sigma)
+    mu, sigma = _validate_params(mu, sigma)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.zero
+    lnx = mp.log(x)
+    return mp.ncdf(lnx, mu, sigma)
 
 
+@mp.extradps(5)
 def sf(x, mu=0, sigma=1):
     """
     Log-normal distribution survival function.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.mp.one
-        lnx = mp.log(x)
-        return mp.ncdf(-lnx, -mu, sigma)
+    mu, sigma = _validate_params(mu, sigma)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.mp.one
+    lnx = mp.log(x)
+    return mp.ncdf(-lnx, -mu, sigma)
 
 
+@mp.extradps(5)
 def invcdf(p, mu=0, sigma=1):
     """
     Log-normal distribution inverse CDF.
@@ -85,108 +86,108 @@ def invcdf(p, mu=0, sigma=1):
     This function is also known as the quantile function or the percent
     point function.
     """
-    with mp.extradps(5):
-        p = _validate_p(p)
-        mu, sigma = _validate_params(mu, sigma)
-        a = mp.erfinv(2*p - 1)
-        x = mp.exp(mp.sqrt(2)*sigma*a + mu)
-        return x
+    p = _validate_p(p)
+    mu, sigma = _validate_params(mu, sigma)
+    a = mp.erfinv(2*p - 1)
+    x = mp.exp(mp.sqrt(2)*sigma*a + mu)
+    return x
 
 
+@mp.extradps(5)
 def invsf(p, mu=0, sigma=1):
     """
     Log-normal distribution inverse survival function.
     """
-    with mp.extradps(5):
-        p = _validate_p(p)
-        mu, sigma = _validate_params(mu, sigma)
-        return invcdf(1 - p, mu, sigma)
+    p = _validate_p(p)
+    mu, sigma = _validate_params(mu, sigma)
+    return invcdf(1 - p, mu, sigma)
 
 
+@mp.extradps(5)
 def support(mu=0, sigma=1):
     """
     Support of the lognormal distribution.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        return (mp.zero, mp.inf)
+    mu, sigma = _validate_params(mu, sigma)
+    return (mp.zero, mp.inf)
 
 
+@mp.extradps(5)
 def mean(mu=0, sigma=1):
     """
     Mean of the lognormal distribution.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        return mp.exp(mu + sigma**2/2)
+    mu, sigma = _validate_params(mu, sigma)
+    return mp.exp(mu + sigma**2/2)
 
 
+@mp.extradps(5)
 def var(mu=0, sigma=1):
     """
     Variance of the lognormal distribution.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        sigma2 = sigma**2
-        return mp.expm1(sigma2) * mp.exp(2*mu + sigma2)
+    mu, sigma = _validate_params(mu, sigma)
+    sigma2 = sigma**2
+    return mp.expm1(sigma2) * mp.exp(2*mu + sigma2)
 
 
+@mp.extradps(5)
 def skewness(mu=0, sigma=1):
     """
     Skewness of the lognormal distribution.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        sigma2 = sigma**2
-        return (mp.exp(sigma2) + 2) * mp.sqrt(mp.expm1(sigma2))
+    mu, sigma = _validate_params(mu, sigma)
+    sigma2 = sigma**2
+    return (mp.exp(sigma2) + 2) * mp.sqrt(mp.expm1(sigma2))
 
 
+@mp.extradps(5)
 def kurtosis(mu=0, sigma=1):
     """
     Kurtosis of the lognormal distribution.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        sigma2 = sigma**2
-        return (mp.exp(4*sigma2) + 2*mp.exp(3*sigma2)
-                + 3*mp.exp(2*sigma2) - 6)
+    mu, sigma = _validate_params(mu, sigma)
+    sigma2 = sigma**2
+    return (mp.exp(4*sigma2) + 2*mp.exp(3*sigma2)
+            + 3*mp.exp(2*sigma2) - 6)
 
 
+@mp.extradps(5)
 def entropy(mu=0, sigma=1):
     """
     Differential entropy of the lognormal distribution.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        return mp.log(sigma) + mu + 0.5 + 0.5*mp.log(2*mp.pi)
+    mu, sigma = _validate_params(mu, sigma)
+    return mp.log(sigma) + mu + 0.5 + 0.5*mp.log(2*mp.pi)
 
 
+@mp.extradps(5)
 def noncentral_moment(n, mu=0, sigma=1):
     """
     Noncentral moment of the lognormal distribution.
     """
     n = _validate_moment_n(n)
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        return mp.exp(n*mu + n**2*sigma**2/2)
+    mu, sigma = _validate_params(mu, sigma)
+    return mp.exp(n*mu + n**2*sigma**2/2)
 
 
+@mp.extradps(5)
 def nll(x, mu, sigma):
     """
     Negative log-likelihood of a sample for the log-normal distribution.
 
     x must be a sequence of numbers.
     """
-    with mp.extradps(5):
-        mu, sigma = _validate_params(mu, sigma)
-        x = _validate_x_bounds(x, low=0, high=mp.inf,
-                               strict_low=True, strict_high=True)
-        return -mp.fsum([logpdf(xi, mu, sigma) for xi in x])
+    mu, sigma = _validate_params(mu, sigma)
+    x = _validate_x_bounds(x, low=0, high=mp.inf,
+                           strict_low=True, strict_high=True)
+    return -mp.fsum([logpdf(xi, mu, sigma) for xi in x])
 
 
 # XXX Add standard errors and confidence intervals for the fitted parameters.
 
 
+@mp.extradps(5)
 def mle(x):
     """
     Log-normal distribution maximum likelihood parameter estimation.
@@ -195,16 +196,16 @@ def mle(x):
 
     Returns (mu, sigma).
     """
-    with mp.extradps(5):
-        x = _validate_x_bounds(x, low=0, strict_low=True)
-        lnx = [mp.log(t) for t in x]
-        N = len(x)
-        meanx = sum(lnx) / N
-        var = sum((lnxi - meanx)**2 for lnxi in lnx) / N
-        sigma = mp.sqrt(var)
-        return meanx, sigma
+    x = _validate_x_bounds(x, low=0, strict_low=True)
+    lnx = [mp.log(t) for t in x]
+    N = len(x)
+    meanx = sum(lnx) / N
+    var = sum((lnxi - meanx)**2 for lnxi in lnx) / N
+    sigma = mp.sqrt(var)
+    return meanx, sigma
 
 
+@mp.extradps(5)
 def mom(x):
     """
     Method of moments parameter estimation for the log-normal distribution.
@@ -213,11 +214,10 @@ def mom(x):
 
     Returns (mu, sigma).
     """
-    with mp.extradps(5):
-        x = _validate_x_bounds(x, low=0, strict_low=True)
-        logsumx = mp.log(mp.fsum(x))
-        logsumx2 = mp.log(mp.fsum([mp.mpf(t)**2 for t in x]))
-        logn = mp.log(len(x))
-        mu = -logsumx2/2 + 2*logsumx - 3*logn/2
-        sigma = mp.sqrt(logsumx2 - 2*logsumx + logn)
-        return mu, sigma
+    x = _validate_x_bounds(x, low=0, strict_low=True)
+    logsumx = mp.log(mp.fsum(x))
+    logsumx2 = mp.log(mp.fsum([mp.mpf(t)**2 for t in x]))
+    logn = mp.log(len(x))
+    mu = -logsumx2/2 + 2*logsumx - 3*logn/2
+    sigma = mp.sqrt(logsumx2 - 2*logsumx + logn)
+    return mu, sigma
