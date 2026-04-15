@@ -24,7 +24,7 @@ from ._common import _validate_x_bounds, _validate_p,  _find_bracket
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'support', 'mean', 'var', 'entropy',
+           'support', 'mean', 'mode', 'var', 'entropy',
            'nll', 'mle']
 
 
@@ -140,6 +140,15 @@ def mean(nu, loc=0, scale=1):
     gratio = mp.gammaprod([nu + 0.5], [nu])
     mean0 = gratio / mp.sqrt(nu)
     return loc + scale*mean0
+
+
+@mp.extradps(5)
+def mode(nu, loc=0, scale=1):
+    """
+    Mode of the Nakagami distribution.
+    """
+    nu, loc, scale = _validate_params(nu, loc, scale)
+    return loc + scale * mp.sqrt(1 - 1/(2 * nu))
 
 
 @mp.extradps(5)

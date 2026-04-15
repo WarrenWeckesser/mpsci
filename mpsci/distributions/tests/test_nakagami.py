@@ -157,6 +157,25 @@ def test_mean(nu, scale, ref):
     assert mp.almosteq(m, ref)
 
 
+@pytest.mark.parametrize('loc, scale', [(0, 1), (1, 3)])
+def test_mode_nu_eq_half(loc, scale):
+    nu = 0.5
+    m = nakagami.mode(nu, loc, scale)
+    assert m == loc
+
+
+@pytest.mark.parametrize('nu', [0.625, 1.5, 10, 125, 1000])
+@pytest.mark.parametrize('loc, scale', [(0, 1), (1, 3)])
+@mp.workdps(55)
+def test_mode(nu, loc, scale):
+    # A crude test of the mode.
+    m = nakagami.mode(nu, loc, scale)
+    pm = nakagami.pdf(m, nu, loc, scale)
+    delta = mp.sqrt(mp.eps)
+    assert nakagami.pdf((1 + delta) * m, nu, loc, scale) < pm
+    assert nakagami.pdf((1 - delta) * m, nu, loc, scale) < pm
+
+
 # Reference values are computed with Wolfram Alpha.
 # Given nu and scale (loc=0), the variance is
 #     Variance[NakagamiDistribution[nu, scale**2]]
