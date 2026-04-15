@@ -1,3 +1,4 @@
+import pytest
 from mpmath import mp
 from mpsci.distributions import invgamma
 
@@ -47,6 +48,24 @@ def test_mean():
     scale = 3
     m = invgamma.mean(a, scale=scale)
     assert m == mp.mpf(3)/4
+
+
+@pytest.mark.parametrize('a, loc, scale',
+                         [(1, 0, 1), (2, 1, 2.5), (3, -1, 4), (5, 0, 0.25)])
+@mp.workdps(50)
+def test_mode(a, loc, scale):
+    # A crude test of the mode.
+    m = invgamma.mode(a, loc, scale)
+    pm = invgamma.pdf(m, a, loc, scale)
+    delta = mp.sqrt(mp.eps)
+    if m == 0:
+        left = -delta
+        right = delta
+    else:
+        left = (1 - mp.sign(m) * delta) * m
+        right = (1 + mp.sign(m) * delta) * m
+    assert invgamma.pdf(left, a, loc, scale) < pm
+    assert invgamma.pdf(right, a, loc, scale) < pm
 
 
 @mp.workdps(50)

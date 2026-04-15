@@ -25,7 +25,7 @@ __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
 
 def _validate_params(a, loc, scale):
     if a <= 0:
-        raise ValueError('m must be positive')
+        raise ValueError('`a` must be positive')
     if scale <= 0:
         raise ValueError('scale must be positive')
     a = mp.mpf(a)
