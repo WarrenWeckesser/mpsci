@@ -77,6 +77,23 @@ def test_sf_invsf_roundtrip(x, k, scale):
     assert mp.almosteq(x1, x)
 
 
+@pytest.mark.parametrize('k, scale', [(1, 3), (0.5, 1), (0.125, 20)])
+def test_mode_k_le_1(k, scale):
+    m = gamma.mode(k, scale)
+    assert m == 0
+
+
+@pytest.mark.parametrize('k, scale', [(1.5, 1), (12.5, 0.125), (32, 4)])
+@mp.workdps(50)
+def test_mode(k, scale):
+    # A crude test of the mode.
+    m = gamma.mode(k, scale)
+    pm = gamma.pdf(m, k, scale)
+    delta = mp.sqrt(mp.eps)
+    assert gamma.pdf(m - delta, k, scale) < pm
+    assert gamma.pdf(m + delta, k, scale) < pm
+
+
 @mp.workdps(25)
 def test_variance():
     k = 2.5

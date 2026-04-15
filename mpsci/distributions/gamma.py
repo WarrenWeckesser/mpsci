@@ -176,6 +176,17 @@ def mean(k, scale):
 
 
 @mp.extradps(5)
+def mode(k, scale):
+    """
+    Mode of the gamma distribution.
+    """
+    k, scale = _validate_k_scale(k, scale)
+    if k <= 1:
+        return mp.zero
+    return scale * (k - 1)
+
+
+@mp.extradps(5)
 def var(k, scale):
     """
     Variance of the gamma distribution.
