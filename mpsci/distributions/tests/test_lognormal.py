@@ -97,6 +97,17 @@ def test_mean():
         assert mp.almosteq(mean, expected)
 
 
+@pytest.mark.parametrize('mu, sigma', [(0, 1), (1, 3), (-1.5, 4), (4.5, 0.125)])
+@mp.workdps(50)
+def test_mode(mu, sigma):
+    # A crude test of the mode.
+    m = lognormal.mode(mu, sigma)
+    pm = lognormal.pdf(m, mu, sigma)
+    delta = mp.sqrt(mp.eps)
+    assert lognormal.pdf((1 + delta) * m, mu, sigma) < pm
+    assert lognormal.pdf((1 - delta) * m, mu, sigma) < pm
+
+
 def test_var():
     mu = -1
     sigma = 3/4

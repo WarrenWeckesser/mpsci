@@ -13,7 +13,7 @@ from ._common import _validate_p, _validate_moment_n, _validate_x_bounds
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
            'support',
-           'mean', 'var', 'skewness', 'kurtosis', 'entropy',
+           'mean', 'mode', 'var', 'skewness', 'kurtosis', 'entropy',
            'noncentral_moment',
            'nll', 'mle', 'mom']
 
@@ -119,6 +119,15 @@ def mean(mu=0, sigma=1):
     """
     mu, sigma = _validate_params(mu, sigma)
     return mp.exp(mu + sigma**2/2)
+
+
+@mp.extradps(5)
+def mode(mu=0, sigma=1):
+    """
+    Mode of the lognormal distribution.
+    """
+    mu, sigma = _validate_params(mu, sigma)
+    return mp.exp(mu - sigma**2)
 
 
 @mp.extradps(5)
