@@ -34,6 +34,7 @@ def _validate_k_scale(k, scale):
     return mp.mpf(k), mp.mpf(scale)
 
 
+@mp.extradps(5)
 def pdf(x, k, scale):
     """
     Gamma distribution probability density function.
@@ -43,27 +44,27 @@ def pdf(x, k, scale):
 
     Unlike scipy, a location parameter is not included.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.zero
-        return mp.rgamma(k) / scale**k * x**(k-1) * mp.exp(-x/scale)
+    k, scale = _validate_k_scale(k, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.zero
+    return mp.rgamma(k) / scale**k * x**(k-1) * mp.exp(-x/scale)
 
 
+@mp.extradps(5)
 def logpdf(x, k, scale):
     """
     Log of the PDF of the gamma distribution.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.ninf
-        return (-mp.loggamma(k) - k*mp.log(scale) +
-                (k - 1)*mp.log(x) - x/scale)
+    k, scale = _validate_k_scale(k, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.ninf
+    return (-mp.loggamma(k) - k*mp.log(scale) +
+            (k - 1)*mp.log(x) - x/scale)
 
 
+@mp.extradps(5)
 def cdf(x, k, scale):
     """
     Gamma distribution cumulative distribution function.
@@ -73,12 +74,11 @@ def cdf(x, k, scale):
 
     Unlike scipy, a location parameter is not included.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.zero
-        return mp.gammainc(k, 0, x/scale, regularized=True)
+    k, scale = _validate_k_scale(k, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.zero
+    return mp.gammainc(k, 0, x/scale, regularized=True)
 
 
 def invcdf(p, k, scale):
@@ -102,16 +102,16 @@ def invcdf(p, k, scale):
         return x
 
 
+@mp.extradps(5)
 def sf(x, k, scale):
     """
     Survival function of the gamma distribution.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.one
-        return mp.gammainc(k, x/scale, mp.inf, regularized=True)
+    k, scale = _validate_k_scale(k, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.one
+    return mp.gammainc(k, x/scale, mp.inf, regularized=True)
 
 
 def invsf(p, k, scale):
@@ -135,6 +135,7 @@ def invsf(p, k, scale):
         return x
 
 
+@mp.extradps(5)
 def interval_prob(x1, x2, k, scale):
     """
     Compute the probability of x in [x1, x2] for the gamma distribution.
@@ -148,60 +149,60 @@ def interval_prob(x1, x2, k, scale):
 
     x1 must be less than or equal to x2.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        x1 = mp.mpf(x1)
-        x2 = mp.mpf(x2)
-        if x1 > x2:
-            raise ValueError('x1 must not be greater than x2')
-        return mp.gammainc(k, x1/scale, x2/scale, regularized=True)
+    k, scale = _validate_k_scale(k, scale)
+    x1 = mp.mpf(x1)
+    x2 = mp.mpf(x2)
+    if x1 > x2:
+        raise ValueError('x1 must not be greater than x2')
+    return mp.gammainc(k, x1/scale, x2/scale, regularized=True)
 
 
+@mp.extradps(5)
 def support(k, scale):
     """
     Support of the gamma distribution.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        return (mp.zero, mp.inf)
+    k, scale = _validate_k_scale(k, scale)
+    return (mp.zero, mp.inf)
 
 
+@mp.extradps(5)
 def mean(k, scale):
     """
     Mean of the gamma distribution.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        return k * scale
+    k, scale = _validate_k_scale(k, scale)
+    return k * scale
 
 
+@mp.extradps(5)
 def var(k, scale):
     """
     Variance of the gamma distribution.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        return k * scale**2
+    k, scale = _validate_k_scale(k, scale)
+    return k * scale**2
 
 
+@mp.extradps(5)
 def skewness(k, scale):
     """
     Skewness of the gamma distribution.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        return 2/mp.sqrt(k)
+    k, scale = _validate_k_scale(k, scale)
+    return 2/mp.sqrt(k)
 
 
+@mp.extradps(5)
 def kurtosis(k, scale):
     """
     Excess kurtosis of the gamma distribution.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        return 6/k
+    k, scale = _validate_k_scale(k, scale)
+    return 6/k
 
 
+@mp.extradps(5)
 def noncentral_moment(n, k, scale):
     """
     n-th noncentral moment of the gamma distribution.
@@ -209,22 +210,22 @@ def noncentral_moment(n, k, scale):
     n must be a nonnegative integer.
     """
     n = _validate_moment_n(n)
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        if n == 0:
-            return mp.one
-        return scale**n * mp.gammaprod([k + n], [k])
+    k, scale = _validate_k_scale(k, scale)
+    if n == 0:
+        return mp.one
+    return scale**n * mp.gammaprod([k + n], [k])
 
 
+@mp.extradps(5)
 def entropy(k, scale):
     """
     Differential entropy of the gamma distribution.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        return k + mp.log(scale) + mp.loggamma(k) + (1 - k)*mp.psi(0, k)
+    k, scale = _validate_k_scale(k, scale)
+    return k + mp.log(scale) + mp.loggamma(k) + (1 - k)*mp.psi(0, k)
 
 
+@mp.extradps(5)
 def mom(x):
     """
     Parameter estimation by the method of moments for the gamma distribution.
@@ -233,10 +234,9 @@ def mom(x):
 
     Returns the estimates of the shape k and the scale.
     """
-    with mp.extradps(5):
-        m = stats.mean(x)
-        v = stats.var(x)
-        return m**2/v, v/m
+    m = stats.mean(x)
+    v = stats.var(x)
+    return m**2/v, v/m
 
 
 def mle(x, *, k=None, scale=None):
@@ -286,94 +286,95 @@ def mle(x, *, k=None, scale=None):
     return k_hat, scale_hat
 
 
+@mp.extradps(5)
 def nll(x, k, scale):
     """
     Gamma distribution negative log-likelihood.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        x = _validate_x_bounds(x, low=0, high=mp.inf,
-                               strict_low=False, strict_high=True)
-        N = len(x)
-        sumx = mp.fsum(x)
-        sumlnx = mp.fsum(mp.log(t) for t in x)
+    k, scale = _validate_k_scale(k, scale)
+    x = _validate_x_bounds(x, low=0, high=mp.inf,
+                           strict_low=False, strict_high=True)
+    N = len(x)
+    sumx = mp.fsum(x)
+    sumlnx = mp.fsum(mp.log(t) for t in x)
 
-        ll = ((k - 1)*sumlnx - sumx/scale - N*k*mp.log(scale) -
-              N*mp.loggamma(k))
-        return -ll
+    ll = ((k - 1)*sumlnx - sumx/scale - N*k*mp.log(scale) -
+          N*mp.loggamma(k))
+    return -ll
 
 
+@mp.extradps(5)
 def nll_grad(x, k, scale):
     """
     Gamma distribution gradient of the negative log-likelihood function.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
+    k, scale = _validate_k_scale(k, scale)
 
-        N = len(x)
-        sumx = mp.fsum(x)
-        sumlnx = mp.fsum(mp.log(t) for t in x)
+    N = len(x)
+    sumx = mp.fsum(x)
+    sumlnx = mp.fsum(mp.log(t) for t in x)
 
-        dk = sumlnx - N*mp.log(scale) - N*mp.digamma(k)
-        dscale = sumx/scale**2 - N*k/scale
-        return [-dk, -dscale]
+    dk = sumlnx - N*mp.log(scale) - N*mp.digamma(k)
+    dscale = sumx/scale**2 - N*k/scale
+    return [-dk, -dscale]
 
 
+@mp.extradps(5)
 def nll_hess(x, k, scale):
     """
     Gamma distribution hessian of the negative log-likelihood function.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
+    k, scale = _validate_k_scale(k, scale)
 
-        N = len(x)
-        sumx = mp.fsum(x)
-        # sumlnx = mp.fsum(mpmath.log(t) for t in x)
+    N = len(x)
+    sumx = mp.fsum(x)
+    # sumlnx = mp.fsum(mpmath.log(t) for t in x)
 
-        dk2 = -N*mp.psi(1, k)
-        dkdscale = -N/scale
-        dscale2 = -2*sumx/scale**3 + N*k/scale**2
+    dk2 = -N*mp.psi(1, k)
+    dkdscale = -N/scale
+    dscale2 = -2*sumx/scale**3 + N*k/scale**2
 
-        return mp.matrix([[-dk2, -dkdscale], [-dkdscale, -dscale2]])
+    return mp.matrix([[-dk2, -dkdscale], [-dkdscale, -dscale2]])
 
 
+@mp.extradps(5)
 def nll_invhess(x, k, scale):
     """
     Gamma distribution inverse of the hessian of the negative log-likelihood.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
+    k, scale = _validate_k_scale(k, scale)
 
-        N = len(x)
-        sumx = mp.fsum(x)
-        # sumlnx = mp.fsum(mpmath.log(t) for t in x)
+    N = len(x)
+    sumx = mp.fsum(x)
+    # sumlnx = mp.fsum(mpmath.log(t) for t in x)
 
-        dk2 = -N*mp.psi(1, k)
-        dkdscale = -N/scale
-        dscale2 = -2*sumx/scale**3 + N*k/scale**2
+    dk2 = -N*mp.psi(1, k)
+    dkdscale = -N/scale
+    dscale2 = -2*sumx/scale**3 + N*k/scale**2
 
-        det = dk2*dscale2 - dkdscale**2
+    det = dk2*dscale2 - dkdscale**2
 
-        return mp.matrix([[-dscale2/det, dkdscale/det],
-                          [dkdscale/det, -dk2/det]])
+    return mp.matrix([[-dscale2/det, dkdscale/det],
+                      [dkdscale/det, -dk2/det]])
 
 
 #
 # The following are experimental and not thoroughly checked.
 #
 
+@mp.extradps(5)
 def _mle_se(x, k, scale):
     """
     Standard errors of the MLE estimates k and scale for the sequence x.
 
     This function assumes that both k and scale were estimated from x.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        invhess_diag = _nll_invhess_diag(x, k, scale)
-        return (mp.sqrt(invhess_diag[0]), mp.sqrt(invhess_diag[1]))
+    k, scale = _validate_k_scale(k, scale)
+    invhess_diag = _nll_invhess_diag(x, k, scale)
+    return (mp.sqrt(invhess_diag[0]), mp.sqrt(invhess_diag[1]))
 
 
+@mp.extradps(5)
 def _mle_ci(x, k, scale, alpha):
     """
     Confidence intervals of the MLE estimates k and scale for the sequence x.
@@ -383,29 +384,28 @@ def _mle_ci(x, k, scale, alpha):
     The values are based on the asymptotic normality of the estimates.
     These are not the exact confidence intervals.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
-        kse, scalese = _mle_se(x, k, scale)
-        w = normal.invcdf(alpha/2)
-        return (k + w*kse, k - w*kse), (scale + w*scalese, scale - w*scalese)
+    k, scale = _validate_k_scale(k, scale)
+    kse, scalese = _mle_se(x, k, scale)
+    w = normal.invcdf(alpha/2)
+    return (k + w*kse, k - w*kse), (scale + w*scalese, scale - w*scalese)
 
 
+@mp.extradps(5)
 def _nll_invhess_diag(x, k, scale):
     """
     Diagonal elements of the inverse of the hessian of the negative
     log-likelihood of the gamma distribution.
     """
-    with mp.extradps(5):
-        k, scale = _validate_k_scale(k, scale)
+    k, scale = _validate_k_scale(k, scale)
 
-        N = len(x)
-        sumx = mp.fsum(x)
-        # sumlnx = mp.fsum(mp.log(t) for t in x)
+    N = len(x)
+    sumx = mp.fsum(x)
+    # sumlnx = mp.fsum(mp.log(t) for t in x)
 
-        dk2 = -N*mp.psi(1, k)
-        dkdscale = -N/scale
-        dscale2 = -2*sumx/scale**3 + N*k/scale**2
+    dk2 = -N*mp.psi(1, k)
+    dkdscale = -N/scale
+    dscale2 = -2*sumx/scale**3 + N*k/scale**2
 
-        det = dk2*dscale2 - dkdscale**2
+    det = dk2*dscale2 - dkdscale**2
 
-        return (-dscale2/det, -dk2/det)
+    return (-dscale2/det, -dk2/det)
