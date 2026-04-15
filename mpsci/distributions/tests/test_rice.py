@@ -45,6 +45,19 @@ def test_mean():
     assert mp.almosteq(m, mp.mpf(val))
 
 
+@pytest.mark.parametrize('nu, sigma',
+                         [(2, 3), (10, 0.5), (0.125, 1), (0.125, 0.0625),
+                          (1000, 0.0625)])
+@mp.workdps(55)
+def test_mode(nu, sigma):
+    # A crude test of the mode.
+    m = rice.mode(nu, sigma)
+    pm = rice.pdf(m, nu, sigma)
+    delta = mp.sqrt(mp.eps)
+    assert rice.pdf((1 + delta) * m, nu, sigma) < pm
+    assert rice.pdf((1 - delta) * m, nu, sigma) < pm
+
+
 @mp.workdps(55)
 def test_var():
     nu = 2

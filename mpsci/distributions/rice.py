@@ -110,6 +110,25 @@ def mean(nu, sigma):
 
 
 @mp.extradps(5)
+def mode(nu, sigma):
+    """
+    Mode of the Rice distribution.
+
+    The mode is computed by numerically solving an implicit equation.
+    An exception is raised if the numerical solver fails to converge.
+    """
+    nu, sigma = _validate_params(nu, sigma)
+    r = nu / sigma**2
+
+    def eq(x):
+        return ((sigma + x) * (sigma - x)
+                + x * nu * mp.besseli(1, r * x) / mp.besseli(0, r * x))
+
+    m = mp.findroot(eq, x0=mean(nu, sigma))
+    return m
+
+
+@mp.extradps(5)
 def var(nu, sigma):
     """
     Variance of the Rice distribution.
