@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import invgamma
+from ._expect import check_entropy_with_integral
 
 
 @mp.workdps(50)
@@ -94,3 +95,11 @@ def test_kurtosis():
     # Wolfram Alpha: Kurtosis[InverseGammaDistribution[5, 3]] - 3
     ref = 42
     assert mp.almosteq(sk, ref)
+
+
+@mp.workdps(50)
+def test_entropy():
+    a = 2
+    loc = 1
+    scale = 7.5
+    check_entropy_with_integral(invgamma, (a, loc, scale))
