@@ -16,6 +16,7 @@ of the corresponding shape parameter `c` in `scipy.stats.genextreme`.
 
 from mpmath import mp
 from ._common import _validate_p, _validate_moment_n
+from mpsci.fun import pow1pm1
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'logcdf', 'invcdf', 'sf', 'logsf', 'invsf',
@@ -40,7 +41,7 @@ def pdf(x, xi, mu=0, sigma=1):
         bound = mu - sigma/xi
         if xi > 0 and x <= bound:
             return mp.zero
-        if xi < 0 and x >= bound:
+        if xi < 0 and x > bound:
             return mp.zero
 
     # Formula from wikipedia, which has a sign convention for xi that
@@ -196,6 +197,26 @@ def mean(xi, mu=0, sigma=1):
         return mu + sigma * (g1 - mp.one)/xi
     else:
         return mp.inf
+
+
+@mp.extradps(5)
+def mode(xi, mu=0, sigma=1):
+    """
+    Mode of the generalized extreme value distribution.
+
+    If xi < -1, this function returns the upper bound of the support as
+    the mode.  Note that when xi < -1, the PDF(x) approaches infinity as x
+    approaches the support bound from below.
+    """
+    xi, mu, sigma = _validate_params(xi, mu, sigma)
+    if xi < -1:
+        # When xi < -1, the support is (-inf, mu - sigma/xi) and the PDF goes
+        # to infinity as x -> -1/xi from below. So we return the support
+        # boundary as the mode.
+        return mu - sigma/xi
+    if xi == 0:
+        return mu
+    return mu + sigma * pow1pm1(xi, -xi) / xi
 
 
 @mp.extradps(5)

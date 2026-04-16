@@ -27,6 +27,15 @@ def test_basic_logpdf():
 
 
 @mp.workdps(50)
+def test_pdf_xi_pos_x_at_bound():
+    xi = mp.mpf(2)
+    mu = 0
+    sigma = 1
+    p = genextreme.pdf(-1/xi, xi, mu, sigma)
+    assert p == 0
+
+
+@mp.workdps(50)
 def test_basic_cdf():
     # The expected value was computed "by hand".
     expected = mp.exp(mp.mpf('-0.5'))
@@ -144,6 +153,36 @@ def test_mean_xi_zero():
 @mp.workdps(50)
 def test_inf_mean():
     assert genextreme.mean(2, 3, 2) == mp.inf
+
+
+@pytest.mark.parametrize(
+    'xi, mu, sigma',
+    [(-1, 0.25, 1), (-0.25, 0, 3), (0, 0, 1), (0, 2, 3), (0.75, -10, 25),
+     (2, 4, 2.5), (3, -1, 4), (8, -3, 0.25)]
+)
+@mp.workdps(50)
+def test_mode_xi_ge_neg1(xi, mu, sigma):
+    # A crude test of the mode.
+    m = genextreme.mode(xi, mu, sigma)
+    pm = genextreme.pdf(m, xi, mu, sigma)
+    delta = mp.sqrt(mp.eps)
+    if m == 0:
+        left = -delta
+        right = delta
+    else:
+        left = (1 - mp.sign(m) * delta) * m
+        right = (1 + mp.sign(m) * delta) * m
+    assert genextreme.pdf(left, xi, mu, sigma) < pm
+    assert genextreme.pdf(right, xi, mu, sigma) < pm
+
+
+@pytest.mark.parametrize('xi, mu, sigma',
+                         [(-1.25, 2, 3), (-2, 0, 1), (-5, -1, 0.125)])
+@mp.workdps(35)
+def test_mode_xi_lt_neg1(xi, mu, sigma):
+    m = genextreme.mode(xi, mu, sigma)
+    sup = genextreme.support(xi, mu, sigma)
+    assert mp.almosteq(m, sup[1])
 
 
 @mp.workdps(50)
