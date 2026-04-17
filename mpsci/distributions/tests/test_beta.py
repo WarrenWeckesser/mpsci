@@ -100,6 +100,30 @@ def test_mean():
     assert mp.almosteq(m, expected)
 
 
+# Cases where a > 1 and b > 1:
+@pytest.mark.parametrize('a, b',
+                         [(1.25, 1.5), (2, 2.5), (5, 1.125), (15, 31)])
+@mp.workdps(50)
+def test_mode_a_gt_1_and_b_gt_1(a, b):
+    # A crude test of the mode.
+    m = beta.mode(a, b)
+    pm = beta.pdf(m, a, b)
+    delta = mp.sqrt(mp.eps)
+    left = (1 - delta) * m
+    right = (1 + delta) * m
+    assert beta.pdf(left, a, b) < pm
+    assert beta.pdf(right, a, b) < pm
+
+
+# Mode edge cases...
+@pytest.mark.parametrize('a, b, mode',
+                         [(0.5, 0.125, 0), (1, 0.625, 1), (2.5, 0.75, 1),
+                          (0.75, 1, 0), (0.125, 3, 0), (1, 1, 0)])
+def test_mode_edge_case(a, b, mode):
+    m = beta.mode(a, b)
+    assert m == mode
+
+
 @pytest.mark.parametrize('a, b, expected',
                          [(1, 3, '0.0375'),
                           (0.5, 0.5, 0.125)])

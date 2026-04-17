@@ -154,6 +154,29 @@ def mean(a, b):
 
 
 @mp.extradps(5)
+def mode(a, b):
+    """
+    Mode of the beta distribution.
+
+    For parameter values where the PDF goes to infinity at either x=0
+    or x=1 (but not both), that x value is returned as the mode.
+    If the PDF goes to infinity at x=0 and x=1, or if a == b == 1, 0 is
+    returned as the mode.
+    """
+    a, b = _validate_a_b(a, b)
+    if a < 1:
+        return mp.zero
+    if a == 1:
+        if b < 1:
+            return mp.one
+        return mp.zero
+    if b <= 1:
+        return mp.one
+    # a > 1 and b > 1:
+    return (a - 1) / (a + b - 2)
+
+
+@mp.extradps(5)
 def var(a, b):
     """
     Variance of the beta distribution.
