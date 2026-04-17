@@ -31,6 +31,7 @@ __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
            'nll', 'mle', 'mom']
 
 
+@mp.extradps(5)
 def pdf(x, loc, scale):
     """
     Probability density function for the Gumbel distribution (for maxima).
@@ -38,13 +39,13 @@ def pdf(x, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        return mp.exp(logpdf(x, loc, scale))
+    x = mp.mpf(x)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    return mp.exp(logpdf(x, loc, scale))
 
 
+@mp.extradps(5)
 def logpdf(x, loc, scale):
     """
     Log of the PDF of the Gumbel distribution.
@@ -52,14 +53,14 @@ def logpdf(x, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        z = (x - loc) / scale
-        return -(z + mp.exp(-z)) - mp.log(scale)
+    x = mp.mpf(x)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    z = (x - loc) / scale
+    return -(z + mp.exp(-z)) - mp.log(scale)
 
 
+@mp.extradps(5)
 def cdf(x, loc, scale):
     """
     Cumulative distribution function for the Gumbel distribution.
@@ -67,14 +68,14 @@ def cdf(x, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        z = (x - loc) / scale
-        return mp.exp(-mp.exp(-z))
+    x = mp.mpf(x)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    z = (x - loc) / scale
+    return mp.exp(-mp.exp(-z))
 
 
+@mp.extradps(5)
 def invcdf(p, loc, scale):
     """
     Inverse of the CDF for the Gumbel distribution.
@@ -82,15 +83,15 @@ def invcdf(p, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mp.extradps(5):
-        p = mp.mpf(p)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        z = -mp.log(-mp.log(p))
-        x = scale*z + loc
-        return x
+    p = mp.mpf(p)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    z = -mp.log(-mp.log(p))
+    x = scale*z + loc
+    return x
 
 
+@mp.extradps(5)
 def sf(x, loc, scale):
     """
     Survival function for the Gumbel distribution.
@@ -98,14 +99,14 @@ def sf(x, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        z = (x - loc) / scale
-        return -mp.expm1(-mp.exp(-z))
+    x = mp.mpf(x)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    z = (x - loc) / scale
+    return -mp.expm1(-mp.exp(-z))
 
 
+@mp.extradps(5)
 def invsf(p, loc, scale):
     """
     Inverse of the survival function for the Gumbel distribution.
@@ -113,13 +114,12 @@ def invsf(p, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mp.extradps(5):
-        p = mp.mpf(p)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        z = -mp.log(-mp.log1p(-p))
-        x = scale*z + loc
-        return x
+    p = mp.mpf(p)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    z = -mp.log(-mp.log1p(-p))
+    x = scale*z + loc
+    return x
 
 
 def support(loc, scale):
@@ -132,6 +132,7 @@ def support(loc, scale):
     return (mp.ninf, mp.inf)
 
 
+@mp.extradps(5)
 def mean(loc, scale):
     """
     Mean of the Gumbel distribution.
@@ -139,12 +140,12 @@ def mean(loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mp.extradps(5):
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        return loc + mp.euler*scale
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    return loc + mp.euler*scale
 
 
+@mp.extradps(5)
 def var(loc, scale):
     """
     Variance of the Gumbel distribution.
@@ -152,12 +153,12 @@ def var(loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mp.extradps(5):
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        return mp.pi**2/6 * scale**2
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    return mp.pi**2/6 * scale**2
 
 
+@mp.extradps(5)
 def nll(x, loc, scale):
     """
     Negative log-likelihood function for the Gumbel distribution.
@@ -165,15 +166,14 @@ def nll(x, loc, scale):
     if scale <= 0:
         raise ValueError('scale must be positive.')
 
-    with mp.extradps(5):
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        n = len(x)
-        z = [(mp.mpf(xi) - loc)/scale for xi in x]
-        t1 = n*mp.log(scale)
-        t2 = mp.fsum(z)
-        t3 = mp.fsum([mp.exp(-zi) for zi in z])
-        return t1 + t2 + t3
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    n = len(x)
+    z = [(mp.mpf(xi) - loc)/scale for xi in x]
+    t1 = n*mp.log(scale)
+    t2 = mp.fsum(z)
+    t3 = mp.fsum([mp.exp(-zi) for zi in z])
+    return t1 + t2 + t3
 
 
 def _mle_scale_func(scale, x, xbar):
@@ -226,6 +226,7 @@ def _mle_scale_with_fixed_loc(scale, x, loc):
     return stats.mean(ez) + 1
 
 
+@mp.extradps(5)
 def mle(x, *, loc=None, scale=None):
     """
     Maximum likelihood estimates for the Gumbel distribution.
@@ -261,33 +262,33 @@ def mle(x, *, loc=None, scale=None):
     >>> gumbel_max.mle(x, scale=2)
     (mpf('9.1305625326153555632872'), mpf('2.0'))
     """
-    with mp.extradps(5):
-        x = _seq_to_mp(x)
+    x = _seq_to_mp(x)
 
-        if scale is None and loc is not None:
-            # Estimate scale with fixed loc.
-            loc = mp.mpf(loc)
-            # Initial guess for findroot.
-            s0 = stats.std([xi - loc for xi in x])
-            scale = mp.findroot(
-                lambda t: _mle_scale_with_fixed_loc(t, x, loc), s0
-            )
-            return loc, scale
-
-        if scale is None:
-            scale = _solve_mle_scale(x)
-        else:
-            scale = mp.mpf(scale)
-
-        if loc is None:
-            ex = [mp.exp(-xi / scale) for xi in x]
-            loc = -scale * mp.log(stats.mean(ex))
-        else:
-            loc = mp.mpf(loc)
-
+    if scale is None and loc is not None:
+        # Estimate scale with fixed loc.
+        loc = mp.mpf(loc)
+        # Initial guess for findroot.
+        s0 = stats.std([xi - loc for xi in x])
+        scale = mp.findroot(
+            lambda t: _mle_scale_with_fixed_loc(t, x, loc), s0
+        )
         return loc, scale
 
+    if scale is None:
+        scale = _solve_mle_scale(x)
+    else:
+        scale = mp.mpf(scale)
 
+    if loc is None:
+        ex = [mp.exp(-xi / scale) for xi in x]
+        loc = -scale * mp.log(stats.mean(ex))
+    else:
+        loc = mp.mpf(loc)
+
+    return loc, scale
+
+
+@mp.extradps(5)
 def mom(x):
     """
     Method of moments parameter estimation for the Gumbel-max distribution.
@@ -296,9 +297,8 @@ def mom(x):
 
     Returns (loc, scale).
     """
-    with mp.extradps(5):
-        M1 = _mean(x)
-        M2 = _mean([mp.mpf(t)**2 for t in x])
-        scale = mp.sqrt(6*(M2 - M1**2))/mp.pi
-        loc = M1 - scale*mp.euler
-        return loc, scale
+    M1 = _mean(x)
+    M2 = _mean([mp.mpf(t)**2 for t in x])
+    scale = mp.sqrt(6*(M2 - M1**2))/mp.pi
+    loc = M1 - scale*mp.euler
+    return loc, scale
