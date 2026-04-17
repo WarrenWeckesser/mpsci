@@ -9,6 +9,16 @@ from ._expect import (
 )
 
 
+def test_bad_k():
+    with pytest.raises(ValueError, match="k must be positive"):
+        gamma.pdf(1.5, k=-1, scale=3)
+
+
+def test_bad_scale():
+    with pytest.raises(ValueError, match="scale must be positive"):
+        gamma.pdf(1.5, k=1.25, scale=-2)
+
+
 @mp.workdps(25)
 def test_pdf_outside_support():
     p = gamma.pdf(-10, k=0.5, scale=1)
@@ -65,6 +75,15 @@ def test_cdf_invcdf_roundtrip(x, k, scale):
     assert mp.almosteq(x1, x)
 
 
+def test_invcdf_endpoints():
+    k = 1.5
+    scale = 8.75
+    x0 = gamma.invcdf(0, k, scale)
+    assert x0 == 0
+    x1 = gamma.invcdf(1, k, scale)
+    assert x1 == mp.inf
+
+
 @pytest.mark.parametrize('x, k, scale', [(0.01, 2, 3),
                                          (1, 2, 3),
                                          (0.5, 1, 1),
@@ -75,6 +94,15 @@ def test_sf_invsf_roundtrip(x, k, scale):
     p = gamma.sf(x, k, scale)
     x1 = gamma.invsf(p, k, scale)
     assert mp.almosteq(x1, x)
+
+
+def test_invcsf_endpoints():
+    k = 1.5
+    scale = 8.75
+    x0 = gamma.invsf(0, k, scale)
+    assert x0 == mp.inf
+    x1 = gamma.invsf(1, k, scale)
+    assert x1 == 0
 
 
 @pytest.mark.parametrize('k, scale', [(1, 3), (0.5, 1), (0.125, 20)])
@@ -128,6 +156,14 @@ def test_interval_prob():
     p = gamma.interval_prob(x1, x2, 2, 1)
     expected = gamma.cdf(x2, 2, 1) - gamma.cdf(x1, 2, 1)
     assert mp.almosteq(p, expected)
+
+
+@mp.workdps(80)
+def test_interval_prob_x1_gt_x2():
+    x1 = 3.0
+    x2 = 1.5
+    with pytest.raises(ValueError, match="x1 must not be greater than x2"):
+        gamma.interval_prob(x1, x2, 2, 1)
 
 
 @mp.workdps(80)
@@ -230,6 +266,57 @@ def test_mle_fixed_k(x):
                        lambda x, scale: gamma.nll(x, k=5, scale=scale), x)
 
 
+def test_mle_both_fixed():
+    # Trivial case: fix both k and scale.
+    x = [1, 1, 2, 3, 5, 8]
+    k0 = 2.75
+    scale0 = 1.5
+    k, scale = gamma.mle(x, k=k0, scale=scale0)
+    assert k == k0
+    assert scale == scale0
+
+
 def test_nll_bad_x():
     with pytest.raises(ValueError, match='All values in x'):
         gamma.nll([1, 3, -1.5, 2], 2, 3)
+
+
+def test_nll_grad():
+    x = [1, 1, 2, 3, 5, 8]
+    k = 1.75
+    scale = 3
+    g = gamma.nll_grad(x, k, scale)
+
+    dnll_dk = mp.diff(lambda t: gamma.nll(x, t, scale), k)
+    dnll_dscale = mp.diff(lambda t: gamma.nll(x, k, t), scale)
+    assert mp.almosteq(g[0], dnll_dk)
+    assert mp.almosteq(g[1], dnll_dscale)
+
+
+def test_nll_hess():
+    x = [1, 1, 2, 3, 5, 8]
+    k = 1.75
+    scale = 3
+    h = gamma.nll_hess(x, k, scale)
+
+    h00 = mp.diff(lambda t: gamma.nll_grad(x, t, scale)[0], k)
+    h01 = mp.diff(lambda t: gamma.nll_grad(x, k, t)[0], scale)
+    h10 = mp.diff(lambda t: gamma.nll_grad(x, t, scale)[1], k)
+    h11 = mp.diff(lambda t: gamma.nll_grad(x, k, t)[1], scale)
+    assert mp.almosteq(h[0, 0], h00)
+    assert mp.almosteq(h[0, 1], h01)
+    assert mp.almosteq(h[1, 0], h10)
+    assert mp.almosteq(h[1, 1], h11)
+
+
+def test_nll_invhess():
+    x = [1, 1, 2, 3, 5, 8]
+    k = 1.75
+    scale = 3
+    invh = gamma.nll_invhess(x, k, scale)
+
+    h = gamma.nll_hess(x, k, scale)
+    computed_inv = mp.inverse(h)
+    for i in range(2):
+        for j in range(2):
+            assert mp.almosteq(invh[i, j], computed_inv[i, j])
