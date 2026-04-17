@@ -8,6 +8,14 @@ from ._expect import (
 )
 
 
+def test_support_xi_eq_0():
+    xi = 0
+    mu = 4
+    sigma = 3
+    sup = genextreme.support(xi, mu, sigma)
+    assert sup == (mp.ninf, mp.inf)
+
+
 @mp.workdps(50)
 def test_basic_pdf():
     # The expected values were computed "by hand".
@@ -15,6 +23,50 @@ def test_basic_pdf():
     assert mp.almosteq(genextreme.pdf(6, 2, 3, 2), expected)
     expected = mp.exp(mp.mpf('-2'))/4
     assert mp.almosteq(genextreme.pdf(0, -2, 3, 2), expected)
+
+
+@mp.workdps(50)
+def test_pdf_from_wolfram_alpha():
+    x = 4
+    xi = 2
+    mu = 0
+    sigma = 1
+    p = genextreme.pdf(x, xi, mu, sigma)
+    # Wolfram Alpha (https://www.wolframalpha.com):
+    #    PDF[MaxStableDistribution[0, 1, 2], 4]
+    refstr = '0.02653819668791812038613348507131035805381896517857330'
+    assert mp.almosteq(p, mp.mpf(refstr))
+
+
+def test_pdf_bad_sigma():
+    x = 1
+    xi = -3
+    mu = 0
+    sigma = -0.25
+    with pytest.raises(ValueError, match='sigma must be positive'):
+        genextreme.pdf(x, xi, mu, sigma)
+
+
+@pytest.mark.parametrize('x, xi, mu, sigma', [(4, -2.5, -1, 5), (-6, 0.5, 3, 4)])
+@mp.workdps(50)
+def test_pdf_logpdf_outside_support(x, xi, mu, sigma):
+    p = genextreme.pdf(x, xi, mu, sigma)
+    assert p == 0
+    logp = genextreme.logpdf(x, xi, mu, sigma)
+    assert logp == mp.ninf
+
+
+@mp.workdps(50)
+def test_logpdf_xi_eq_0_from_wolfram_alpha():
+    x = 2.5
+    xi = 0
+    mu = -1
+    sigma = 1.5
+    logp = genextreme.logpdf(x, xi, mu, sigma)
+    # Wolfram Alpha (https://www.wolframalpha.com):
+    #    Log[PDF[MaxStableDistribution[-1, 3/2, 0], 5/2]]
+    refstr = '-2.8357704093059027781212531080960532013860446157206319'
+    assert mp.almosteq(logp, mp.mpf(refstr))
 
 
 @mp.workdps(50)
@@ -234,12 +286,31 @@ def test_entropy_with_integral():
     check_entropy_with_integral(genextreme, (xi, mu, sigma))
 
 
+@pytest.mark.parametrize('xi, mu, sigma', [(0.125, 2.5, 8.0),
+                                           (0.25, 0.0, 1.0),
+                                           (-1.25, 0.0, 1.0)])
 @mp.workdps(50)
-def test_skewness_with_integral():
-    xi = 0.125
-    mu = 2.5
-    sigma = 8.0
+def test_skewness_with_integral(xi, mu, sigma):
     check_skewness_with_integral(genextreme, (xi, mu, sigma))
+
+
+@mp.workdps(50)
+def test_skewness_xi_eq_0_with_custom_integral():
+    sk = genextreme.skewness(0, 0, 1)
+    with mp.extradps(2*mp.dps):
+        eps = mp.eps / 2
+        x0 = mp.lambertw(-eps, k=-1) - mp.log(eps)
+        mn = genextreme.mean(0, 0, 1)
+        sd = mp.sqrt(genextreme.var(0, 0, 1))
+        q = mp.quad(lambda x: ((x - mn)/sd)**3 * mp.exp(-(x + mp.exp(-x))),
+                    [x0, 0, mp.inf],
+                    method='tanh-sinh')
+    assert mp.almosteq(sk, q)
+
+
+def test_skewness_xi_gt_one_third():
+    sk = genextreme.skewness(0.75, 0, 1)
+    assert sk == mp.inf
 
 
 @mp.workdps(50)
@@ -248,3 +319,23 @@ def test_kurtosis_with_integral():
     mu = 2.5
     sigma = 8.0
     check_kurtosis_with_integral(genextreme, (xi, mu, sigma))
+
+
+@mp.workdps(50)
+def test_kurtosis_xi_eq_0_with_custom_integral():
+    k = genextreme.kurtosis(0, 0, 1)
+    with mp.extradps(2*mp.dps):
+        eps = mp.eps / 16
+        x0 = mp.lambertw(-eps, k=-1) - mp.log(eps)
+        mn = genextreme.mean(0, 0, 1)
+        sd = mp.sqrt(genextreme.var(0, 0, 1))
+        q = mp.quad(lambda x: ((x - mn)/sd)**4 * mp.exp(-(x + mp.exp(-x))),
+                    [x0, 0, mp.inf],
+                    method='tanh-sinh')
+    # Subtract 3 from q for the excess kurtosis.
+    assert mp.almosteq(k, q - 3)
+
+
+def test_kurtosis_xi_gt_one_fourth():
+    k = genextreme.kurtosis(0.5, 0, 1)
+    assert k == mp.inf
