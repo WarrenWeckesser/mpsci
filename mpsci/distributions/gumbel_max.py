@@ -114,6 +114,14 @@ def mean(loc, scale):
     return loc + mp.euler*scale
 
 
+def mode(loc, scale):
+    """
+    Mode of the Gumbel distribution.
+    """
+    loc, scale = _validate_loc_scale(loc, scale)
+    return loc
+
+
 @mp.extradps(5)
 def var(loc, scale):
     """

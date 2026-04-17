@@ -95,6 +95,23 @@ def test_mean():
     assert mp.almosteq(m, mp.mpf(valstr))
 
 
+@pytest.mark.parametrize('loc, scale',
+                         [(1.25, 1.5), (10, 25), (-5, 0.125)])
+@mp.workdps(50)
+def test_mode(loc, scale):
+    m = gumbel_min.mode(loc, scale)
+    # We know the mode should be loc.
+    assert m == loc
+
+    # Crude test of the PDF at points close to the mode.
+    pm = gumbel_min.pdf(m, loc, scale)
+    delta = mp.sqrt(mp.eps)
+    left = (1 - delta) * m
+    right = (1 + delta) * m
+    assert gumbel_min.pdf(left, loc, scale) < pm
+    assert gumbel_min.pdf(right, loc, scale) < pm
+
+
 @mp.workdps(50)
 def test_var():
     loc = 2
