@@ -182,6 +182,15 @@ def mean(k, theta):
 
 
 @mp.extradps(5)
+def mode(k, theta):
+    """
+    Mode of the log-gamma distribution.
+    """
+    k, theta = _validate_k_theta(k, theta)
+    return theta * mp.log(k)
+
+
+@mp.extradps(5)
 def var(k, theta):
     """
     Variance of the log-gamma distribution.

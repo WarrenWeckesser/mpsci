@@ -68,6 +68,24 @@ def test_mean():
         assert mp.almosteq(mean, expected)
 
 
+@pytest.mark.parametrize('k, theta',
+                         [(1, 1), (0.125, 2.5), (100, 0.0625), (5, 25)])
+@mp.workdps(50)
+def test_mode(k, theta):
+    # A crude test of the mode.
+    m = loggamma.mode(k, theta)
+    pm = loggamma.pdf(m, k, theta)
+    delta = mp.sqrt(mp.eps)
+    if m == 0:
+        left = -delta
+        right = delta
+    else:
+        left = (1 - mp.sign(m) * delta) * m
+        right = (1 + mp.sign(m) * delta) * m
+    assert loggamma.pdf(left, k, theta) < pm
+    assert loggamma.pdf(right, k, theta) < pm
+
+
 def test_var():
     with mp.workdps(50):
         k = mp.mpf(2)
