@@ -35,111 +35,111 @@ def _validate_params(c, beta, scale):
     return mp.mpf(c), mp.mpf(beta), mp.mpf(scale)
 
 
+@mp.extradps(5)
 def pdf(x, c, beta, scale):
     """
     Probability density function of the Gamma/Gompertz distribution.
     """
-    with mp.extradps(5):
-        c, beta, scale = _validate_params(c, beta, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.zero
-        z = x/scale
-        num = c * mp.exp(z) * mp.power(beta, c)
-        den = scale * mp.power(beta + mp.expm1(z), c + 1)
-        return num / den
+    c, beta, scale = _validate_params(c, beta, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.zero
+    z = x/scale
+    num = c * mp.exp(z) * mp.power(beta, c)
+    den = scale * mp.power(beta + mp.expm1(z), c + 1)
+    return num / den
 
 
+@mp.extradps(5)
 def logpdf(x, c, beta, scale):
     """
     Probability density function of the Gamma/Gompertz distribution.
     """
-    with mp.extradps(5):
-        c, beta, scale = _validate_params(c, beta, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.ninf
-        z = x/scale
-        return (mp.log(c) + z + c*mp.log(beta)
-                - (c + 1)*mp.log(beta + mp.expm1(z)) - mp.log(scale))
+    c, beta, scale = _validate_params(c, beta, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.ninf
+    z = x/scale
+    return (mp.log(c) + z + c*mp.log(beta)
+            - (c + 1)*mp.log(beta + mp.expm1(z)) - mp.log(scale))
 
 
+@mp.extradps(5)
 def cdf(x, c, beta, scale):
     """
     Cumulative distribution function of the Gamma/Gompertz distribution.
     """
-    with mp.extradps(5):
-        c, beta, scale = _validate_params(c, beta, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.zero
-        z = x/scale
-        if beta == 1:
-            return -mp.expm1(-c*z)
-        else:
-            p = -mp.powm1(beta / (beta + mp.expm1(z)), c)
-            return p
+    c, beta, scale = _validate_params(c, beta, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.zero
+    z = x/scale
+    if beta == 1:
+        return -mp.expm1(-c*z)
+    else:
+        p = -mp.powm1(beta / (beta + mp.expm1(z)), c)
+        return p
 
 
+@mp.extradps(5)
 def invcdf(p, c, beta, scale):
     """
     Inverse CDF (i.e. quantile function) of the Gamma/Gompertz distribution.
     """
-    with mp.extradps(5):
-        c, beta, scale = _validate_params(c, beta, scale)
-        p = _validate_p(p)
-        r = pow1pm1(-p, -1/c)
-        x = scale * mp.log1p(beta * r)
-        return x
+    c, beta, scale = _validate_params(c, beta, scale)
+    p = _validate_p(p)
+    r = pow1pm1(-p, -1/c)
+    x = scale * mp.log1p(beta * r)
+    return x
 
 
+@mp.extradps(5)
 def sf(x, c, beta, scale):
     """
     Cumulative distribution function of the Gamma/Gompertz distribution.
     """
-    with mp.extradps(5):
-        c, beta, scale = _validate_params(c, beta, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.one
-        z = x/scale
-        if beta == 1:
-            return mp.exp(-c*z)
-        else:
-            ex = mp.exp(z)
-            p = mp.power(beta / (beta - 1 + ex), c)
-            return p
+    c, beta, scale = _validate_params(c, beta, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.one
+    z = x/scale
+    if beta == 1:
+        return mp.exp(-c*z)
+    else:
+        ex = mp.exp(z)
+        p = mp.power(beta / (beta - 1 + ex), c)
+        return p
 
 
+@mp.extradps(5)
 def invsf(p, c, beta, scale):
     """
     Inverse survival function of the Gamma/Gompertz distribution.
     """
-    with mp.extradps(5):
-        c, beta, scale = _validate_params(c, beta, scale)
-        p = _validate_p(p)
-        r = mp.powm1(p, -1/c)
-        x = scale * mp.log1p(beta * r)
-        return x
+    c, beta, scale = _validate_params(c, beta, scale)
+    p = _validate_p(p)
+    r = mp.powm1(p, -1/c)
+    x = scale * mp.log1p(beta * r)
+    return x
 
 
+@mp.extradps(5)
 def support(c, beta, scale):
     """
     Support of the Gamma/Gompertz distribution.
     """
-    with mp.extradps(5):
-        c, beta, scale = _validate_params(c, beta, scale)
-        return (mp.zero, mp.inf)
+    c, beta, scale = _validate_params(c, beta, scale)
+    return (mp.zero, mp.inf)
 
 
+@mp.extradps(5)
 def mean(c, beta, scale):
     """
     Mean of the Gamma/Gompertz distribution.
     """
-    with mp.extradps(5):
-        c, beta, scale = _validate_params(c, beta, scale)
-        if beta == 1:
-            return scale/c
-        if c == 1:
-            return scale * beta/(beta - 1) * mp.log(beta)
-        return scale/c * mp.hyp2f1(c, 1, c+1, (beta - 1)/beta)
+    c, beta, scale = _validate_params(c, beta, scale)
+    if beta == 1:
+        return scale/c
+    if c == 1:
+        return scale * beta/(beta - 1) * mp.log(beta)
+    return scale/c * mp.hyp2f1(c, 1, c+1, (beta - 1)/beta)
