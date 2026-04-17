@@ -4,6 +4,20 @@ from mpsci.distributions import loggamma, Initial
 from ._utils import check_mle
 
 
+def test_support():
+    sup = loggamma.support(2.5, 21)
+    assert sup == (mp.ninf, mp.inf)
+
+
+@mp.workdps(50)
+def test_pdf():
+    p = loggamma.pdf(4, 1.5, 3)
+    # From Wolfram Alpha:
+    #     PDF[ExpGammaDistribution[3/2, 3, 0], 4]
+    val = '0.0625682107273006368238566657123783044686244713939151609331'
+    assert mp.almosteq(p, mp.mpf(val))
+
+
 def test_basic_cdf_sf():
     with mp.workdps(50):
         k = 2
@@ -32,6 +46,14 @@ def test_dist_roundtrip(funcpair, params, x0):
         p = func(x0, k, theta)
         x1 = invfunc(p, k, theta)
         assert mp.almosteq(x1, x0)
+
+
+def test_interval_prob():
+    p = loggamma.interval_prob(1, 4, 1.5, 3)
+    # From Wolfram Alpha:
+    # CDF[ExpGammaDistribution[3/2, 3, 0], 4] - CDF[ExpGammaDistribution[3/2, 3, 0], 1]
+    val = '0.36959012177134813468062641177066315159552011064329673333628'
+    assert mp.almosteq(p, mp.mpf(val))
 
 
 def test_mean():
