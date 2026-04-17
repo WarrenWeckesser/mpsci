@@ -14,7 +14,7 @@ This is the same distribution as:
 from mpmath import mp
 from .. import stats
 from mpsci.stats import mean as _mean
-from ._common import _seq_to_mp
+from ._common import _seq_to_mp, _validate_loc_scale, _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
@@ -27,12 +27,7 @@ def pdf(x, loc, scale):
     """
     Probability density function for the Gumbel distribution (for minima).
     """
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-
-    x = mp.mpf(x)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     return mp.exp(logpdf(x, loc, scale))
 
 
@@ -41,12 +36,8 @@ def logpdf(x, loc, scale):
     """
     Log of the PDF of the Gumbel distribution.
     """
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
     z = (x - loc) / scale
     return -(-z + mp.exp(z)) - mp.log(scale)
 
@@ -56,12 +47,8 @@ def cdf(x, loc, scale):
     """
     Cumulative distribution function for the Gumbel distribution.
     """
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
     z = (x - loc) / scale
     return -mp.expm1(-mp.exp(z))
 
@@ -71,12 +58,8 @@ def invcdf(p, loc, scale):
     """
     Inverse of the CDF for the Gumbel distribution.
     """
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-
-    p = mp.mpf(p)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
+    loc, scale = _validate_loc_scale(loc, scale)
+    p = _validate_p(p)
     z = mp.log(-mp.log1p(-p))
     x = scale*z + loc
     return x
@@ -87,12 +70,8 @@ def sf(x, loc, scale):
     """
     Survival function for the Gumbel distribution.
     """
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
     z = (x - loc) / scale
     return mp.exp(-mp.exp(z))
 
@@ -102,12 +81,8 @@ def invsf(p, loc, scale):
     """
     Inverse of the survival function for the Gumbel distribution.
     """
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-
-    p = mp.mpf(p)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
+    loc, scale = _validate_loc_scale(loc, scale)
+    p = _validate_p(p)
     z = mp.log(-mp.log(p))
     x = scale*z + loc
     return x
@@ -117,9 +92,7 @@ def support(loc, scale):
     """
     Support of the Gumbel distribution.
     """
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-
+    loc, scale = _validate_loc_scale(loc, scale)
     return (mp.ninf, mp.inf)
 
 
@@ -128,11 +101,7 @@ def mean(loc, scale):
     """
     Mean of the Gumbel distribution.
     """
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     return loc - mp.euler*scale
 
 
@@ -141,11 +110,7 @@ def var(loc, scale):
     """
     Variance of the Gumbel distribution.
     """
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     return mp.pi**2/6 * scale**2
 
 
@@ -154,11 +119,7 @@ def nll(x, loc, scale):
     """
     Negative log-likelihood function for the Gumbel distribution.
     """
-    if scale <= 0:
-        raise ValueError('scale must be positive.')
-
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     n = len(x)
     z = [(mp.mpf(xi) - loc)/scale for xi in x]
     t1 = n*mp.log(scale)
