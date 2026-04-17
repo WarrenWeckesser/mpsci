@@ -33,6 +33,7 @@ def _validate_k_theta(k, theta):
     return mp.mpf(k), mp.mpf(theta)
 
 
+@mp.extradps(5)
 def pdf(x, k, theta):
     """
     Probability density function for the log-gamma distribution.
@@ -40,13 +41,13 @@ def pdf(x, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        k, theta = _validate_k_theta(k, theta)
-        z = x/theta
-        return mp.exp(k*z - mp.exp(z))/mp.gamma(k)/theta
+    x = mp.mpf(x)
+    k, theta = _validate_k_theta(k, theta)
+    z = x/theta
+    return mp.exp(k*z - mp.exp(z))/mp.gamma(k)/theta
 
 
+@mp.extradps(5)
 def logpdf(x, k, theta):
     """
     Log of the PDF of the log-gamma distribution.
@@ -54,13 +55,13 @@ def logpdf(x, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        k, theta = _validate_k_theta(k, theta)
-        z = x/theta
-        return (k*z - mp.exp(z)) - mp.loggamma(k) - mp.log(theta)
+    x = mp.mpf(x)
+    k, theta = _validate_k_theta(k, theta)
+    z = x/theta
+    return (k*z - mp.exp(z)) - mp.loggamma(k) - mp.log(theta)
 
 
+@mp.extradps(5)
 def cdf(x, k, theta):
     """
     Cumulative distribution function of the log-gamma distribution.
@@ -68,13 +69,13 @@ def cdf(x, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        k, theta = _validate_k_theta(k, theta)
-        z = x/theta
-        return mp.gammainc(k, 0, mp.exp(z), regularized=True)
+    x = mp.mpf(x)
+    k, theta = _validate_k_theta(k, theta)
+    z = x/theta
+    return mp.gammainc(k, 0, mp.exp(z), regularized=True)
 
 
+@mp.extradps(5)
 def invcdf(p, k, theta):
     """
     Inverse of the CDF for the log-gamma distribution.
@@ -84,18 +85,18 @@ def invcdf(p, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        p = _validate_p(p)
-        if p == 0:
-            return mp.ninf
-        if p == 1:
-            return mp.inf
-        k, theta = _validate_k_theta(k, theta)
-        x0, x1 = _find_bracket(lambda t: cdf(t, k, theta), p, -mp.inf, mp.inf)
-        root = mp.findroot(lambda t: cdf(t, k, theta) - p, x0=(x0, x1))
-        return root
+    p = _validate_p(p)
+    if p == 0:
+        return mp.ninf
+    if p == 1:
+        return mp.inf
+    k, theta = _validate_k_theta(k, theta)
+    x0, x1 = _find_bracket(lambda t: cdf(t, k, theta), p, -mp.inf, mp.inf)
+    root = mp.findroot(lambda t: cdf(t, k, theta) - p, x0=(x0, x1))
+    return root
 
 
+@mp.extradps(5)
 def sf(x, k, theta):
     """
     Survival function of the log-gamma distribution.
@@ -103,13 +104,13 @@ def sf(x, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        k, theta = _validate_k_theta(k, theta)
-        z = x/theta
-        return mp.gammainc(k, mp.exp(z), mp.inf, regularized=True)
+    x = mp.mpf(x)
+    k, theta = _validate_k_theta(k, theta)
+    z = x/theta
+    return mp.gammainc(k, mp.exp(z), mp.inf, regularized=True)
 
 
+@mp.extradps(5)
 def invsf(p, k, theta):
     """
     Inverse of the survival functin for the log-gamma distribution.
@@ -117,18 +118,18 @@ def invsf(p, k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        p = _validate_p(p)
-        if p == 0:
-            return mp.inf
-        if p == 1:
-            return mp.ninf
-        k, theta = _validate_k_theta(k, theta)
-        x0, x1 = _find_bracket(lambda t: sf(t, k, theta), p, -mp.inf, mp.inf)
-        root = mp.findroot(lambda t: sf(t, k, theta) - p, x0)
-        return root
+    p = _validate_p(p)
+    if p == 0:
+        return mp.inf
+    if p == 1:
+        return mp.ninf
+    k, theta = _validate_k_theta(k, theta)
+    x0, x1 = _find_bracket(lambda t: sf(t, k, theta), p, -mp.inf, mp.inf)
+    root = mp.findroot(lambda t: sf(t, k, theta) - p, x0)
+    return root
 
 
+@mp.extradps(5)
 def interval_prob(x1, x2, k, theta):
     """
     Compute the probability of x in [x1, x2] for the log-gamma distribution.
@@ -148,15 +149,15 @@ def interval_prob(x1, x2, k, theta):
     if x1 > x2:
         raise ValueError('x1 must not be greater than x2')
 
-    with mp.extradps(5):
-        x1 = mp.mpf(x1)
-        x2 = mp.mpf(x2)
-        k, theta = _validate_k_theta(k, theta)
-        z1 = x1/theta
-        z2 = x2/theta
-        return mp.gammainc(k, mp.exp(z1), mp.exp(z2), regularized=True)
+    x1 = mp.mpf(x1)
+    x2 = mp.mpf(x2)
+    k, theta = _validate_k_theta(k, theta)
+    z1 = x1/theta
+    z2 = x2/theta
+    return mp.gammainc(k, mp.exp(z1), mp.exp(z2), regularized=True)
 
 
+@mp.extradps(5)
 def support(k, theta):
     """
     Support of the log-gamma distribution.
@@ -164,11 +165,11 @@ def support(k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        k, theta = _validate_k_theta(k, theta)
-        return (mp.ninf, mp.inf)
+    k, theta = _validate_k_theta(k, theta)
+    return (mp.ninf, mp.inf)
 
 
+@mp.extradps(5)
 def mean(k, theta):
     """
     Mean of the log-gamma distribution.
@@ -176,11 +177,11 @@ def mean(k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        k, theta = _validate_k_theta(k, theta)
-        return theta * mp.psi(0, k)
+    k, theta = _validate_k_theta(k, theta)
+    return theta * mp.psi(0, k)
 
 
+@mp.extradps(5)
 def var(k, theta):
     """
     Variance of the log-gamma distribution.
@@ -188,11 +189,11 @@ def var(k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        k, theta = _validate_k_theta(k, theta)
-        return theta**2 * mp.psi(1, k)
+    k, theta = _validate_k_theta(k, theta)
+    return theta**2 * mp.psi(1, k)
 
 
+@mp.extradps(5)
 def skewness(k, theta):
     """
     Variance of the log-gamma distribution.
@@ -200,11 +201,11 @@ def skewness(k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        k, theta = _validate_k_theta(k, theta)
-        return mp.psi(2, k) / mp.psi(1, k)**1.5
+    k, theta = _validate_k_theta(k, theta)
+    return mp.psi(2, k) / mp.psi(1, k)**1.5
 
 
+@mp.extradps(5)
 def kurtosis(k, theta):
     """
     Excess kurtosis of the log-gamma distribution.
@@ -212,21 +213,20 @@ def kurtosis(k, theta):
     k is the shape parameter of the gamma distribution.
     theta is the scale parameter of the log-gamma distribution.
     """
-    with mp.extradps(5):
-        k, theta = _validate_k_theta(k, theta)
-        return mp.psi(3, k) / mp.psi(1, k)**2
+    k, theta = _validate_k_theta(k, theta)
+    return mp.psi(3, k) / mp.psi(1, k)**2
 
 
+@mp.extradps(5)
 def nll(x, k, theta):
     """
     Negative log-likelihood for the log-gamma distribution.
 
     `x` must be a sequence of numbers.
     """
-    with mp.extradps(5):
-        k, theta = _validate_k_theta(k, theta)
-        x = _validate_x_bounds(x, low=mp.ninf, high=mp.inf)
-        return -mp.fsum([logpdf(xi, k, theta) for xi in x])
+    k, theta = _validate_k_theta(k, theta)
+    x = _validate_x_bounds(x, low=mp.ninf, high=mp.inf)
+    return -mp.fsum([logpdf(xi, k, theta) for xi in x])
 
 
 def _mle_shape_scale(x, k0=1, theta0=1):
@@ -257,41 +257,41 @@ def _mle_scale(x, k, theta0=1):
 # MLE to do:
 # * Better default initial guess for the parameters.
 
+@mp.extradps(5)
 def mle(x, *, k=None, theta=None):
     """
     Maximum likelihood estimation for the log-gamma distribution.
 
     `x` must be a sequence of numbers.
     """
-    with mp.extradps(5):
-        x = _validate_x_bounds(x, low=mp.ninf, high=mp.inf)
-        theta_fixed = isfixed(theta)
-        k_fixed = isfixed(k)
+    x = _validate_x_bounds(x, low=mp.ninf, high=mp.inf)
+    theta_fixed = isfixed(theta)
+    k_fixed = isfixed(k)
 
-        if theta_fixed and k_fixed:
-            # Both k and theta fixed, nothing to do.
-            k, theta = _validate_k_theta(k, theta)
-            return k, theta
+    if theta_fixed and k_fixed:
+        # Both k and theta fixed, nothing to do.
+        k, theta = _validate_k_theta(k, theta)
+        return k, theta
 
-        elif not k_fixed and not theta_fixed:
-            # Fit both k and theta.
-            k0 = k.initial if isinstance(k, Initial) else 1
-            theta0 = theta.initial if isinstance(theta, Initial) else 1
-            k0, theta0 = _validate_k_theta(k0, theta0)
-            k, theta = _mle_shape_scale(x, k0, theta0)
-            return k, theta
+    elif not k_fixed and not theta_fixed:
+        # Fit both k and theta.
+        k0 = k.initial if isinstance(k, Initial) else 1
+        theta0 = theta.initial if isinstance(theta, Initial) else 1
+        k0, theta0 = _validate_k_theta(k0, theta0)
+        k, theta = _mle_shape_scale(x, k0, theta0)
+        return k, theta
 
-        elif theta_fixed:
-            # theta is fixed, so fit only the shape k.
-            _, theta = _validate_k_theta(1, theta)
-            xs = [t/theta for t in x]
-            # MLE for the shape, assuming the scale is 1:
-            k = _digammainv(_mean(xs))
-            return k, theta
+    elif theta_fixed:
+        # theta is fixed, so fit only the shape k.
+        _, theta = _validate_k_theta(1, theta)
+        xs = [t/theta for t in x]
+        # MLE for the shape, assuming the scale is 1:
+        k = _digammainv(_mean(xs))
+        return k, theta
 
-        else:
-            # k is fixed, theta is not.
-            theta0 = theta.initial if isinstance(theta, Initial) else 1
-            k, theta0 = _validate_k_theta(k, theta0)
-            theta = _mle_scale(x, k, theta0)
-            return k, theta
+    else:
+        # k is fixed, theta is not.
+        theta0 = theta.initial if isinstance(theta, Initial) else 1
+        k, theta0 = _validate_k_theta(k, theta0)
+        theta = _mle_scale(x, k, theta0)
+        return k, theta
