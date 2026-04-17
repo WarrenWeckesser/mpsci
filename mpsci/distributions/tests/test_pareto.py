@@ -1,7 +1,18 @@
+import pytest
 from mpmath import mp
 from mpsci.distributions import pareto
 from ._utils import check_mle
 from ._expect import check_entropy_with_integral
+
+
+def test_bad_b():
+    with pytest.raises(ValueError, match='b must be positive'):
+        pareto.pdf(3, -1, 0, 1)
+
+
+def test_bad_scale():
+    with pytest.raises(ValueError, match='scale must be positive'):
+        pareto.cdf(3, 1, 0, 0)
 
 
 @mp.workdps(40)
@@ -76,6 +87,21 @@ def test_invsf_loc0():
     assert mp.almosteq(x, expected)
 
 
+def test_pdf_logpdf_cdf_sf_outside_support():
+    b = 4
+    loc = 2.0
+    scale = 2.5
+    x = 4.25
+    p = pareto.pdf(x, b, loc, scale)
+    assert p == 0
+    logp = pareto.logpdf(x, b, loc, scale)
+    assert logp == mp.ninf
+    p = pareto.cdf(x, b, loc, scale)
+    assert p == 0
+    p = pareto.sf(x, b, loc, scale)
+    assert p == 1
+
+
 @mp.workdps(40)
 def test_mean_loc0():
     b = 5
@@ -87,6 +113,14 @@ def test_mean_loc0():
     assert mp.almosteq(m, expected)
 
 
+def test_inf_mean():
+    b = 0.5
+    loc = 0
+    scale = 2.5
+    m = pareto.mean(b, loc, scale)
+    assert m == mp.inf
+
+
 @mp.workdps(40)
 def test_var_loc0():
     b = 5
@@ -96,6 +130,14 @@ def test_var_loc0():
     #   Variance[ParetoDistribution[3, 5]]
     expected = mp.mpf('15/16')
     assert mp.almosteq(m, expected)
+
+
+def test_nan_var():
+    b = 0.5
+    loc = 0
+    scale = 2.5
+    v = pareto.var(b, loc=loc, scale=scale)
+    assert mp.isnan(v)
 
 
 @mp.workdps(50)
