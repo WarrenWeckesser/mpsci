@@ -138,3 +138,16 @@ def mean(c, beta, scale):
     if c == 1:
         return scale * beta/(beta - 1) * mp.log(beta)
     return scale/c * mp.hyp2f1(c, 1, c+1, (beta - 1)/beta)
+
+
+@mp.extradps(5)
+def mode(c, beta, scale):
+    """
+    Mode of the Gamma/Gompertz distribution.
+
+    If beta <= c + 1, the mode is 0.
+    """
+    c, beta, scale = _validate_params(c, beta, scale)
+    if beta <= c + 1:
+        return mp.zero
+    return scale * mp.log((beta - 1)/c)

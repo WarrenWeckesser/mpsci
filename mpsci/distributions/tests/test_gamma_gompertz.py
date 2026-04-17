@@ -93,3 +93,26 @@ def test_mean_with_integral(c, beta, scale):
     m = gamma_gompertz.mean(c, beta, scale)
     q = noncentral_moment_with_integral(1, gamma_gompertz, (c, beta, scale))
     assert mp.almosteq(m, q)
+
+
+# beta <= c + 1 for these cases...
+@pytest.mark.parametrize('c, beta, scale',
+                         [(1.5, 0.25, 3), (8, 8.5, 0.25), (0.5, 1.5, 1)])
+def test_mode_zero(c, beta, scale):
+    m = gamma_gompertz.mode(c, beta, scale)
+    assert m == 0
+
+
+# beta > c + 1 for these cases...
+@pytest.mark.parametrize('c, beta, scale',
+                         [(1.5, 3, 2), (8, 9.5, 0.25), (0.5, 4.5, 1)])
+def test_mode(c, beta, scale):
+    # A crude test of the mode.
+    m = gamma_gompertz.mode(c, beta, scale)
+
+    pm = gamma_gompertz.pdf(m, c, beta, scale)
+    delta = mp.sqrt(mp.eps)
+    left = (1 - delta) * m
+    right = (1 + delta) * m
+    assert gamma_gompertz.pdf(left, c, beta, scale) < pm
+    assert gamma_gompertz.pdf(right, c, beta, scale) < pm
