@@ -76,9 +76,7 @@ def cdf(x, c, beta, scale):
     z = x/scale
     if beta == 1:
         return -mp.expm1(-c*z)
-    else:
-        p = -mp.powm1(beta / (beta + mp.expm1(z)), c)
-        return p
+    return -mp.powm1(beta / (beta + mp.expm1(z)), c)
 
 
 @mp.extradps(5)
@@ -89,8 +87,7 @@ def invcdf(p, c, beta, scale):
     c, beta, scale = _validate_params(c, beta, scale)
     p = _validate_p(p)
     r = pow1pm1(-p, -1/c)
-    x = scale * mp.log1p(beta * r)
-    return x
+    return scale * mp.log1p(beta * r)
 
 
 @mp.extradps(5)
@@ -105,10 +102,8 @@ def sf(x, c, beta, scale):
     z = x/scale
     if beta == 1:
         return mp.exp(-c*z)
-    else:
-        ex = mp.exp(z)
-        p = mp.power(beta / (beta - 1 + ex), c)
-        return p
+    ex = mp.exp(z)
+    return mp.power(beta / (beta - 1 + ex), c)
 
 
 @mp.extradps(5)
@@ -119,8 +114,8 @@ def invsf(p, c, beta, scale):
     c, beta, scale = _validate_params(c, beta, scale)
     p = _validate_p(p)
     r = mp.powm1(p, -1/c)
-    x = scale * mp.log1p(beta * r)
-    return x
+    scale * mp.log1p(beta * r)
+    return scale * mp.log1p(beta * r)
 
 
 @mp.extradps(5)
