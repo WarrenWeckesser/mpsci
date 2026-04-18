@@ -11,6 +11,7 @@ __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
            'support', 'entropy']
 
 
+@mp.extradps(5)
 def logpdf(x, df):
     """
     Logarithm of the PDF of Student's t distribution.
@@ -18,14 +19,13 @@ def logpdf(x, df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        df = mp.mpf(df)
-        h = (df + 1) / 2
-        logp = (mp.loggamma(h)
-                - mp.log(df * mp.pi)/2
-                - mp.loggamma(df/2)
-                - h * mp.log1p(x**2/df))
+    x = mp.mpf(x)
+    df = mp.mpf(df)
+    h = (df + 1) / 2
+    logp = (mp.loggamma(h)
+            - mp.log(df * mp.pi)/2
+            - mp.loggamma(df/2)
+            - h * mp.log1p(x**2/df))
     return logp
 
 
@@ -39,6 +39,7 @@ def pdf(x, df):
     return mp.exp(logpdf(x, df))
 
 
+@mp.extradps(5)
 def cdf(x, df):
     """
     CDF of Student's t distribution.
@@ -46,20 +47,20 @@ def cdf(x, df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        if x == mp.ninf:
-            return mp.zero
-        if x == mp.inf:
-            return mp.one
-        half = mp.one/2
-        df = mp.mpf(df)
-        h = (df + 1) / 2
-        p1 = x * mp.gamma(h)
-        p2 = mp.hyp2f1(half, h, 3*half, -x**2/df)
-        return half + p1*p2/mp.sqrt(mp.pi*df)/mp.gamma(df/2)
+    x = mp.mpf(x)
+    if x == mp.ninf:
+        return mp.zero
+    if x == mp.inf:
+        return mp.one
+    half = mp.one/2
+    df = mp.mpf(df)
+    h = (df + 1) / 2
+    p1 = x * mp.gamma(h)
+    p2 = mp.hyp2f1(half, h, 3*half, -x**2/df)
+    return half + p1*p2/mp.sqrt(mp.pi*df)/mp.gamma(df/2)
 
 
+@mp.extradps(5)
 def sf(x, df):
     """
     Survival function of Student's t distribution.
@@ -67,20 +68,20 @@ def sf(x, df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        if x == mp.ninf:
-            return mp.one
-        if x == mp.inf:
-            return mp.zero
-        half = mp.one/2
-        df = mp.mpf(df)
-        h = (df + 1) / 2
-        p1 = x * mp.gamma(h)
-        p2 = mp.hyp2f1(half, h, 3*half, -x**2/df)
-        return half - p1*p2/mp.sqrt(mp.pi*df)/mp.gamma(df/2)
+    x = mp.mpf(x)
+    if x == mp.ninf:
+        return mp.one
+    if x == mp.inf:
+        return mp.zero
+    half = mp.one/2
+    df = mp.mpf(df)
+    h = (df + 1) / 2
+    p1 = x * mp.gamma(h)
+    p2 = mp.hyp2f1(half, h, 3*half, -x**2/df)
+    return half - p1*p2/mp.sqrt(mp.pi*df)/mp.gamma(df/2)
 
 
+@mp.extradps(5)
 def invcdf(p, df):
     """
     Inverse of the CDF for Student's t distribution.
@@ -99,30 +100,29 @@ def invcdf(p, df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mp.extradps(5):
-        p = _validate_p(p)
-        if p == 0:
-            return mp.ninf
-        if p == 1:
-            return mp.inf
-        if p > 0.5:
-            p0 = mp.one - p
-        else:
-            p0 = p
-        df = mp.mpf(df)
+    p = _validate_p(p)
+    if p == 0:
+        return mp.ninf
+    if p == 1:
+        return mp.inf
+    if p > 0.5:
+        p0 = mp.one - p
+    else:
+        p0 = p
+    df = mp.mpf(df)
 
-        x0, x1 = _find_bracket(lambda x: cdf(x, df), p0, mp.ninf, mp.inf)
-        if x0 == x1:
-            return x0
+    x0, x1 = _find_bracket(lambda x: cdf(x, df), p0, mp.ninf, mp.inf)
+    if x0 == x1:
+        return x0
 
-        def _func(x):
-            return cdf(x, df) - p0
+    def _func(x):
+        return cdf(x, df) - p0
 
-        x = mp.findroot(_func, (x0, x1), solver='anderson')
-        if p > 0.5:
-            x = -x
+    x = mp.findroot(_func, (x0, x1), solver='anderson')
+    if p > 0.5:
+        x = -x
 
-        return x
+    return x
 
 
 def invsf(p, df):
@@ -144,6 +144,7 @@ def invsf(p, df):
     return -invcdf(p, df)
 
 
+@mp.extradps(5)
 def support(df):
     """
     Support of Student's t distribution.
@@ -151,11 +152,11 @@ def support(df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mp.extradps(5):
-        df = mp.mpf(df)
-        return (mp.ninf, mp.inf)
+    df = mp.mpf(df)
+    return (mp.ninf, mp.inf)
 
 
+@mp.extradps(5)
 def entropy(df):
     """
     Entropy of Student's t distribution.
@@ -163,9 +164,8 @@ def entropy(df):
     if df <= 0:
         raise ValueError('df must be greater than 0')
 
-    with mp.extradps(5):
-        df = mp.mpf(df)
-        h = df/2
-        h1 = (df + 1)/2
-        return (h1*(mp.digamma(h1) - mp.digamma(h)) +
-                mp.log(mp.sqrt(df)*mp.beta(h, 0.5)))
+    df = mp.mpf(df)
+    h = df/2
+    h1 = (df + 1)/2
+    return (h1*(mp.digamma(h1) - mp.digamma(h)) +
+            mp.log(mp.sqrt(df)*mp.beta(h, 0.5)))
