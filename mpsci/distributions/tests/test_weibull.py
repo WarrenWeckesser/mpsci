@@ -6,67 +6,67 @@ from ._expect import check_entropy_with_integral
 
 
 @pytest.mark.parametrize('dist, xsign', [(weibull_min, 1), (weibull_max, -1)])
+@mp.workdps(50)
 def test_pdf(dist, xsign):
-    with mp.workdps(50):
-        k = 1.25
-        loc = 1
-        scale = 3
-        x = 2.5
-        p = dist.pdf(xsign*x, k, xsign*loc, scale)
-        # Expected value was computed with Wolfram Alpha:
-        #   PDF[WeibullDistribution[5/4, 3, 1], 5/2]
-        valstr = '0.23010863853495101956594599926808749710908978279269136511'
-        expected = mp.mpf(valstr)
-        assert mp.almosteq(p, expected)
+    k = 1.25
+    loc = 1
+    scale = 3
+    x = 2.5
+    p = dist.pdf(xsign*x, k, xsign*loc, scale)
+    # Expected value was computed with Wolfram Alpha:
+    #   PDF[WeibullDistribution[5/4, 3, 1], 5/2]
+    valstr = '0.23010863853495101956594599926808749710908978279269136511'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(p, expected)
 
 
 @pytest.mark.parametrize('dist', [weibull_min, weibull_max])
+@mp.workdps(50)
 def test_cdf_sf(dist):
-    with mp.workdps(50):
-        k = 1.25
-        loc = 1
-        scale = 3
-        x = 2.5
-        if dist == weibull_min:
-            cdf = dist.cdf(x, k, loc, scale)
-            sf = dist.sf(x, k, loc, scale)
-        else:
-            cdf = dist.sf(-x, k, -loc, scale)
-            sf = dist.cdf(-x, k, -loc, scale)
-        # Expected value computed with Wolfram Alpha:
-        #   CDF[WeibullDistribution[5/4, 3, 1], 5/2]
-        valstr = '0.34324760759355263295507068694174586069396497366940988665'
-        expected = mp.mpf(valstr)
-        assert mp.almosteq(cdf, expected)
-        assert mp.almosteq(sf, 1 - expected)
+    k = 1.25
+    loc = 1
+    scale = 3
+    x = 2.5
+    if dist == weibull_min:
+        cdf = dist.cdf(x, k, loc, scale)
+        sf = dist.sf(x, k, loc, scale)
+    else:
+        cdf = dist.sf(-x, k, -loc, scale)
+        sf = dist.cdf(-x, k, -loc, scale)
+    # Expected value computed with Wolfram Alpha:
+    #   CDF[WeibullDistribution[5/4, 3, 1], 5/2]
+    valstr = '0.34324760759355263295507068694174586069396497366940988665'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(cdf, expected)
+    assert mp.almosteq(sf, 1 - expected)
 
 
 @pytest.mark.parametrize('dist, sign', [(weibull_min, 1), (weibull_max, -1)])
+@mp.workdps(50)
 def test_skewness(dist, sign):
-    with mp.workdps(50):
-        k = 1.25
-        loc = 1
-        scale = 3
-        skew = dist.skewness(k, loc, scale)
-        # Expected value computed with Wolfram Alpha:
-        #   Skewness[WeibullDistribution[5/4, 3, 1]]
-        valstr = '1.429545236590974853525527387620583784997166374292021040338'
-        expected = mp.mpf(valstr)
-        assert mp.almosteq(skew, sign*expected)
+    k = 1.25
+    loc = 1
+    scale = 3
+    skew = dist.skewness(k, loc, scale)
+    # Expected value computed with Wolfram Alpha:
+    #   Skewness[WeibullDistribution[5/4, 3, 1]]
+    valstr = '1.429545236590974853525527387620583784997166374292021040338'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(skew, sign*expected)
 
 
 @pytest.mark.parametrize('dist', [weibull_min, weibull_max])
+@mp.workdps(50)
 def test_kurtosis(dist):
-    with mp.workdps(50):
-        k = 1.25
-        loc = 1
-        scale = 3
-        kurt = dist.kurtosis(k, loc, scale)
-        # Expected value computed with Wolfram Alpha:
-        #   ExcessKurtosis[WeibullDistribution[5/4, 3, 1]]
-        valstr = '2.8021519350984650074697694858304410798423229238041266467027'
-        expected = mp.mpf(valstr)
-        assert mp.almosteq(kurt, expected)
+    k = 1.25
+    loc = 1
+    scale = 3
+    kurt = dist.kurtosis(k, loc, scale)
+    # Expected value computed with Wolfram Alpha:
+    #   ExcessKurtosis[WeibullDistribution[5/4, 3, 1]]
+    valstr = '2.8021519350984650074697694858304410798423229238041266467027'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(kurt, expected)
 
 
 @pytest.mark.parametrize('dist', [weibull_min, weibull_max])
