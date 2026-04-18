@@ -16,58 +16,59 @@ __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
            'mom', 'nll', 'mle']
 
 
+@mp.extradps(5)
 def pdf(x, loc=0, scale=1):
     """
     PDF of the logistic distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        z = (x - loc) / scale
-        p = mp.sech(z/2)**2 / (4*scale)
+    x = mp.mpf(x)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    z = (x - loc) / scale
+    p = mp.sech(z/2)**2 / (4*scale)
     return p
 
 
+@mp.extradps(5)
 def logpdf(x, loc=0, scale=1):
     """
     Logarithm of the PDF of the logistic distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        z = (x - loc) / scale
-        logp = 2*mp.log(mp.sech(z/2)) - mp.log(4*scale)
+    x = mp.mpf(x)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    z = (x - loc) / scale
+    logp = 2*mp.log(mp.sech(z/2)) - mp.log(4*scale)
     return logp
 
 
+@mp.extradps(5)
 def cdf(x, loc=0, scale=1):
     """
     CDF of the logistic distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        z = (x - loc) / scale
-        p = (1 + mp.tanh(z/2)) / 2
+    x = mp.mpf(x)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    z = (x - loc) / scale
+    p = (1 + mp.tanh(z/2)) / 2
     return p
 
 
+@mp.extradps(5)
 def sf(x, loc=0, scale=1):
     """
     Survival function of the logistic distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        z = (x - loc) / scale
-        p = (1 - mp.tanh(z/2)) / 2
+    x = mp.mpf(x)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    z = (x - loc) / scale
+    p = (1 - mp.tanh(z/2)) / 2
     return p
 
 
+@mp.extradps(5)
 def invcdf(p, loc=0, scale=1):
     """
     Inverse CDF of the logistic distribution.
@@ -75,23 +76,22 @@ def invcdf(p, loc=0, scale=1):
     This function is also known as the quantile function or the percent
     point function.
     """
-    with mp.extradps(5):
-        p = mp.mpf(p)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        x = loc + scale*(mp.log(p) - mp.log1p(-p))
+    p = mp.mpf(p)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    x = loc + scale*(mp.log(p) - mp.log1p(-p))
     return x
 
 
+@mp.extradps(5)
 def invsf(p, loc=0, scale=1):
     """
     Inverse survival function of the logistic distribution.
     """
-    with mp.extradps(5):
-        p = mp.mpf(p)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        x = loc + scale*(mp.log1p(-p) - mp.log(p))
+    p = mp.mpf(p)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    x = loc + scale*(mp.log1p(-p) - mp.log(p))
     return x
 
 
@@ -99,36 +99,35 @@ def support(loc=0, scale=1):
     """
     Support of the logistic distribution.
     """
-    with mp.extradps(5):
-        return (mp.ninf, mp.inf)
+    return (mp.ninf, mp.inf)
 
 
 def mean(loc=0, scale=1):
     """
     Mean of the logistic distribution.
     """
-    with mp.extradps(5):
-        return mp.mpf(loc)
+    return mp.mpf(loc)
 
 
+@mp.extradps(5)
 def var(loc=0, scale=1):
     """
     Variance of the logistic distribution.
     """
-    with mp.extradps(5):
-        scale = mp.mpf(scale)
-        return scale**2 * mp.pi**2 / 3
+    scale = mp.mpf(scale)
+    return scale**2 * mp.pi**2 / 3
 
 
+@mp.extradps(5)
 def entropy(loc=0, scale=1):
     """
     Differential entropy of the logistic distribution.
     """
-    with mp.extradps(5):
-        scale = mp.mpf(scale)
-        return mp.log(scale) + 2
+    scale = mp.mpf(scale)
+    return mp.log(scale) + 2
 
 
+@mp.extradps(5)
 def mom(x):
     """
     Method of moments parameter estimation for the logistic distribution.
@@ -137,26 +136,25 @@ def mom(x):
 
     Returns (loc, scale).
     """
-    with mp.extradps(5):
-        x = _seq_to_mp(x)
-        M1 = _mean(x)
-        M2 = _mean([t**2 for t in x])
-        return M1, mp.sqrt(3*(M2 - M1**2))/mp.pi
+    x = _seq_to_mp(x)
+    M1 = _mean(x)
+    M2 = _mean([t**2 for t in x])
+    return M1, mp.sqrt(3*(M2 - M1**2))/mp.pi
 
 
+@mp.extradps(5)
 def nll(x, loc, scale):
     """
     Negative log-likelihood function for the logistic equation.
 
     `x` must be a sequence of numbers.
     """
-    with mp.extradps(5):
-        x = _seq_to_mp(x)
-        loc = mp.mpf(loc)
-        scale = mp.mpf(scale)
-        v = [mp.log(mp.sech((t - loc)/(2*scale))) for t in x]
-        n = len(x)
-        return n*mp.log(4*scale) - 2*mp.fsum(v)
+    x = _seq_to_mp(x)
+    loc = mp.mpf(loc)
+    scale = mp.mpf(scale)
+    v = [mp.log(mp.sech((t - loc)/(2*scale))) for t in x]
+    n = len(x)
+    return n*mp.log(4*scale) - 2*mp.fsum(v)
 
 
 def _mle_loc_eq(loc, scale, x):
@@ -181,7 +179,7 @@ def mle(x):
     This function uses `mp.findroot` to numerically solve for the
     maximum likelihood estimate.
     """
-    with mp.extradps(mp.dps//4):
+    with mp.extradps(min(5, mp.dps//4)):
         loc0, scale0 = mom(x)
         x = _seq_to_mp(x)
         loc1, scale1 = mp.findroot(
