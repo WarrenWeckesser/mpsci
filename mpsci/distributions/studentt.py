@@ -8,7 +8,7 @@ from ._common import _validate_p, _find_bracket
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'entropy']
+           'support', 'mean', 'mode', 'entropy']
 
 
 @mp.extradps(5)
@@ -154,6 +154,24 @@ def support(df):
 
     df = mp.mpf(df)
     return (mp.ninf, mp.inf)
+
+
+def mean():
+    """
+    Mean of Student's t distribution.
+
+    The mean is 0.
+    """
+    return mp.zero
+
+
+def mode():
+    """
+    Mode of the Student's t distribution.
+
+    The mode is 0.
+    """
+    return mp.zero
 
 
 @mp.extradps(5)

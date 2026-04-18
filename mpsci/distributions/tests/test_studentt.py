@@ -69,3 +69,11 @@ def test_invsf_sf_roundtrip():
     x = studentt.invsf(p0, df)
     p1 = studentt.sf(x, df)
     assert mp.almosteq(p1, p0)
+
+
+def test_mean():
+    assert studentt.mean() == 0
+
+
+def test_mode():
+    assert studentt.mode() == 0

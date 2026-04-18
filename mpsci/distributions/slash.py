@@ -16,7 +16,8 @@ from mpmath import mp
 from ._common import _validate_p
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'support']
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'mean', 'mode', 'support']
 
 
 # This is a fuzzy threshold, so using a Python float is OK.
@@ -141,3 +142,21 @@ def invsf(p):
 @mp.extradps(5)
 def support():
     return (mp.ninf, mp.inf)
+
+
+def mean():
+    """
+    Mean of the slash distribution.
+
+    The mean is 0.
+    """
+    return mp.zero
+
+
+def mode():
+    """
+    Mode of the slash distribution.
+
+    The mode is 0.
+    """
+    return mp.zero

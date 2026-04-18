@@ -58,6 +58,9 @@ def test_dist_roundtrip(funcpair, x0):
     assert mp.almosteq(x1, x0, rel_eps=2**(-mp.prec + 10), abs_eps=0)
 
 
-@mp.workdps(25)
 def test_mean():
     assert cosine.mean() == 0
+
+
+def test_mode():
+    assert cosine.mode() == 0

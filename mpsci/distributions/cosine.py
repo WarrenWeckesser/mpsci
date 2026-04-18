@@ -10,7 +10,7 @@ from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'support', 'mean', 'var', 'skewness', 'kurtosis']
+           'support', 'mean', 'mode', 'var', 'skewness', 'kurtosis']
 
 
 # TO DO: Add location and scale parameters.
@@ -196,6 +196,15 @@ def mean():
     Mean of the cosine distribution.
 
     The mean is 0.
+    """
+    return mp.zero
+
+
+def mode():
+    """
+    Mode of the cosine distribution.
+
+    The mode is 0.
     """
     return mp.zero
 

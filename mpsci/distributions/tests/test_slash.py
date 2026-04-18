@@ -90,3 +90,11 @@ def test_sf_invsf_roundtrip(x):
         assert x2 == x
     else:
         assert mp.almosteq(x2, x)
+
+
+def test_mean():
+    assert slash.mean() == 0
+
+
+def test_mode():
+    assert slash.mode() == 0
