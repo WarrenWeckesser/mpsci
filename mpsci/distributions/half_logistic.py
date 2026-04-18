@@ -22,92 +22,91 @@ def _validate_params(loc, scale):
     return mp.mpf(loc), mp.mpf(scale)
 
 
+@mp.extradps(5)
 def pdf(x, loc=0, scale=1):
     """
     Probability density function for the half-logistic distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        x = mp.mpf(x)
-        if x < loc:
-            return mp.zero
-        z = (x - loc)/scale
-        return mp.sech(z/2)**2 / 2 / scale
+    loc, scale = _validate_params(loc, scale)
+    x = mp.mpf(x)
+    if x < loc:
+        return mp.zero
+    z = (x - loc)/scale
+    return mp.sech(z/2)**2 / 2 / scale
 
 
+@mp.extradps(5)
 def logpdf(x, loc=0, scale=1):
     """
     Logarithm of the PDF for the half-logistic distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        x = mp.mpf(x)
-        if x < loc:
-            return mp.ninf
-        z = (x - loc)/scale
-        return 2*mp.log(mp.sech(z/2)) - mp.log(2) - mp.log(scale)
+    loc, scale = _validate_params(loc, scale)
+    x = mp.mpf(x)
+    if x < loc:
+        return mp.ninf
+    z = (x - loc)/scale
+    return 2*mp.log(mp.sech(z/2)) - mp.log(2) - mp.log(scale)
 
 
+@mp.extradps(5)
 def cdf(x, loc=0, scale=1):
     """
     Cumulative distribution function for the half-logistic distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        x = mp.mpf(x)
-        if x < loc:
-            return mp.zero
-        z = (x - loc)/scale
-        return -mp.expm1(-z)/(1 + mp.exp(-z))
+    loc, scale = _validate_params(loc, scale)
+    x = mp.mpf(x)
+    if x < loc:
+        return mp.zero
+    z = (x - loc)/scale
+    return -mp.expm1(-z)/(1 + mp.exp(-z))
 
 
+@mp.extradps(5)
 def invcdf(p, loc=0, scale=1):
     """
     Inverse of the CDF for the half-logistic distribution.
 
     This function is also known as the *quantile function*.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        p = _validate_p(p)
-        if p == 1:
-            return mp.inf
-        if p == 0:
-            return loc
-        return loc - scale*(mp.log1p(-p) - mp.log1p(p))
+    loc, scale = _validate_params(loc, scale)
+    p = _validate_p(p)
+    if p == 1:
+        return mp.inf
+    if p == 0:
+        return loc
+    return loc - scale*(mp.log1p(-p) - mp.log1p(p))
 
 
+@mp.extradps(5)
 def sf(x, loc=0, scale=1):
     """
     Survival function for the half-logistic distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        x = mp.mpf(x)
-        if x < loc:
-            return mp.one
-        z = (x - loc)/scale
-        return 2*mp.exp(-z)/(1 + mp.exp(-z))
+    loc, scale = _validate_params(loc, scale)
+    x = mp.mpf(x)
+    if x < loc:
+        return mp.one
+    z = (x - loc)/scale
+    return 2*mp.exp(-z)/(1 + mp.exp(-z))
 
 
+@mp.extradps(5)
 def invsf(p, loc=0, scale=1):
     """
     Inverse of the survival function for the half-logistic distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        p = _validate_p(p)
-        if p == 1:
-            return loc
-        if p == 0:
-            return mp.inf
-        return loc - scale*mp.log(p/2/(1 - p/2))
+    loc, scale = _validate_params(loc, scale)
+    p = _validate_p(p)
+    if p == 1:
+        return loc
+    if p == 0:
+        return mp.inf
+    return loc - scale*mp.log(p/2/(1 - p/2))
 
 
 def support(loc=0, scale=1):
     """
     Support of the half-logistic distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        return (loc, mp.inf)
+    loc, scale = _validate_params(loc, scale)
+    return (loc, mp.inf)
