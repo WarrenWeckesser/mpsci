@@ -8,7 +8,7 @@ The logistic distribution is also known as the sech-squared distribution.
 
 from mpmath import mp
 from mpsci.stats import mean as _mean
-from ._common import _seq_to_mp
+from ._common import _seq_to_mp, _validate_loc_scale, _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
@@ -21,12 +21,10 @@ def pdf(x, loc=0, scale=1):
     """
     PDF of the logistic distribution.
     """
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
     z = (x - loc) / scale
-    p = mp.sech(z/2)**2 / (4*scale)
-    return p
+    return mp.sech(z/2)**2 / (4*scale)
 
 
 @mp.extradps(5)
@@ -34,12 +32,10 @@ def logpdf(x, loc=0, scale=1):
     """
     Logarithm of the PDF of the logistic distribution.
     """
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
     z = (x - loc) / scale
-    logp = 2*mp.log(mp.sech(z/2)) - mp.log(4*scale)
-    return logp
+    return 2*mp.log(mp.sech(z/2)) - mp.log(4*scale)
 
 
 @mp.extradps(5)
@@ -47,12 +43,10 @@ def cdf(x, loc=0, scale=1):
     """
     CDF of the logistic distribution.
     """
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
     z = (x - loc) / scale
-    p = (1 + mp.tanh(z/2)) / 2
-    return p
+    return (1 + mp.tanh(z/2)) / 2
 
 
 @mp.extradps(5)
@@ -60,12 +54,10 @@ def sf(x, loc=0, scale=1):
     """
     Survival function of the logistic distribution.
     """
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
     z = (x - loc) / scale
-    p = (1 - mp.tanh(z/2)) / 2
-    return p
+    return (1 - mp.tanh(z/2)) / 2
 
 
 @mp.extradps(5)
@@ -76,11 +68,9 @@ def invcdf(p, loc=0, scale=1):
     This function is also known as the quantile function or the percent
     point function.
     """
-    p = mp.mpf(p)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
-    x = loc + scale*(mp.log(p) - mp.log1p(-p))
-    return x
+    loc, scale = _validate_loc_scale(loc, scale)
+    p = _validate_p(p)
+    return loc + scale*(mp.log(p) - mp.log1p(-p))
 
 
 @mp.extradps(5)
@@ -88,17 +78,16 @@ def invsf(p, loc=0, scale=1):
     """
     Inverse survival function of the logistic distribution.
     """
-    p = mp.mpf(p)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
-    x = loc + scale*(mp.log1p(-p) - mp.log(p))
-    return x
+    loc, scale = _validate_loc_scale(loc, scale)
+    p = _validate_p(p)
+    return loc + scale*(mp.log1p(-p) - mp.log(p))
 
 
 def support(loc=0, scale=1):
     """
     Support of the logistic distribution.
     """
+    loc, scale = _validate_loc_scale(loc, scale)
     return (mp.ninf, mp.inf)
 
 
@@ -106,7 +95,8 @@ def mean(loc=0, scale=1):
     """
     Mean of the logistic distribution.
     """
-    return mp.mpf(loc)
+    loc, scale = _validate_loc_scale(loc, scale)
+    return loc
 
 
 @mp.extradps(5)
@@ -114,7 +104,7 @@ def var(loc=0, scale=1):
     """
     Variance of the logistic distribution.
     """
-    scale = mp.mpf(scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     return scale**2 * mp.pi**2 / 3
 
 
@@ -123,7 +113,7 @@ def entropy(loc=0, scale=1):
     """
     Differential entropy of the logistic distribution.
     """
-    scale = mp.mpf(scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     return mp.log(scale) + 2
 
 
@@ -149,9 +139,8 @@ def nll(x, loc, scale):
 
     `x` must be a sequence of numbers.
     """
+    loc, scale = _validate_loc_scale(loc, scale)
     x = _seq_to_mp(x)
-    loc = mp.mpf(loc)
-    scale = mp.mpf(scale)
     v = [mp.log(mp.sech((t - loc)/(2*scale))) for t in x]
     n = len(x)
     return n*mp.log(4*scale) - 2*mp.fsum(v)
