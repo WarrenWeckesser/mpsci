@@ -14,6 +14,18 @@ def test_pdf(x):
     assert mp.almosteq(p, expected_p)
 
 
+@mp.workdps(50)
+def test_logpdf():
+    x = 3
+    loc = 1
+    scale = 2
+    logp = logistic.logpdf(x, loc=loc, scale=scale)
+    # From Wolfram Alpha:
+    #     Log[PDF[LogisticDistribution[1, 2], 3]]
+    refstr = '-2.319670555596390977515223111393887851906060305700952003'
+    assert mp.almosteq(logp, mp.mpf(refstr))
+
+
 @pytest.mark.parametrize('x', [-20, -1, 0, 3, 18])
 @mp.workdps(50)
 def test_cdf(x):
