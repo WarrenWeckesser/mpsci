@@ -42,9 +42,9 @@ def check_entropy_with_integral(dist, params, support=None, extradps=None):
     assert mp.almosteq(entr, ex), f"{entr} not almost equal to {ex}"
 
 
-def noncentral_moment_with_integral(order, dist, params, extradps=None):
+def noncentral_moment_with_integral(order, dist, params, support=None, extradps=None):
     order = mp.mpf(order)
-    return expect(dist, params, lambda t: t**order, extradps=extradps)
+    return expect(dist, params, lambda t: t**order, support=support, extradps=extradps)
 
 
 def check_noncentral_moment_with_integral(order, dist, params, extradps=None):
