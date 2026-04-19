@@ -11,7 +11,7 @@ def test_support():
 
 
 def test_pdf_bad_scale():
-    with pytest.raises(ValueError, match='must be greater than 0'):
+    with pytest.raises(ValueError, match='must be positive'):
         half_logistic.pdf(3, 2, -0.5)
 
 

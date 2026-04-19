@@ -9,17 +9,11 @@ This implementation includes location and scale parameters.
 """
 
 from mpmath import mp
-from ._common import _validate_p
+from ._common import _validate_p, _validate_loc_scale
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
            'support']
-
-
-def _validate_params(loc, scale):
-    if scale <= 0:
-        raise ValueError('scale must be greater than 0')
-    return mp.mpf(loc), mp.mpf(scale)
 
 
 @mp.extradps(5)
@@ -27,7 +21,7 @@ def pdf(x, loc=0, scale=1):
     """
     Probability density function for the half-logistic distribution.
     """
-    loc, scale = _validate_params(loc, scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
     if x < loc:
         return mp.zero
@@ -40,7 +34,7 @@ def logpdf(x, loc=0, scale=1):
     """
     Logarithm of the PDF for the half-logistic distribution.
     """
-    loc, scale = _validate_params(loc, scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
     if x < loc:
         return mp.ninf
@@ -53,7 +47,7 @@ def cdf(x, loc=0, scale=1):
     """
     Cumulative distribution function for the half-logistic distribution.
     """
-    loc, scale = _validate_params(loc, scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
     if x < loc:
         return mp.zero
@@ -68,7 +62,7 @@ def invcdf(p, loc=0, scale=1):
 
     This function is also known as the *quantile function*.
     """
-    loc, scale = _validate_params(loc, scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     p = _validate_p(p)
     if p == 1:
         return mp.inf
@@ -82,7 +76,7 @@ def sf(x, loc=0, scale=1):
     """
     Survival function for the half-logistic distribution.
     """
-    loc, scale = _validate_params(loc, scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     x = mp.mpf(x)
     if x < loc:
         return mp.one
@@ -95,7 +89,7 @@ def invsf(p, loc=0, scale=1):
     """
     Inverse of the survival function for the half-logistic distribution.
     """
-    loc, scale = _validate_params(loc, scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     p = _validate_p(p)
     if p == 1:
         return loc
@@ -108,5 +102,5 @@ def support(loc=0, scale=1):
     """
     Support of the half-logistic distribution.
     """
-    loc, scale = _validate_params(loc, scale)
+    loc, scale = _validate_loc_scale(loc, scale)
     return (loc, mp.inf)
