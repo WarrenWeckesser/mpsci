@@ -49,9 +49,9 @@ def test_sf():
 @mp.workdps(40)
 def test_mle():
     x = [1, 2, 4, 4, 6, 8, 8, 9]
-    mu_hat, scale_hat = laplace.mle(x)
-    # The MLE for mu is the median.
-    assert mu_hat == 5
+    loc_hat, scale_hat = laplace.mle(x)
+    # The MLE for loc is the median.
+    assert loc_hat == 5
     # The MLE for scale is the mean absolute deviation from the median:
     # scale_hat = mean(|1-5|, |2-5|, |4-5|, |4-5|, |6-5|,
     #                  |8-5|, |8-5|, |9-5|)
@@ -88,5 +88,5 @@ def test_interval_prob():
 
 def test_mode():
     loc = 3
-    m = laplace.mode(mu=loc, b=2.5)
+    m = laplace.mode(loc=loc, scale=2.5)
     assert m == loc
