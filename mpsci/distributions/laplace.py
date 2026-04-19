@@ -8,17 +8,11 @@ The parameters are mu (the location) and b (the scale).
 
 from mpmath import mp
 from mpsci.stats import mean as _mean
-from ._common import _seq_to_mp
+from ._common import _seq_to_mp, _validate_loc_scale
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'interval_prob',
            'support', 'mean', 'mode', 'var', 'mle', 'mom']
-
-
-def _validate_params(mu, b):
-    if b <= 0:
-        raise ValueError('b must be positive.')
-    return mp.mpf(mu), mp.mpf(b)
 
 
 @mp.extradps(5)
@@ -26,7 +20,7 @@ def pdf(x, mu=0, b=1):
     """
     Laplace distribution probability density function.
     """
-    mu, b = _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     x = mp.mpf(x)
     return mp.exp(-abs(x - mu)/b)/(2*b)
 
@@ -36,7 +30,7 @@ def logpdf(x, mu=0, b=1):
     """
     Log of the PDF of the Laplace distribution.
     """
-    mu, b = _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     x = mp.mpf(x)
     return -abs(x - mu)/b - mp.log(2*b)
 
@@ -46,7 +40,7 @@ def cdf(x, mu=0, b=1):
     """
     Laplace distribution cumulative distribution function.
     """
-    mu, b = _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     x = mp.mpf(x)
     z = (x - mu)/b
     if x <= mu:
@@ -61,7 +55,7 @@ def sf(x, mu=0, b=1):
     """
     Laplace distribution survival function.
     """
-    mu, b = _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     x = mp.mpf(x)
     z = (x - mu)/b
     if x <= mu:
@@ -85,7 +79,7 @@ def interval_prob(x1, x2, mu=0, b=1):
 
     x1 must be less than or equal to x2.
     """
-    mu, b = _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     x1 = mp.mpf(x1)
     x2 = mp.mpf(x2)
     if x1 > x2:
@@ -111,7 +105,7 @@ def invcdf(p, mu=0, b=1):
     This function is also known as the quantile function or the percent
     point function.
     """
-    mu, b = _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     p = mp.mpf(p)
     if p <= 0.5:
         q = mu + b*mp.log(2*p)
@@ -125,7 +119,7 @@ def invsf(p, mu=0, b=1):
     """
     Laplace distribution inverse survival function.
     """
-    mu, b = _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     p = mp.mpf(p)
     if p >= 0.5:
         q = mu + b*mp.log(2 - 2*p)
@@ -139,7 +133,7 @@ def support(mu=0, b=1):
     """
     Support of the Laplace distribution.
     """
-    mu, b = _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     return (mp.ninf, mp.inf)
 
 
@@ -148,7 +142,7 @@ def mean(mu=0, b=1):
     """
     Mean of the Laplace distribution.
     """
-    mu, b = _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     return mu
 
 
@@ -158,7 +152,7 @@ def mode(mu=0, b=1):
 
     The mode of the Laplace distribution is simply `mu`.
     """
-    _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     return mu
 
 
@@ -167,7 +161,7 @@ def var(mu=0, b=1):
     """
     Variance of the Laplace distribution.
     """
-    mu, b = _validate_params(mu, b)
+    mu, b = _validate_loc_scale(mu, b, scale_name="b")
     return 2*b**2
 
 
