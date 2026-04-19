@@ -84,3 +84,9 @@ def test_interval_prob():
     s = "1.4999998750000074999996458333470833328819444572420631733631023e-7"
     ref = mp.mpf(s)
     assert mp.almosteq(p, ref)
+
+
+def test_mode():
+    loc = 3
+    m = laplace.mode(mu=loc, b=2.5)
+    assert m == loc

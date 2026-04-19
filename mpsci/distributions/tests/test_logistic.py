@@ -87,3 +87,9 @@ def test_mle():
     loc1, scale1 = logistic.mle(data)
     assert mp.almosteq(loc1, loc)
     assert mp.almosteq(scale1, 0.5)
+
+
+def test_mode():
+    loc = 3
+    m = logistic.mode(loc=loc, scale=2.5)
+    assert m == loc

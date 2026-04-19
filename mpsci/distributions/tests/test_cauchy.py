@@ -105,6 +105,12 @@ def test_mean_var():
     assert mp.isnan(var)
 
 
+def test_mode():
+    loc = 3
+    m = cauchy.mode(loc=loc, scale=2.5)
+    assert m == loc
+
+
 @mp.workdps(50)
 def test_entropy():
     check_entropy_with_integral(cauchy, ())

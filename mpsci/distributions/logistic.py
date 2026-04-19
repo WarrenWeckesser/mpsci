@@ -12,7 +12,7 @@ from ._common import _seq_to_mp, _validate_loc_scale, _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'mean', 'var',
+           'support', 'mean', 'mode', 'var',
            'mom', 'nll', 'mle']
 
 
@@ -92,6 +92,14 @@ def support(loc=0, scale=1):
 
 
 def mean(loc=0, scale=1):
+    """
+    Mean of the logistic distribution.
+    """
+    loc, scale = _validate_loc_scale(loc, scale)
+    return loc
+
+
+def mode(loc=0, scale=1):
     """
     Mean of the logistic distribution.
     """

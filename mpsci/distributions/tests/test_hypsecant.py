@@ -61,6 +61,12 @@ def test_mean():
     assert mean == 5
 
 
+def test_mode():
+    loc = 3
+    m = hypsecant.mode(loc=loc, scale=2.5)
+    assert m == loc
+
+
 @mp.workdps(50)
 def test_var_with_integral():
     loc = 5

@@ -18,7 +18,7 @@ from .. import stats
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'mean', 'var', 'entropy', 'nll', 'mle']
+           'support', 'mean', 'mode', 'var', 'entropy', 'nll', 'mle']
 
 
 def _validate_args(x, loc, scale):
@@ -102,6 +102,16 @@ def mean(loc=0, scale=1):
     Mean of the hyperbolic secant distribution.
     """
     loc, scale = _validate_loc_scale(loc, scale)
+    return loc
+
+
+def mode(loc=0, scale=1):
+    """
+    Mode of the hyperbolic secant distribution.
+
+    The mode of the hyperboic secant distribution is simply `loc`.
+    """
+    _validate_loc_scale(loc, scale)
     return loc
 
 

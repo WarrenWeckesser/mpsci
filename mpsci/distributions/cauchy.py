@@ -9,7 +9,7 @@ from ._common import _validate_p, _validate_loc_scale
 
 
 __all__ = ['support', 'pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'mean', 'var', 'entropy']
+           'mean', 'mode', 'var', 'entropy']
 
 
 def support(loc=0, scale=1):
@@ -80,6 +80,16 @@ def mean(loc=0, scale=1):
     """
     _validate_loc_scale(loc, scale)
     return mp.nan
+
+
+def mode(loc=0, scale=1):
+    """
+    Mode of the Cauchy distribution.
+
+    The mode of the Cauchy distribution is simply `loc`.
+    """
+    _validate_loc_scale(loc, scale)
+    return loc
 
 
 def var(loc=0, scale=1):

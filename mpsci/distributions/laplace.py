@@ -12,7 +12,7 @@ from ._common import _seq_to_mp
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf', 'interval_prob',
-           'support', 'mean', 'var', 'mle', 'mom']
+           'support', 'mean', 'mode', 'var', 'mle', 'mom']
 
 
 def _validate_params(mu, b):
@@ -149,6 +149,16 @@ def mean(mu=0, b=1):
     Mean of the Laplace distribution.
     """
     mu, b = _validate_params(mu, b)
+    return mu
+
+
+def mode(mu=0, b=1):
+    """
+    Mode of the Laplace distribution.
+
+    The mode of the Laplace distribution is simply `mu`.
+    """
+    _validate_params(mu, b)
     return mu
 
 
