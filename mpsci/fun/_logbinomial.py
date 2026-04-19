@@ -4,6 +4,7 @@ from mpmath import mp
 __all__ = ['logbinomial']
 
 
+@mp.extradps(5)
 def logbinomial(n, k):
     """
     Natural logarithm of binomial(n, k).
@@ -31,7 +32,6 @@ def logbinomial(n, k):
     if k > n:
         raise ValueError('k must not exceed n')
 
-    with mp.extradps(5):
-        return (mp.loggamma(n + 1)
-                - mp.loggamma(k + 1)
-                - mp.loggamma(mp.fsum([n + 1, -k])))
+    return (mp.loggamma(n + 1)
+            - mp.loggamma(k + 1)
+            - mp.loggamma(mp.fsum([n + 1, -k])))

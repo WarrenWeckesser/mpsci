@@ -4,6 +4,7 @@ from mpmath import mp
 __all__ = ['logsumexp']
 
 
+@mp.extradps(5)
 def logsumexp(logs, weights=None):
     """
     Compute the log of the sum of exponentials of the input sequence.
@@ -40,12 +41,11 @@ def logsumexp(logs, weights=None):
     >>> mp.log(mp.fsum([wi*mp.exp(xi) for xi, wi in zip(x, w)]))
     mpf('1.838387764326144472528490234')
     """
-    with mp.extradps(5):
-        log_max = max(logs)
-        exps = [mp.exp(t - log_max) for t in logs]
-        if weights is None:
-            result = mp.log(mp.fsum(exps)) + log_max
-        else:
-            weighted = [w*e for w, e in zip(weights, exps)]
-            result = mp.log(mp.fsum(weighted)) + log_max
-        return result
+    log_max = max(logs)
+    exps = [mp.exp(t - log_max) for t in logs]
+    if weights is None:
+        result = mp.log(mp.fsum(exps)) + log_max
+    else:
+        weighted = [w*e for w, e in zip(weights, exps)]
+        result = mp.log(mp.fsum(weighted)) + log_max
+    return result

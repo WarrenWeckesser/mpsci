@@ -12,6 +12,7 @@ def _wright_bessel_term(k, z, rho, beta):
     return numer / denom
 
 
+@mp.extradps(5)
 def wright_bessel(z, rho, beta):
     """
     Wright's generalized Bessel function.
@@ -38,28 +39,27 @@ def wright_bessel(z, rho, beta):
     * https://en.wikipedia.org/wiki/Bessel%E2%80%93Maitland_function
 
     """
-    with mp.extradps(5):
-        z = mp.mpmathify(z)
-        rho = mp.mpf(rho)
-        if rho <= -1:
-            raise ValueError('rho must be greater than -1')
-        beta = mp.mpmathify(beta)
+    z = mp.mpmathify(z)
+    rho = mp.mpf(rho)
+    if rho <= -1:
+        raise ValueError('rho must be greater than -1')
+    beta = mp.mpmathify(beta)
 
-        try:
-            g = mp.gamma(beta)
-        except ValueError:
-            g = mp.inf
+    try:
+        g = mp.gamma(beta)
+    except ValueError:
+        g = mp.inf
 
-        # Handle special cases.
-        if z == 0:
-            return 1 / g
-        if rho == 0:
-            return mp.exp(z) / g
-        if rho == 1:
-            rootz = mp.sqrt(z)
-            return (rootz**((1 - beta)) *
-                    mpmath.besseli(beta - 1, 2*rootz))
+    # Handle special cases.
+    if z == 0:
+        return 1 / g
+    if rho == 0:
+        return mp.exp(z) / g
+    if rho == 1:
+        rootz = mp.sqrt(z)
+        return (rootz**((1 - beta)) *
+                mpmath.besseli(beta - 1, 2*rootz))
 
-        # Nothing special, so just sum the series.
-        return mp.nsum(lambda k: _wright_bessel_term(k, z, rho, beta),
-                       [0, mp.inf])
+    # Nothing special, so just sum the series.
+    return mp.nsum(lambda k: _wright_bessel_term(k, z, rho, beta),
+                   [0, mp.inf])

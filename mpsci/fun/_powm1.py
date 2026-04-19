@@ -2,6 +2,7 @@ from mpmath import mp
 from ._xlogy import xlog1py
 
 
+@mp.extradps(5)
 def inv_powm1(t, y):
     """
     Inverse with respect to x of ``mpmath.powm1(x, y)``.
@@ -12,12 +13,12 @@ def inv_powm1(t, y):
         raise ValueError('y must not be 0.')
     if t <= -1:
         raise ValueError('t must be greater than -1.')
-    with mp.extradps(5):
-        t = mp.mpf(t)
-        y = mp.mpf(y)
-        return mp.exp(xlog1py(1/y, t))
+    t = mp.mpf(t)
+    y = mp.mpf(y)
+    return mp.exp(xlog1py(1/y, t))
 
 
+@mp.extradps(5)
 def pow1pm1(x, y):
     """
     Compute (1 + x)**y - 1.
@@ -44,10 +45,9 @@ def pow1pm1(x, y):
     mpf('1.001000000000000000000000001e-82')
 
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        y = mp.mpf(y)
-        return mp.expm1(xlog1py(y, x))
+    x = mp.mpf(x)
+    y = mp.mpf(y)
+    return mp.expm1(xlog1py(y, x))
 
 
 pow1pm1._docstring_re_subs = [
@@ -55,6 +55,7 @@ pow1pm1._docstring_re_subs = [
 ]
 
 
+@mp.extradps(5)
 def inv_pow1pm1(t, y):
     """
     Inverse with respect to x of ``pow1pm1(x, y)``.
@@ -65,7 +66,6 @@ def inv_pow1pm1(t, y):
         raise ValueError('y must not be 0.')
     if t <= -1:
         raise ValueError('t must be greater than -1.')
-    with mp.extradps(5):
-        t = mp.mpf(t)
-        y = mp.mpf(y)
-        return mp.expm1(xlog1py(1/y, t))
+    t = mp.mpf(t)
+    y = mp.mpf(y)
+    return mp.expm1(xlog1py(1/y, t))

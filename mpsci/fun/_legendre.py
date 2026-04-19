@@ -2,16 +2,17 @@ import operator
 from mpmath import mp
 
 
+@mp.extradps(5)
 def _root_approx(n, k):
     # Tricomi approximation
-    with mp.extradps(5):
-        n = mp.mpf(n)
-        k = mp.mpf(k)
-        c = 1 + (1/(8*n**2)) * (-1 + 1/n)
-        a = mp.pi*(4*k - 1)/(4*n + 2)
-        return c*mp.cos(a)
+    n = mp.mpf(n)
+    k = mp.mpf(k)
+    c = 1 + (1/(8*n**2)) * (-1 + 1/n)
+    a = mp.pi*(4*k - 1)/(4*n + 2)
+    return c*mp.cos(a)
 
 
+@mp.extradps(5)
 def roots_legendre(n):
     """
     Compute the roots of the Legendre polynomial, and quadrature weights.
@@ -73,20 +74,19 @@ def roots_legendre(n):
         w0 = mp.mpf('8/9')
         return [-x, mp.zero, x], [wx, w0, wx]
     approx_roots = [_root_approx(n, k) for k in range(1, n//2 + 1)]
-    with mp.extradps(5):
-        roots = [mp.findroot(lambda x: mp.legendre(n, x), x0)
-                 for x0 in approx_roots]
-        derivs = [mp.diff(lambda x: mp.legendre(n, x), root)
-                  for root in roots]
-        weights = [2/((1-root**2)*deriv**2)
-                   for root, deriv in zip(roots, derivs)]
-        if n & 1:
-            z = mp.zero
-            root0 = [z]
-            deriv = mp.diff(lambda x: mp.legendre(n, x), z)
-            weight0 = [2/deriv**2]
-        else:
-            root0 = []
-            weight0 = []
-        return ([-r for r in roots] + root0 + roots[::-1],
-                weights + weight0 + weights[::-1])
+    roots = [mp.findroot(lambda x: mp.legendre(n, x), x0)
+             for x0 in approx_roots]
+    derivs = [mp.diff(lambda x: mp.legendre(n, x), root)
+              for root in roots]
+    weights = [2/((1-root**2)*deriv**2)
+               for root, deriv in zip(roots, derivs)]
+    if n & 1:
+        z = mp.zero
+        root0 = [z]
+        deriv = mp.diff(lambda x: mp.legendre(n, x), z)
+        weight0 = [2/deriv**2]
+    else:
+        root0 = []
+        weight0 = []
+    return ([-r for r in roots] + root0 + roots[::-1],
+            weights + weight0 + weights[::-1])

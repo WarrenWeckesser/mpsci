@@ -6,6 +6,7 @@ from mpmath import mp
 __all__ = ['logbeta', 'multivariate_logbeta']
 
 
+@mp.extradps(5)
 def logbeta(x, y):
     """
     Natural logarithm of beta(x, y).
@@ -32,8 +33,7 @@ def logbeta(x, y):
     mpf('-1.575224779107371741939220592')
 
     """
-    with mp.extradps(5):
-        return (mp.loggamma(x) + mp.loggamma(y) - mp.loggamma(mp.fsum([x, y])))
+    return (mp.loggamma(x) + mp.loggamma(y) - mp.loggamma(mp.fsum([x, y])))
 
 
 _beta_func_latex = r"""
@@ -49,6 +49,7 @@ logbeta._docstring_re_subs = [
 ]
 
 
+@mp.extradps(5)
 def multivariate_logbeta(alpha):
     """
     Logarithm of the multivariate beta function.
@@ -70,10 +71,9 @@ def multivariate_logbeta(alpha):
     >>> multivariate_logbeta([1.5, 2.0, 4.0, 1.25, 5.0])
     mpf('-17.15300326630985105656599532')
     """
-    with mp.extradps(5):
-        terms = [mp.loggamma(t) for t in alpha]
-        terms.append(-mp.loggamma(mp.fsum(alpha)))
-        return mp.fsum(terms)
+    terms = [mp.loggamma(t) for t in alpha]
+    terms.append(-mp.loggamma(mp.fsum(alpha)))
+    return mp.fsum(terms)
 
 
 _mvbeta_func_latex = r"""

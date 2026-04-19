@@ -4,6 +4,7 @@ from mpmath import mp
 __all__ = ['digammainv']
 
 
+@mp.extradps(5)
 def digammainv(y):
     """
     Inverse of the digamma function (real values only).
@@ -39,21 +40,19 @@ def digammainv(y):
     >>> mp.digamma(x)
     mpf('7.891230000000000000000000011')
     """
+    y = mp.mpf(y)
 
-    with mp.extradps(5):
-        y = mp.mpf(y)
+    # Find a good initial guess for the root.
+    if y > -0.125:
+        x0 = mp.exp(y) + mp.mpf('0.5')
+    elif y > -3:
+        x0 = mp.exp(y/mp.mpf(2.332)) + mp.mpf(0.08661)
+    else:
+        x0 = -1 / (y + mp.euler)
 
-        # Find a good initial guess for the root.
-        if y > -0.125:
-            x0 = mp.exp(y) + mp.mpf('0.5')
-        elif y > -3:
-            x0 = mp.exp(y/mp.mpf(2.332)) + mp.mpf(0.08661)
-        else:
-            x0 = -1 / (y + mp.euler)
-
-        solver = 'anderson'
-        x0 = (4*x0/5, 5*x0/4)
-        x = mp.findroot(lambda x: mp.digamma(x) - y, x0, solver=solver)
+    solver = 'anderson'
+    x0 = (4*x0/5, 5*x0/4)
+    x = mp.findroot(lambda x: mp.digamma(x) - y, x0, solver=solver)
 
     return x
 
