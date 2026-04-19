@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import half_logistic, logistic
+from ._expect import noncentral_moment_with_integral, check_entropy_with_integral
 
 
 def test_support():
@@ -103,3 +104,36 @@ def test_invsf_edges():
     assert x == mp.inf
     x = half_logistic.invsf(1, loc, scale)
     assert x == loc
+
+
+def test_mode():
+    loc = 3
+    m = half_logistic.mode(loc=loc, scale=7)
+    assert m == loc
+
+
+@pytest.mark.parametrize('loc, scale',
+                         [(0.5, 3.0), (-10, 4), (125, 87.5)])
+@mp.workdps(50)
+def test_mean_with_integral(loc, scale):
+    m = half_logistic.mean(loc, scale)
+    q = noncentral_moment_with_integral(1, half_logistic, (loc, scale))
+    assert mp.almosteq(m, q)
+
+
+@pytest.mark.parametrize('loc, scale',
+                         [(0.25, 2.5), (-12, 3.5), (150, 123.5)])
+@mp.workdps(50)
+def test_var_with_integral(loc, scale):
+    mu = half_logistic.mean(loc, scale)
+    var = half_logistic.var(loc, scale)
+    expected = mp.quad(lambda t: (t - mu)**2 * half_logistic.pdf(t, loc, scale),
+                       [loc, mp.inf])
+    assert mp.almosteq(var, expected)
+
+
+@pytest.mark.parametrize('loc, scale',
+                         [(0.25, 2.5), (-12, 3.5), (150, 123.5)])
+@mp.workdps(50)
+def test_entropy_with_integral(loc, scale):
+    check_entropy_with_integral(half_logistic, (loc, scale))

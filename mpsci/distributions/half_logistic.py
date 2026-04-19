@@ -13,7 +13,7 @@ from ._common import _validate_p, _validate_loc_scale
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'support']
+           'mean', 'mode', 'var', 'entropy', 'support']
 
 
 @mp.extradps(5)
@@ -96,6 +96,44 @@ def invsf(p, loc=0, scale=1):
     if p == 0:
         return mp.inf
     return loc - scale*mp.log(p/2/(1 - p/2))
+
+
+@mp.extradps(5)
+def mean(loc=0, scale=1):
+    """
+    Mean of the half-logistic distribution.
+    """
+    loc, scale = _validate_loc_scale(loc, scale)
+    return loc + scale * mp.log(4)
+
+
+def mode(loc=0, scale=1):
+    """
+    Mean of the half-logistic distribution.
+
+    The PDF of the half-logistic distribution is a decreasing function on the
+    support [loc, inf), so the mode is simply loc.
+    """
+    loc, scale = _validate_loc_scale(loc, scale)
+    return loc
+
+
+@mp.extradps(5)
+def var(loc=0, scale=1):
+    """
+    Variance of the half-logistic distribution.
+    """
+    loc, scale = _validate_loc_scale(loc, scale)
+    return scale**2 * (mp.pi**2 / 3 - mp.log(4)**2)
+
+
+@mp.extradps(5)
+def entropy(loc=0, scale=1):
+    """
+    Entropy of the half-logistic distribution.
+    """
+    loc, scale = _validate_loc_scale(loc, scale)
+    return mp.log(scale/2) + 2
 
 
 def support(loc=0, scale=1):
