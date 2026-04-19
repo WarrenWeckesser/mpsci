@@ -1,6 +1,7 @@
 import pytest
 from mpmath import mp
 from mpsci.distributions import logistic
+from ._expect import noncentral_moment_with_integral
 
 
 @pytest.mark.parametrize('x', [-20, -1, 0, 3, 18])
@@ -68,6 +69,26 @@ def test_invsf(p):
     x = logistic.invsf(p, loc=loc, scale=scale)
     expected_x = loc + scale*mp.log((1 - p)/p)
     assert mp.almosteq(x, expected_x)
+
+
+@pytest.mark.parametrize('loc, scale',
+                         [(0.5, 3.0), (-10, 4), (125, 87.5)])
+@mp.workdps(50)
+def test_mean_with_integral(loc, scale):
+    m = logistic.mean(loc, scale)
+    q = noncentral_moment_with_integral(1, logistic, (loc, scale))
+    assert mp.almosteq(m, q)
+
+
+@pytest.mark.parametrize('loc, scale',
+                         [(0.25, 2.5), (-12, 3.5), (150, 123.5)])
+@mp.workdps(50)
+def test_var_with_integral(loc, scale):
+    mu = logistic.mean(loc, scale)
+    var = logistic.var(loc, scale)
+    expected = mp.quad(lambda t: (t - mu)**2 * logistic.pdf(t, loc, scale),
+                       [mp.ninf, mp.inf])
+    assert mp.almosteq(var, expected)
 
 
 @pytest.mark.parametrize('scale', [1, 0.5])
