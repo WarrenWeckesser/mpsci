@@ -85,6 +85,25 @@ def test_mean():
     assert mp.almosteq(m, expected)
 
 
+# c >= 1.
+@pytest.mark.parametrize('c, scale', [(1, 6), (1.125, 1.5), (125, 8.5)])
+def test_mode_endpoint(c, scale):
+    m = gompertz.mode(c, scale)
+    assert m == 0
+
+
+# c < 1.
+@pytest.mark.parametrize('c, scale', [(0.75, 6), (0.975, 1.5), (0.125, 0.5)])
+@mp.workdps(50)
+def test_mode_interior(c, scale):
+    # A crude test of the mode.
+    m = gompertz.mode(c, scale)
+    pm = gompertz.pdf(m, c, scale)
+    delta = mp.sqrt(mp.eps)
+    assert gompertz.pdf(m - delta, c, scale) < pm
+    assert gompertz.pdf(m + delta, c, scale) < pm
+
+
 @mp.workdps(60)
 def test_entropy_against_integral():
     c = mp.mpf(3.0)

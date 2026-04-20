@@ -155,6 +155,19 @@ def mean(c, scale):
     return scale * mp.exp(c) * mp.e1(c)
 
 
+@mp.extradps(5)
+def mode(c, scale):
+    """
+    Mode of the Gompertz distribution.
+
+    When c >= 1, the mode is 0.
+    """
+    c, scale = _validate_c_scale(c, scale)
+    if c >= 1:
+        return mp.zero
+    return -scale * mp.log(c)
+
+
 def _hyp3f3_111222(x):
     x = mp.mpf(x)
     return mp.nsum(lambda k: (-1)**k/(k+1)**3 * x**k/mp.factorial(k),
