@@ -69,6 +69,7 @@ def _support_gen(colors, nsample):
             yield from [[k] + t for t in _support_gen(colors[1:], nsample - k)]
 
 
+@mp.extradps(5)
 def logpmf(point, colors, nsample):
     """
     Log of the PMF of the multivariate hypergeometric distribution.
@@ -83,14 +84,13 @@ def logpmf(point, colors, nsample):
     mpf('-2.121263036533174590973082873')
     """
     _validate_params(colors, nsample)
-    with mp.extradps(5):
-        total = sum(colors)
-        logdenom = logbinomial(total, nsample)
-        lognumer = 0
-        for color, k in zip(colors, point):
-            lognumer += logbinomial(color, k)
-        logp = lognumer - logdenom
-        return logp
+    total = sum(colors)
+    logdenom = logbinomial(total, nsample)
+    lognumer = 0
+    for color, k in zip(colors, point):
+        lognumer += logbinomial(color, k)
+    logp = lognumer - logdenom
+    return logp
 
 
 def pmf(point, colors, nsample):
@@ -109,6 +109,7 @@ def pmf(point, colors, nsample):
     return mp.exp(logpmf(point, colors, nsample))
 
 
+@mp.extradps(5)
 def mean(colors, nsample):
     """
     Mean of the multivariate hypergeometric distribution.
@@ -134,15 +135,15 @@ def mean(colors, nsample):
      mpf('10.32258064516129032258064516')]
     """
     _validate_params(colors, nsample)
-    with mp.extradps(5):
-        s = mp.fsum(colors)
-        if nsample == s:
-            # This includes the edge case where colors = [0, ..., 0]
-            # and nsample = 0.
-            return [mp.one * k for k in colors]
-        return [nsample * (k / s) for k in colors]
+    s = mp.fsum(colors)
+    if nsample == s:
+        # This includes the edge case where colors = [0, ..., 0]
+        # and nsample = 0.
+        return [mp.one * k for k in colors]
+    return [nsample * (k / s) for k in colors]
 
 
+@mp.extradps(5)
 def cov(colors, nsample):
     """
     Covariance matrix of the multivariate hypergeometric distribution.
@@ -195,22 +196,22 @@ def cov(colors, nsample):
     """
     _validate_params(colors, nsample)
     n = len(colors)
-    with mp.extradps(5):
-        s = mp.fsum(colors)
-        if nsample == s:
-            return [[mp.zero]*n for _ in range(n)]
-        u = [k / s for k in colors]
-        f = nsample * (s - nsample) / (s - 1)
-        c = [[None]*n for _ in range(n)]
-        for i in range(n):
-            for j in range(n):
-                if i == j:
-                    c[i][j] = f * u[i] * (1 - u[i])
-                else:
-                    c[i][j] = -f * u[i] * u[j]
-        return c
+    s = mp.fsum(colors)
+    if nsample == s:
+        return [[mp.zero]*n for _ in range(n)]
+    u = [k / s for k in colors]
+    f = nsample * (s - nsample) / (s - 1)
+    c = [[None]*n for _ in range(n)]
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                c[i][j] = f * u[i] * (1 - u[i])
+            else:
+                c[i][j] = -f * u[i] * u[j]
+    return c
 
 
+@mp.extradps(5)
 def entropy(colors, nsample):
     """
     Entropy of the multivariate hypergeometric distribution.
@@ -234,9 +235,8 @@ def entropy(colors, nsample):
     mpf('2.877874138861812367967354693')
     """
     _validate_params(colors, nsample)
-    with mp.extradps(5):
-        terms = []
-        for x in _support_gen(colors, nsample):
-            logp = logpmf(x, colors, nsample)
-            terms.append(mp.exp(logp) * logp)
-        return -mp.fsum(terms)
+    terms = []
+    for x in _support_gen(colors, nsample):
+        logp = logpmf(x, colors, nsample)
+        terms.append(mp.exp(logp) * logp)
+    return -mp.fsum(terms)
