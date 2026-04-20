@@ -32,87 +32,86 @@ def _validate_sigma(sigma):
     return mp.mpf(sigma)
 
 
+@mp.extradps(5)
 def pdf(x, mu, sigma):
     """
     Probability density function of the folded normal distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        mu = mp.mpf(mu)
-        sigma = _validate_sigma(sigma)
-        if x < 0:
-            return mp.zero
-        return mp.npdf(x, mu, sigma) + mp.npdf(-x, mu, sigma)
+    x = mp.mpf(x)
+    mu = mp.mpf(mu)
+    sigma = _validate_sigma(sigma)
+    if x < 0:
+        return mp.zero
+    return mp.npdf(x, mu, sigma) + mp.npdf(-x, mu, sigma)
 
 
+@mp.extradps(5)
 def logpdf(x, mu, sigma):
     """
     Logarithm of the PDF of the folded normal distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        mu = mp.mpf(mu)
-        sigma = _validate_sigma(sigma)
-        if x < 0:
-            return mp.ninf
-        logp1 = normal_logpdf(x, mu, sigma)
-        logp2 = normal_logpdf(-x, mu, sigma)
-        return logsumexp([logp1, logp2])
+    x = mp.mpf(x)
+    mu = mp.mpf(mu)
+    sigma = _validate_sigma(sigma)
+    if x < 0:
+        return mp.ninf
+    logp1 = normal_logpdf(x, mu, sigma)
+    logp2 = normal_logpdf(-x, mu, sigma)
+    return logsumexp([logp1, logp2])
 
 
+@mp.extradps(5)
 def cdf(x, mu, sigma):
     """
     Cumulative distribution function of the folded normal distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        mu = mp.mpf(mu)
-        sigma = _validate_sigma(sigma)
-        if x < 0:
-            return mp.zero
-        return mp.ncdf(x, mu, sigma) - mp.ncdf(-x, mu, sigma)
+    x = mp.mpf(x)
+    mu = mp.mpf(mu)
+    sigma = _validate_sigma(sigma)
+    if x < 0:
+        return mp.zero
+    return mp.ncdf(x, mu, sigma) - mp.ncdf(-x, mu, sigma)
 
 
+@mp.extradps(5)
 def sf(x, mu, sigma):
     """
     Survival function of the folded normal distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        mu = mp.mpf(mu)
-        sigma = _validate_sigma(sigma)
-        if x < 0:
-            return mp.one
-        return mp.ncdf(-x, -mu, sigma) + mp.ncdf(-x, mu, sigma)
+    x = mp.mpf(x)
+    mu = mp.mpf(mu)
+    sigma = _validate_sigma(sigma)
+    if x < 0:
+        return mp.one
+    return mp.ncdf(-x, -mu, sigma) + mp.ncdf(-x, mu, sigma)
 
 
 def support(mu, sigma):
     """
     Support of the folded normal distribution.
     """
-    with mp.extradps(5):
-        mu = mp.mpf(mu)
-        sigma = _validate_sigma(sigma)
-        return (mp.zero, mp.inf)
+    mu = mp.mpf(mu)
+    sigma = _validate_sigma(sigma)
+    return (mp.zero, mp.inf)
 
 
+@mp.extradps(5)
 def mean(mu, sigma):
     """
     Mean of the folded normal distribution.
     """
-    with mp.extradps(5):
-        mu = mp.mpf(mu)
-        sigma = _validate_sigma(sigma)
-        r = mu/sigma
-        m = sigma*mp.sqrt(2/mp.pi)*mp.exp(-r**2/2) + mu*(1 - 2*mp.ncdf(-r))
-        return m
+    mu = mp.mpf(mu)
+    sigma = _validate_sigma(sigma)
+    r = mu/sigma
+    m = sigma*mp.sqrt(2/mp.pi)*mp.exp(-r**2/2) + mu*(1 - 2*mp.ncdf(-r))
+    return m
 
 
+@mp.extradps(5)
 def var(mu, sigma):
     """
     Variance of the folded normal distribution.
     """
-    with mp.extradps(5):
-        mu = mp.mpf(mu)
-        sigma = _validate_sigma(sigma)
-        return mu**2 + sigma**2 - mean(mu, sigma)**2
+    mu = mp.mpf(mu)
+    sigma = _validate_sigma(sigma)
+    return mu**2 + sigma**2 - mean(mu, sigma)**2
