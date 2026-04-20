@@ -112,3 +112,16 @@ def test_mle_n_fixed():
     nhat, phat = binomial.mle(x, n=5)
     assert nhat == 5
     assert mp.almosteq(phat, mean(x)/nhat)
+
+
+@mp.workdps(50)
+def test_mle_p_fixed():
+    x = [2, 4, 4, 5, 3, 7]
+    p = 0.375
+    nhat, phat = binomial.mle(x, p=p)
+    assert phat == p
+    nllhat = binomial.nll(x, nhat, p)
+    maxx = max(x)
+    nllcheck = min(binomial.nll(x, n=k, p=p)
+                   for k in range(maxx, 5 * maxx) if k != nhat)
+    assert nllhat < nllcheck
