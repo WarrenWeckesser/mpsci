@@ -153,3 +153,25 @@ def test_mle_fixed_loc():
     check_mle(lambda x, b: pareto.nll(x, b=b, scale=scale_hat),
               x, (b_hat,))
     assert scale_hat == min(x)
+
+
+def test_mle_fixed_loc_and_b():
+    # In this case, the MLE for the scale is min(x) - loc.
+    x = [1.25, 1.5, 1.5, 7]
+    b0 = 3.5
+    loc0 = 0.125
+    b, loc, scale_hat = pareto.mle(x, b=b0, loc=loc0)
+    assert b == b0
+    assert loc == loc0
+    assert scale_hat == min(x) - loc0
+
+
+def test_mle_all_fixed():
+    x = [1.25, 1.5, 1.5, 7, 3]
+    b0 = 2.5
+    loc0 = 0
+    scale0 = 0.5
+    b_hat, loc_hat, scale_hat = pareto.mle(x, b=b0, loc=loc0, scale=scale0)
+    assert b_hat == b0
+    assert loc_hat == loc0
+    assert scale_hat == scale0
