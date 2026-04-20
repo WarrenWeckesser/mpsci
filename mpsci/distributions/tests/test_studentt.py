@@ -1,5 +1,7 @@
+import pytest
 from mpmath import mp
 from mpsci.distributions import studentt
+from ._expect import check_entropy_with_integral
 
 
 @mp.workdps(50)
@@ -77,3 +79,9 @@ def test_mean():
 
 def test_mode():
     assert studentt.mode() == 0
+
+
+@pytest.mark.parametrize('df', [2, 5, 57, 123])
+@mp.workdps(50)
+def test_entropy_with_integral(df):
+    check_entropy_with_integral(studentt, (df,))
