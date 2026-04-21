@@ -40,6 +40,7 @@ def support():
     return itertools.count(start=1)
 
 
+@mp.extradps(5)
 def pmf(k):
     """
     Probability mass function (PMF) of the Gauss-Kuzmin distribution.
@@ -48,12 +49,12 @@ def pmf(k):
     """
     if k < 1:
         return mp.zero
-    with mp.extradps(5):
-        k = mp.mpf(k)
-        r = 1/(k + 1)
-        return -(mp.log1p(-r) + mp.log1p(r)) / mp.log(2)
+    k = mp.mpf(k)
+    r = 1/(k + 1)
+    return -(mp.log1p(-r) + mp.log1p(r)) / mp.log(2)
 
 
+@mp.extradps(5)
 def logpmf(k):
     """
     Logarithm of the PMF of the Gauss-Kuzmin distribution.
@@ -62,11 +63,11 @@ def logpmf(k):
     """
     if k < 0:
         return mp.ninf
-    with mp.extradps(5):
-        k = mp.mpf(k)
-        return mp.log(pmf(k))
+    k = mp.mpf(k)
+    return mp.log(pmf(k))
 
 
+@mp.extradps(5)
 def cdf(k):
     """
     CDF of the Gauss-Kuzmin distribution.
@@ -75,14 +76,14 @@ def cdf(k):
     """
     if k < 0:
         return mp.zero
-    with mp.extradps(5):
-        k = mp.mpf(k)
-        if mp.isinf(k):
-            return mp.one
-        r = 1/(k + 1)
-        return mp.one - mp.log1p(r)/mp.log(2)
+    k = mp.mpf(k)
+    if mp.isinf(k):
+        return mp.one
+    r = 1/(k + 1)
+    return mp.one - mp.log1p(r)/mp.log(2)
 
 
+@mp.extradps(5)
 def invcdf(p):
     """
     Inverse of the CDF of the Gauss-Kuzmin distribution.
@@ -90,14 +91,14 @@ def invcdf(p):
     The distribution is discrete, but mpmath.mpf values are returned,
     to allow for returning `inf` when p is 1.
     """
-    with mp.extradps(5):
-        p = _validate_p(p)
-        if p == 1:
-            return mp.inf
-        t = mp.powm1(2, 1 - p)
-        return mp.powm1(t, -1)
+    p = _validate_p(p)
+    if p == 1:
+        return mp.inf
+    t = mp.powm1(2, 1 - p)
+    return mp.powm1(t, -1)
 
 
+@mp.extradps(5)
 def sf(k):
     """
     Survival function of the Gauss-Kuzmin distribution.
@@ -106,12 +107,12 @@ def sf(k):
     """
     if k < 0:
         return mp.one
-    with mp.extradps(5):
-        k = mp.mpf(k)
-        r = 1/(k + 1)
-        return mp.log1p(r)/mp.log(2)
+    k = mp.mpf(k)
+    r = 1/(k + 1)
+    return mp.log1p(r)/mp.log(2)
 
 
+@mp.extradps(5)
 def invsf(p):
     """
     Inverse of the survival function of the Gauss-Kuzmin distribution.
@@ -119,12 +120,11 @@ def invsf(p):
     The distribution is discrete, but mpmath.mpf values are returned,
     to allow for returning `inf` when p is 0.
     """
-    with mp.extradps(5):
-        p = _validate_p(p)
-        if p == 0:
-            return mp.inf
-        t = mp.powm1(2, p)
-        return mp.powm1(t, -1)
+    p = _validate_p(p)
+    if p == 0:
+        return mp.inf
+    t = mp.powm1(2, p)
+    return mp.powm1(t, -1)
 
 
 def mode():

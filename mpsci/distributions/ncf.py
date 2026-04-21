@@ -25,6 +25,7 @@ def _pdf_term(k, x, dfn, dfd, nc):
     return mp.exp(logr)
 
 
+@mp.extradps(5)
 def pdf(x, dfn, dfd, nc):
     """
     PDF of the noncentral F distribution.
@@ -35,13 +36,12 @@ def pdf(x, dfn, dfd, nc):
     def _pdfk(k):
         return _pdf_term(k, x, dfn, dfd, nc)
 
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
-        nc = mp.mpf(nc)
-        p = mp.nsum(_pdfk, [0, mp.inf])
-        return p
+    x = mp.mpf(x)
+    dfn = mp.mpf(dfn)
+    dfd = mp.mpf(dfd)
+    nc = mp.mpf(nc)
+    p = mp.nsum(_pdfk, [0, mp.inf])
+    return p
 
 
 def _cdf_term(k, x, dfn, dfd, nc):
@@ -56,6 +56,7 @@ def _cdf_term(k, x, dfn, dfd, nc):
     return r
 
 
+@mp.extradps(5)
 def cdf(x, dfn, dfd, nc):
     """
     CDF of the noncentral F distribution.
@@ -66,26 +67,26 @@ def cdf(x, dfn, dfd, nc):
     def _cdfk(k):
         return _cdf_term(k, x, dfn, dfd, nc)
 
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
-        nc = mp.mpf(nc)
-        p = mp.nsum(_cdfk, [0, mp.inf])
-        return p
+    x = mp.mpf(x)
+    dfn = mp.mpf(dfn)
+    dfd = mp.mpf(dfd)
+    nc = mp.mpf(nc)
+    p = mp.nsum(_cdfk, [0, mp.inf])
+    return p
 
 
+@mp.extradps(5)
 def support(dfn, dfd, nc):
     """
     Support of the noncentral F distribution.
     """
-    with mp.extradps(5):
-        nc = mp.mpf(nc)
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
-        return (mp.zero, mp.inf)
+    nc = mp.mpf(nc)
+    dfn = mp.mpf(dfn)
+    dfd = mp.mpf(dfd)
+    return (mp.zero, mp.inf)
 
 
+@mp.extradps(5)
 def mean(dfn, dfd, nc):
     """
     Mean of the noncentral F distribution.
@@ -93,13 +94,13 @@ def mean(dfn, dfd, nc):
     if dfd <= 2:
         return mp.nan
 
-    with mp.extradps(5):
-        nc = mp.mpf(nc)
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
-        return dfd * (dfn + nc) / dfn / (dfd - 2)
+    nc = mp.mpf(nc)
+    dfn = mp.mpf(dfn)
+    dfd = mp.mpf(dfd)
+    return dfd * (dfn + nc) / dfn / (dfd - 2)
 
 
+@mp.extradps(5)
 def var(dfn, dfd, nc):
     """
     Variance of the noncentral F distribution.
@@ -107,12 +108,11 @@ def var(dfn, dfd, nc):
     if dfd <= 4:
         return mp.nan
 
-    with mp.extradps(5):
-        nc = mp.mpf(nc)
-        dfn = mp.mpf(dfn)
-        dfd = mp.mpf(dfd)
-        v = (2*((dfn + nc)**2 +
-                (dfn + 2*nc) * (dfd - 2)) /
-               ((dfd - 2)**2 * (dfd - 4)) *
-             (dfd/dfn)**2)
-        return v
+    nc = mp.mpf(nc)
+    dfn = mp.mpf(dfn)
+    dfd = mp.mpf(dfd)
+    v = (2*((dfn + nc)**2 +
+            (dfn + 2*nc) * (dfd - 2)) /
+           ((dfd - 2)**2 * (dfd - 4)) *
+         (dfd/dfn)**2)
+    return v
