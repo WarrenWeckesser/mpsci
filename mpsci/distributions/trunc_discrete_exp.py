@@ -55,80 +55,80 @@ def support(lam, n):
     return range(n)
 
 
+@mp.extradps(5)
 def logpmf(k, lam, n):
     """
     Logarithm of PMF of the truncated discrete exponential distribution.
     """
     k = _validate_int(k)
-    with mp.extradps(5):
-        lam, n = _validate_params(lam, n)
-        if k < 0:
-            return mp.ninf
-        if k >= n:
-            return mp.ninf
-        if lam == 0:
-            return -mp.log(n)
-        return mp.log1p(-mp.exp(-lam)) - lam*k - mp.log1p(-mp.exp(-lam*n))
+    lam, n = _validate_params(lam, n)
+    if k < 0:
+        return mp.ninf
+    if k >= n:
+        return mp.ninf
+    if lam == 0:
+        return -mp.log(n)
+    return mp.log1p(-mp.exp(-lam)) - lam*k - mp.log1p(-mp.exp(-lam*n))
 
 
+@mp.extradps(5)
 def pmf(k, lam, n):
     """
     Probability mass function of the truncated discrete exponential distribution.
     """
     k = _validate_int(k)
-    with mp.extradps(5):
-        lam, n = _validate_params(lam, n)
-        if k < 0:
-            return mp.zero
-        if k >= n:
-            return mp.zero
-        if lam == 0:
-            return mp.one/n
-        return mp.exp(logpmf(k, lam, n))
+    lam, n = _validate_params(lam, n)
+    if k < 0:
+        return mp.zero
+    if k >= n:
+        return mp.zero
+    if lam == 0:
+        return mp.one/n
+    return mp.exp(logpmf(k, lam, n))
 
 
+@mp.extradps(5)
 def cdf(k, lam, n):
     """
     Cumulative distribution function of the truncated discrete exponential distribution.
     """
     k = _validate_int(k)
-    with mp.extradps(5):
-        lam, n = _validate_params(lam, n)
-        if k < 0:
-            return mp.zero
-        if k >= n:
-            return mp.one
-        if lam == 0:
-            return (k + mp.one)/n
-        return mp.expm1(-lam*(k + 1)) / mp.expm1(-lam*n)
+    lam, n = _validate_params(lam, n)
+    if k < 0:
+        return mp.zero
+    if k >= n:
+        return mp.one
+    if lam == 0:
+        return (k + mp.one)/n
+    return mp.expm1(-lam*(k + 1)) / mp.expm1(-lam*n)
 
 
+@mp.extradps(5)
 def sf(k, lam, n):
     """
     Survival function of the truncated discrete exponential distribution.
     """
     k = _validate_int(k)
-    with mp.extradps(5):
-        lam, n = _validate_params(lam, n)
-        if k < 0:
-            return mp.one
-        if k >= n:
-            return mp.zero
-        if lam == 0:
-            return (n - k - mp.one)/n
-        return mp.expm1(lam*(n - k - 1)) / mp.expm1(lam*n)
+    lam, n = _validate_params(lam, n)
+    if k < 0:
+        return mp.one
+    if k >= n:
+        return mp.zero
+    if lam == 0:
+        return (n - k - mp.one)/n
+    return mp.expm1(lam*(n - k - 1)) / mp.expm1(lam*n)
 
 
+@mp.extradps(5)
 def mean(lam, n):
     """
     Mean of the truncated discrete exponential distribution.
     """
-    with mp.extradps(5):
-        lam, n = _validate_params(lam, n)
-        if lam == 0:
-            return (n - mp.one)/2
-        nlam = n*lam
-        return -mp.exp(-lam)/mp.expm1(-lam) + n*mp.exp(-nlam)/mp.expm1(-nlam)
+    lam, n = _validate_params(lam, n)
+    if lam == 0:
+        return (n - mp.one)/2
+    nlam = n*lam
+    return -mp.exp(-lam)/mp.expm1(-lam) + n*mp.exp(-nlam)/mp.expm1(-nlam)
 
 
 def mode(lam, n):
@@ -141,22 +141,22 @@ def mode(lam, n):
     return 0
 
 
+@mp.extradps(5)
 def var(lam, n):
     """
     Variance of the truncated discrete exponential distribution.
     """
-    with mp.extradps(5):
-        lam, n = _validate_params(lam, n)
-        if lam == 0:
-            return (mp.mpf(n)**2 - 1)/12
-        nlam = n*lam
-        return mp.exp(-lam)/mp.expm1(-lam)**2 - n**2 * mp.exp(-nlam)/mp.expm1(-nlam)**2
+    lam, n = _validate_params(lam, n)
+    if lam == 0:
+        return (mp.mpf(n)**2 - 1)/12
+    nlam = n*lam
+    return mp.exp(-lam)/mp.expm1(-lam)**2 - n**2 * mp.exp(-nlam)/mp.expm1(-nlam)**2
 
 
+@mp.extradps(5)
 def entropy(lam, n):
     """
     Entropy of the truncated discrete exponential distribution.
     """
-    with mp.extradps(5):
-        lam, n = _validate_params(lam, n)
-        return -logpmf(0, lam, n) + lam * mean(lam, n)
+    lam, n = _validate_params(lam, n)
+    return -logpmf(0, lam, n) + lam * mean(lam, n)

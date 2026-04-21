@@ -37,127 +37,127 @@ def _validate_a_b(a, b):
     return mp.mpf(a), mp.mpf(b)
 
 
+@mp.extradps(5)
 def pdf(x, a, b):
     """
     Probability density function (PDF) for the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        x = mp.mpf(x)
-        if x < 0 or x > 1:
-            return mp.zero
-        if x == 0 and a < 1:
-            return mp.inf
-        if x == 1 and b < 1:
-            return mp.inf
-        return (a * b * mp.power(x, a - 1)
-                * mp.power(-mp.powm1(x, a), b - 1))
+    a, b = _validate_a_b(a, b)
+    x = mp.mpf(x)
+    if x < 0 or x > 1:
+        return mp.zero
+    if x == 0 and a < 1:
+        return mp.inf
+    if x == 1 and b < 1:
+        return mp.inf
+    return (a * b * mp.power(x, a - 1)
+            * mp.power(-mp.powm1(x, a), b - 1))
 
 
+@mp.extradps(5)
 def logpdf(x, a, b):
     """
     Natural logarithm of the PDF of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        x = mp.mpf(x)
-        if x < 0 or x > 1:
-            return mp.ninf
-        return (mp.log(a) + mp.log(b) + (a - 1)*mp.log(x)
-                + (b - 1)*mp.log1p(-x**a))
+    a, b = _validate_a_b(a, b)
+    x = mp.mpf(x)
+    if x < 0 or x > 1:
+        return mp.ninf
+    return (mp.log(a) + mp.log(b) + (a - 1)*mp.log(x)
+            + (b - 1)*mp.log1p(-x**a))
 
 
+@mp.extradps(5)
 def cdf(x, a, b):
     """
     Cumulative distribution function of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.zero
-        if x > 1:
-            return mp.one
-        return -mp.powm1(-mp.powm1(x, a), b)
+    a, b = _validate_a_b(a, b)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.zero
+    if x > 1:
+        return mp.one
+    return -mp.powm1(-mp.powm1(x, a), b)
 
 
+@mp.extradps(5)
 def sf(x, a, b):
     """
     Survival function of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.one
-        if x > 1:
-            return mp.zero
-        return mp.power(-mp.powm1(x, a), b)
+    a, b = _validate_a_b(a, b)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.one
+    if x > 1:
+        return mp.zero
+    return mp.power(-mp.powm1(x, a), b)
 
 
+@mp.extradps(5)
 def invcdf(p, a, b):
     """
     Inverse of the CDF of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        p = _validate_p(p)
-        if p == 0:
-            return mp.zero
-        if p == 1:
-            return mp.one
-        return inv_powm1(-inv_powm1(-p, b), a)
+    a, b = _validate_a_b(a, b)
+    p = _validate_p(p)
+    if p == 0:
+        return mp.zero
+    if p == 1:
+        return mp.one
+    return inv_powm1(-inv_powm1(-p, b), a)
 
 
+@mp.extradps(5)
 def invsf(p, a, b):
     """
     Inverse of the survival function of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        p = _validate_p(p)
-        if p == 0:
-            return mp.one
-        if p == 1:
-            return mp.zero
-        return inv_powm1(-mp.power(p, 1/b), a)
+    a, b = _validate_a_b(a, b)
+    p = _validate_p(p)
+    if p == 0:
+        return mp.one
+    if p == 1:
+        return mp.zero
+    return inv_powm1(-mp.power(p, 1/b), a)
 
 
 def support(a, b):
     """
     Support of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        return (mp.zero, mp.one)
+    return (mp.zero, mp.one)
 
 
+@mp.extradps(5)
 def mean(a, b):
     """
     Mean of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        return b*mp.beta(1 + 1/a, b)
+    a, b = _validate_a_b(a, b)
+    return b*mp.beta(1 + 1/a, b)
 
 
+@mp.extradps(5)
 def var(a, b):
     """
     Variance of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        return b*mp.beta(1 + 2/a, b) - mean(a, b)**2
+    a, b = _validate_a_b(a, b)
+    return b*mp.beta(1 + 2/a, b) - mean(a, b)**2
 
 
+@mp.extradps(5)
 def median(a, b):
     """
     Median of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        return inv_powm1(-mp.power(0.5, 1/b), a)
+    a, b = _validate_a_b(a, b)
+    return inv_powm1(-mp.power(0.5, 1/b), a)
 
 
+@mp.extradps(5)
 def noncentral_moment(n, a, b):
     """
     n-th noncentral moment of the Kumaraswamy distribution.
@@ -165,50 +165,49 @@ def noncentral_moment(n, a, b):
     n must be a nonnegative integer.
     """
     n = _validate_moment_n(n)
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        if n == 0:
-            return mp.one
-        return b * mp.beta(1 + n/a, b)
+    a, b = _validate_a_b(a, b)
+    if n == 0:
+        return mp.one
+    return b * mp.beta(1 + n/a, b)
 
 
+@mp.extradps(5)
 def skewness(a, b):
     """
     Skewness of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        m = mean(a, b)
-        v = var(a, b)
-        mu3p = noncentral_moment(3, a, b)
-        return (mu3p - m*(3*v + m**2))/v**1.5
+    a, b = _validate_a_b(a, b)
+    m = mean(a, b)
+    v = var(a, b)
+    mu3p = noncentral_moment(3, a, b)
+    return (mu3p - m*(3*v + m**2))/v**1.5
 
 
 def _harmonic_number(n):
     return mp.digamma(n + 1) + mp.euler
 
 
+@mp.extradps(5)
 def entropy(a, b):
     """
     Differential entropy of the Kumaraswamy distribution.
     """
-    with mp.extradps(5):
-        a, b = _validate_a_b(a, b)
-        return ((1 - 1/b) + (1 - 1/a)*_harmonic_number(b)
-                - mp.log(a) - mp.log(b))
+    a, b = _validate_a_b(a, b)
+    return ((1 - 1/b) + (1 - 1/a)*_harmonic_number(b)
+            - mp.log(a) - mp.log(b))
 
 
+@mp.extradps(5)
 def nll(x, a, b):
     """
     Negative log-likelihood function for the Kumaraswamy distribution.
 
     `x` must be a sequence of numbers with values in the open interval (0, 1).
     """
-    with mp.extradps(5):
-        x = _validate_x_bounds(x, low=0, high=1,
-                               strict_low=True, strict_high=True)
-        a, b = _validate_a_b(a, b)
-        return -mp.fsum([logpdf(t, a, b) for t in x])
+    x = _validate_x_bounds(x, low=0, high=1,
+                           strict_low=True, strict_high=True)
+    a, b = _validate_a_b(a, b)
+    return -mp.fsum([logpdf(t, a, b) for t in x])
 
 
 def _mle_a_eqn(a, x, sumlogx):
@@ -224,6 +223,7 @@ def _mle_a_eqn_b_fixed(a, b, x, sumlogx):
     return n/a + sumlogx + (1 - b)*s3
 
 
+@mp.extradps(5)
 def mle(x, *, a=None, b=None):
     """
     Maximum likelihood estimate for the Kumaraswamy distribution.
@@ -240,31 +240,30 @@ def mle(x, *, a=None, b=None):
     guess for `a` is 1.
 
     """
-    with mp.extradps(5):
-        x = _validate_x_bounds(x, low=0, high=1,
-                               strict_low=True, strict_high=True)
-        n = len(x)
-        sumlogx = mp.fsum([mp.log(t) for t in x])
-        if (a is None or isinstance(a, Initial)) and b is None:
-            if isinstance(a, Initial):
-                a0 = a.initial
-            else:
-                a0 = 1
-            a = mp.findroot(lambda t: _mle_a_eqn(t, x, sumlogx), a0)
-            b = -n / mp.fsum([mp.log1p(-t**a) for t in x])
-            return a, b
-        if (a is not None and not isinstance(a, Initial)) and b is not None:
-            a, b = _validate_a_b(a, b)
-            return a, b
-        if a is None or isinstance(a, Initial):
-            _, b = _validate_a_b(1, b)
-            if isinstance(a, Initial):
-                a0 = a.initial
-            else:
-                a0 = 1
-            a = mp.findroot(lambda t: _mle_a_eqn_b_fixed(t, b, x, sumlogx), a0)
-            return a, b
-        # a is fixed, b is not.
-        a, _ = _validate_a_b(a, 1)
+    x = _validate_x_bounds(x, low=0, high=1,
+                           strict_low=True, strict_high=True)
+    n = len(x)
+    sumlogx = mp.fsum([mp.log(t) for t in x])
+    if (a is None or isinstance(a, Initial)) and b is None:
+        if isinstance(a, Initial):
+            a0 = a.initial
+        else:
+            a0 = 1
+        a = mp.findroot(lambda t: _mle_a_eqn(t, x, sumlogx), a0)
         b = -n / mp.fsum([mp.log1p(-t**a) for t in x])
         return a, b
+    if (a is not None and not isinstance(a, Initial)) and b is not None:
+        a, b = _validate_a_b(a, b)
+        return a, b
+    if a is None or isinstance(a, Initial):
+        _, b = _validate_a_b(1, b)
+        if isinstance(a, Initial):
+            a0 = a.initial
+        else:
+            a0 = 1
+        a = mp.findroot(lambda t: _mle_a_eqn_b_fixed(t, b, x, sumlogx), a0)
+        return a, b
+    # a is fixed, b is not.
+    a, _ = _validate_a_b(a, 1)
+    b = -n / mp.fsum([mp.log1p(-t**a) for t in x])
+    return a, b

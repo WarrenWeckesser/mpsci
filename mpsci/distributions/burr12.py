@@ -26,164 +26,163 @@ def _validate_params(c, d, scale):
     return mp.mpf(c), mp.mpf(d), mp.mpf(scale)
 
 
+@mp.extradps(5)
 def pdf(x, c, d, scale):
     """
     Probability density function of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.zero
-        z = x/scale
-        return c*d*z**(c - 1)/scale / (1 + z**c)**(d+1)
+    c, d, scale = _validate_params(c, d, scale)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.zero
+    z = x/scale
+    return c*d*z**(c - 1)/scale / (1 + z**c)**(d+1)
 
 
+@mp.extradps(5)
 def logpdf(x, c, d, scale):
     """
     Natural logarithm of the PDF of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.ninf
-        return (mp.log(c) + mp.log(d) + (c - 1)*mp.log(x)
-                - c*mp.log(scale) - (d + 1)*mp.log1p((x / scale)**c))
+    c, d, scale = _validate_params(c, d, scale)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.ninf
+    return (mp.log(c) + mp.log(d) + (c - 1)*mp.log(x)
+            - c*mp.log(scale) - (d + 1)*mp.log1p((x / scale)**c))
 
 
+@mp.extradps(5)
 def cdf(x, c, d, scale):
     """
     Cumulative distribution function of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.zero
-        # TO DO: See if the use of logsf (as in scipy) is worthwhile.
-        return 1 - sf(x, c, d, scale)
+    c, d, scale = _validate_params(c, d, scale)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.zero
+    # TO DO: See if the use of logsf (as in scipy) is worthwhile.
+    return 1 - sf(x, c, d, scale)
 
 
+@mp.extradps(5)
 def invcdf(p, c, d, scale):
     """
     Inverse of the CDF of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        p = _validate_p(p)
-        return scale * mp.powm1(1 - p, -1/d)**(1/c)
+    c, d, scale = _validate_params(c, d, scale)
+    p = _validate_p(p)
+    return scale * mp.powm1(1 - p, -1/d)**(1/c)
 
 
+@mp.extradps(5)
 def logcdf(x, c, d, scale):
     """
     Natural logarithm of the CDF of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.ninf
-        return mp.log1p(-sf(x, c, d, scale))
+    c, d, scale = _validate_params(c, d, scale)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.ninf
+    return mp.log1p(-sf(x, c, d, scale))
 
 
+@mp.extradps(5)
 def sf(x, c, d, scale):
     """
     Survival function of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.one
-        return (1 + (x/scale)**c)**(-d)
+    c, d, scale = _validate_params(c, d, scale)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.one
+    return (1 + (x/scale)**c)**(-d)
 
 
+@mp.extradps(5)
 def invsf(p, c, d, scale):
     """
     Inverse of the survival function of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        p = _validate_p(p)
-        return scale * mp.powm1(p, -1/d)**(1/c)
+    c, d, scale = _validate_params(c, d, scale)
+    p = _validate_p(p)
+    return scale * mp.powm1(p, -1/d)**(1/c)
 
 
+@mp.extradps(5)
 def logsf(x, c, d, scale):
     """
     Natural logarithm of the survival function of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.zero
-        return -d*mp.log1p((x/scale)**c)
+    c, d, scale = _validate_params(c, d, scale)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.zero
+    return -d*mp.log1p((x/scale)**c)
 
 
 def support(c, d, scale):
     """
     Support of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        return (mp.zero, mp.inf)
+    c, d, scale = _validate_params(c, d, scale)
+    return (mp.zero, mp.inf)
 
 
+@mp.extradps(5)
 def mean(c, d, scale):
     """
     Mean of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        if c*d <= 1:
-            return mp.nan
-        return d*mp.beta(d - 1/c, 1 + 1/c)*scale
+    c, d, scale = _validate_params(c, d, scale)
+    if c*d <= 1:
+        return mp.nan
+    return d*mp.beta(d - 1/c, 1 + 1/c)*scale
 
 
+@mp.extradps(5)
 def var(c, d, scale):
     """
     Variance of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        if c*d <= 2:
-            return mp.nan
-        mu1 = mean(c, d, 1)
-        mu2 = d*mp.beta(d - 2/c, 1 + 2/c)
-        return scale**2 * (-mu1**2 + mu2)
+    c, d, scale = _validate_params(c, d, scale)
+    if c*d <= 2:
+        return mp.nan
+    mu1 = mean(c, d, 1)
+    mu2 = d*mp.beta(d - 2/c, 1 + 2/c)
+    return scale**2 * (-mu1**2 + mu2)
 
 
+@mp.extradps(5)
 def median(c, d, scale):
     """
     Median of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        return scale * (2**(1/d) - 1)**(1/c)
+    c, d, scale = _validate_params(c, d, scale)
+    return scale * (2**(1/d) - 1)**(1/c)
 
 
+@mp.extradps(5)
 def mode(c, d, scale):
     """
     Mode of the Burr type XII distribution.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        if c <= 1:
-            return mp.zero
-        return scale*((c - 1)/(d*c + 1))**(1/c)
+    c, d, scale = _validate_params(c, d, scale)
+    if c <= 1:
+        return mp.zero
+    return scale*((c - 1)/(d*c + 1))**(1/c)
 
 
+@mp.extradps(5)
 def nll(x, c, d, scale):
     """
     Negative log-likelihood for the Burr type XII distribution.
 
     `x` must be a sequence of numbers.
     """
-    with mp.extradps(5):
-        c, d, scale = _validate_params(c, d, scale)
-        x = _validate_x_bounds(x, low=0, strict_low=True, high=mp.inf)
-        return -mp.fsum([logpdf(xi, c, d, scale) for xi in x])
+    c, d, scale = _validate_params(c, d, scale)
+    x = _validate_x_bounds(x, low=0, strict_low=True, high=mp.inf)
+    return -mp.fsum([logpdf(xi, c, d, scale) for xi in x])
 
 
 # Work in progress...
