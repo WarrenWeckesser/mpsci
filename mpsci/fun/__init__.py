@@ -7,6 +7,7 @@ in scientific computing.
 """
 
 from ._debye import debye
+from ._hermite_e import hermite_e
 from ._inv_reg_inc_beta import betaincinv
 from ._marcumq import marcumq, cmarcumq
 from ._digammainv import digammainv

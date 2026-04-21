@@ -219,16 +219,6 @@ def mode(alpha, beta, scale):
     return scale * mp.exp((-2*alpha + mp.sqrt(8*beta + 1) - 1)/(4*beta))
 
 
-@mp.extradps(5)
-def _hermite_e(n, x):
-    """
-    "Probabilist's" Hermite polynomial.
-    """
-    n = mp.mpf(n)
-    x = mp.mpf(x)
-    return mp.mpf(2)**(-n/2)*mp.hermite(n, x/mp.sqrt(2))
-
-
 def h_neg1(x):
     sqrt2 = mp.sqrt(2)
     t = mp.mpf(x)/sqrt2
