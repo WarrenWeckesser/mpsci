@@ -25,10 +25,6 @@ def _validate_params(chi, scale):
     return mp.mpf(chi), mp.mpf(scale)
 
 
-def _powm1(x, b):
-    return mp.expm1(b*mp.log(x))
-
-
 def _psi(chi):
     return mp.ncdf(chi) - chi*mp.npdf(chi) - mp.mpf('0.5')
 
@@ -80,7 +76,7 @@ def cdf(x, chi, scale):
     z = x/scale
     if chi == 0:
         # 1 - (1 - z**2)**1.5
-        return -_powm1((1 + z)*(1 - z), 1.5)
+        return -mp.powm1((1 + z)*(1 - z), 1.5)
     else:
         return mp.one - _psi(chi*mp.sqrt((1 - z)*(1 + z))) / _psi(chi)
 

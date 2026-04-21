@@ -60,7 +60,8 @@ def test_pdf_integral_is_one():
     assert mp.almosteq(i, mp.one)
 
 
-@pytest.mark.parametrize('x, chi, scale', [(0.25, 3, 0.5), (0.95, 2.5, 1.0)])
+@pytest.mark.parametrize('x, chi, scale',
+                         [(0.25, 3, 0.5), (0.95, 2.5, 1.0), (0.3125, 0, 2)])
 @mp.workdps(50)
 def test_pdf_integrates_to_cdf(x, chi, scale):
     p = argus.cdf(x, chi, scale)
@@ -68,7 +69,8 @@ def test_pdf_integrates_to_cdf(x, chi, scale):
     assert mp.almosteq(p, q), f'{p=} is not close to {q=}'
 
 
-@pytest.mark.parametrize('x, chi, scale', [(0.25, 3, 0.5), (0.95, 2.5, 1.0)])
+@pytest.mark.parametrize('x, chi, scale',
+                         [(0.25, 3, 0.5), (0.95, 2.5, 1.0), (0.3125, 0, 2)])
 @mp.workdps(50)
 def test_pdf_integrates_to_sf(x, chi, scale):
     p = argus.sf(x, chi, scale)
@@ -106,7 +108,8 @@ def test_invsf_sf_roundtrip(p, chi, scale):
                          [(0.5, 3.0),
                           (0.125, 25.0),
                           (10, 4),
-                          (240, 725)])
+                          (240, 725),
+                          (0, 2.5)])
 @mp.workdps(50)
 def test_mean_with_integral(chi, scale):
     m = argus.mean(chi, scale)
@@ -114,10 +117,9 @@ def test_mean_with_integral(chi, scale):
     assert mp.almosteq(m, q)
 
 
+@pytest.mark.parametrize('chi, scale', [(3.5, 1.25), (0, 5)])
 @mp.workdps(50)
-def test_var_with_integral():
-    chi = 3.5
-    scale = 1.25
+def test_var_with_integral(chi, scale):
     var = argus.var(chi, scale)
 
     mean = argus.mean(chi, scale)
@@ -125,11 +127,10 @@ def test_var_with_integral():
     assert mp.almosteq(var, mom2 - mean**2)
 
 
+@pytest.mark.parametrize('chi, scale', [(3.5, 1.25), (4.0, 0.125), (0, 5)])
 @mp.workdps(50)
-def test_mode():
+def test_mode(chi, scale):
     # A crude test of the mode.
-    chi = 4.0
-    scale = 0.125
     m = argus.mode(chi, scale)
     pm = argus.pdf(m, chi, scale)
     delta = mp.sqrt(mp.eps)
