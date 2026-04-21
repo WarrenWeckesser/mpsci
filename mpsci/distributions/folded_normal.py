@@ -22,7 +22,7 @@ from .normal import logpdf as normal_logpdf
 from ..fun import logsumexp
 
 
-__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'var',
+__all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'mean', 'mode', 'var',
            'support']
 
 
@@ -105,6 +105,38 @@ def mean(mu, sigma):
     r = mu/sigma
     m = sigma*mp.sqrt(2/mp.pi)*mp.exp(-r**2/2) + mu*(1 - 2*mp.ncdf(-r))
     return m
+
+
+def _mode_eq(t, r):
+    return t - r * mp.tanh(r*t)
+
+
+def _mode_getstart(r):
+    x = r
+    while _mode_eq(x, r) >= 0:
+        x = x/2
+    return x
+
+
+@mp.extradps(5)
+def mode(mu, sigma):
+    """
+    Mode of the folded normal distribution.
+
+    If abs(mu) <= sigma, then the mode is 0.
+    """
+    mu = abs(mp.mpf(mu))
+    sigma = _validate_sigma(sigma)
+    if mu <= sigma:
+        return mp.zero
+    r = mu/sigma
+    # TODO: It should be possible to derive a better calculation of t0.
+    if r < 1.25:
+        t0 = _mode_getstart(r)
+    else:
+        t0 = r
+    t = mp.findroot(lambda s: s - r*mp.tanh(r*s), t0)
+    return sigma * t
 
 
 @mp.extradps(5)

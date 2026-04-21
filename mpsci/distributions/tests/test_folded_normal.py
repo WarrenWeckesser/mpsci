@@ -93,3 +93,22 @@ def test_var_with_integral():
     expected = expect(folded_normal, (mu, sigma), lambda t: (t - mean)**2,
                       support=[0, mp.inf])
     assert mp.almosteq(v, expected)
+
+
+# abs(mu)/sigma <= 1, so the mode is 0.
+@pytest.mark.parametrize('mu, sigma', [(0.75, 1.6), (3, 3), (-4.5, 5)])
+def test_mode_zero(mu, sigma):
+    m = folded_normal.mode(mu, sigma)
+    assert m == 0
+
+
+# abs(mu)/sigma > 1.
+@pytest.mark.parametrize('mu, sigma',
+                         [(2.75, 1.6), (3.0000001, 3), (-5.5, 5),
+                          (25, 1.5), (95, 0.125)])
+@mp.workdps(80)
+def test_mode_positive(mu, sigma):
+    m = folded_normal.mode(mu, sigma)
+    assert m > 0
+    d = mp.diff(lambda t: folded_normal.pdf(t, mu, sigma), m)
+    assert mp.almosteq(d, 0, rel_eps=0, abs_eps=mp.eps)
