@@ -20,44 +20,45 @@ def _validate_params(a, c, scale):
     return mp.mpf(a), mp.mpf(c), mp.mpf(scale)
 
 
+@mp.extradps(5)
 def pdf(x, a, c, scale=1):
     """
     PDF for the exponentiated Weibull distribution.
 
     All the distribution parameters are assumed to be positive.
     """
-    with mp.extradps(5):
-        a, c, scale = _validate_params(a, c, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.zero
-        z = x/scale
-        p = (a * c / scale * z**(c-1) * (-mp.expm1(-z**c))**(a - 1) *
-             mp.exp(-z**c))
-        return p
+    a, c, scale = _validate_params(a, c, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.zero
+    z = x/scale
+    p = (a * c / scale * z**(c-1) * (-mp.expm1(-z**c))**(a - 1) *
+         mp.exp(-z**c))
+    return p
 
 
+@mp.extradps(5)
 def logpdf(x, a, c, scale=1):
     """
     Logarithm of the PDF for the exponentiated Weibull distribution.
 
     All the distribution parameters are assumed to be positive.
     """
-    with mp.extradps(5):
-        a, c, scale = _validate_params(a, c, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.ninf
-        z = x/scale
-        logp = (mp.log(a)
-                + mp.log(c)
-                - mp.log(scale)
-                + (c - 1)*mp.log(z)
-                + (a - 1)*mp.log(-mp.expm1(-z**c))
-                - z**c)
-        return logp
+    a, c, scale = _validate_params(a, c, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.ninf
+    z = x/scale
+    logp = (mp.log(a)
+            + mp.log(c)
+            - mp.log(scale)
+            + (c - 1)*mp.log(z)
+            + (a - 1)*mp.log(-mp.expm1(-z**c))
+            - z**c)
+    return logp
 
 
+@mp.extradps(5)
 def cdf(x, a, c, scale=1):
     """
     CDF for the exponentiated Weibull distribution.
@@ -67,52 +68,50 @@ def cdf(x, a, c, scale=1):
 
     All the distribution parameters are assumed to be positive.
     """
-    with mp.extradps(5):
-        a, c, scale = _validate_params(a, c, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.zero
-        z = x/scale
-        return mp.power(-mp.expm1(-z**c), a)
+    a, c, scale = _validate_params(a, c, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.zero
+    z = x/scale
+    return mp.power(-mp.expm1(-z**c), a)
 
 
+@mp.extradps(5)
 def invcdf(p, a, c, scale=1):
     """
     Inverse of the CDF of the exponentiated Weibull distribution.
     """
-    with mp.extradps(5):
-        a, c, scale = _validate_params(a, c, scale)
-        p = _validate_p(p)
-        return scale*(-mp.log1p(-p**(1/a)))**(1/c)
+    a, c, scale = _validate_params(a, c, scale)
+    p = _validate_p(p)
+    return scale*(-mp.log1p(-p**(1/a)))**(1/c)
 
 
+@mp.extradps(5)
 def sf(x, a, c, scale=1):
     """
     Survival function of the exponentiated Weibull distribution.
     """
-    with mp.extradps(5):
-        a, c, scale = _validate_params(a, c, scale)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.one
-        z = x/scale
-        return -mp.powm1(-mp.expm1(-z**c), a)
+    a, c, scale = _validate_params(a, c, scale)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.one
+    z = x/scale
+    return -mp.powm1(-mp.expm1(-z**c), a)
 
 
+@mp.extradps(5)
 def invsf(p, a, c, scale=1):
     """
     Inverse of the survival function of the exponentiated Weibull distribution.
     """
-    with mp.extradps(5):
-        a, c, scale = _validate_params(a, c, scale)
-        p = _validate_p(p)
-        return scale*(-mp.log(-mp.expm1(mp.log1p(-p)/a)))**(1/c)
+    a, c, scale = _validate_params(a, c, scale)
+    p = _validate_p(p)
+    return scale*(-mp.log(-mp.expm1(mp.log1p(-p)/a)))**(1/c)
 
 
 def support(a, c, scale=1):
     """
     Support of the exponentiated Weibull distribution.
     """
-    with mp.extradps(5):
-        a, c, scale = _validate_params(a, c, scale)
-        return (mp.zero, mp.inf)
+    a, c, scale = _validate_params(a, c, scale)
+    return (mp.zero, mp.inf)
