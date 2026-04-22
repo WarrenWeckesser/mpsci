@@ -103,3 +103,52 @@ def test_sf_invsf_roundtrip(x, a, c, scale):
     sf = exponweib.sf(x, a, c, scale)
     x1 = exponweib.invsf(sf, a, c, scale)
     assert mp.almosteq(x1, x)
+
+
+@pytest.mark.parametrize('n', [1, 2, 3])
+@mp.workdps(50)
+def test_noncentral_moment_against_integral(n):
+    a = 12.5
+    c = 2.25
+    scale = 3
+    m = exponweib.noncentral_moment(n, a, c, scale)
+    with mp.extradps(mp.dps):
+        # The integral often requires a much higher working precision.
+        intgrl = mp.quad(lambda t: t**n * exponweib.pdf(t, a, c, scale), [0, mp.inf])
+    assert mp.almosteq(m, intgrl)
+
+
+@pytest.mark.parametrize(
+    'a, c, scale',
+    [(2, 3, 5),
+     (10, 0.25, 0.5),
+     (0.5, 5, 1.25)]
+)
+@mp.workdps(50)
+def test_mean_against_integral(a, c, scale):
+    a = 0.5
+    c = 5
+    scale = 1.25
+    m = exponweib.mean(a, c, scale)
+    with mp.extradps(mp.dps):
+        # The integral often requires a much higher working precision.
+        intgrl = mp.quad(lambda t: t * exponweib.pdf(t, a, c, scale), [0, mp.inf])
+    assert mp.almosteq(m, intgrl)
+
+
+@pytest.mark.parametrize(
+    'a, c, scale',
+    [(8, 3, 6),
+     (1, 1, 0.5),
+     (2.5, 5, 1)]
+)
+@mp.workdps(50)
+def test_var_with_integral(a, c, scale):
+    var = exponweib.var(a, c, scale)
+
+    mu = exponweib.mean(a, c, scale)
+    with mp.extradps(mp.dps):
+        # The integral often requires a much higher working precision.
+        intgrl = mp.quad(lambda t: (t - mu)**2 * exponweib.pdf(t, a, c, scale),
+                         [0, mp.inf])
+    assert mp.almosteq(var, intgrl)
