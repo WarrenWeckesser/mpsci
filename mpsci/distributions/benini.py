@@ -70,7 +70,7 @@ _docstring_re_subs = [
 __all__ = ['support', 'pdf', 'logpdf',
            'cdf', 'logcdf', 'invcdf',
            'sf', 'logsf', 'invsf',
-           'median', 'mode', 'mean', 'var',
+           'median', 'mode', 'mean', 'var', 'noncentral_moment',
            'nll']
 
 
@@ -245,6 +245,16 @@ def var(alpha, beta, scale):
     s = mp.sqrt(2*beta)
     g = scale*mp.sqrt(1 + 2*h_neg1((alpha - 2)/s)/s)
     return (g - mu)*(g + mu)
+
+
+@mp.extradps(5)
+def noncentral_moment(n, alpha, beta, scale=1):
+    alpha, beta, scale = _validate_params(alpha, beta, scale)
+    amn = alpha - n
+    tsqrtb = 2*mp.sqrt(beta)
+    r = amn / tsqrtb
+    r2 = 0.25 * amn**2 / beta
+    return scale**n * (mp.one + n * mp.sqrt(mp.pi) / tsqrtb * mp.exp(r2) * mp.erfc(r))
 
 
 @mp.extradps(5)

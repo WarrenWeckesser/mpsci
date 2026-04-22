@@ -151,3 +151,18 @@ def test_var_against_wolfram_alpha():
     #    Variance[BeniniDistribution[3, 4, 5]]
     refstr = '1.565734202983936195380092260357367181004500764935885673850'
     assert mp.almosteq(v, mp.mpf(refstr))
+
+
+@pytest.mark.parametrize('n, alpha, beta, scale',
+                         [(1, 3.5, 0.5, 5),
+                          (2, 9, 2.75, 0.125),
+                          (3, 8, 9, 2),
+                          (4, 0.125, 8, 1.125),
+                          (5, 1, 2, 3)])
+@mp.workdps(50)
+def test_noncentral_moment_against_integral(n, alpha, beta, scale):
+    m3 = benini.noncentral_moment(n, alpha, beta, scale)
+    with mp.extradps(mp.dps):
+        intgrl = mp.quad(lambda t: t**n * benini.pdf(t, alpha, beta, scale),
+                         [scale, mp.inf])
+    assert mp.almosteq(m3, intgrl)
