@@ -55,6 +55,14 @@ def print_impl_table(title, dists, function_names):
     print(title)
     print('='*len(title))
     print()
+
+    # Check for incomplete __all__ while we're here...
+    msgs = []
+    for dist in dists:
+        for funcname in function_names:
+            if getattr(dist, funcname, None) and funcname not in dist.__all__:
+                msgs.append(f"{dist.__name__}.__all__ is missing {funcname}")
+
     function_names_limited, subs = column_heading_subs(function_names)
     funcname_col_width = max(len(dist.__name__.split('.')[-1])
                              for dist in dists)
@@ -70,6 +78,8 @@ def print_impl_table(title, dists, function_names):
             flag = hasattr(dist, funcname)
             print(f'{"✔" if flag else "-":3s}', end='')
         print()
+
+    return msgs
 
 
 cont_uni, cont_multi, disc_uni, disc_multi = get_distributions()
@@ -100,14 +110,26 @@ disc_multi_function_names = ['pmf', 'logpmf',
                              'mean', 'var', 'cov', 'entropy',
                              'nll', 'mle', 'mom']
 
-print_impl_table('Continuous univariate distributions',
-                 cont_uni, cont_uni_function_names)
+msgs = []
+m = print_impl_table('Continuous univariate distributions',
+                     cont_uni, cont_uni_function_names)
+msgs.extend(m)
 print()
-print_impl_table('Continuous multivariate distributions',
-                 cont_multi, cont_multi_function_names)
+m = print_impl_table('Continuous multivariate distributions',
+                     cont_multi, cont_multi_function_names)
+msgs.extend(m)
 print()
-print_impl_table('Discrete univariate distributions',
-                 disc_uni, disc_uni_function_names)
+m = print_impl_table('Discrete univariate distributions',
+                     disc_uni, disc_uni_function_names)
+msgs.extend(m)
 print()
-print_impl_table('Discrete multivariate distributions',
-                 disc_multi, disc_multi_function_names)
+m = print_impl_table('Discrete multivariate distributions',
+                     disc_multi, disc_multi_function_names)
+msgs.extend(m)
+
+if msgs:
+    print();
+    print("Warning: __all__ is not complete for some modules:\n")
+    for msg in msgs:
+        parts = msg.split('.')
+        print(f"{parts[2]}: {parts[3]}")

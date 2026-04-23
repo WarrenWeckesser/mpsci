@@ -18,7 +18,7 @@ from ._common import _seq_to_mp, _validate_loc_scale, _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'support', 'mean', 'var',
+           'support', 'mean', 'mode', 'var',
            'nll', 'mle', 'mom']
 
 

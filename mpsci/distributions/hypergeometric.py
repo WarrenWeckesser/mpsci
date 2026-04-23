@@ -7,7 +7,8 @@ from mpmath import mp
 from ..fun import logbeta
 
 
-__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'support_pmf', 'mean', 'mode', 'var']
+__all__ = ['pmf', 'logpmf', 'cdf', 'sf', 'support', 'support_pmf',
+           'mean', 'mode', 'var']
 
 
 def _validate(ntotal, ngood, nsample):

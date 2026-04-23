@@ -20,7 +20,7 @@ from ._common import _validate_moment_n
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf',
-           'support', 'mean', 'var', 'noncentral_moment']
+           'support', 'mean', 'mode', 'var', 'noncentral_moment']
 
 
 def _validate_params(nu, sigma):

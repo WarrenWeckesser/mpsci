@@ -35,7 +35,7 @@ from .. import fun as _fun
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'support',
+           'support', 'entropy',
            'mean', 'mode', 'var', 'skewness', 'kurtosis', 'noncentral_moment',
            'nll', 'mle']
 

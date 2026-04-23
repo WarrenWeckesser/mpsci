@@ -8,7 +8,7 @@ from ._common import _validate_loc_scale, _validate_p, _seq_to_mp
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'entropy', 'mle']
+           'support', 'entropy', 'nll', 'mle']
 
 
 @mp.extradps(5)

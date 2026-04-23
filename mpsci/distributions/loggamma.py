@@ -22,7 +22,7 @@ from ._common import (_validate_p, _validate_x_bounds, _find_bracket, Initial,
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
-           'support', 'mean', 'var', 'skewness', 'kurtosis', 'nll', 'mle']
+           'support', 'mean', 'mode', 'var', 'skewness', 'kurtosis', 'nll', 'mle']
 
 
 def _validate_k_theta(k, theta):

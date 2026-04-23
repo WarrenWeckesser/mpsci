@@ -20,7 +20,7 @@ from . import normal
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
            'support',
-           'mean', 'var', 'skewness', 'kurtosis', 'noncentral_moment',
+           'mean', 'mode', 'var', 'skewness', 'kurtosis', 'noncentral_moment',
            'entropy',
            'mom', 'mle',
            'nll', 'nll_grad', 'nll_hess', 'nll_invhess']

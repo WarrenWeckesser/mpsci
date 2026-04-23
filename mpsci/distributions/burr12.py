@@ -13,7 +13,7 @@ from mpsci.distributions._common import (_validate_p,  _validate_x_bounds,
 __all__ = ['support', 'pdf', 'logpdf',
            'cdf', 'invcdf', 'logcdf', 'sf', 'invsf', 'logsf',
            'mean', 'var', 'median', 'mode',
-           'nll']
+           'nll', 'mle']
 
 
 def _validate_params(c, d, scale):

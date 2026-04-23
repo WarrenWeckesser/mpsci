@@ -11,7 +11,7 @@ from ._common import (_validate_p, _validate_x_bounds, _validate_counts,
 from ..fun import logbinomial
 
 
-__all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf', 'mean', 'var',
+__all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf', 'mean', 'mode', 'var',
            'nll', 'mle']
 
 

@@ -15,7 +15,7 @@ from ..stats import mean as _mean, var as _var
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf', 'interval_prob',
            'support',
-           'mean', 'var', 'skewness', 'kurtosis', 'nll', 'noncentral_moment',
+           'mean', 'mode', 'var', 'skewness', 'kurtosis', 'nll', 'noncentral_moment',
            'entropy', 'mle', 'mom']
 
 

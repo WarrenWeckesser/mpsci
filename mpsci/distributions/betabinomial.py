@@ -12,7 +12,7 @@ from ._common import _validate_x_bounds, Initial, _validate_counts
 
 
 __all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf',
-           'mean', 'var', 'skewness', 'kurtosis',
+           'mean', 'mode', 'var', 'skewness', 'kurtosis',
            'nll', 'mle']
 
 

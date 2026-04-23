@@ -20,8 +20,8 @@ from mpsci.fun import pow1pm1
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'logcdf', 'invcdf', 'sf', 'logsf', 'invsf',
-           'mean', 'var', 'skewness', 'kurtosis', 'entropy',
-           'noncentral_moment']
+           'mean', 'mode', 'var', 'skewness', 'kurtosis', 'entropy',
+           'noncentral_moment', 'support']
 
 
 def _validate_params(xi, mu, sigma):

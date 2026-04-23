@@ -21,7 +21,7 @@ from ._common import _validate_p, _validate_x_bounds, Initial
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'mean', 'var', 'entropy', 'nll', 'mle']
+           'support', 'mean', 'mode', 'var', 'entropy', 'nll', 'mle']
 
 
 def _validate_c_scale(c, scale):

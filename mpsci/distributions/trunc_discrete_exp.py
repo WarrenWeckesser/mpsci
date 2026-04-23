@@ -22,7 +22,7 @@ from ._common import _validate_x_bounds, Initial, _validate_counts, _validate_in
 
 __all__ = ['support', 'pmf', 'logpmf', 'cdf', 'sf',
            'mean', 'mode', 'var', 'skewness', 'kurtosis',
-           'nll', 'mle']
+           'nll', 'mle', 'entropy']
 
 
 def _validate_params(lam, n):

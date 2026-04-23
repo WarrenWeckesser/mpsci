@@ -22,7 +22,7 @@ from ..fun import pow1pm1
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
-           'support', 'mean']
+           'support', 'mean', 'mode']
 
 
 def _validate_params(c, beta, scale):

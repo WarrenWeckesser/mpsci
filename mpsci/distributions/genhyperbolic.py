@@ -19,7 +19,7 @@ distribution is obtained by setting δ = 0.
 from mpmath import mp
 
 
-__all__ = ['logpdf', 'pdf', 'cdf', 'support', 'mean', 'var']
+__all__ = ['logpdf', 'pdf', 'cdf', 'sf', 'support', 'mean', 'var']
 
 
 # To do: verify the valid ranges of the parameters.  E.g. can `a` be negative?
