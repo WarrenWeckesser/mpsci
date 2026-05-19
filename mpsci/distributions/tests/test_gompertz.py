@@ -105,6 +105,34 @@ def test_mode_interior(c, scale):
 
 
 @mp.workdps(60)
+def test_var():
+    c = mp.mpf(5.0)
+    scale = mp.mpf(0.25)
+    v = gompertz.var(c, scale)
+    # Expected value computed with Wolfram Alpha:
+    #   Variance[GompertzDistribution[1/scale, c]]
+    expected = mp.mpf(
+        '0.0013871782773409649922169159764781516831570101866734380943438553963652')
+    assert mp.almosteq(v, expected)
+
+
+@mp.workdps(50)
+def test_var_against_integral():
+    c = mp.mpf(0.5)
+    scale = mp.mpf(1.25)
+    mu = gompertz.mean(c, scale)
+    var = gompertz.var(c, scale)
+
+    # Numerically computing the integral with quad() on [0, mp.inf] takes an
+    # extremely long time.  Instead we use a large finite interval.
+    upper = gompertz.mean(c, scale) + 100*mp.sqrt(var)
+
+    expected = mp.quad(lambda t: (t - mu)**2 * gompertz.pdf(t, c, scale),
+                       [0, upper])
+    assert mp.almosteq(var, expected)
+
+
+@mp.workdps(60)
 def test_entropy_against_integral():
     c = mp.mpf(3.0)
     scale = mp.mpf(0.5)
