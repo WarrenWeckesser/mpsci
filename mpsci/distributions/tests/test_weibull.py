@@ -21,6 +21,17 @@ def test_pdf(dist, xsign):
 
 
 @pytest.mark.parametrize('dist', [weibull_min, weibull_max])
+@pytest.mark.parametrize('k', [0.125, 1, 2.25])
+@mp.workdps(50)
+def test_pdf_loc_edge_case(dist, k):
+    loc = 0
+    scale = mp.mpf(0.25)
+    p = dist.pdf(loc, k, loc, scale)
+    expected = mp.inf if k < 1 else 1/scale if k == 1 else 0
+    assert mp.almosteq(p, expected)
+
+
+@pytest.mark.parametrize('dist', [weibull_min, weibull_max])
 @mp.workdps(50)
 def test_cdf_sf(dist):
     k = 1.25
@@ -39,6 +50,67 @@ def test_cdf_sf(dist):
     expected = mp.mpf(valstr)
     assert mp.almosteq(cdf, expected)
     assert mp.almosteq(sf, 1 - expected)
+
+
+@pytest.mark.parametrize('dist, sign', [(weibull_min, 1), (weibull_max, -1)])
+@mp.workdps(50)
+def test_invcdf(dist, sign):
+    k = 1.5
+    loc = 1
+    scale = 3
+    p = mp.mpf('1/16')
+    if sign == -1:
+        p = 1 - p
+    x = dist.invcdf(p, k, sign*loc, scale)
+    # Expected value computed with Wolfram Alpha:
+    #   InverseCDF[WeibullDistribution[3/2, 3, 1], 1/16]
+    valstr = '1.48268884363357472595994253221918943182906779611027773721'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(x, sign * expected)
+
+
+@pytest.mark.parametrize('dist, sign', [(weibull_min, 1), (weibull_max, -1)])
+@mp.workdps(50)
+def test_mean(dist, sign):
+    k = 1.5
+    loc = 1
+    scale = 3
+    m = dist.mean(k, sign*loc, scale)
+    # Expected value computed with Wolfram Alpha:
+    #   Mean[WeibullDistribution[3/2, 3, 1]]
+    valstr = '3.708235878852800833890576056309027571038654532113587396788'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(m, sign*expected)
+
+
+@pytest.mark.parametrize('dist', [weibull_min, weibull_max])
+@pytest.mark.parametrize('k', [1.125, 4.75])
+@mp.workdps(50)
+def test_mode_k_gt_1(dist, k):
+    loc = 1
+    scale = 0.125
+    m = dist.mode(k, loc, scale)
+    # A crude test of the mode.
+    pm = dist.pdf(m, k, loc, scale)
+    delta = mp.sqrt(mp.eps)
+    left = (1 - mp.sign(m) * delta) * m
+    right = (1 + mp.sign(m) * delta) * m
+    assert dist.pdf(left, k, loc, scale) < pm
+    assert dist.pdf(right, k, loc, scale) < pm
+
+
+@pytest.mark.parametrize('dist, sign', [(weibull_min, 1), (weibull_max, -1)])
+@mp.workdps(50)
+def test_var(dist, sign):
+    k = 1.5
+    loc = 1
+    scale = 3
+    m = dist.var(k, sign*loc, scale)
+    # Expected value computed with Wolfram Alpha:
+    #   Variance[WeibullDistribution[3/2, 3, 1]]
+    valstr = '3.38121256332538801963394969804653523502508870632016051797309'
+    expected = mp.mpf(valstr)
+    assert mp.almosteq(m, expected)
 
 
 @pytest.mark.parametrize('dist, sign', [(weibull_min, 1), (weibull_max, -1)])
