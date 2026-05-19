@@ -21,6 +21,14 @@ def test_basic():
         mp.mpf('15625/433249'),
     ]
     sup, pmf = fnchg.support_pmf(nc, ntotal, ngood, nsample)
-    assert list(sup) == [2, 3, 4, 5, 6, 7, 8]
+    sup = list(sup)
+    assert sup == [2, 3, 4, 5, 6, 7, 8]
     for k in range(len(expected_pmf)):
         assert mp.almosteq(pmf[k], expected_pmf[k])
+        p = fnchg.pmf(sup[k], nc, ntotal, ngood, nsample)
+        assert mp.almosteq(p, expected_pmf[k])
+
+    m = fnchg.mode(nc, ntotal, ngood, nsample)
+    # Inspection of the above data generated with Wolfram Alpha shows the
+    # mode to be sup[4].
+    assert m == sup[4]
