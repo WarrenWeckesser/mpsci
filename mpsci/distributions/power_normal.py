@@ -24,79 +24,78 @@ def _validate_params(c, loc, scale):
     return mp.mpf(c), mp.mpf(loc), mp.mpf(scale)
 
 
+@mp.extradps(5)
 def pdf(x, c, loc=0, scale=1):
     """
     Probability density function for the power normal distribution.
     """
-    with mp.extradps(5):
-        c, loc, scale = _validate_params(c, loc, scale)
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return c * mp.npdf(z) * mp.ncdf(-z)**(c - 1) / scale
+    c, loc, scale = _validate_params(c, loc, scale)
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return c * mp.npdf(z) * mp.ncdf(-z)**(c - 1) / scale
 
 
+@mp.extradps(5)
 def logpdf(x, c, loc=0, scale=1):
     """
     Logarithm of the PDF for the power normal distribution.
     """
-    with mp.extradps(5):
-        c, loc, scale = _validate_params(c, loc, scale)
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return (mp.log(c)
-                + normal.logpdf(z)
-                + (c - 1)*mp.log(mp.ncdf(-z))
-                - mp.log(scale))
+    c, loc, scale = _validate_params(c, loc, scale)
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return (mp.log(c)
+            + normal.logpdf(z)
+            + (c - 1)*mp.log(mp.ncdf(-z))
+            - mp.log(scale))
 
 
+@mp.extradps(5)
 def cdf(x, c, loc=0, scale=1):
     """
     Cumulative distribution function for the power normal distribution.
     """
-    with mp.extradps(5):
-        c, loc, scale = _validate_params(c, loc, scale)
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return -mp.expm1(c*mp.log(mp.ncdf(-z)))
+    c, loc, scale = _validate_params(c, loc, scale)
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return -mp.expm1(c*mp.log(mp.ncdf(-z)))
 
 
+@mp.extradps(5)
 def invcdf(p, c, loc=0, scale=1):
     """
     Inverse of the CDF for the power normal distribution.
 
     This function is also known as the *quantile function*.
     """
-    with mp.extradps(5):
-        c, loc, scale = _validate_params(c, loc, scale)
-        p = _validate_p(p)
-        return loc - scale*normal.invcdf(mp.power(mp.one - p, mp.one/c))
+    c, loc, scale = _validate_params(c, loc, scale)
+    p = _validate_p(p)
+    return loc - scale*normal.invcdf(mp.power(mp.one - p, mp.one/c))
 
 
+@mp.extradps(5)
 def sf(x, c, loc=0, scale=1):
     """
     Survival function for the power normal distribution.
     """
-    with mp.extradps(5):
-        c, loc, scale = _validate_params(c, loc, scale)
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return mp.exp(c*mp.log(mp.ncdf(-z)))
+    c, loc, scale = _validate_params(c, loc, scale)
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return mp.exp(c*mp.log(mp.ncdf(-z)))
 
 
+@mp.extradps(5)
 def invsf(p, c, loc=0, scale=1):
     """
     Inverse of the survival function for the power normal distribution.
     """
-    with mp.extradps(5):
-        c, loc, scale = _validate_params(c, loc, scale)
-        p = _validate_p(p)
-        return loc - scale*normal.invcdf(mp.power(p, mp.one/c))
+    c, loc, scale = _validate_params(c, loc, scale)
+    p = _validate_p(p)
+    return loc - scale*normal.invcdf(mp.power(p, mp.one/c))
 
 
 def support(c, loc=0, scale=1):
     """
     Support of the power normal distribution.
     """
-    with mp.extradps(5):
-        c, loc, scale = _validate_params(c, loc, scale)
-        return (mp.ninf, mp.inf)
+    c, loc, scale = _validate_params(c, loc, scale)
+    return (mp.ninf, mp.inf)

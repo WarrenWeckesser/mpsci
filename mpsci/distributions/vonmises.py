@@ -15,29 +15,29 @@ from mpmath import mp
 __all__ = ['pdf', 'logpdf', 'support',  'circmean', 'circvar', 'entropy']
 
 
+@mp.extradps(5)
 def pdf(x, kappa, mu=0):
     """
     Probability density function of the von Mises distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        kappa = mp.mpf(kappa)
-        mu = mp.mpf(mu)
-        i0k = mp.besseli(0, kappa)
-        numer = mp.exp(kappa * mp.cos(x - mu))
-        return numer / (2*mp.pi*i0k)
+    x = mp.mpf(x)
+    kappa = mp.mpf(kappa)
+    mu = mp.mpf(mu)
+    i0k = mp.besseli(0, kappa)
+    numer = mp.exp(kappa * mp.cos(x - mu))
+    return numer / (2*mp.pi*i0k)
 
 
+@mp.extradps(5)
 def logpdf(x, kappa, mu=0):
     """
     Natural logarithm of the PDF of the von Mises distribution.
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        kappa = mp.mpf(kappa)
-        mu = mp.mpf(mu)
-        i0k = mp.besseli(0, kappa)
-        return (kappa * mp.cos(x - mu) - mp.log(2*mp.pi) - mp.log(i0k))
+    x = mp.mpf(x)
+    kappa = mp.mpf(kappa)
+    mu = mp.mpf(mu)
+    i0k = mp.besseli(0, kappa)
+    return (kappa * mp.cos(x - mu) - mp.log(2*mp.pi) - mp.log(i0k))
 
 
 def circmean(kappa, mu=0):
@@ -49,6 +49,7 @@ def circmean(kappa, mu=0):
     return mp.mpf(mu)
 
 
+@mp.extradps(5)
 def circvar(kappa, mu=0):
     """
     Circular variance of the von Mises distribution.
@@ -60,13 +61,13 @@ def circvar(kappa, mu=0):
     where I0 and I1 are the modified Bessel functions of the
     first kind.
     """
-    with mp.extradps(5):
-        kappa = mp.mpf(kappa)
-        mu = mp.mpf(mu)
-        r = mp.besseli(1, kappa) / mp.besseli(0, kappa)
-        return 1 - r
+    kappa = mp.mpf(kappa)
+    mu = mp.mpf(mu)
+    r = mp.besseli(1, kappa) / mp.besseli(0, kappa)
+    return 1 - r
 
 
+@mp.extradps(5)
 def support(kappa, mu=0):
     """
     Support of the von Mises distribution.
@@ -78,19 +79,18 @@ def support(kappa, mu=0):
     the integral of the PDF over the support results in the expected
     value of 1.
     """
-    with mp.extradps(5):
-        kappa = mp.mpf(kappa)
-        mu = mp.mpf(mu)
-        return (-mp.pi + mu, mp.pi + mu)
+    kappa = mp.mpf(kappa)
+    mu = mp.mpf(mu)
+    return (-mp.pi + mu, mp.pi + mu)
 
 
+@mp.extradps(5)
 def entropy(kappa, mu=0):
     """
     Differential entropy of the von Mises distribution.
     """
-    with mp.extradps(5):
-        kappa = mp.mpf(kappa)
-        mu = mp.mpf(mu)
-        i0k = mp.besseli(0, kappa)
-        r = mp.besseli(1, kappa) / i0k
-        return -kappa * r + mp.log(2*mp.pi*i0k)
+    kappa = mp.mpf(kappa)
+    mu = mp.mpf(mu)
+    i0k = mp.besseli(0, kappa)
+    r = mp.besseli(1, kappa) / i0k
+    return -kappa * r + mp.log(2*mp.pi*i0k)

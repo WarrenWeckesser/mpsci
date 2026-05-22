@@ -28,46 +28,47 @@ def _validate_params(loc=0, scale=1):
     return mp.mpf(loc), mp.mpf(scale)
 
 
+@mp.extradps(5)
 def pdf(x, loc=0, scale=1):
     """
     Probability density function for the Maxwell distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        if x <= loc:
-            return mp.zero
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        z2 = z**2
-        return mp.sqrt(2/mp.pi)*z2*mp.exp(-z2/2)/scale
+    loc, scale = _validate_params(loc, scale)
+    if x <= loc:
+        return mp.zero
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    z2 = z**2
+    return mp.sqrt(2/mp.pi)*z2*mp.exp(-z2/2)/scale
 
 
+@mp.extradps(5)
 def logpdf(x, loc=0, scale=1):
     """
     Natural logarithm of the PDF of the Maxwell distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        if x <= loc:
-            return mp.ninf
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return mp.log(2/mp.pi)/2 + 2*mp.log(z) - z**2/2 - mp.log(scale)
+    loc, scale = _validate_params(loc, scale)
+    if x <= loc:
+        return mp.ninf
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return mp.log(2/mp.pi)/2 + 2*mp.log(z) - z**2/2 - mp.log(scale)
 
 
+@mp.extradps(5)
 def cdf(x, loc=0, scale=1):
     """
     Cumulative distribution function for the Maxwell distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        if x <= loc:
-            return mp.zero
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return mp.gammainc(3/2, 0, z**2/2, regularized=True)
+    loc, scale = _validate_params(loc, scale)
+    if x <= loc:
+        return mp.zero
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return mp.gammainc(3/2, 0, z**2/2, regularized=True)
 
 
+@mp.extradps(5)
 def invcdf(p, loc=0, scale=1):
     """
     Inverse of the CDF of the Maxwell distribution.
@@ -78,38 +79,38 @@ def invcdf(p, loc=0, scale=1):
     using the mpmath ``findroot`` function.  It may fail for
     extremely small values of ``p``.
     """
-    with mp.extradps(5):
-        p = _validate_p(p)
-        loc, scale = _validate_params(loc, scale)
-        if p == 0:
-            return mp.zero
-        if p == 1:
-            return mp.inf
-        x0, x1 = _find_bracket(lambda x: cdf(x, loc, scale), p, 0, mp.inf)
-        if x0 == x1:
-            return x0
-        try:
-            x = mp.findroot(lambda x: cdf(x, loc, scale) - p, x0=(x0, x1),
-                            solver='secant')
-        except Exception:
-            x = mp.findroot(lambda x: cdf(x, loc, scale) - p, x0=(x0 + x1)/2,
-                            solver='newton')
-        return x
+    p = _validate_p(p)
+    loc, scale = _validate_params(loc, scale)
+    if p == 0:
+        return mp.zero
+    if p == 1:
+        return mp.inf
+    x0, x1 = _find_bracket(lambda x: cdf(x, loc, scale), p, 0, mp.inf)
+    if x0 == x1:
+        return x0
+    try:
+        x = mp.findroot(lambda x: cdf(x, loc, scale) - p, x0=(x0, x1),
+                        solver='secant')
+    except Exception:
+        x = mp.findroot(lambda x: cdf(x, loc, scale) - p, x0=(x0 + x1)/2,
+                        solver='newton')
+    return x
 
 
+@mp.extradps(5)
 def sf(x, loc=0, scale=1):
     """
     Survival function for the Maxwell distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        if x <= loc:
-            return mp.one
-        x = mp.mpf(x)
-        z = (x - loc)/scale
-        return mp.gammainc(3/2, z**2/2, mp.inf, regularized=True)
+    loc, scale = _validate_params(loc, scale)
+    if x <= loc:
+        return mp.one
+    x = mp.mpf(x)
+    z = (x - loc)/scale
+    return mp.gammainc(3/2, z**2/2, mp.inf, regularized=True)
 
 
+@mp.extradps(5)
 def invsf(p, loc=0, scale=1):
     """
     Inverse of the survival function of the Maxwell distribution.
@@ -118,65 +119,63 @@ def invsf(p, loc=0, scale=1):
     survival function using the mpmath ``findroot`` function.
     It may fail for values of ``p`` very close to 1.
     """
-    with mp.extradps(5):
-        p = _validate_p(p)
-        loc, scale = _validate_params(loc, scale)
-        if p == 0:
-            return mp.inf
-        if p == 1:
-            return mp.zero
-        x0, x1 = _find_bracket(lambda x: sf(x, loc, scale), p, 0, mp.inf)
-        if x0 == x1:
-            return x0
-        try:
-            x = mp.findroot(lambda x: sf(x, loc, scale) - p, x0=(x0, x1),
-                            solver='secant')
-        except Exception:
-            x = mp.findroot(lambda x: cdf(x, loc, scale) - p, x0=(x0 + x1)/2,
-                            solver='newton')
-        return x
+    p = _validate_p(p)
+    loc, scale = _validate_params(loc, scale)
+    if p == 0:
+        return mp.inf
+    if p == 1:
+        return mp.zero
+    x0, x1 = _find_bracket(lambda x: sf(x, loc, scale), p, 0, mp.inf)
+    if x0 == x1:
+        return x0
+    try:
+        x = mp.findroot(lambda x: sf(x, loc, scale) - p, x0=(x0, x1),
+                        solver='secant')
+    except Exception:
+        x = mp.findroot(lambda x: cdf(x, loc, scale) - p, x0=(x0 + x1)/2,
+                        solver='newton')
+    return x
 
 
 def support(loc=0, scale=1):
     """
     Support of the Maxwell distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        return (loc, mp.inf)
+    loc, scale = _validate_params(loc, scale)
+    return (loc, mp.inf)
 
 
+@mp.extradps(5)
 def mean(loc=0, scale=1):
     """
     Mean of the Maxwell distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        return loc + scale*2*mp.sqrt(2/mp.pi)
+    loc, scale = _validate_params(loc, scale)
+    return loc + scale*2*mp.sqrt(2/mp.pi)
 
 
+@mp.extradps(5)
 def mode(loc=0, scale=1):
     """
     Mode of the Maxwell distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        return loc + scale*mp.sqrt(2)
+    loc, scale = _validate_params(loc, scale)
+    return loc + scale*mp.sqrt(2)
 
 
+@mp.extradps(5)
 def var(loc=0, scale=1):
     """
     Variance of the Maxwell distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        return scale**2 * (3*mp.pi - 8)/mp.pi
+    loc, scale = _validate_params(loc, scale)
+    return scale**2 * (3*mp.pi - 8)/mp.pi
 
 
+@mp.extradps(5)
 def entropy(loc=0, scale=1):
     """
     Differential entropy of the Maxwell distribution.
     """
-    with mp.extradps(5):
-        loc, scale = _validate_params(loc, scale)
-        return mp.log(scale*mp.sqrt(2*mp.pi)) + mp.euler - mp.one/2
+    loc, scale = _validate_params(loc, scale)
+    return mp.log(scale*mp.sqrt(2*mp.pi)) + mp.euler - mp.one/2

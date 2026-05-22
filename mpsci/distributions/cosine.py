@@ -68,6 +68,7 @@ logpdf._docstring_re_subs = [
 ]
 
 
+@mp.extradps(5)
 def cdf(x):
     """
     Cumulative distribution function (CDF) of the raised cosine distribution.
@@ -76,13 +77,12 @@ def cdf(x):
 
         F(x) = (pi + x + sin(x))/(2*pi)
     """
-    with mp.extradps(5):
-        x = mp.mpf(x)
-        if x <= -mp.pi:
-            return mp.zero
-        if x >= mp.pi:
-            return mp.one
-        return mp.mpf('1/2') + (x + mp.sin(x))/(2*mp.pi)
+    x = mp.mpf(x)
+    if x <= -mp.pi:
+        return mp.zero
+    if x >= mp.pi:
+        return mp.one
+    return mp.mpf('1/2') + (x + mp.sin(x))/(2*mp.pi)
 
 
 _cdf_docstring_replace = r"""
@@ -139,34 +139,34 @@ def _poly_approx(s):
                                  + s2*mp.mpf('43/17248000'))))))
 
 
+@mp.extradps(5)
 def invcdf(p):
     """
     Inverse of the CDF of the raised cosine distribution.
     """
-    with mp.extradps(5):
-        p = _validate_p(p)
-        if p == 0:
-            return -mp.pi
-        if p == 1:
-            return mp.pi
+    p = _validate_p(p)
+    if p == 0:
+        return -mp.pi
+    if p == 1:
+        return mp.pi
 
-        if p < 0.094:
-            x = _poly_approx(mp.cbrt(12*mp.pi*p)) - mp.pi
-        elif p > 0.906:
-            x = mp.pi - _poly_approx(mp.cbrt(12*mp.pi*(1 - p)))
-        else:
-            y = mp.pi*(2*p - 1)
-            y2 = y**2
-            x = y * _p2(y2) / _q2(y2)
+    if p < 0.094:
+        x = _poly_approx(mp.cbrt(12*mp.pi*p)) - mp.pi
+    elif p > 0.906:
+        x = mp.pi - _poly_approx(mp.cbrt(12*mp.pi*(1 - p)))
+    else:
+        y = mp.pi*(2*p - 1)
+        y2 = y**2
+        x = y * _p2(y2) / _q2(y2)
 
-        solver = 'mnewton'
-        x = mp.findroot(f=lambda t: cdf(t) - p,
-                        x0=x,
-                        df=lambda t: (1 + mp.cos(t))/(2*mp.pi),
-                        df2=lambda t: -mp.sin(t)/(2*mp.pi),
-                        solver=solver)
+    solver = 'mnewton'
+    x = mp.findroot(f=lambda t: cdf(t) - p,
+                    x0=x,
+                    df=lambda t: (1 + mp.cos(t))/(2*mp.pi),
+                    df2=lambda t: -mp.sin(t)/(2*mp.pi),
+                    solver=solver)
 
-        return x
+    return x
 
 
 def sf(x):
@@ -187,8 +187,7 @@ def support():
     """
     Support for the cosine distribution.
     """
-    with mp.extradps(5):
-        return (-mp.pi, mp.pi)
+    return (-mp.pi, mp.pi)
 
 
 def mean():
@@ -209,6 +208,7 @@ def mode():
     return mp.zero
 
 
+@mp.extradps(5)
 def var():
     """
     Variance of the cosine distribution.
@@ -227,6 +227,7 @@ def skewness():
     return mp.zero
 
 
+@mp.extradps(5)
 def kurtosis():
     """
     Excess kurtosis of the cosine distribution.

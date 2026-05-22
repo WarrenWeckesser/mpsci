@@ -68,6 +68,7 @@ _pdf_docstring_re_subs = [
 # Parameters have been chosen to match the proposed implementation of
 # geninvgauss in scipy.
 
+@mp.extradps(5)
 def pdf(x, p, b, loc=0, scale=1):
     """
     Probability density function of the generalized inverse Gaussian
@@ -82,21 +83,21 @@ def pdf(x, p, b, loc=0, scale=1):
     where s is the scale, z = (x - loc)/s, and K_p(b) is the modified Bessel
     function of the second kind.  For x <= loc, the PDF is zero.
     """
-    with mp.extradps(5):
-        p, b, loc, scale = _validate_params(p, b, loc, scale)
-        x = mp.mpf(x)
-        if x <= loc:
-            return mp.zero
-        z = (x - loc)/scale
-        return (mp.power(z, p - 1)
-                * mp.exp(-b*(z + 1/z)/2)
-                / (2*mp.besselk(p, b))
-                / scale)
+    p, b, loc, scale = _validate_params(p, b, loc, scale)
+    x = mp.mpf(x)
+    if x <= loc:
+        return mp.zero
+    z = (x - loc)/scale
+    return (mp.power(z, p - 1)
+            * mp.exp(-b*(z + 1/z)/2)
+            / (2*mp.besselk(p, b))
+            / scale)
 
 
 pdf._docstring_re_subs = _pdf_docstring_re_subs
 
 
+@mp.extradps(5)
 def logpdf(x, p, b, loc=0, scale=1):
     """
     Log of the PDF of the generalized inverse Gaussian distribution.
@@ -110,22 +111,22 @@ def logpdf(x, p, b, loc=0, scale=1):
     where s is the scale, z = (x - loc)/s, and K_p(b) is the modified Bessel
     function of the second kind.  For x <= loc, the PDF is zero.
     """
-    with mp.extradps(5):
-        p, b, loc, scale = _validate_params(p, b, loc, scale)
-        x = mp.mpf(x)
+    p, b, loc, scale = _validate_params(p, b, loc, scale)
+    x = mp.mpf(x)
 
-        if x <= loc:
-            return mp.ninf
-        z = (x - loc)/scale
-        return ((p - 1)*mp.log(z)
-                - b*(z + 1/z)/2
-                - mp.log(2*mp.besselk(p, b))
-                - mp.log(scale))
+    if x <= loc:
+        return mp.ninf
+    z = (x - loc)/scale
+    return ((p - 1)*mp.log(z)
+            - b*(z + 1/z)/2
+            - mp.log(2*mp.besselk(p, b))
+            - mp.log(scale))
 
 
 logpdf._docstring_re_subs = _pdf_docstring_re_subs
 
 
+@mp.extradps(5)
 def cdf(x, p, b, loc=0, scale=1):
     """
     Cumulative distribution function of the generalized inverse Gaussian
@@ -133,24 +134,24 @@ def cdf(x, p, b, loc=0, scale=1):
 
     The CDF is computed by using mpmath.quad to numerically integrate the PDF.
     """
-    with mp.extradps(5):
-        p, b, loc, scale = _validate_params(p, b, loc, scale)
-        x = mp.mpf(x)
+    p, b, loc, scale = _validate_params(p, b, loc, scale)
+    x = mp.mpf(x)
 
-        if x <= loc:
-            return mp.zero
-        m = mode(p, b, loc, scale)
-        # If the mode is in the integration interval, use it to do the integral
-        # in two parts.  Otherwise do just one integral.
-        if x <= m:
-            c = mp.quad(lambda t: pdf(t, p, b, loc, scale), [loc, x])
-        else:
-            c = (mp.quad(lambda t: pdf(t, p, b, loc, scale), [loc, m]) +
-                 mp.quad(lambda t: pdf(t, p, b, loc, scale), [m, x]))
-        c = min(c, mp.one)
-        return c
+    if x <= loc:
+        return mp.zero
+    m = mode(p, b, loc, scale)
+    # If the mode is in the integration interval, use it to do the integral
+    # in two parts.  Otherwise do just one integral.
+    if x <= m:
+        c = mp.quad(lambda t: pdf(t, p, b, loc, scale), [loc, x])
+    else:
+        c = (mp.quad(lambda t: pdf(t, p, b, loc, scale), [loc, m]) +
+                mp.quad(lambda t: pdf(t, p, b, loc, scale), [m, x]))
+    c = min(c, mp.one)
+    return c
 
 
+@mp.extradps(5)
 def sf(x, p, b, loc=0, scale=1):
     """
     Survival function of the generalized inverse Gaussian distribution.
@@ -158,32 +159,31 @@ def sf(x, p, b, loc=0, scale=1):
     The survival function is computed by using mpmath.quad to numerically
     integrate the PDF.
     """
-    with mp.extradps(5):
-        p, b, loc, scale = _validate_params(p, b, loc, scale)
-        x = mp.mpf(x)
+    p, b, loc, scale = _validate_params(p, b, loc, scale)
+    x = mp.mpf(x)
 
-        if x <= loc:
-            return mp.one
-        m = mode(p, b, loc, scale)
-        # If the mode is in the integration interval, use it to do the integral
-        # in two parts.  Otherwise do just one integral.
-        if x >= m:
-            s = mp.quad(lambda t: pdf(t, p, b, loc, scale), [x, mp.inf])
-        else:
-            s = (mp.quad(lambda t: pdf(t, p, b, loc, scale), [x, m]) +
-                 mp.quad(lambda t: pdf(t, p, b, loc, scale), [m, mp.inf]))
-        return s
+    if x <= loc:
+        return mp.one
+    m = mode(p, b, loc, scale)
+    # If the mode is in the integration interval, use it to do the integral
+    # in two parts.  Otherwise do just one integral.
+    if x >= m:
+        s = mp.quad(lambda t: pdf(t, p, b, loc, scale), [x, mp.inf])
+    else:
+        s = (mp.quad(lambda t: pdf(t, p, b, loc, scale), [x, m]) +
+                mp.quad(lambda t: pdf(t, p, b, loc, scale), [m, mp.inf]))
+    return s
 
 
 def support(p, b, loc=0, scale=1):
     """
     Support of the generalized inverse Gaussian distribution.
     """
-    with mp.extradps(5):
-        p, b, loc, scale = _validate_params(p, b, loc, scale)
-        return (loc, mp.inf)
+    p, b, loc, scale = _validate_params(p, b, loc, scale)
+    return (loc, mp.inf)
 
 
+@mp.extradps(5)
 def mean(p, b, loc=0, scale=1):
     """
     Mean of the generalized inverse Gaussian distribution.
@@ -197,9 +197,8 @@ def mean(p, b, loc=0, scale=1):
     where K_n(x) is the modified Bessel function of the second kind
     (implemented in mpmath as besselk(n, x)).
     """
-    with mp.extradps(5):
-        p, b, loc, scale = _validate_params(p, b, loc, scale)
-        return loc + scale*mp.besselk(p + 1, b)/mp.besselk(p, b)
+    p, b, loc, scale = _validate_params(p, b, loc, scale)
+    return loc + scale*mp.besselk(p + 1, b)/mp.besselk(p, b)
 
 
 _mean_latex = r"""
@@ -215,6 +214,7 @@ mean._docstring_re_subs = [
 ]
 
 
+@mp.extradps(5)
 def mode(p, b, loc=0, scale=1):
     """
     Mode of the generalized inverse Gaussian distribution.
@@ -225,9 +225,8 @@ def mode(p, b, loc=0, scale=1):
         loc + scale -------------------------------
                                   b
     """
-    with mp.extradps(5):
-        p, b, loc, scale = _validate_params(p, b, loc, scale)
-        return loc + scale*(p - 1 + mp.sqrt((p - 1)**2 + b**2))/b
+    p, b, loc, scale = _validate_params(p, b, loc, scale)
+    return loc + scale*(p - 1 + mp.sqrt((p - 1)**2 + b**2))/b
 
 
 _mode_latex = r"""
@@ -243,35 +242,35 @@ mode._docstring_re_subs = [
 ]
 
 
+@mp.extradps(5)
 def var(p, b, loc=0, scale=1):
     """
     Variance of the generalized inverse Gaussian distribution.
     """
-    with mp.extradps(5):
-        p, b, loc, scale = _validate_params(p, b, loc, scale)
-        kpb = mp.besselk(p, b)
-        r1 = mp.besselk(p + 2, b) / kpb
-        r2 = mp.besselk(p + 1, b) / kpb
-        return scale**2 * (r1 - r2**2)
+    p, b, loc, scale = _validate_params(p, b, loc, scale)
+    kpb = mp.besselk(p, b)
+    r1 = mp.besselk(p + 2, b) / kpb
+    r2 = mp.besselk(p + 1, b) / kpb
+    return scale**2 * (r1 - r2**2)
 
 
 def _besselk_nderiv(n, k):
     return mp.diff(lambda n: mp.besselk(n, k), n)
 
 
+@mp.extradps(5)
 def entropy(p, b, loc=0, scale=1):
     """
     Differential entropy of the generalized inverse Gaussian distribution.
     """
-    with mp.extradps(5):
-        p, b, loc, scale = _validate_params(p, b, loc, scale)
+    p, b, loc, scale = _validate_params(p, b, loc, scale)
 
-        # See, for example,
-        # https://en.wikipedia.org/wiki/Generalized_inverse_Gaussian_distribution
-        # for the entropy formula.
-        kpb = mp.besselk(p, b)
-        t1 = mp.log(scale)
-        t2 = mp.log(2*kpb)
-        t3 = -(p - 1)*_besselk_nderiv(p, b)/kpb
-        t4 = b/(2*kpb)*(mp.besselk(p + 1, b) + mp.besselk(p - 1, b))
-        return mp.fsum([t1, t2, t3, t4])
+    # See, for example,
+    # https://en.wikipedia.org/wiki/Generalized_inverse_Gaussian_distribution
+    # for the entropy formula.
+    kpb = mp.besselk(p, b)
+    t1 = mp.log(scale)
+    t2 = mp.log(2*kpb)
+    t3 = -(p - 1)*_besselk_nderiv(p, b)/kpb
+    t4 = b/(2*kpb)*(mp.besselk(p + 1, b) + mp.besselk(p - 1, b))
+    return mp.fsum([t1, t2, t3, t4])

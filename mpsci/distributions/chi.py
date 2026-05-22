@@ -18,6 +18,7 @@ def _validate_k(k):
     return mp.mpf(k)
 
 
+@mp.extradps(5)
 def pdf(x, k):
     """
     PDF for the chi distribution.
@@ -28,11 +29,10 @@ def pdf(x, k):
 
     for x >= 0.
     """
-    with mp.extradps(5):
-        k = _validate_k(k)
-        if x < 0:
-            return mp.zero
-        return mp.exp(logpdf(x, k))
+    k = _validate_k(k)
+    if x < 0:
+        return mp.zero
+    return mp.exp(logpdf(x, k))
 
 
 _pdf_docstring_replace = r"""
@@ -49,44 +49,43 @@ pdf._docstring_re_subs = [
 ]
 
 
+@mp.extradps(5)
 def logpdf(x, k):
     """
     Logarithm of the PDF for the chi distribution.
     """
-    with mp.extradps(5):
-        k = _validate_k(k)
-        x = mp.mpf(x)
-        if x < 0:
-            return mp.ninf
-        p = ((k - 1)*mp.log(x) - x**2/2 - ((k/2) - 1)*mp.log(2)
-             - mp.loggamma(k/2))
-        return p
+    k = _validate_k(k)
+    x = mp.mpf(x)
+    if x < 0:
+        return mp.ninf
+    p = ((k - 1)*mp.log(x) - x**2/2 - ((k/2) - 1)*mp.log(2)
+            - mp.loggamma(k/2))
+    return p
 
 
+@mp.extradps(5)
 def cdf(x, k):
     """
     CDF for the chi distribution.
     """
-    with mp.extradps(5):
-        k = _validate_k(k)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.zero
-        c = mp.gammainc(k/2, a=0, b=x**2/2, regularized=True)
-        return c
+    k = _validate_k(k)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.zero
+    c = mp.gammainc(k/2, a=0, b=x**2/2, regularized=True)
+    return c
 
 
+@mp.extradps(5)
 def sf(x, k):
     """
     Survival function for the chi distribution.
     """
-
-    with mp.extradps(5):
-        k = _validate_k(k)
-        x = mp.mpf(x)
-        if x <= 0:
-            return mp.one
-        s = mp.gammainc(k/2, a=x**2/2, b=mp.inf, regularized=True)
+    k = _validate_k(k)
+    x = mp.mpf(x)
+    if x <= 0:
+        return mp.one
+    s = mp.gammainc(k/2, a=x**2/2, b=mp.inf, regularized=True)
     return s
 
 
@@ -94,11 +93,11 @@ def support(k):
     """
     Support for the chi distribution.
     """
-    with mp.extradps(5):
-        k = _validate_k(k)
-        return (mp.zero, mp.inf)
+    k = _validate_k(k)
+    return (mp.zero, mp.inf)
 
 
+@mp.extradps(5)
 def mode(k):
     """
     Mode of the chi distribution.
@@ -107,11 +106,10 @@ def mode(k):
 
     For 0 < k < 1, 0 is returned.
     """
-    with mp.extradps(5):
-        k = _validate_k(k)
-        if k < 1:
-            return mp.zero
-        return mp.sqrt(k - 1)
+    k = _validate_k(k)
+    if k < 1:
+        return mp.zero
+    return mp.sqrt(k - 1)
 
 
 mode._docstring_re_subs = ([
@@ -121,36 +119,36 @@ mode._docstring_re_subs = ([
 ])
 
 
+@mp.extradps(5)
 def mean(k):
     """
     Mean of the chi distribution.
     """
-    with mp.extradps(5):
-        k = _validate_k(k)
-        return mp.sqrt(2) * mp.gamma((k + 1)/2) / mp.gamma(k/2)
-        return k
+    k = _validate_k(k)
+    return mp.sqrt(2) * mp.gamma((k + 1)/2) / mp.gamma(k/2)
 
 
+@mp.extradps(5)
 def var(k):
     """
     Variance of the chi distribution.
     """
-    with mp.extradps(5):
-        k = _validate_k(k)
-        mu = mean(k)
-        return k - mu**2
+    k = _validate_k(k)
+    mu = mean(k)
+    return k - mu**2
 
 
+@mp.extradps(5)
 def entropy(k):
     """
     Differential entropy of the chi distribution.
     """
-    with mp.extradps(5):
-        k = _validate_k(k)
-        k2 = k/2
-        return mp.loggamma(k2) + (k - mp.log(2) - (k - 1)*mp.psi(0, k2))/2
+    k = _validate_k(k)
+    k2 = k/2
+    return mp.loggamma(k2) + (k - mp.log(2) - (k - 1)*mp.psi(0, k2))/2
 
 
+@mp.extradps(5)
 def noncentral_moment(n, k):
     """
     n-th noncentral moment of the chi distribution.
@@ -158,8 +156,7 @@ def noncentral_moment(n, k):
     n must be a nonnegative integer.
     """
     n = _validate_moment_n(n)
-    with mp.extradps(5):
-        k = _validate_k(k)
-        if n == 0:
-            return mp.one
-        return mp.mpf(2)**(n/2) * mp.gammaprod([(n + k)/2], [k/2])
+    k = _validate_k(k)
+    if n == 0:
+        return mp.one
+    return mp.mpf(2)**(n/2) * mp.gammaprod([(n + k)/2], [k/2])

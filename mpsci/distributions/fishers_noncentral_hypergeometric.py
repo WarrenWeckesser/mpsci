@@ -33,41 +33,41 @@ def support(nc, ntotal, ngood, nsample):
 # This auxiliary version of support includes the parameter prec,
 # so the mpmath precision is part of the cache key.
 @lru_cache()
+@mp.extradps(5)
 def _support_pmf(nc, ntotal, ngood, nsample, prec):
-    with mp.extradps(5):
-        sup = _hg.support(ntotal, ngood, nsample)
-        lpmf = [_hg.logpmf(k, ntotal, ngood, nsample)
-                for k in sup]
+    sup = _hg.support(ntotal, ngood, nsample)
+    lpmf = [_hg.logpmf(k, ntotal, ngood, nsample)
+            for k in sup]
 
-        # The PMF of Fisher's noncentral hypergeometric distribution is
-        # proportional to a weighted version of the hypergeometric
-        # distribution.  The weights are the powers of the noncentrality
-        # parameter.  To maintain precision over a wide range of values, we
-        # compute the log of the weighted hypergeometric PMF:
-        g = [lpmf[k - sup[0]] + mp.log(nc) * k for k in sup]
+    # The PMF of Fisher's noncentral hypergeometric distribution is
+    # proportional to a weighted version of the hypergeometric
+    # distribution.  The weights are the powers of the noncentrality
+    # parameter.  To maintain precision over a wide range of values, we
+    # compute the log of the weighted hypergeometric PMF:
+    g = [lpmf[k - sup[0]] + mp.log(nc) * k for k in sup]
 
-        # g contains the logs of values proportional to the noncentral
-        # hypergeometric PMF.  That is, g = [log(c0), log(c1), log(c2), ...].
-        # We must exponentiate these values, and then normalize them to get
-        # a PMF.  To exponentiate safely, we'll subtract the maximum value
-        # from all the values before exponentiating.  So instead of computing
-        # [exp(log(c0), exp(log(c1)), exp(log(c2)), ...], we compute
-        #   [exp(log(c0) - log(cmax)),
-        #    exp(log(c1) - log(cmax)),
-        #    exp(log(c2) - log(cmax)),
-        #    ...],
-        # which is
-        #   [c0/cmax, c1/cmax, c2/cmax, ...].
-        # and the maximum value in that sequence is therefore 1.
-        gmax = max(g)
-        eg = [mp.exp(v - gmax) for v in g]
+    # g contains the logs of values proportional to the noncentral
+    # hypergeometric PMF.  That is, g = [log(c0), log(c1), log(c2), ...].
+    # We must exponentiate these values, and then normalize them to get
+    # a PMF.  To exponentiate safely, we'll subtract the maximum value
+    # from all the values before exponentiating.  So instead of computing
+    # [exp(log(c0), exp(log(c1)), exp(log(c2)), ...], we compute
+    #   [exp(log(c0) - log(cmax)),
+    #    exp(log(c1) - log(cmax)),
+    #    exp(log(c2) - log(cmax)),
+    #    ...],
+    # which is
+    #   [c0/cmax, c1/cmax, c2/cmax, ...].
+    # and the maximum value in that sequence is therefore 1.
+    gmax = max(g)
+    eg = [mp.exp(v - gmax) for v in g]
 
-        # The values in eg are proportional to the desired PMF, and the
-        # maximum value in eg is 1.  Divide all the values in eg by sum(eg)
-        # to create a PMF.
-        egsum = mp.fsum(eg)
-        values = [v/egsum for v in eg]
-        return sup, values
+    # The values in eg are proportional to the desired PMF, and the
+    # maximum value in eg is 1.  Divide all the values in eg by sum(eg)
+    # to create a PMF.
+    egsum = mp.fsum(eg)
+    values = [v/egsum for v in eg]
+    return sup, values
 
 
 def support_pmf(nc, ntotal, ngood, nsample):
@@ -196,6 +196,7 @@ def sf(k, nc, ntotal, ngood, nsample):
         return mp.fsum(p[k - sup[0] + 1:])
 
 
+@mp.extradps(5)
 def mode(nc, ntotal, ngood, nsample):
     """
     Mode of Fisher's noncentral hypergeometric distribution.
@@ -233,16 +234,16 @@ def mode(nc, ntotal, ngood, nsample):
 
     """
     _hg._validate(ntotal, ngood, nsample)
-    with mp.extradps(5):
-        nc = mp.mpf(nc)
-        # Using the notation from the wikipedia page...
-        A = nc - 1
-        B = ngood + nsample - ntotal - (ngood + nsample + 2)*nc
-        C = (ngood + 1)*(nsample + 1)*nc
-        m = mp.floor(-2*C / (B - mp.sqrt(B**2 - 4*A*C)))
-        return int(m)
+    nc = mp.mpf(nc)
+    # Using the notation from the wikipedia page...
+    A = nc - 1
+    B = ngood + nsample - ntotal - (ngood + nsample + 2)*nc
+    C = (ngood + 1)*(nsample + 1)*nc
+    m = mp.floor(-2*C / (B - mp.sqrt(B**2 - 4*A*C)))
+    return int(m)
 
 
+@mp.extradps(5)
 def mean(nc, ntotal, ngood, nsample):
     """
     Mean of Fisher's noncentral hypergeometric distribution.
@@ -266,5 +267,4 @@ def mean(nc, ntotal, ngood, nsample):
     _hg._validate(ntotal, ngood, nsample)
     sup, p = support_pmf(nc, ntotal, ngood, nsample)
     n = len(p)
-    with mp.extradps(5):
-        return mp.fsum([sup[k]*p[k] for k in range(n)])
+    return mp.fsum([sup[k]*p[k] for k in range(n)])

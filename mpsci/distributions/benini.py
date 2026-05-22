@@ -264,7 +264,6 @@ def nll(x, alpha, beta, scale):
 
     `x` must be a sequence of numbers, each greater than `scale`.
     """
-    with mp.extradps(5):
-        alpha, beta, scale = _validate_params(alpha, beta, scale)
-        x = _validate_x_bounds(x, low=scale, high=mp.inf)
-        return -mp.fsum([logpdf(xi, alpha, beta, scale) for xi in x])
+    alpha, beta, scale = _validate_params(alpha, beta, scale)
+    x = _validate_x_bounds(x, low=scale, high=mp.inf)
+    return -mp.fsum([logpdf(xi, alpha, beta, scale) for xi in x])
