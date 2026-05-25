@@ -8,7 +8,7 @@ from ._common import _validate_p, _validate_x_bounds
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'mean', 'var', 'nll']
+           'support', 'mean', 'mode', 'var', 'nll']
 
 
 def _validate_ab(a, b):
@@ -135,6 +135,15 @@ def mean(a, b):
     """
     a, b = _validate_ab(a, b)
     return 1 + 1/a
+
+
+def mode(a, b):
+    """
+    Mode of the Benktander II distribution.
+
+    The is 1 for all parameter values.
+    """
+    return mp.one
 
 
 @mp.extradps(5)

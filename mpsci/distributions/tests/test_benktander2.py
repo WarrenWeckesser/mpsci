@@ -157,6 +157,14 @@ def test_mean():
 
 
 @mp.workdps(50)
+def test_mean():
+    a = 2
+    b = 0.125
+    m = benktander2.mode(a, b)
+    assert m == mp.one
+
+
+@mp.workdps(50)
 def test_var():
     a = 2
     b = mp.mpf('0.25')
