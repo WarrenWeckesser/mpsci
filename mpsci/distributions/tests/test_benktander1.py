@@ -119,6 +119,29 @@ def test_mean():
     assert mp.almosteq(m, mp.mpf('1.5'))
 
 
+@pytest.mark.parametrize('a, b', [(4, 0.125), (0.125, 0.03125)])
+@mp.workdps(50)
+def test_mode_eq_1(a, b):
+    a = 4
+    b = 0.125
+    m = benktander1.mode(a, b)
+    assert m == 1
+    assert (benktander1.pdf(mp.one + mp.sqrt(mp.eps), a, b)
+            < benktander1.pdf(mp.one, a, b))
+
+
+@pytest.mark.parametrize('a, b', [(4, 4.5), (1, 0.75), (0.125, 0.0625)])
+@mp.workdps(50)
+def test_mode_gt_1(a, b):
+    # A crude test of the mode.
+    m = benktander1.mode(a, b)
+    assert m > 1
+    pm = benktander1.pdf(m, a, b)
+    delta = mp.sqrt(mp.eps)
+    assert benktander1.pdf((1 + delta) * m, a, b) < pm
+    assert benktander1.pdf((1 - delta) * m, a, b) < pm
+
+
 @mp.workdps(50)
 def test_var():
     a = 2

@@ -9,7 +9,7 @@ from ._common import _validate_p, _validate_x_bounds, Initial
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'mean', 'var', 'nll', 'mle']
+           'support', 'mean', 'mode', 'var', 'nll', 'mle']
 
 
 def _validate_ab(a, b):
@@ -147,6 +147,17 @@ def mean(a, b):
     """
     a, b = _validate_ab(a, b)
     return 1 + 1/a
+
+
+@mp.extradps(5)
+def mode(a, b):
+    """
+    Mode of the Benktander I distribution.
+    """
+    a, b = _validate_ab(a, b)
+    if b > a * (a + 2) / 6:
+        return mp.exp((-(a + 1) + mp.sqrt(6 * b + 1))/(2 * b))
+    return mp.one
 
 
 @mp.extradps(5)
