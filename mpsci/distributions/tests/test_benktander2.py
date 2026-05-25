@@ -157,7 +157,7 @@ def test_mean():
 
 
 @mp.workdps(50)
-def test_mean():
+def test_mode():
     a = 2
     b = 0.125
     m = benktander2.mode(a, b)
