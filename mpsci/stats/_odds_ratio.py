@@ -26,6 +26,7 @@ def _row_or_column_zero(table):
     return (a == b == 0) or (c == d == 0) or (a == c == 0) or (b == d == 0)
 
 
+@mp.extradps(5)
 def _sample_odds_ratio(table):
     """
     Given a table [[a, b], [c, d]], compute a*d/(b*c).
@@ -33,50 +34,49 @@ def _sample_odds_ratio(table):
     Return nan if the numerator and denominator are 0.
     Return inf if just the denominator is 0.
     """
-    with mp.extradps(5):
-        a, b, c, d = _unpack_table_to_mpf(table)
-        if c > 0 and b > 0:
-            oddsratio = a*d / (c*b)
-        elif a == 0 or d == 0:
-            oddsratio = mp.nan
-        else:
-            oddsratio = mp.inf
-        return oddsratio
+    a, b, c, d = _unpack_table_to_mpf(table)
+    if c > 0 and b > 0:
+        oddsratio = a*d / (c*b)
+    elif a == 0 or d == 0:
+        oddsratio = mp.nan
+    else:
+        oddsratio = mp.inf
+    return oddsratio
 
 
+@mp.extradps(5)
 def _solve(func):
     """
     Solve func(nc) = 0.  func must be an increasing function.
     """
-    with mp.extradps(5):
-        # We could just as well call the variable `x` instead of `nc`, but we
-        # always call this function with functions for which nc (the
-        # noncentrality parameter) is the variable for which we are solving.
-        nc = mp.one
-        value = func(nc)
-        if value == 0:
-            return nc
-
-        # Multiplicative factor by which to increase or decrease nc when
-        # searching for a bracketing interval.
-        factor = mp.mpf(2)
-        # Find a bracketing interval.
-        if value > 0:
-            nc /= factor
-            while func(nc) > 0:
-                nc /= factor
-            lo = nc
-            hi = factor*nc
-        else:
-            nc *= factor
-            while func(nc) < 0:
-                nc *= factor
-            lo = nc/factor
-            hi = nc
-
-        # lo and hi bracket the solution for nc.
-        nc = mp.findroot(func, (lo, hi), solver='illinois')
+    # We could just as well call the variable `x` instead of `nc`, but we
+    # always call this function with functions for which nc (the
+    # noncentrality parameter) is the variable for which we are solving.
+    nc = mp.one
+    value = func(nc)
+    if value == 0:
         return nc
+
+    # Multiplicative factor by which to increase or decrease nc when
+    # searching for a bracketing interval.
+    factor = mp.mpf(2)
+    # Find a bracketing interval.
+    if value > 0:
+        nc /= factor
+        while func(nc) > 0:
+            nc /= factor
+        lo = nc
+        hi = factor*nc
+    else:
+        nc *= factor
+        while func(nc) < 0:
+            nc *= factor
+        lo = nc/factor
+        hi = nc
+
+    # lo and hi bracket the solution for nc.
+    nc = mp.findroot(func, (lo, hi), solver='illinois')
+    return nc
 
 
 def _nc_hypergeom_mean_inverse(x, total, ngood, nsample):
@@ -147,6 +147,7 @@ def _conditional_oddsratio(table):
     return nc
 
 
+@mp.extradps(5)
 def _conditional_oddsratio_ci(table, confidence_level,
                               alternative='two-sided'):
     """
@@ -171,21 +172,20 @@ def _conditional_oddsratio_ci(table, confidence_level,
     See "Example 1" starting on page 48.
 
     """
-    with mp.extradps(5):
-        confidence_level = mp.mpf(confidence_level)
-        if alternative == 'two-sided':
-            alpha = (mp.one - confidence_level)/2
-            lower = _ci_lower(table, alpha)
-            upper = _ci_upper(table, alpha)
-        elif alternative == 'less':
-            lower = mp.zero
-            upper = _ci_upper(table, mp.one - confidence_level)
-        else:
-            # alternative == 'greater'
-            lower = _ci_lower(table, mp.one - confidence_level)
-            upper = mp.inf
+    confidence_level = mp.mpf(confidence_level)
+    if alternative == 'two-sided':
+        alpha = (mp.one - confidence_level)/2
+        lower = _ci_lower(table, alpha)
+        upper = _ci_upper(table, alpha)
+    elif alternative == 'less':
+        lower = mp.zero
+        upper = _ci_upper(table, mp.one - confidence_level)
+    else:
+        # alternative == 'greater'
+        lower = _ci_lower(table, mp.one - confidence_level)
+        upper = mp.inf
 
-        return lower, upper
+    return lower, upper
 
 
 def _sample_odds_ratio_ci(table, confidence_level,

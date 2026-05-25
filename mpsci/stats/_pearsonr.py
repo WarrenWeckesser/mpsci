@@ -79,6 +79,7 @@ def pearsonr(x, y, alternative='two-sided'):
     return r, p
 
 
+@mp.extradps(5)
 def pearsonr_ci(r, n, alpha, alternative='two-sided'):
     """
     Confidence interval of Pearson's correlation coefficient.
@@ -118,26 +119,25 @@ def pearsonr_ci(r, n, alpha, alternative='two-sided'):
         raise ValueError("alternative must be 'two-sided', 'less', or "
                          "'greater'.")
 
-    with mp.extradps(5):
-        zr = mp.atanh(r)
-        n = mp.mpf(n)
-        alpha = mp.mpf(alpha)
-        s = mp.sqrt(1/(n - 3))
-        if alternative == 'two-sided':
-            h = normal.invcdf(1 - alpha/2)
-            zlo = zr - h*s
-            zhi = zr + h*s
-            rlo = mp.tanh(zlo)
-            rhi = mp.tanh(zhi)
-        elif alternative == 'less':
-            h = normal.invcdf(1 - alpha)
-            zhi = zr + h*s
-            rhi = mp.tanh(zhi)
-            rlo = -mp.one
-        else:
-            # alternative == 'greater'
-            h = normal.invcdf(1 - alpha)
-            zlo = zr - h*s
-            rlo = mp.tanh(zlo)
-            rhi = mp.one
-        return rlo, rhi
+    zr = mp.atanh(r)
+    n = mp.mpf(n)
+    alpha = mp.mpf(alpha)
+    s = mp.sqrt(1/(n - 3))
+    if alternative == 'two-sided':
+        h = normal.invcdf(1 - alpha/2)
+        zlo = zr - h*s
+        zhi = zr + h*s
+        rlo = mp.tanh(zlo)
+        rhi = mp.tanh(zhi)
+    elif alternative == 'less':
+        h = normal.invcdf(1 - alpha)
+        zhi = zr + h*s
+        rhi = mp.tanh(zhi)
+        rlo = -mp.one
+    else:
+        # alternative == 'greater'
+        h = normal.invcdf(1 - alpha)
+        zlo = zr - h*s
+        rlo = mp.tanh(zlo)
+        rhi = mp.one
+    return rlo, rhi

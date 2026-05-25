@@ -3,6 +3,7 @@ from ._basic import mean
 from ..distributions import f
 
 
+@mp.extradps(5)
 def anova_oneway(*args):
     """
     One-way analysis of variance (ANOVA) test.
@@ -40,23 +41,22 @@ def anova_oneway(*args):
     mpf('0.00028122423145345577062353')
 
     """
-    with mp.extradps(5):
-        num_groups = len(args)
-        groups = [[mp.mpf(x) for x in group] for group in args]
-        n = 0
-        grand_total = mp.zero
-        for group in groups:
-            n += len(group)
-            grand_total += mp.fsum(group)
-        grand_mean = grand_total / n
+    num_groups = len(args)
+    groups = [[mp.mpf(x) for x in group] for group in args]
+    n = 0
+    grand_total = mp.zero
+    for group in groups:
+        n += len(group)
+        grand_total += mp.fsum(group)
+    grand_mean = grand_total / n
 
-        v = mp.fsum(mp.fsum((g - grand_mean)**2 for g in group)
+    v = mp.fsum(mp.fsum((g - grand_mean)**2 for g in group)
+                for group in groups)
+    vb = mp.fsum(len(group)*(mean(group) - grand_mean)**2
                     for group in groups)
-        vb = mp.fsum(len(group)*(mean(group) - grand_mean)**2
-                     for group in groups)
-        vw = v - vb
-        F = vb/(num_groups - 1) / (vw/(n - num_groups))
-        dof_num = num_groups - 1
-        dof_den = n - num_groups
-        p = f.sf(F, dof_num, dof_den)
-        return F, p
+    vw = v - vb
+    F = vb/(num_groups - 1) / (vw/(n - num_groups))
+    dof_num = num_groups - 1
+    dof_den = n - num_groups
+    p = f.sf(F, dof_num, dof_den)
+    return F, p

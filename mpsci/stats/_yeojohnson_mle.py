@@ -5,6 +5,7 @@ from ._yeojohnson import yeojohnson
 from ._basic import var
 
 
+@mp.extradps(5)
 def yeojohnson_llf(lam, x):
     r"""The log-likelihood function for the Yeo-Johnson transformation.
 
@@ -31,18 +32,17 @@ def yeojohnson_llf(lam, x):
     transformed input data ``x``.
 
     """
-    with mp.extradps(5):
-        lam = mp.mpf(lam)
-        n = len(x)
-        x = [mp.mpf(t) for t in x]
-        if n == 0:
-            raise ValueError('x must have at least one element')
+    lam = mp.mpf(lam)
+    n = len(x)
+    x = [mp.mpf(t) for t in x]
+    if n == 0:
+        raise ValueError('x must have at least one element')
 
-        y = [yeojohnson(t, lam) for t in x]
-        y_var = var(y)
-        log1psum = mp.fsum([mp.sign(t)*mp.log1p(abs(t)) for t in x])
-        llf = -n/2 * mp.log(y_var) + (lam - 1)*log1psum
-        return llf
+    y = [yeojohnson(t, lam) for t in x]
+    y_var = var(y)
+    log1psum = mp.fsum([mp.sign(t)*mp.log1p(abs(t)) for t in x])
+    llf = -n/2 * mp.log(y_var) + (lam - 1)*log1psum
+    return llf
 
 
 _llf_expression = r"""
