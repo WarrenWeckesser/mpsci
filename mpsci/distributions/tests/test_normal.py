@@ -51,6 +51,14 @@ def test_sf(x, sf):
     assert mp.almosteq(x2, x)
 
 
+@pytest.mark.parametrize('func', [normal.mean, normal.median, normal.mode])
+def test_func_returns_mu(func):
+    mu = 3
+    sigma = 1.25
+    m = func(mu, sigma)
+    assert m == mu
+
+
 @mp.workdps(50)
 def test_entropy():
     mu = 1.5

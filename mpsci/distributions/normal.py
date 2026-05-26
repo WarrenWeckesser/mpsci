@@ -8,6 +8,7 @@ from ._common import _validate_loc_scale, _validate_p, _seq_to_mp
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
+           'mean', 'median', 'mode',
            'support', 'entropy', 'nll', 'mle']
 
 
@@ -87,6 +88,36 @@ def support(mu=0, sigma=1):
     """
     mu, sigma = _validate_loc_scale(mu, sigma, scale_name='sigma')
     return (mp.ninf, mp.inf)
+
+
+def mean(mu=0, sigma=1):
+    """
+    Mean of the normal distribution.
+
+    The mean is mu.
+    """
+    mu, sigma = _validate_loc_scale(mu, sigma, scale_name='sigma')
+    return mu
+
+
+def median(mu=0, sigma=1):
+    """
+    Median of the normal distribution.
+
+    The median is mu.
+    """
+    mu, sigma = _validate_loc_scale(mu, sigma, scale_name='sigma')
+    return mu
+
+
+def mode(mu=0, sigma=1):
+    """
+    Mode of the normal distribution.
+
+    The mode is mu.
+    """
+    mu, sigma = _validate_loc_scale(mu, sigma, scale_name='sigma')
+    return mu
 
 
 @mp.extradps(5)
