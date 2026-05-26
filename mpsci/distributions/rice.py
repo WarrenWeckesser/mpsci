@@ -12,6 +12,8 @@ SciPy has a different parametrization::
     -----------------   -----------------------------------------------------
     pdf(x, nu, sigma)   scipy.stats.rice.pdf(x, nu/sigma, loc=0, scale=sigma)
 
+The parameter sigma controls the scale, but it is not a pure scale parameter
+because pdf(x, nu, sigma) ≠ pdf(x/sigma, nu, 1)/sigma.
 """
 
 from mpmath import mp

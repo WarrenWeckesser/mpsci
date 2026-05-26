@@ -84,7 +84,7 @@ def test_mean_with_integral(nu, sigma):
 # Reference values were computed with Wolfram Alpha.  The input
 #     moments RiceDistribution 7 3
 # generates a table of raw moments.  When n is even, the moment
-# is a rational.  When n is odd, Wolfram Alpha expressed thre moment
+# is a rational.  When n is odd, Wolfram Alpha expressed the moment as
 # a linear combination of the Bessel functions I0 and I1.  In the
 # following, the reference value in the odd case holds the coefficients
 # of the linear combination.
