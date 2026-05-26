@@ -1,4 +1,4 @@
-
+import pytest
 from mpmath import mp
 from mpsci.distributions import truncnorm, normal
 from ._expect import (
@@ -49,6 +49,13 @@ def test_mean_with_integral():
     mean = truncnorm.mean(a, b)
     intgrl = noncentral_moment_with_integral(1, truncnorm, (a, b))
     assert mp.almosteq(mean, intgrl)
+
+
+@pytest.mark.parametrize('a, b, ref', [(-3, 1, 0), (-4.5, -3, -3), (8, 10, 8)])
+@mp.workdps(40)
+def test_mode(a, b, ref):
+    m = truncnorm.mode(a, b)
+    assert m == ref
 
 
 @mp.workdps(50)

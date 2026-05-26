@@ -12,7 +12,7 @@ from ._common import _validate_p
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'mean', 'median',
+           'support', 'mean', 'median', 'mode',
            'var', 'skewness', 'kurtosis', 'entropy']
 
 
@@ -148,6 +148,18 @@ def median(a, b):
     """
     a, b = _validate_params(a, b)
     return normal.invcdf((normal.cdf(a) + normal.cdf(b))/2)
+
+
+def mode(a, b):
+    """
+    Mode of the truncated standard normal distribution.
+    """
+    a, b = _validate_params(a, b)
+    if a >= 0:
+        return a
+    if b <= 0:
+        return b
+    return mp.zero
 
 
 @mp.extradps(5)
