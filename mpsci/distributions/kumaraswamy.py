@@ -26,7 +26,8 @@ from ..fun._powm1 import inv_powm1
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'invcdf', 'sf', 'invsf',
            'support',
-           'mean', 'var', 'median', 'skewness', 'noncentral_moment', 'entropy',
+           'mean', 'mode', 'median',
+           'var', 'skewness', 'noncentral_moment', 'entropy',
            'nll', 'mle']
 
 
@@ -140,21 +141,45 @@ def mean(a, b):
 
 
 @mp.extradps(5)
-def var(a, b):
-    """
-    Variance of the Kumaraswamy distribution.
-    """
-    a, b = _validate_a_b(a, b)
-    return b*mp.beta(1 + 2/a, b) - mean(a, b)**2
-
-
-@mp.extradps(5)
 def median(a, b):
     """
     Median of the Kumaraswamy distribution.
     """
     a, b = _validate_a_b(a, b)
     return inv_powm1(-mp.power(0.5, 1/b), a)
+
+
+@mp.extradps(5)
+def mode(a, b):
+    """
+    Mode of the Kumaraswamy distribution.
+
+    0 is returned if:
+    * a < 1;
+    * a == 1 and b >= 1.
+
+    1 is returned if:
+    * a >= 1 and b < 1;
+    * a > 1 and b == 1.
+
+    Otherwise the formula for the mode returns a value in the
+    interval (0, 1).
+    """
+    a, b = _validate_a_b(a, b)
+    if a < 1 or (a == 1 and b >= 1):
+        return mp.zero
+    if (a >= 1 and b < 1) or (a > 1 and b == 1):
+        return mp.one
+    return ((a - 1) / (a * b - 1))**(1/a)
+
+
+@mp.extradps(5)
+def var(a, b):
+    """
+    Variance of the Kumaraswamy distribution.
+    """
+    a, b = _validate_a_b(a, b)
+    return b*mp.beta(1 + 2/a, b) - mean(a, b)**2
 
 
 @mp.extradps(5)

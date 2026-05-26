@@ -138,6 +138,17 @@ def test_mean():
     assert mp.almosteq(m, expected, rel_eps=10**(-mp.dps + 12))
 
 
+@pytest.mark.parametrize('a, b', [(1.125, 1.025), (2, 4.5),  (7, 8)])
+@mp.workdps(60)
+def test_mode(a, b):
+    # A crude test of the mode.
+    m = kumaraswamy.mode(a, b)
+    pm = kumaraswamy.pdf(m, a, b)
+    delta = mp.sqrt(mp.eps)
+    assert kumaraswamy.pdf((1 + delta) * m, a, b) < pm
+    assert kumaraswamy.pdf((1 - delta) * m, a, b) < pm
+
+
 @mp.workdps(50)
 def test_var():
     v = kumaraswamy.var(6, 0.5)
