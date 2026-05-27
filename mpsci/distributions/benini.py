@@ -32,6 +32,9 @@ from mpmath import mp
 from ._common import _validate_p, _validate_x_bounds
 
 
+__all__ = ['suport', 'logpdf', 'pdf', 'cdf', 'logcdf', 'invcdf', 'sf', 'logsf',
+           'invsf', 'median', 'mode', 'mean', 'var', 'noncentral_moment', 'nll']
+
 # module docstring substitution
 _f_expression = r"""
 .. math::
@@ -202,6 +205,9 @@ def invsf(p, alpha, beta, scale):
 
 @mp.extradps(5)
 def median(alpha, beta, scale):
+    """
+    Median of the Benini distribution.
+    """
     return invcdf(0.5, alpha, beta, scale)
 
 
@@ -219,7 +225,7 @@ def mode(alpha, beta, scale):
     return scale * mp.exp((-2*alpha + mp.sqrt(8*beta + 1) - 1)/(4*beta))
 
 
-def h_neg1(x):
+def _h_neg1(x):
     sqrt2 = mp.sqrt(2)
     t = mp.mpf(x)/sqrt2
     return mp.sqrt(mp.pi)/sqrt2 * mp.exp(t**2) * mp.erfc(t)
@@ -232,7 +238,7 @@ def mean(alpha, beta, scale):
     """
     alpha, beta, scale = _validate_params(alpha, beta, scale)
     s = mp.sqrt(2*beta)
-    return scale*(1 + h_neg1((alpha - 1)/s)/s)
+    return scale*(1 + _h_neg1((alpha - 1)/s)/s)
 
 
 @mp.extradps(5)
@@ -243,12 +249,15 @@ def var(alpha, beta, scale):
     alpha, beta, scale = _validate_params(alpha, beta, scale)
     mu = mean(alpha, beta, scale)
     s = mp.sqrt(2*beta)
-    g = scale*mp.sqrt(1 + 2*h_neg1((alpha - 2)/s)/s)
+    g = scale*mp.sqrt(1 + 2 * _h_neg1((alpha - 2)/s)/s)
     return (g - mu)*(g + mu)
 
 
 @mp.extradps(5)
 def noncentral_moment(n, alpha, beta, scale=1):
+    """
+    Noncentral moment of the Benini distribution.
+    """
     alpha, beta, scale = _validate_params(alpha, beta, scale)
     amn = alpha - n
     tsqrtb = 2*mp.sqrt(beta)
