@@ -61,9 +61,9 @@ def _cdf_solver_bracket(z, lam):
             if z < mp.power(2.0, -lam)/lam:
                 pmax = mp.power(lam*z, lamrecip)
             else:
-                pmax = 0.5
+                pmax = mp.mpf(0.5)
             if z < -mp.power(2.0, -lam - 1):
-                pmin = 0.0
+                pmin = mp.zero
             else:
                 pmin = mp.one/2 + mp.power(2, lam)*z
         else:
@@ -71,31 +71,53 @@ def _cdf_solver_bracket(z, lam):
             if z > -mp.power(2.0, -lam)/lam:
                 pmin = -mp.expm1(mp.log(-lam*z)/lam)
             else:
-                pmin = 0.5
+                pmin = mp.mpf(0.5)
             if z > mp.power(2.0, -lam - 1):
-                pmax = 1.0
+                pmax = mp.one
             else:
                 pmax = mp.one/2 + mp.power(2, lam)*z
     else:
-        pmin = 0.0
-        pmax = 1.0
+        pmin = mp.zero
+        pmax = mp.one
     return (pmin, pmax)
 
 
-@mp.extradps(5)
-def cdf(x, lam, loc=0, scale=1, solver='ridder'):
+def _refine_bracket(pmin, pmax, z, lam):
+    """
+    Use simple bisection to refine the bracket.
+    """
+    m = (pmin + pmax) / 2
+    delta = mp.sqrt(mp.eps)
+    sign_min = mp.sign(invcdf(pmin, lam) - z)
+    sign_max = mp.sign(invcdf(pmax, lam) - z)
+    while (pmax - pmin) / m > delta:
+        pmid = (pmin + pmax) / 2
+        sign_mid = mp.sign(invcdf(pmid, lam) - z)
+        if sign_mid == 0:
+            # Not likely...
+            return (pmid, pmid)
+        if sign_mid == sign_min:
+            pmin = pmid
+        else:
+            pmax = pmid
+    return (pmin, pmax)
+
+
+@mp.extradps(10)
+def cdf(x, lam, loc=0, scale=1):
     """
     Cumulative distribution function for Tukey's lambda distribution.
 
     This function uses `mpmath.findroot` to compute the survival
     function.
-
-    `solver` is passed to `mpmath.findroot`.  It can be one of
-    ['bisect', 'anderson', 'ridder'].
     """
+    x = mp.mpf(x)
     lam, loc, scale = _validate_params(lam, loc, scale)
 
     z = (x - loc)/scale
+    if z == 0:
+        return mp.mpf(0.5)
+
     if lam > 0:
         lamrecip = 1/lam
         if z <= -lamrecip:
@@ -106,48 +128,26 @@ def cdf(x, lam, loc=0, scale=1, solver='ridder'):
     if lam == 0:
         return mp.one/(mp.exp(-z) + 1)
 
-    # Get starting bracket for bisection.
     pmin, pmax = _cdf_solver_bracket(z, lam)
+    pmin, pmax = _refine_bracket(pmin, pmax, z, lam)
 
-    p = findroot(lambda t: invcdf(t, lam) - z, [pmin, pmax],
-                 solver=solver)
+    with mp.extradps((mp.dps + 1) // 2):
+        p = findroot(lambda t: invcdf(t, lam) - z, [pmin, pmax],
+                     solver="anderson")
     return p
 
 
-@mp.extradps(5)
-def sf(x, lam, loc=0, scale=1, solver='ridder'):
+def sf(x, lam, loc=0, scale=1):
     """
     Survival function for Tukey's lambda distribution.
 
     This function uses `mpmath.findroot` to compute the survival
     function.
-
-    `solver` is passed to `mpmath.findroot`.  It can be one of
-    ['bisect', 'anderson', 'ridder'].
     """
-    lam, loc, scale = _validate_params(lam, loc, scale)
-
-    z = (x - loc)/scale
-    if lam > 0:
-        lamrecip = 1/lam
-        if z <= -lamrecip:
-            return mp.one
-        if z >= lamrecip:
-            return mp.zero
-
-    if lam == 0:
-        ez = mp.exp(-z)
-        return ez/(ez + 1)
-
-    # Get starting bracket for bisection.
-    pmin, pmax = _cdf_solver_bracket(-z, lam)
-
-    p = findroot(lambda t: invsf(t, lam) - z, [pmin, pmax],
-                 solver=solver)
-    return p
+    return cdf(-x, lam, loc=-loc, scale=scale)
 
 
-@mp.extradps(5)
+@mp.extradps(10)
 def invcdf(p, lam, loc=0, scale=1):
     """
     Quantile function for Tukey's lambda distribution.
@@ -168,25 +168,12 @@ def invcdf(p, lam, loc=0, scale=1):
     return loc + scale*z
 
 
-@mp.extradps(5)
+@mp.extradps(10)
 def invsf(p, lam, loc=0, scale=1):
     """
     Inverse survival function for Tukey's lambda distribution.
     """
-    p = _validate_p(p)
-    lam, loc, scale = _validate_params(lam, loc, scale)
-
-    if lam < 0:
-        if p == 0:
-            return mp.inf
-        if p == 1:
-            return mp.ninf
-
-    if lam == 0.0:
-        z = mp.log1p(-p) - mp.log(p)
-    else:
-        z = (mp.exp(lam*mp.log1p(-p)) - p**lam)/lam
-    return loc + scale*z
+    return -invcdf(p, lam, loc=-loc, scale=scale)
 
 
 @mp.extradps(5)
@@ -201,7 +188,6 @@ def support(lam, loc=0, scale=1):
         return (loc - scale/lam, loc + scale/lam)
 
 
-@mp.extradps(5)
 def mean(lam, loc=0, scale=1):
     """
     Mean of Tukey's lambda distribution.

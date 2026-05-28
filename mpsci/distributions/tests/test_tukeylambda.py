@@ -28,7 +28,10 @@ def test_pdf_logpdf(x, lam, ref):
      (-1.25, 0, '0.2227001388253088530004804523384582019709507184521052349878'),
      (-3, -1, '0.23240812075600178448012978875491734229145057102579229788159'),
      (-0.5, -2, '0.468989943540430815367258741152357011991279453295291106394098'),
-     (100, -3, '0.850888295809637571379812810386688549623479342189446248413169')]
+     (0, -1.25, '0.5'),
+     (100, -3, '0.850888295809637571379812810386688549623479342189446248413169'),
+     (2000, -3, '0.944971501868898823441012561166301183368389695667748349929002'),
+     (-5000, -4, '0.08408814797967718378182063883873424219506787762387318778480751')]
 )
 @mp.workdps(50)
 def test_cdf_sf(x, lam, ref):
@@ -64,6 +67,12 @@ def test_mean():
     assert m == loc
 
 
+def test_mean_lam_lt_neg1():
+    lam = -2
+    m = tukeylambda.mean(lam)
+    assert mp.isnan(m)
+
+
 # Reference values computed with Wolfram Alpha, e.g.:
 #   Variance[TukeyLambdaDistribution[1/4]]
 @mp.workdps(50)
@@ -81,6 +90,12 @@ def test_var_lam_is_0():
     var = tukeylambda.var(lam)
     ref = mp.pi**2 / 3
     assert mp.almosteq(var, ref)
+
+
+def test_var_lam_lt_neg_half():
+    lam = -2
+    v = tukeylambda.var(lam)
+    assert mp.isnan(v)
 
 
 @pytest.mark.parametrize('lam', [-2.5, 0])
