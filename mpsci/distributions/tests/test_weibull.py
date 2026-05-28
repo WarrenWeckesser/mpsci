@@ -2,7 +2,9 @@ from itertools import product
 import pytest
 from mpmath import mp
 from mpsci.distributions import weibull_max, weibull_min
-from ._expect import check_entropy_with_integral
+from ._expect import (check_entropy_with_integral,
+                      check_noncentral_moment_with_integral)
+
 
 
 @pytest.mark.parametrize('dist, xsign', [(weibull_min, 1), (weibull_max, -1)])
@@ -32,6 +34,17 @@ def test_pdf_loc_edge_case(dist, k):
 
 
 @pytest.mark.parametrize('dist', [weibull_min, weibull_max])
+@pytest.mark.parametrize('k', [0.125, 1, 2.25])
+@mp.workdps(50)
+def test_logpdf_loc_edge_case(dist, k):
+    loc = 0
+    scale = mp.mpf(0.25)
+    p = dist.logpdf(loc, k, loc, scale)
+    expected = mp.inf if k < 1 else -mp.log(scale) if k == 1 else mp.ninf
+    assert mp.almosteq(p, expected)
+
+
+@pytest.mark.parametrize('dist', [weibull_min, weibull_max])
 @mp.workdps(50)
 def test_cdf_sf(dist):
     k = 1.25
@@ -54,7 +67,7 @@ def test_cdf_sf(dist):
 
 @pytest.mark.parametrize('dist, sign', [(weibull_min, 1), (weibull_max, -1)])
 @mp.workdps(50)
-def test_invcdf(dist, sign):
+def test_invcdf_invsf(dist, sign):
     k = 1.5
     loc = 1
     scale = 3
@@ -67,6 +80,7 @@ def test_invcdf(dist, sign):
     valstr = '1.48268884363357472595994253221918943182906779611027773721'
     expected = mp.mpf(valstr)
     assert mp.almosteq(x, sign * expected)
+    assert mp.almosteq(dist.invsf(1 - p, k, sign*loc, scale), sign * expected)
 
 
 @pytest.mark.parametrize('dist, sign', [(weibull_min, 1), (weibull_max, -1)])
@@ -147,6 +161,13 @@ def test_entropy(dist):
     check_entropy_with_integral(dist, (1.25, 1, 3))
 
 
+@pytest.mark.parametrize('dist', [weibull_min, weibull_max])
+@pytest.mark.parametrize('order', [0, 1, 2, 3, 4])
+@mp.workdps(50)
+def test_noncentral_moment_with_integral(dist, order):
+    check_noncentral_moment_with_integral(order, dist, (4.5, -1, 0.5))
+
+
 @pytest.mark.parametrize('dist, sgn', [(weibull_min, 1), (weibull_max, -1)])
 @pytest.mark.parametrize(
     'x',
@@ -188,3 +209,38 @@ def test_mle_fixed_scale(dist, sgn, x, scale):
     delta = 1e-9
     assert nll < dist.nll(x, k_hat + delta, loc=0, scale=scale)
     assert nll < dist.nll(x, k_hat - delta, loc=0, scale=scale)
+
+
+
+@pytest.mark.parametrize('dist, sgn', [(weibull_min, 1), (weibull_max, -1)])
+@pytest.mark.parametrize(
+    'x',
+    [[2, 4, 8, 16],
+     [5.43, 4.78, 3.38, 4.71, 4.64, 4.76, 5.45, 5.33, 4.64, 3.60,
+      5.02, 4.93, 3.40, 5.37, 4.36, 4.08, 4.97, 5.65, 5.10, 4.48,
+      5.44, 5.59, 4.64, 5.36, 4.99]],
+)
+@pytest.mark.parametrize('k', [0.25, 8])
+@mp.workdps(50)
+def test_mle_fixed_k(dist, sgn, x, k):
+    # This is a crude test of dist.mle().
+    x = [sgn*t for t in x]
+    k_hat, loc_hat, scale_hat = dist.mle(x, loc=0, k=k)
+    assert loc_hat == 0
+    assert k_hat == k
+    nll = dist.nll(x, k=k, loc=0, scale=scale_hat)
+    delta = 1e-9
+    assert nll < dist.nll(x, k, loc=0, scale=scale_hat + delta)
+    assert nll < dist.nll(x, k, loc=0, scale=scale_hat - delta)
+
+
+@pytest.mark.parametrize('dist, sgn', [(weibull_min, 1), (weibull_max, -1)])
+@mp.workdps(50)
+def test_mle_trivial(dist, sgn):
+    x = [sgn*t for t in [2, 3, 7, 8]]
+    # All parameters fixed, so the returned values should be the same as the input
+    # parameters.
+    k_hat, loc_hat, scale_hat = dist.mle(x, loc=0, k=1, scale=3)
+    assert loc_hat == 0
+    assert k_hat == 1
+    assert scale_hat == 3
