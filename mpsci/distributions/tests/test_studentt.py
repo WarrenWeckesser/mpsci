@@ -74,11 +74,13 @@ def test_invsf_sf_roundtrip():
 
 
 def test_mean():
-    assert studentt.mean() == 0
+    df = 11
+    assert studentt.mean(df) == 0
 
 
 def test_mode():
-    assert studentt.mode() == 0
+    df = 99
+    assert studentt.mode(df) == 0
 
 
 @pytest.mark.parametrize('df', [2, 5, 57, 123])

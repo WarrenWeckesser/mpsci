@@ -156,7 +156,7 @@ def support(df):
     return (mp.ninf, mp.inf)
 
 
-def mean():
+def mean(df):
     """
     Mean of Student's t distribution.
 
@@ -165,7 +165,7 @@ def mean():
     return mp.zero
 
 
-def mode():
+def mode(df):
     """
     Mode of the Student's t distribution.
 
