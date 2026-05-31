@@ -17,15 +17,16 @@ distribution is obtained by setting δ = 0.
 """
 
 from mpmath import mp
+from ._common import _validate_loc_scale
 
 
 __all__ = ['logpdf', 'pdf', 'cdf', 'sf', 'support', 'mean', 'var']
 
 
-# To do: verify the valid ranges of the parameters.  E.g. can `a` be negative?
 def _validate_params(p, a, b, loc, scale):
-    if scale <= 0:
-        raise ValueError('scale must be positive')
+    loc, scale = _validate_loc_scale(loc, scale)
+    if a <= 0:
+        raise ValueError('a must be greater than 0.')
     if abs(b) > a or (abs(b) == a and p >= 0):
         raise ValueError('must have abs(b) < a if p >= 0, '
                          'abs(b) <= a if p < 0')
