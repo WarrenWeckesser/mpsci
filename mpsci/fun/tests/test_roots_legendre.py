@@ -18,7 +18,7 @@ def test_roots_legendre_bad_n():
 
 @mp.workdps(50)
 @pytest.mark.parametrize('n', [3, 9, 14, 21])
-def test_gausss_legendre_quadrature(n):
+def test_gauss_legendre_quadrature(n):
     roots, weights = roots_legendre(n)
     coeffs = range(1, 2*n)
     with mp.extradps(5):
