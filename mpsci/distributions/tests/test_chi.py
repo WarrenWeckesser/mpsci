@@ -1,6 +1,7 @@
-
+import pytest
 from mpmath import mp
 from mpsci.distributions import chi
+from ._expect import check_entropy_with_integral
 
 
 @mp.workdps(50)
@@ -65,10 +66,16 @@ def test_basic_mode():
 @mp.workdps(50)
 def test_noncentral_moment():
     k = 3
-    m = [chi.noncentral_moment(t, k) for t in range(1, 5)]
+    m = [chi.noncentral_moment(t, k) for t in range(0, 5)]
     # References values were computed with Wolfram Alpha:
     #     moments ChiDistribution 3
     sqrt2opi = mp.sqrt(2/mp.pi)
-    ref = [2*sqrt2opi, 3, 8*sqrt2opi, 15]
+    ref = [1, 2*sqrt2opi, 3, 8*sqrt2opi, 15]
     for mn, refn in zip(m, ref):
         assert mp.almosteq(mn, refn)
+
+
+@pytest.mark.parametrize('k', [3, 99])
+@mp.workdps(50)
+def test_entropy_with_integral(k):
+    check_entropy_with_integral(chi, (k,))
