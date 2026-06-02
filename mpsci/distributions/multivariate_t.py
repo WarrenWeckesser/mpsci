@@ -24,6 +24,7 @@ __all__ = ['logpdf', 'pdf', 'entropy']
 _multivariate = True
 
 
+@mp.extradps(5)
 def logpdf(x, nu, loc, scale, scale_inv=None):
     """
     Natural logarithm of the PDF for the multivariate t distribution.
@@ -36,30 +37,29 @@ def logpdf(x, nu, loc, scale, scale_inv=None):
     """
 
     p = mp.mpf(len(loc))
-    with mp.extradps(5):
-        nu = mp.mpf(nu)
-        if scale_inv is None:
-            with mp.extradps(5):
-                scale_inv = mp.inverse(scale)
-        tmp = mp.matrix(scale.cols, 1)
-        for k, v in enumerate(loc):
-            tmp[k] = mp.mpf(v)
-        loc = tmp
-        tmp = mp.matrix(scale.cols, 1)
-        for k, v in enumerate(x):
-            tmp[k] = mp.mpf(v)
-        x = tmp
-        delta = x - loc
-        c = (nu + p)/2
-        t1 = -c * mp.log1p((delta.T * scale_inv * delta)[0, 0] / nu)
-        t2 = mp.loggamma(c)
-        t3 = mp.loggamma(nu/2)
-        t4 = (p/2)*mp.log(nu)
-        t5 = (p/2)*mp.log(mp.pi)
+    nu = mp.mpf(nu)
+    if scale_inv is None:
         with mp.extradps(5):
-            det = mp.det(scale)
-        t6 = mp.log(det)/2
-        return t2 - t3 - t4 - t5 - t6 + t1
+            scale_inv = mp.inverse(scale)
+    tmp = mp.matrix(scale.cols, 1)
+    for k, v in enumerate(loc):
+        tmp[k] = mp.mpf(v)
+    loc = tmp
+    tmp = mp.matrix(scale.cols, 1)
+    for k, v in enumerate(x):
+        tmp[k] = mp.mpf(v)
+    x = tmp
+    delta = x - loc
+    c = (nu + p)/2
+    t1 = -c * mp.log1p((delta.T * scale_inv * delta)[0, 0] / nu)
+    t2 = mp.loggamma(c)
+    t3 = mp.loggamma(nu/2)
+    t4 = (p/2)*mp.log(nu)
+    t5 = (p/2)*mp.log(mp.pi)
+    with mp.extradps(5):
+        det = mp.det(scale)
+    t6 = mp.log(det)/2
+    return t2 - t3 - t4 - t5 - t6 + t1
 
 
 def pdf(x, nu, loc, scale, scale_inv=None):
@@ -76,6 +76,7 @@ def pdf(x, nu, loc, scale, scale_inv=None):
     return mp.exp(logpdf(x, nu, loc, scale, scale_inv))
 
 
+@mp.extradps(5)
 def entropy(nu, loc, scale):
     """
     Differential entropy of the multivariate t distribution.
@@ -86,13 +87,12 @@ def entropy(nu, loc, scale):
     the return value might not be meaningful.
     """
     d = mp.mpf(len(loc))
-    with mp.extradps(5):
-        nu = mp.mpf(nu)
-        loc = [mp.mpf(t) for t in loc]
-        mean_nu_d = (nu + d)/2
-        half_nu = nu/2
-        return (-mp.loggamma(mean_nu_d)
-                + mp.loggamma(half_nu)
-                + (d/2)*mp.log(nu*mp.pi)
-                + mean_nu_d*(mp.digamma(mean_nu_d) - mp.digamma(half_nu))
-                + mp.log(abs(mp.det(scale)))/2)
+    nu = mp.mpf(nu)
+    loc = [mp.mpf(t) for t in loc]
+    mean_nu_d = (nu + d)/2
+    half_nu = nu/2
+    return (-mp.loggamma(mean_nu_d)
+            + mp.loggamma(half_nu)
+            + (d/2)*mp.log(nu*mp.pi)
+            + mean_nu_d*(mp.digamma(mean_nu_d) - mp.digamma(half_nu))
+            + mp.log(abs(mp.det(scale)))/2)
