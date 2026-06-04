@@ -1,6 +1,13 @@
+from dataclasses import dataclass
 from mpmath import mp
 from ._basic import mean
 from ..distributions import f
+
+
+@dataclass
+class ANOVAOneWayResult:
+    f : mp.mpf
+    p : mp.mpf
 
 
 @mp.extradps(5)
@@ -10,7 +17,8 @@ def anova_oneway(*args):
 
     The number of replicates in each group may be different.
 
-    Returns the F statistic and the p-value.
+    Returns an instance of `ANOVAOneWayResult` with attributes `f` and `p`
+    that are the F-statistic and the p-value, respectively.
 
     Example
     -------
@@ -34,10 +42,10 @@ def anova_oneway(*args):
     >>> mdan = [0.1033, 0.0915, 0.0781, 0.0685, 0.0677, 0.0697,
     ...         0.0764, 0.0689]
     >>> tvar = [0.0703, 0.1026, 0.0956, 0.0973, 0.1039, 0.1045]
-    >>> F, p = anova_oneway(tmook, nport, pburg, mdan, tvar)
-    >>> F
+    >>> result = anova_oneway(tmook, nport, pburg, mdan, tvar)
+    >>> result.f
     mpf('7.1210194716424442964706')
-    >>> p
+    >>> result.p
     mpf('0.00028122423145345577062353')
 
     """
@@ -59,4 +67,4 @@ def anova_oneway(*args):
     dof_num = num_groups - 1
     dof_den = n - num_groups
     p = f.sf(F, dof_num, dof_den)
-    return F, p
+    return ANOVAOneWayResult(f=F, p=p)
