@@ -7,11 +7,13 @@ def test_pearsonr():
     y = [2, 2, 4, 7]
     r, p = pearsonr(x, y)
     # The reference values were computed with Wolfram Alpha:
-    #    Correlation[(1, 2, 3, 5), (2, 2, 4, 7)]
-    # Alpha reports only 6 digits, and does not provide the usual
-    # "more digits" option that other Alpha computations provide.
-    assert mp.almosteq(r, 0.970569, rel_eps=5e-6, abs_eps=0)
-    assert mp.almosteq(p, 0.029431, rel_eps=5e-5, abs_eps=0)
+    #    PearsonCorrelationTest[{1, 2, 3, 5}, {2, 2, 4, 7}]
+    # The reference p-value is found by clicking on "Plain text" in the
+    # "p-value" section of the result, and getting the result shown under
+    # "Wolfram Language plain text output".  The reference value for r is
+    # found similarly in the "Result" section.
+    assert mp.almosteq(p, 0.02943095846182884, rel_eps=1e-15, abs_eps=0)
+    assert mp.almosteq(r, 0.9705690415381711, rel_eps=1e-15, abs_eps=0)
 
 
 def test_sample_length_2():
