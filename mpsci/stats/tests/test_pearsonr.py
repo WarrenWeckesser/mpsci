@@ -1,3 +1,4 @@
+import pytest
 from mpmath import mp
 from mpsci.stats import pearsonr, pearsonr_ci
 
@@ -14,6 +15,43 @@ def test_pearsonr():
     # found similarly in the "Result" section.
     assert mp.almosteq(p, 0.02943095846182884, rel_eps=1e-15, abs_eps=0)
     assert mp.almosteq(r, 0.9705690415381711, rel_eps=1e-15, abs_eps=0)
+
+
+@pytest.mark.parametrize(
+    'alternative, ref_p',
+    [("less", 0.98528452076909),
+     ("greater", 0.014715479230915)]
+)
+def test_pearsonr_alternatives(alternative, ref_p):
+    """
+    The reference values for this test were computed with R, e.g.:
+
+        x <- c(1, 2, 3, 5)
+        y <- c(2, 2, 4, 7)
+        result <- cor.test(x, y, method="pearson", alternative="less")
+        options(digits=17)
+        print(result)
+
+    outputs
+
+            Pearson's product-moment correlation
+
+        data:  x and y
+        t = 5.69958718835381, df = 2, p-value = 0.98528452076909
+        alternative hypothesis: true correlation is less than 0
+        95 percent confidence interval:
+        -1.00000000000000000  0.99888750159949846
+        sample estimates:
+                        cor
+        0.97056904153817092
+    """
+    x = [1, 2, 3, 5]
+    y = [2, 2, 4, 7]
+    r, p = pearsonr(x, y, alternative=alternative)
+    # Correlation coefficient does not depend on 'alternative'.
+    ref_r = 0.97056904153817092
+    assert mp.almosteq(r, ref_r, rel_eps=1e-14)
+    assert mp.almosteq(p, ref_p, rel_eps=1e-14)
 
 
 def test_sample_length_2():
