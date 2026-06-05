@@ -111,3 +111,19 @@ def test_support_lam_gt_0(lam):
     lam = mp.mpf(lam)
     sup = tukeylambda.support(lam)
     assert sup == (-1/lam, 1/lam)
+
+
+@mp.workdps(40)
+def test_noncentral_moment():
+    # The reference value was computed using
+    #   mp.dps = 100
+    #   lam = mp.mpf('-0.1')
+    #   t1 = mp.quad(lambda t: t**2 * tukeylambda.pdf(t, lam, loc=1, scale=3), [-1e9, 0])
+    #   t2 = mp.quad(lambda t: t**2 * tukeylambda.pdf(t, lam, loc=1, scale=3), [0, 1e7])
+    #   ref = t1 + t2
+    # and then keeping the first 43 digits. (`check_noncentral_moment_with_integral` has
+    # been a bit flaky when applied to tukeylambda.)
+    ref = mp.mpf('44.02451960868272339412251903255121235441242')
+    lam = mp.mpf('-0.1')
+    m = tukeylambda.noncentral_moment(2, lam, loc=1, scale=3)
+    assert mp.almosteq(m, ref)

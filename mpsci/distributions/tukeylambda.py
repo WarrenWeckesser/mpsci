@@ -10,7 +10,8 @@ This implementation uses the same parameter names as
 """
 
 from mpmath import mp, findroot
-from ._common import _validate_loc_scale, _validate_p
+from ._common import _validate_loc_scale, _validate_p, _validate_moment_n
+
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
@@ -216,3 +217,38 @@ def var(lam, loc=0, scale=1):
     g2 = mp.gamma(2*lam + 2)
     v0 = (2/lam**2)*(1/(1 + 2*lam) - g1**2/g2)
     return scale**2 * v0
+
+
+@mp.extradps(5)
+def _standard_noncentral_moment(n, lam):
+    """
+    Noncentral moment of the "standard" Tukey's lambda distribution.
+    """
+    if n == 0:
+        return mp.one
+    if n % 2 == 1:
+        # Moments of odd order are zero.
+        return mp.zero
+    if lam * n <= -1:
+        return mp.nan
+    terms = [(-1)**k * mp.binomial(n, k) * mp.beta(lam * k + 1, (n - k) * lam + 1)
+             for k in range(0, n + 1)]
+    m = mp.fsum(terms) / lam**n
+    return m
+
+
+@mp.extradps(5)
+def noncentral_moment(n, lam, loc=0, scale=1):
+    """
+    Noncentral moment of Tukey's lambda distribution.
+
+    The value is also known as the raw moment.
+    """
+    _validate_moment_n(n)
+    lam, loc, scale = _validate_params(lam, loc, scale)
+    if n == 0:
+        return mp.one
+    terms = [(mp.binomial(n, i) * mp.power(loc, n - i) * mp.power(scale, i)
+              * _standard_noncentral_moment(i, lam))
+             for i in range(n + 1)]
+    return mp.fsum(terms)
