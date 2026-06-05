@@ -108,8 +108,7 @@ def cdf(x, lam, loc=0, scale=1):
     """
     Cumulative distribution function for Tukey's lambda distribution.
 
-    This function uses `mpmath.findroot` to compute the survival
-    function.
+    This function uses `mpmath.findroot` to compute the CDF.
     """
     x = mp.mpf(x)
     lam, loc, scale = _validate_params(lam, loc, scale)
