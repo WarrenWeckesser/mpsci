@@ -25,7 +25,7 @@ def expect(dist, params, func, support=None, extradps=None):
             support = dist.support(*params)
 
         def integrand(t):
-            return (func(t) * dist.pdf(t, *params))
+            return func(t) * dist.pdf(t, *params)
 
         return mp.quad(integrand, support)
 
