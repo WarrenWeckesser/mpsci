@@ -51,7 +51,7 @@ def check_noncentral_moment_with_integral(order, dist, params, extradps=None):
     m = dist.noncentral_moment(order, *params)
     intgrl = noncentral_moment_with_integral(order, dist, params,
                                              extradps=extradps)
-    assert mp.almosteq(m, intgrl)
+    assert mp.almosteq(m, intgrl), f"{m = } not close to {intgrl = }"
 
 
 def skewness_with_integral(dist, params):
