@@ -1,12 +1,12 @@
 [project]
 name = "mpsci"
-version = "0.0.1.dev100"
+version = "0.0.1.dev101"
 dependencies = [
     "mpmath",
 ]
 description = "Assorted statistical and mathematical functions implemented using mpmath."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = {text = "BSD-2-Clause"}
 authors = [
   {name = 'Warren Weckesser', email = 'warren.weckesser+mpsci@gmail.com'},
@@ -16,11 +16,11 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries",
     "Topic :: Scientific/Engineering",
 ]
