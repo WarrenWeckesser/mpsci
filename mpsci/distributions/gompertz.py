@@ -170,7 +170,7 @@ def mode(c, scale):
 
 def _hyp3f3_111222(x):
     x = mp.mpf(x)
-    return mp.nsum(lambda k: (-1)**k/(k+1)**3 * x**k/mp.factorial(k),
+    return mp.nsum(lambda k: 1/(k+1)**3 * x**k/mp.factorial(k),
                    [0, mp.inf])
 
 
@@ -185,7 +185,7 @@ def var(c, scale):
     c, scale = _validate_c_scale(c, scale)
     lnc = mp.log(c)
     expc = mp.exp(c)
-    return scale**2 * expc * (-2*c*_hyp3f3_111222(c) + mp.euler**2
+    return scale**2 * expc * (-2*c*_hyp3f3_111222(-c) + mp.euler**2
                               + mp.pi**2/6 + 2*mp.euler*lnc + lnc**2
                               - expc*mp.e1(c)**2)
 
