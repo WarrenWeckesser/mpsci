@@ -373,6 +373,7 @@ def mle(x, *, c=None, d=None, scale=None):
         return c, d, scale
 
     elif not c_fixed and d_fixed and not scale_fixed:
+        # Only d is fixed.
         # work in progress...
         c0 = c.initial if isinstance(c, Initial) else 1
         scale0 = scale.initial if isinstance(scale, Initial) else 1
@@ -380,14 +381,10 @@ def mle(x, *, c=None, d=None, scale=None):
         c, scale = _mle_c_scale(x, d, c0, scale0)
         return c, d, scale
 
-    elif not c_fixed and not d_fixed and not scale_fixed:
-        # Fit c, d and scale
-        c0 = c.initial if isinstance(c, Initial) else 1
-        d0 = d.initial if isinstance(d, Initial) else 1
-        scale0 = scale.initial if isinstance(scale, Initial) else 1
-        c0, d0, scale0 = _validate_params(c0, d0, scale0)
-        c, d, scale = _mle_c_d_scale(x, c0, d0, scale0)
-        return c, d, scale
-
-    else:
-        raise NotImplementedError
+    # No parameters fixed: fit c, d and scale
+    c0 = c.initial if isinstance(c, Initial) else 1
+    d0 = d.initial if isinstance(d, Initial) else 1
+    scale0 = scale.initial if isinstance(scale, Initial) else 1
+    c0, d0, scale0 = _validate_params(c0, d0, scale0)
+    c, d, scale = _mle_c_d_scale(x, c0, d0, scale0)
+    return c, d, scale

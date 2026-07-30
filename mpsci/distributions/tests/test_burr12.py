@@ -5,6 +5,19 @@ from mpsci.distributions import burr12, Initial
 from ._utils import check_mle
 
 
+def test_support():
+    # Trivial test, since the support is always [0, inf].
+    a, b = burr12.support(2, 3, 4)
+    assert a == 0
+    assert b == mp.inf
+
+
+@pytest.mark.parametrize('c, d, scale', [(-1, 2, 3), (3, -1.5, 1), (2, 3, -2)])
+def test_bad_params(c, d, scale):
+    with pytest.raises(ValueError, match='must be greater than 0'):
+        sup = burr12.support(c, d, scale)
+
+
 @mp.workdps(25)
 def test_pdf_outside_supprt():
     assert burr12.pdf(-1, 2, 3, 4) == 0
@@ -38,6 +51,11 @@ def test_logpdf_basic():
 @mp.workdps(25)
 def test_cdf_outside_supprt():
     assert burr12.cdf(-1, 2, 3, 4) == 0
+
+
+@mp.workdps(25)
+def test_logcdf_outside_supprt():
+    assert burr12.logcdf(-1, 2, 3, 4) == mp.ninf
 
 
 @pytest.mark.parametrize(
@@ -121,6 +139,16 @@ def test_mean_basic():
 
 
 @mp.workdps(25)
+def test_mean_nan():
+    c = 2.0
+    d = 0.5
+    scale = 1
+    mean = burr12.mean(c, d, scale)
+    # if c*d <= 1, the mean does not exist.
+    assert mp.isnan(mean)
+
+
+@mp.workdps(25)
 def test_var_basic():
     c = mp.mpf(2)
     d = mp.mpf(3)
@@ -129,6 +157,16 @@ def test_var_basic():
     mu2 = d*mp.beta((c*d - 2)/c, (c + 2)/c)
     var = burr12.var(c, d, scale)
     assert mp.almosteq(var, scale**2 * (-mu1**2 + mu2))
+
+
+@mp.workdps(25)
+def test_var_nan():
+    c = 2.0
+    d = 1.0
+    scale = 1
+    var = burr12.var(c, d, scale)
+    # if c*d <= 2, the variance does not exist.
+    assert mp.isnan(var)
 
 
 @mp.workdps(25)
@@ -156,6 +194,16 @@ def test_mode0_basic():
     scale = mp.mpf(7)
     mode = burr12.mode(c, d, scale)
     assert mode == 0
+
+
+def test_mle_trivial():
+    c = 2.0
+    d = 1.0
+    scale = 3.0
+    x = [1, 1, 2, 3, 5, 8]
+    # Trivial case: all parameters fixed.
+    p_hat = burr12.mle(x, c=c, d=d, scale=scale)
+    assert p_hat == (c, d, scale)
 
 
 @pytest.mark.parametrize(
@@ -245,7 +293,11 @@ def test_mle_scale_fixed(x, scale):
     [([0.116, 0.034, 0.081, 0.051, 0.171, 0.107, 0.171, 0.106, 0.116],
       1.5, 3.25, 0.12),
      ([12.5, 18.75, 6.25, 125.0, 37.5],
-      0.125, 6.2, 6.5)]
+      0.125, 6.2, 6.5),
+     ([1.132, 1.082, 1.054, 0.724, 1.2  , 0.991, 0.973, 0.896, 0.911,
+       0.865, 0.871, 0.761, 0.866, 0.828, 0.984, 1.134, 1.011, 1.047,
+       0.785, 1.076, 0.881, 1.052, 1.145, 0.803, 0.824, 0.747, 0.581],
+      2.0, 4.0, 1.0)]
 )
 @mp.workdps(50)
 def test_mle_d_fixed(x, d, c0, scale0):
