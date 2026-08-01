@@ -15,7 +15,7 @@ from ._common import _validate_loc_scale, _validate_p, _validate_moment_n
 
 
 __all__ = ['pdf', 'logpdf', 'cdf', 'sf', 'invcdf', 'invsf',
-           'support', 'mean', 'var']
+           'support', 'mean', 'var', 'noncentral_moment']
 
 
 def _validate_params(lam, loc, scale):
